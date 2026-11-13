@@ -42,6 +42,27 @@ jobs:
       - run: make bootstrap
       - run: make test
 
+  goldens:
+    name: goldens
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          cache: true
+      - run: make bootstrap
+      - run: make goldens
+      - name: Upload golden failure diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-failures
+          path: app/test/**/failures/*.png
+          if-no-files-found: ignore
+          retention-days: 14
+
   coverage:
     name: coverage
     runs-on: ubuntu-latest

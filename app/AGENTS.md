@@ -9,7 +9,7 @@ Flutter app `mitlio` (workspace member, `resolution: workspace`). Shipped target
 ## Key Files
 | File | Description |
 |------|-------------|
-| `pubspec.yaml` | App deps: `material_ui`, `mitlio_domain`; dev: `flutter_test`, `integration_test` |
+| `pubspec.yaml` | App deps: `material_ui`, `mitlio_domain`; dev: `flutter_test`, `integration_test`, `alchemist` |
 | `app_identity.yaml` | Single source of truth for name, flavors (dev/prod bundle ids), URL scheme, link domain, DebugDrive namespace (ADR-16/17) |
 | `.metadata` | Flutter tool metadata (generated) |
 
