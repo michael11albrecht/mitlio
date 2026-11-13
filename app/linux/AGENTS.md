@@ -19,6 +19,6 @@ Linux desktop runner used **only** as headless harness for CI desktop integratio
 - Do not remove: CI and DebugDrive depend on it.
 
 ### Testing Requirements
-- Exercised by `make it` / `make drive-up` once those land.
+- Exercised by `make it` (CI: `desktop-it.yml`, Linux + xvfb) and `make drive-up` once that lands.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
