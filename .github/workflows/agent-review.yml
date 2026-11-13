@@ -66,6 +66,8 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           # Full Claude output only on "Re-run with debug logging" (logs are public).
           show_full_output: ${{ runner.debug == '1' }}
+          # PRs are opened by the implementer App; the action refuses bot-triggered runs otherwise.
+          allowed_bots: "mitlio-agent,mitlio-agent[bot]"
           # Default GITHUB_TOKEN => the review comes from github-actions[bot], a different identity
           # than the implementer's GitHub App, so an approval is never self-approval.
           github_token: ${{ github.token }}
