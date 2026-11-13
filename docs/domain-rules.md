@@ -343,7 +343,7 @@ Result<String, IbanError> normalizeIban(String input);   // remove all whitespac
 Result<String, EpcError> buildEpcQrPayload({
   required String name, required String iban, String? bic, required Money amount, String remittance = '',
 });
-// EpcError: InvalidName, InvalidIban(IbanError), InvalidBic, NotEur, AmountOutOfRange, RemittanceTooLong
+// EpcError: InvalidName, InvalidIban(IbanError), InvalidBic, NotEur, AmountOutOfRange, RemittanceTooLong, PayloadTooLarge(int bytes)
 ```
 
 - **IBAN:** `^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$` (total 15–34). Mod-97: move the first 4 chars to the end,
@@ -355,6 +355,7 @@ Result<String, EpcError> buildEpcQrPayload({
 - **Payload** (EPC069-12, version 002, UTF-8): these 11 lines, joined with `\n`, no trailing newline:
   `BCD`, `002`, `1`, `SCT`, BIC or empty, name, IBAN, `EUR` + amount with 2 decimals, purpose (empty),
   structured ref (empty), remittance text.
+- Payload ≤ 331 UTF-8 bytes, else `PayloadTooLarge`, checked last (after all field checks).
 
 <!-- examples:iban -->
 ```json

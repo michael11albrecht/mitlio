@@ -13,6 +13,9 @@ mode="all"
 [[ "${1:-}" == "--changed" ]] && mode="changed"
 
 cd "$root"
+if [ -d "$HOME/sdk/flutter/bin" ]; then
+  export PATH="$HOME/sdk/flutter/bin:$PATH"
+fi
 if [[ "$mode" == "changed" ]]; then
   base=""
   for ref in origin/main main; do
