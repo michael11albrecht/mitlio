@@ -16,8 +16,9 @@ int _mapHash(Map<String, int> m) =>
 
 /// Equal split among [participants].
 final class EqualSplit extends SplitSpec {
-  /// Creates an equal split.
-  const EqualSplit(this.participants);
+  /// Creates an equal split; the set is copied and frozen.
+  EqualSplit(Set<String> participants)
+    : participants = Set.unmodifiable(participants);
 
   final Set<String> participants;
 
@@ -40,7 +41,7 @@ final class EqualSplit extends SplitSpec {
 /// Weighted split; weight 0 means excluded.
 final class SharesSplit extends SplitSpec {
   /// Creates a shares split.
-  const SharesSplit(this.weights);
+  SharesSplit(Map<String, int> weights) : weights = Map.unmodifiable(weights);
 
   final Map<String, int> weights;
 
@@ -58,7 +59,8 @@ final class SharesSplit extends SplitSpec {
 /// Split by basis points; must sum to 10000.
 final class PercentSplit extends SplitSpec {
   /// Creates a percent split.
-  const PercentSplit(this.basisPoints);
+  PercentSplit(Map<String, int> basisPoints)
+    : basisPoints = Map.unmodifiable(basisPoints);
 
   final Map<String, int> basisPoints;
 
@@ -76,7 +78,7 @@ final class PercentSplit extends SplitSpec {
 /// Explicit amounts per member; must sum to the expense amount.
 final class ExactSplit extends SplitSpec {
   /// Creates an exact split.
-  const ExactSplit(this.cents);
+  ExactSplit(Map<String, int> cents) : cents = Map.unmodifiable(cents);
 
   final Map<String, int> cents;
 

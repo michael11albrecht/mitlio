@@ -125,115 +125,115 @@ void main() {
         Member(id: 'z', position: 0), // Y
         Member(id: 'a', position: 0), // Z
       ];
-      final shares = _ok(_run(100, const EqualSplit({'a', 'z', 'b'}), members));
+      final shares = _ok(_run(100, EqualSplit({'a', 'z', 'b'}), members));
       expect(shares, {'a': 34, 'z': 33, 'b': 33});
     });
   });
 
   group('errors carry details', () {
     test('UnknownMember reports the id', () {
-      expect(_err(_run(10, const EqualSplit({'X'}))), const UnknownMember('X'));
+      expect(_err(_run(10, EqualSplit({'X'}))), const UnknownMember('X'));
     });
 
     test('NegativeValue reports the id', () {
       expect(
-        _err(_run(10, const SharesSplit({'A': 2, 'B': -1}))),
+        _err(_run(10, SharesSplit({'A': 2, 'B': -1}))),
         const NegativeValue('B'),
       );
       expect(
-        _err(_run(10, const PercentSplit({'A': 10001, 'C': -1}))),
+        _err(_run(10, PercentSplit({'A': 10001, 'C': -1}))),
         const NegativeValue('C'),
       );
       expect(
-        _err(_run(10, const ExactSplit({'A': 11, 'B': -1}))),
+        _err(_run(10, ExactSplit({'A': 11, 'B': -1}))),
         const NegativeValue('B'),
       );
     });
 
     test('PercentNotFull reports the sum (10001 and 9999)', () {
       expect(
-        _err(_run(10, const PercentSplit({'A': 5000, 'B': 5001}))),
+        _err(_run(10, PercentSplit({'A': 5000, 'B': 5001}))),
         const PercentNotFull(10001),
       );
       expect(
-        _err(_run(10, const PercentSplit({'A': 9999}))),
+        _err(_run(10, PercentSplit({'A': 9999}))),
         const PercentNotFull(9999),
       );
     });
 
     test('ExactMismatch reports sum and expected', () {
       expect(
-        _err(_run(1000, const ExactSplit({'A': 600, 'B': 300}))),
+        _err(_run(1000, ExactSplit({'A': 600, 'B': 300}))),
         const ExactMismatch(900, 1000),
       );
       expect(
-        _err(_run(1000, const ExactSplit({'A': 600, 'B': 500}))),
+        _err(_run(1000, ExactSplit({'A': 600, 'B': 500}))),
         const ExactMismatch(1100, 1000),
       );
     });
 
     test('check order: amount before unknown id', () {
       expect(
-        _err(_run(0, const EqualSplit({'X'}))),
+        _err(_run(0, EqualSplit({'X'}))),
         const AmountNotPositive(),
       );
       expect(
-        _err(_run(-5, const EqualSplit({'A'}))),
+        _err(_run(-5, EqualSplit({'A'}))),
         const AmountNotPositive(),
       );
     });
 
     test('check order: unknown id before negative value', () {
       expect(
-        _err(_run(10, const SharesSplit({'A': -1, 'X': 1}))),
+        _err(_run(10, SharesSplit({'A': -1, 'X': 1}))),
         const UnknownMember('X'),
       );
     });
 
     test('check order: negative value before sum check', () {
       expect(
-        _err(_run(10, const PercentSplit({'A': -1, 'B': 5}))),
+        _err(_run(10, PercentSplit({'A': -1, 'B': 5}))),
         const NegativeValue('A'),
       );
     });
 
     test('check order: sum check before participants', () {
       expect(
-        _err(_run(10, const ExactSplit({'A': 0}))),
+        _err(_run(10, ExactSplit({'A': 0}))),
         const ExactMismatch(0, 10),
       );
       expect(
-        _err(_run(10, const PercentSplit({}))),
+        _err(_run(10, PercentSplit({}))),
         const PercentNotFull(0),
       );
     });
 
     test('error choice is independent of map order', () {
       expect(
-        _err(_run(10, const SharesSplit({'Y': 1, 'X': 1}))),
+        _err(_run(10, SharesSplit({'Y': 1, 'X': 1}))),
         const UnknownMember('X'),
       );
       expect(
-        _err(_run(10, const SharesSplit({'C': -1, 'B': -1}))),
+        _err(_run(10, SharesSplit({'C': -1, 'B': -1}))),
         const NegativeValue('B'),
       );
     });
 
     test('all shares zero is NoParticipants', () {
       expect(
-        _err(_run(10, const SharesSplit({'A': 0, 'B': 0}))),
+        _err(_run(10, SharesSplit({'A': 0, 'B': 0}))),
         const NoParticipants(),
       );
-      expect(_err(_run(10, const SharesSplit({}))), const NoParticipants());
+      expect(_err(_run(10, SharesSplit({}))), const NoParticipants());
     });
 
     test('no members at all', () {
       expect(
-        _err(_run(10, const EqualSplit({'A'}), const [])),
+        _err(_run(10, EqualSplit({'A'}), const [])),
         const UnknownMember('A'),
       );
       expect(
-        _err(_run(10, const EqualSplit({}), const [])),
+        _err(_run(10, EqualSplit({}), const [])),
         const NoParticipants(),
       );
     });
@@ -241,12 +241,12 @@ void main() {
 
   group('edge cases', () {
     test('1 cent goes to the first participant in tie order', () {
-      expect(_ok(_run(1, const EqualSplit({'A', 'B', 'C'}))), {
+      expect(_ok(_run(1, EqualSplit({'A', 'B', 'C'}))), {
         'A': 1,
         'B': 0,
         'C': 0,
       });
-      expect(_ok(_run(1, const EqualSplit({'B', 'C'}))), {
+      expect(_ok(_run(1, EqualSplit({'B', 'C'}))), {
         'A': 0,
         'B': 1,
         'C': 0,
@@ -255,53 +255,53 @@ void main() {
 
     test('single member takes everything', () {
       const one = [Member(id: 'solo', position: 0)];
-      expect(_ok(_run(777, const EqualSplit({'solo'}), one)), {'solo': 777});
-      expect(_ok(_run(777, const ExactSplit({'solo': 777}), one)), {
+      expect(_ok(_run(777, EqualSplit({'solo'}), one)), {'solo': 777});
+      expect(_ok(_run(777, ExactSplit({'solo': 777}), one)), {
         'solo': 777,
       });
     });
 
     test('all members excluded', () {
       expect(
-        _err(_run(10, const SharesSplit({'A': 0, 'B': 0, 'C': 0}))),
+        _err(_run(10, SharesSplit({'A': 0, 'B': 0, 'C': 0}))),
         const NoParticipants(),
       );
     });
 
     test('percent sum 10001 and 9999 rejected', () {
       expect(
-        _err(_run(100, const PercentSplit({'A': 5000, 'B': 5001}))),
+        _err(_run(100, PercentSplit({'A': 5000, 'B': 5001}))),
         isA<PercentNotFull>(),
       );
       expect(
-        _err(_run(100, const PercentSplit({'A': 5000, 'B': 4999}))),
+        _err(_run(100, PercentSplit({'A': 5000, 'B': 4999}))),
         isA<PercentNotFull>(),
       );
     });
 
     test('huge amounts stay exact', () {
-      final shares = _ok(_run(_maxCents, const EqualSplit({'A', 'B', 'C'})));
+      final shares = _ok(_run(_maxCents, EqualSplit({'A', 'B', 'C'})));
       expect(shares, {
         'A': 333333333333333,
         'B': 333333333333333,
         'C': 333333333333333,
       });
       final pct = _ok(
-        _run(_maxCents, const PercentSplit({'A': 3333, 'B': 3333, 'C': 3334})),
+        _run(_maxCents, PercentSplit({'A': 3333, 'B': 3333, 'C': 3334})),
       );
       expect(_sum(pct.values), _maxCents);
     });
 
     test('huge share weights do not overflow', () {
       const w = 4611686018427387904; // 2^62
-      final shares = _ok(_run(10, const SharesSplit({'A': w, 'B': w, 'C': w})));
+      final shares = _ok(_run(10, SharesSplit({'A': w, 'B': w, 'C': w})));
       expect(shares, {'A': 4, 'B': 3, 'C': 3});
     });
 
     test('huge exact values summing past 2^63 are a mismatch, not a wrap', () {
       const big = 9223372036854775807;
       expect(
-        _err(_run(10, const ExactSplit({'A': big, 'B': big}))),
+        _err(_run(10, ExactSplit({'A': big, 'B': big}))),
         isA<ExactMismatch>(),
       );
     });
@@ -312,14 +312,14 @@ void main() {
         Member(id: 'A', position: 1),
         Member(id: 'B', position: 2),
       ];
-      expect(_ok(_run(3, const EqualSplit({'A', 'B'}), dup)), {
+      expect(_ok(_run(3, EqualSplit({'A', 'B'}), dup)), {
         'A': 2,
         'B': 1,
       });
     });
 
     test('members not mentioned participate with 0', () {
-      expect(_ok(_run(10, const SharesSplit({'B': 1}))), {
+      expect(_ok(_run(10, SharesSplit({'B': 1}))), {
         'A': 0,
         'B': 10,
         'C': 0,
@@ -327,7 +327,7 @@ void main() {
     });
 
     test('exact allows explicit zero entries', () {
-      expect(_ok(_run(10, const ExactSplit({'A': 10, 'B': 0}))), {
+      expect(_ok(_run(10, ExactSplit({'A': 10, 'B': 0}))), {
         'A': 10,
         'B': 0,
         'C': 0,
@@ -335,44 +335,85 @@ void main() {
     });
   });
 
+  group('immutability', () {
+    test('mutating the input collection does not change the spec', () {
+      final set = {'A', 'B'};
+      final map = {'A': 1, 'B': 1};
+      final specs = [
+        EqualSplit(set),
+        SharesSplit(map),
+        PercentSplit(map),
+        ExactSplit(map),
+      ];
+      final hashes = specs.map((s) => s.hashCode).toList();
+      set.add('C');
+      map['C'] = 5;
+      expect(EqualSplit(set), isNot(specs[0]));
+      expect(specs[0], EqualSplit({'A', 'B'}));
+      expect(specs[1], SharesSplit({'A': 1, 'B': 1}));
+      expect(specs[2], PercentSplit({'A': 1, 'B': 1}));
+      expect(specs[3], ExactSplit({'A': 1, 'B': 1}));
+      expect(specs.map((s) => s.hashCode).toList(), hashes);
+    });
+
+    test('exposed collections are unmodifiable', () {
+      expect(
+        () => EqualSplit({'A'}).participants.add('B'),
+        throwsUnsupportedError,
+      );
+      expect(
+        () => SharesSplit({'A': 1}).weights['B'] = 1,
+        throwsUnsupportedError,
+      );
+      expect(
+        () => PercentSplit({'A': 1}).basisPoints['B'] = 1,
+        throwsUnsupportedError,
+      );
+      expect(
+        () => ExactSplit({'A': 1}).cents['B'] = 1,
+        throwsUnsupportedError,
+      );
+    });
+  });
+
   group('value equality', () {
     test('specs', () {
-      expect(const EqualSplit({'A', 'B'}), const EqualSplit({'B', 'A'}));
+      expect(EqualSplit({'A', 'B'}), EqualSplit({'B', 'A'}));
       expect(
-        const EqualSplit({'A', 'B'}).hashCode,
-        const EqualSplit({'B', 'A'}).hashCode,
+        EqualSplit({'A', 'B'}).hashCode,
+        EqualSplit({'B', 'A'}).hashCode,
       );
-      expect(const EqualSplit({'A'}), isNot(const EqualSplit({'B'})));
-      expect(const EqualSplit({'A'}), isNot(const EqualSplit({'A', 'B'})));
+      expect(EqualSplit({'A'}), isNot(EqualSplit({'B'})));
+      expect(EqualSplit({'A'}), isNot(EqualSplit({'A', 'B'})));
       expect(
-        const SharesSplit({'A': 1, 'B': 2}),
-        const SharesSplit({'B': 2, 'A': 1}),
+        SharesSplit({'A': 1, 'B': 2}),
+        SharesSplit({'B': 2, 'A': 1}),
       );
       expect(
-        const SharesSplit({'A': 1, 'B': 2}).hashCode,
-        const SharesSplit({'B': 2, 'A': 1}).hashCode,
+        SharesSplit({'A': 1, 'B': 2}).hashCode,
+        SharesSplit({'B': 2, 'A': 1}).hashCode,
       );
-      expect(const SharesSplit({'A': 1}), isNot(const SharesSplit({'A': 2})));
-      expect(const SharesSplit({'A': 1}), isNot(const SharesSplit({'B': 1})));
+      expect(SharesSplit({'A': 1}), isNot(SharesSplit({'A': 2})));
+      expect(SharesSplit({'A': 1}), isNot(SharesSplit({'B': 1})));
       expect(
-        const SharesSplit({'A': 1}),
-        isNot(const SharesSplit({'A': 1, 'B': 1})),
+        SharesSplit({'A': 1}),
+        isNot(SharesSplit({'A': 1, 'B': 1})),
       );
-      expect(const PercentSplit({'A': 1}), const PercentSplit({'A': 1}));
+      expect(PercentSplit({'A': 1}), PercentSplit({'A': 1}));
       expect(
-        const PercentSplit({'A': 1}).hashCode,
-        const PercentSplit({'A': 1}).hashCode,
+        PercentSplit({'A': 1}).hashCode,
+        PercentSplit({'A': 1}).hashCode,
       );
-      expect(const PercentSplit({'A': 1}), isNot(const PercentSplit({'A': 2})));
-      expect(const ExactSplit({'A': 1}), const ExactSplit({'A': 1}));
+      expect(PercentSplit({'A': 1}), isNot(PercentSplit({'A': 2})));
+      expect(ExactSplit({'A': 1}), ExactSplit({'A': 1}));
       expect(
-        const ExactSplit({'A': 1}).hashCode,
-        const ExactSplit({'A': 1}).hashCode,
+        ExactSplit({'A': 1}).hashCode,
+        ExactSplit({'A': 1}).hashCode,
       );
-      expect(const ExactSplit({'A': 1}), isNot(const ExactSplit({'A': 2})));
-      expect(const SharesSplit({'A': 1}), isNot(const ExactSplit({'A': 1})));
-      expect(const SharesSplit({'A': 1}), isNot(const PercentSplit({'A': 1})));
-      expect(const PercentSplit({'A': 1}), isNot(const ExactSplit({'A': 1})));
+      expect(ExactSplit({'A': 1}), isNot(ExactSplit({'A': 2})));
+      expect(SharesSplit({'A': 1}), isNot(ExactSplit({'A': 1})));
+      expect(SharesSplit({'A': 1}), isNot(PercentSplit({'A': 1})));
+      expect(PercentSplit({'A': 1}), isNot(ExactSplit({'A': 1})));
     });
 
     test('errors', () {
@@ -424,10 +465,10 @@ void main() {
     });
 
     test('toString is informative', () {
-      expect(const EqualSplit({'A'}).toString(), contains('A'));
-      expect(const SharesSplit({'A': 1}).toString(), contains('SharesSplit'));
-      expect(const PercentSplit({'A': 1}).toString(), contains('PercentSplit'));
-      expect(const ExactSplit({'A': 1}).toString(), contains('ExactSplit'));
+      expect(EqualSplit({'A'}).toString(), contains('A'));
+      expect(SharesSplit({'A': 1}).toString(), contains('SharesSplit'));
+      expect(PercentSplit({'A': 1}).toString(), contains('PercentSplit'));
+      expect(ExactSplit({'A': 1}).toString(), contains('ExactSplit'));
       expect(const AmountNotPositive().toString(), 'AmountNotPositive()');
       expect(const NoParticipants().toString(), 'NoParticipants()');
       expect(const UnknownMember('A').toString(), 'UnknownMember(A)');
