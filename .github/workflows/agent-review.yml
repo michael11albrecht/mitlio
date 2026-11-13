@@ -20,6 +20,10 @@ permissions:
   statuses: write
   actions: read
 
+# gh CLI steps that run before checkout have no git remote to infer the repo from.
+env:
+  GH_REPO: ${{ github.repository }}
+
 jobs:
   review:
     name: review
