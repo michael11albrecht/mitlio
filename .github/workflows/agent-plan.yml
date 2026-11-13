@@ -42,6 +42,8 @@ jobs:
         if: steps.perm.outputs.allowed == 'true'
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Full Claude output only on "Re-run with debug logging" (logs are public).
+          show_full_output: ${{ runner.debug == '1' }}
           github_token: ${{ github.token }}
           claude_args: |
             --max-turns 25
