@@ -41,6 +41,7 @@ jobs:
           cache: true
       - run: make bootstrap
       - run: make test
+      - run: make domain-web-test
 
   goldens:
     name: goldens
