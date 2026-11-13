@@ -1,0 +1,48 @@
+name: Agent task
+description: A task sized for one agent PR (see docs/IMPLEMENTATION_PLAN.md)
+labels: ["agent-ready"]
+body:
+  - type: input
+    id: task_id
+    attributes:
+      label: Task ID
+      placeholder: P3-T07
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Links to plan sections, ADRs, domain rules, related issues.
+    validations:
+      required: true
+  - type: textarea
+    id: do
+    attributes:
+      label: Do
+      description: What to build. Include a wireframe and tap budget for UI tasks.
+    validations:
+      required: true
+  - type: textarea
+    id: accept
+    attributes:
+      label: Accept
+      description: Acceptance criteria, each verifiable by a command.
+      value: |
+        - [ ] `make check` green
+        - [ ] Tests: success / validation / failure paths covered
+        - [ ] Mutation score on changed files ≥ threshold
+    validations:
+      required: true
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of scope
+    validations:
+      required: true
+  - type: textarea
+    id: drive
+    attributes:
+      label: Drive verification
+      description: DebugDrive commands the agent runs and pastes output of in the PR.
+      render: shell

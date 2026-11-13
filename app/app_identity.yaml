@@ -1,0 +1,14 @@
+# Single source of truth for app identity (ADR-16).
+# Consumed by flavors (P8-T01) and fastlane (P8-T02).
+name: mitlio
+flavors:
+  dev:
+    display_name: mitlio dev
+    bundle_id: app.mitlio.dev
+  prod:
+    display_name: mitlio
+    bundle_id: app.mitlio
+url_scheme: mitlio
+# ADR-17: own domain recommended for SEO; placeholder until purchased.
+link_domain: mitlio.web.app
+debug_drive_namespace: ext.mitlio

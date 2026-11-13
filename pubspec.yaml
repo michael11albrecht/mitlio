@@ -1,0 +1,14 @@
+name: mitlio_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.14.0
+  flutter: 3.50.0
+
+workspace:
+  - app
+  - packages/domain
+  - packages/drive_client
+
+dev_dependencies:
+  very_good_analysis: ^10.0.0

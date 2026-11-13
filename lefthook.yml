@@ -1,0 +1,14 @@
+# Git hooks. Install with `lefthook install` (run by `make bootstrap`).
+pre-commit:
+  parallel: true
+  commands:
+    format:
+      glob: "*.dart"
+      run: dart format --output=none --set-exit-if-changed {staged_files}
+    secrets:
+      run: gitleaks git --staged --no-banner --redact .
+
+pre-push:
+  commands:
+    check-fast:
+      run: make check-fast

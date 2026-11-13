@@ -1,0 +1,19 @@
+# Dart / Flutter
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+.idea/
+coverage/
+.packages
+
+# Tooling state
+.omc/
+.drive/
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store

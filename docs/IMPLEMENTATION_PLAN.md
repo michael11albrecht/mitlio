@@ -58,7 +58,7 @@ mitlio web calculator (free, no ads, no popups, no signup, instant result)
 
 | # | Decision | Choice | Rationale | Revisit when |
 |---|---|---|---|---|
-| ADR-01 | App framework | Flutter (stable), Dart 3.x | Single codebase iOS/Android, good test tooling, desktop target for headless agent runs | — |
+| ADR-01 | App framework & targets | Flutter (stable), Dart 3.x. **Shipped products: iOS + Android app, plus the Astro web calculator (ADR-19).** The Flutter `linux` desktop target exists **only as a test harness** (headless integration tests + DebugDrive on cheap Linux CI runners/agents, no emulator) and is never released. No macOS/Windows/Flutter-web targets | Single codebase iOS/Android, good test tooling, cheap agent loop | — |
 | ADR-02 | Architecture | MVVM: View → ViewModel → Repository → Service (Flutter's official "app architecture" guide shape) + DebugDrive bridge | Matches the diagram; every user action is a ViewModel command callable from tests and agents | — |
 | ADR-03 | State management / DI | Riverpod (code-gen `riverpod_generator`) | Overridable providers = trivial fakes in tests and DebugDrive seeding | — |
 | ADR-04 | Local DB | Drift (SQLite) | Typed, migration-tested (`drift_dev schema` tests), runs in-memory in unit tests | — |
@@ -72,7 +72,7 @@ mitlio web calculator (free, no ads, no popups, no signup, instant result)
 | ADR-12 | Monorepo tooling | Dart pub workspaces + `Makefile` as the agent entrypoint (+ `melos` only if needed) | One command surface for humans, CI and agents | — |
 | ADR-13 | Push notifications | FCM HTTP v1 (FCM also delivers to iOS via APNs key) sent from a Supabase Edge Function; DB trigger → `notification_outbox` → `pg_cron` every minute → coalesced sends | One push path for both platforms, debouncing is natural, fully testable locally with an FCM stub. Firebase is used **only** for messaging | — |
 | ADR-14 | Crash reporting | Sentry, EU region (`de.sentry.io`), PII scrubbing | Keeps all user data in EU (consistent with Supabase EU), good Dart/Flutter symbolication | — |
-| ADR-15 | Agent models | Open-weights implementer for `safe` tasks, Claude for `critical` tasks and as reviewer (different model family than the implementer) — chosen by measured eval, see §6.7 | Strong mechanical gates make a cheaper implementer viable; decorrelated reviewer catches more | Re-run eval quarterly |
+| ADR-15 | Agent models | **Owner decision 2026-11-13: Claude Sonnet (`claude-sonnet-5-5`) for all implementation work** (issues → PRs, CI fixes, mutation-killing, reviews of PRs). **Claude Opus (`claude-opus-5-5`) only for thinking/planning**: task decomposition, plan/ADR updates, architecture questions, root-cause analysis when an agent is stuck. Open-weights models are not used by default (optional later eval, §6.7) | Sonnet is capable and cheap enough for gated implementation; Opus where reasoning depth matters, not for volume | If Sonnet's first-try green rate on `critical` tasks is poor → consider Opus for those |
 | ADR-16 | App identity | Name **mitlio**. Single source `app/app_identity.yaml`: display name `mitlio` (dev: `mitlio dev`), URL scheme `mitlio://`, bundle/application id `app.mitlio` / `app.mitlio.dev` (reverse-DNS is only a convention, no domain ownership needed; fixed forever after first store upload), DebugDrive namespace `ext.mitlio.*` | Consumed by flavors + fastlane; any change is one PR | — |
 | ADR-17 | Domain | **Own domain (revised 2026-11-13 for SEO)**, e.g. `mitlio.de` (DE-first audience; `mitlio.app` optional redirect), served by Firebase Hosting (free) — hosts the SEO web calculator, `/.well-known/apple-app-site-association`, `/.well-known/assetlinks.json`, invite fallback `/join/<token>`, privacy policy/imprint. Not Firebase Dynamic Links (shut down). Until the domain exists, `mitlio.web.app` works as a stand-in | A `*.web.app` subdomain ranks and converts worse, can't build brand backlinks, and moving later loses SEO equity. Cost ~€10–20/year | — |
 | ADR-19 | Web calculator stack | **Astro** static site (prerendered HTML per landing page, zero JS by default) + one small calculator island. Calculation logic = **the Dart domain compiled to JS** (`packages/domain_web`, `dart compile js`, exported via `dart:js_interop`) so web and app compute identical cents; parity additionally guarded by shared fixture tests | Flutter Web renders to canvas → poor SEO and heavy first load; a TS re-implementation would drift from the app | If dart2js bundle > 150 kB gz → TS port with fixture parity tests |
@@ -429,12 +429,11 @@ jobs:
       - run: make bootstrap
       - uses: anthropics/claude-code-action@v1
         with:
-          # Claude path: subscription token (no marginal cost, §6.8). Open-weights path: provider key + ANTHROPIC_BASE_URL.
+          # Subscription token (no marginal cost, §6.8).
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ steps.app.outputs.token }}
-          # Model is selected per risk class, see §6.7. For open-weights routing:
-          # ANTHROPIC_BASE_URL + provider key via env (verify in P1-T01).
-          claude_args: "--max-turns 60 --model ${{ vars.IMPLEMENTER_MODEL }}"
+          # IMPLEMENTER_MODEL = claude-sonnet-5-5 (§6.7).
+          claude_args: "--max-turns 40 --model ${{ vars.IMPLEMENTER_MODEL }}"
           prompt: |
             Implement issue #${{ github.event.issue.number }} following CLAUDE.md.
             1. Create branch agent/${{ github.event.issue.number }}-<slug>.
@@ -482,26 +481,20 @@ Required checks: `ci`, `desktop-it`, `agent-review`, `risk-label`, (`backend` wh
 
 Rules: backend deploys before app; migrations are **expand/contract** (backward compatible for N−2 app versions); post-deploy smoke test runs the drive scenario against staging; app has a `min_supported_version` remote check from P6.
 
-### 6.7 Model selection (implementer vs reviewer)
+### 6.7 Model selection
 
-**Recommendation:**
+**Owner decision (2026-11-13): Sonnet implements, Opus thinks.**
 
-| Role | Model | Why |
+| Role | Model | Where |
 |---|---|---|
-| Implementer, `safe` tasks (domain, UI slices, tests, mutation-killing) | Strongest open-weights coding model available via an **Anthropic-compatible endpoint**: candidates GLM (Z.ai), Kimi K2.x (Moonshot), DeepSeek V3.x, Qwen3-Coder, MiniMax M2.x — pick the latest version at decision time | Bulk of the token volume; gates (tests, coverage, mutation, arch) catch most mistakes mechanically |
-| Implementer, `critical` tasks (sync, RLS, migrations, push, auth) | Claude Sonnet (`claude-sonnet-5-5`) | Lower defect rate where gates are weaker and review is expensive |
-| Reviewer (all PRs) | Claude Sonnet; Claude Opus (`claude-opus-5-5`) for `critical` | Different model family than the implementer → decorrelated errors; review is few tokens so cost is low |
-| CI-fix retries | same as implementer | |
+| Implementation — every issue → PR (`safe` and `critical`) | Claude Sonnet (`claude-sonnet-5-5`) | `agent-implement.yml`, local Claude Code sessions, implementation subagents |
+| CI-fix retries, mutation-killing | Claude Sonnet | `agent-fix-ci.yml`, `mutation-nightly.yml` |
+| PR review | Claude Sonnet, with a separate prompt/context from the implementer (never self-approve) | `agent-review.yml` |
+| Thinking / planning — breaking phases into issues, plan & ADR changes, architecture decisions, deep debugging when Sonnet is stuck after 2 attempts | Claude Opus (`claude-opus-5-5`) | manual/local sessions, `agent-plan.yml` (label `agent-plan` → Opus writes issues, never code) |
 
-**Wiring:** Claude Code (and therefore `claude-code-action`) talks to any provider that exposes an Anthropic-compatible Messages API by setting `ANTHROPIC_BASE_URL` + the provider key. Several open-weights providers (Z.ai, Moonshot, DeepSeek, MiniMax) offer such endpoints; alternatively run a translation proxy (e.g. LiteLLM) in front of OpenRouter/Together/Fireworks. Verify in P1-T01 that the action passes these env vars through. Model names live in repo variables (`IMPLEMENTER_MODEL_SAFE`, `IMPLEMENTER_MODEL_CRITICAL`, `REVIEWER_MODEL`), so switching is a settings change, not a PR.
+Wiring: model names live in repo variables (`IMPLEMENTER_MODEL=claude-sonnet-5-5`, `REVIEWER_MODEL=claude-sonnet-5-5`, `PLANNER_MODEL=claude-opus-5-5`). The planner workflow has no `contents: write` permission — it can only create/comment on issues.
 
-**Decide by measurement, not vibes** (task P1-T11):
-1. Freeze 6 representative tasks (2 × P2 domain, 2 × P3 slice, 1 × P4, 1 × mutation-kill) on a branch with known-good reference solutions.
-2. Run each candidate model 2× per task with the real workflow and gates.
-3. Record: `make check` green on first PR (y/n), CI-fix rounds, turns, wall time, $ per merged PR, mutation score, reviewer-found defects.
-4. Pick the cheapest model whose green-first-try rate is within ~15 pp of Sonnet. Log results in `docs/agent-metrics.md`; re-run quarterly.
-
-**Guardrails specific to open-weights:** stricter `--max-turns` (40), job timeout 45 min, never routed to `critical` issues (the workflow reads the issue's risk label and picks the model), no access to any secret beyond the provider key.
+**Optional later:** open-weights implementers (GLM, Kimi, DeepSeek, Qwen-Coder, MiniMax via Anthropic-compatible endpoints) can be evaluated with the P1-T11 harness if cost becomes a problem; not part of the default setup.
 
 ### 6.8 Cost budget & hard caps
 
@@ -516,8 +509,7 @@ Target: **≈ €45–80 / month during active development, ≈ €30 / month in
 | Firebase (FCM + Hosting) | Spark (free) | €0 |
 | Sentry | Developer (free) tier, EU | €0 |
 | GitHub | private repo, Free plan Actions quota (Linux minutes; macOS minutes count with a large multiplier) | €0 if within quota, then pay-as-you-go with **$0 spending limit** by default |
-| LLM — Claude (critical tasks + reviewer) | **Use the existing Claude subscription** via `CLAUDE_CODE_OAUTH_TOKEN` (`claude setup-token`) in the action instead of an API key → no marginal cost, bounded by subscription usage limits | €0 extra (if subscription already paid) |
-| LLM — open-weights implementer | prepaid credits, **auto-top-up off** | cap €20–40 / month |
+| LLM — Claude (Sonnet implementation + review, Opus planning) | **Use the existing Claude subscription** via `CLAUDE_CODE_OAUTH_TOKEN` (`claude setup-token`) in the action instead of an API key → no marginal cost, bounded by subscription usage limits | €0 extra (if subscription already paid) |
 
 **Hard caps (mechanical, not willpower):**
 - LLM providers: prepaid balance only, no auto-recharge; Anthropic API key (only if used instead of the subscription) with a workspace spend limit.
@@ -534,7 +526,7 @@ Target: **≈ €45–80 / month during active development, ≈ €30 / month in
 - Optional, €0: register the owner's Mac as a **self-hosted macOS runner** for iOS builds (only works while the Mac is awake; GitHub-hosted macOS as fallback).
 - Alternative to evaluate: making the repo **public** makes standard GitHub-hosted runners free — only with label-gated agent workflows (already the case) and no secrets in fork-triggered workflows.
 
-**Monitoring:** `agent-metrics.md` monthly row: runs, merged PRs, $ per merged PR per model, CI minutes. If $/PR for the open-weights model is not clearly below the subscription-backed Claude path, drop it (subscription is flat-rate).
+**Monitoring:** `agent-metrics.md` monthly row: runs, merged PRs, subscription usage-limit hits, CI minutes. If usage limits block progress, prefer reducing agent runs/day over adding paid API usage.
 
 ---
 
@@ -567,7 +559,7 @@ Target: **≈ €45–80 / month during active development, ≈ €30 / month in
 | P1-T08 | `agent-implement.yml` (no automerge yet) + `agent-review.yml` | a trivial issue ("add README badge") goes issue → PR → review comment | critical |
 | P1-T09 | `desktop-it.yml` with xvfb + a hello-world integration test | green | critical |
 | P1-T10 | Golden setup (alchemist, bundled fonts, `goldens` vs `ci` config) | one sample golden passes in CI | critical |
-| P1-T11 | Model eval harness (§6.7): frozen task set, runner workflow, metrics table | ≥ 2 open-weights models + Sonnet measured; ADR-15 updated with numbers | critical |
+| P1-T11 | Agent metrics (§6.7): `docs/agent-metrics.md` table (runs, first-try green, CI-fix rounds, turns, cost per merged PR) filled by workflows | first 10 Sonnet PRs recorded | critical |
 | P1-T12 | `app/app_identity.yaml` (name `mitlio`, ids per ADR-16) consumed by flavors/fastlane; verify name availability: App Store Connect name reservation, Play Console, `mitlio.web.app` Hosting site id free, EUIPO/DPMA trademark search | name reserved in App Store Connect; Hosting site created | critical |
 
 **Exit P1:** an issue labelled `agent-implement` produces a reviewed PR whose CI enforces every gate. From here, agents do the bulk of the work.
@@ -822,7 +814,7 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 | Emulator / macOS minutes cost | budget | desktop IT as default; Android on PR only when labelled; iOS on main only |
 | Notification spam (burst edits, sync replays) | users disable push | 60 s coalescing, "user-visible change" filter in trigger, HLC dedupe, per-group levels |
 | Push leaks data on lock screen | privacy | IDs + minimal strings only, "hide amounts" option, never IBAN/notes |
-| Open-weights implementer quality drift / provider outage | stalled pipeline | model names in repo variables, fallback to Sonnet, quarterly eval |
+| Subscription usage limits reached during agent bursts | stalled pipeline | `AGENT_DAILY_LIMIT`, one agent job at a time, Opus reserved for planning |
 | App Store review delays | slower prod | phased release; backend backward compatible N−2 |
 
 ---
@@ -874,11 +866,11 @@ tool/drive.sh ext.mitlio.balances.get '{"groupId":"<id>"}'
 | 1 | Apple Developer account | yes | P8-T02 unblocked; TestFlight from M1 |
 | 2 | Supabase EU + paid plan | yes | Pro plan prod (daily backups, no pausing), free plan staging; push via ADR-13 / P6b |
 | 3 | App name / bundle id | **mitlio** | ADR-16; reserve store names in P1-T12; bundle id `app.mitlio` fixed at first TestFlight upload (cannot be changed afterwards) |
-| 4 | Models | open-weights preferred | ADR-15 / §6.7: open-weights for `safe`, Claude for `critical` + review, decided by P1-T11 eval |
+| 4 | Models | **Sonnet for implementation, Opus only for thinking/planning** (revised from open-weights) | ADR-15 / §6.7 |
 | 5 | Crash reporting | no preference | Sentry EU (ADR-14) |
 
 | 6 | Domain | don't care → **revised: own domain recommended** because of the SEO funnel | ADR-17: e.g. `mitlio.de` (~€10–20/year) on Firebase Hosting; needs owner purchase before PW-T10 |
 | 8 | Positioning | private taxometer + SEO web calculator funnel, live clickable fuel prices | Product positioning section, P3r, PW, P6c, ADR-19/20 |
-| 7 | Monthly budget | as low as sensible | ADR-18 / §6.8: ~€45–80 dev, ~€30 maintenance; Claude via existing subscription, prepaid open-weights cap €20–40, GitHub spend limit $0 |
+| 7 | Monthly budget | as low as sensible | ADR-18 / §6.8: ~€45–80 dev, ~€30 maintenance; Claude via existing subscription (no extra LLM spend), GitHub spend limit $0 |
 
 No open owner questions remain for P0–P1.
