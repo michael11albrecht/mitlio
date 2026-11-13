@@ -1,0 +1,17 @@
+# Disabled until P8-T07 (auto-merge for `safe` PRs: all checks green + reviewer verdict approve).
+# Intended action: gh pr merge --auto --squash. Do not enable without the owner's decision.
+name: automerge
+on:
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: read
+
+jobs:
+  automerge:
+    name: automerge
+    if: false # P8-T07
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "disabled until P8-T07"

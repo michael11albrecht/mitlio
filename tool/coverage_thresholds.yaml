@@ -1,0 +1,19 @@
+# Thresholds for tool/coverage_gate (packages/tooling). Paths are repo-relative.
+# Globs with no matching lines are reported as SKIP, not failed.
+# Do not lower these to get green (see CLAUDE.md).
+exclude:
+  - "**/*.g.dart"
+  - "**/*.freezed.dart"
+  - "**/*.drift.dart"
+  - "**/lib/l10n/**"
+thresholds:
+  - glob: "**"
+    min: 80
+  - glob: "packages/domain/lib/**"
+    min: 90
+  - glob: "app/lib/**/data/**"
+    min: 90
+  - glob: "app/lib/**/ui/*_view_model.dart"
+    min: 90
+  - glob: "app/lib/features/sync/**"
+    min: 90
