@@ -4,5 +4,10 @@
 /// See docs/IMPLEMENTATION_PLAN.md §2.2 and §2.5.
 library;
 
+export 'src/core/result.dart';
+export 'src/members/member.dart';
+export 'src/money/currency.dart';
+export 'src/money/money.dart';
+
 /// Version of the domain rules, bumped whenever calculation semantics change.
 const domainRulesVersion = 1;
