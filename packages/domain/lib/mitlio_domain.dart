@@ -5,6 +5,7 @@
 library;
 
 export 'src/allocation/allocate.dart';
+export 'src/balance/compute_balances.dart';
 export 'src/core/result.dart';
 export 'src/expense/expense.dart';
 export 'src/expense/expense_error.dart';
