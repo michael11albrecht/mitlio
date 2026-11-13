@@ -63,6 +63,20 @@ void main() {
       expect(r[1], lessThanOrEqualTo(1));
     });
 
+    test('weight sum beyond int64 does not wrap', () {
+      expect(allocate(1, List.filled(4, 4611686018427387904)), [1, 0, 0, 0]);
+    });
+
+    test('weights near 2^53 stay exact', () {
+      const w = 9007199254740991; // 2^53 - 1
+      expect(allocate(_maxCents, [w, w, w]), [
+        333333333333333,
+        333333333333333,
+        333333333333333,
+      ]);
+      expect(allocate(10, [w, w, w, w]), [3, 3, 2, 2]);
+    });
+
     test('tie goes to the lower index', () {
       expect(allocate(2, [1, 1, 1]), [1, 1, 0]);
     });

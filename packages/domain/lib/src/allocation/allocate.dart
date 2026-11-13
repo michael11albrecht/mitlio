@@ -11,27 +11,26 @@ List<int> allocate(int total, List<int> weights) {
   if (weights.isEmpty) {
     throw ArgumentError('weights must not be empty');
   }
-  var sum = 0;
+  // BigInt throughout: the sum and products can exceed 2^53 (dart2js) or 2^63.
+  var sum = BigInt.zero;
   for (final w in weights) {
     if (w < 0) {
       throw ArgumentError('weights must not be negative');
     }
-    sum += w;
+    sum += BigInt.from(w);
   }
-  if (sum == 0) {
+  if (sum == BigInt.zero) {
     throw ArgumentError('weights must not sum to zero');
   }
 
-  // BigInt: total * weight can exceed 2^53, which dart2js cannot represent.
   final bigTotal = BigInt.from(total);
-  final bigSum = BigInt.from(sum);
   final result = List<int>.filled(weights.length, 0);
   final remainders = List<BigInt>.filled(weights.length, BigInt.zero);
   var left = total;
   for (var i = 0; i < weights.length; i++) {
     final product = bigTotal * BigInt.from(weights[i]);
-    result[i] = (product ~/ bigSum).toInt();
-    remainders[i] = product % bigSum;
+    result[i] = (product ~/ sum).toInt();
+    remainders[i] = product % sum;
     left -= result[i];
   }
 
