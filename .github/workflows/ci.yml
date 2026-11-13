@@ -1,0 +1,122 @@
+# CI gates (docs/IMPLEMENTATION_PLAN.md §6.1). Job `name:` values are the required-check names
+# for branch protection: do not rename them without updating the ruleset.
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  static:
+    name: static (fmt, lint, arch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          cache: true
+      - run: make bootstrap
+      - run: make fmt-check
+      - run: make lint
+      - run: make arch
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          cache: true
+      - run: make bootstrap
+      - run: make test
+
+  coverage:
+    name: coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read # download main's coverage summary artifact
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          cache: true
+      - run: make bootstrap
+      # On PRs fetch the latest main summary as ratchet baseline (P1-T02 gate reads coverage-baseline/summary.txt).
+      # Missing baseline (first run, expired artifact) is fine.
+      - name: Download baseline from main
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run_id=$(gh run list --workflow ci.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+          if [ -n "$run_id" ]; then
+            gh run download "$run_id" --name coverage-summary --dir coverage-baseline || echo "no baseline artifact"
+          else
+            echo "no successful main run yet"
+          fi
+      - run: make cov
+      - name: Write coverage summary
+        if: always()
+        run: |
+          mkdir -p coverage-summary
+          {
+            echo "sha=${GITHUB_SHA}"
+            # Total line coverage over every lcov.info the gate produced (empty until P1-T02 lands).
+            find . -name lcov.info -not -path './coverage-baseline/*' -print0 \
+              | xargs -0 -r cat \
+              | awk -F: '/^LF:/{lf+=$2} /^LH:/{lh+=$2} END{ if (lf>0) printf "lines_found=%d\nlines_hit=%d\nline_coverage=%.2f\n", lf, lh, 100*lh/lf; else print "no lcov data" }'
+          } | tee coverage-summary/summary.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-summary
+          path: coverage-summary/
+          retention-days: 30
+
+  secrets:
+    name: secrets (gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Binary instead of gitleaks-action (the action needs a license key for org repos).
+      - name: Install gitleaks
+        env:
+          GITLEAKS_VERSION: 8.21.2
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz -C /usr/local/bin gitleaks
+          gitleaks version
+      - run: make secrets
+
+  osv:
+    name: osv (pubspec.lock)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install osv-scanner
+        env:
+          OSV_VERSION: 2.0.2
+        run: |
+          curl -sSfL -o osv-scanner "https://github.com/google/osv-scanner/releases/download/v${OSV_VERSION}/osv-scanner_linux_amd64"
+          chmod +x osv-scanner
+      - run: ./osv-scanner scan source --lockfile=pubspec.lock

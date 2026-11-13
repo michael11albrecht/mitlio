@@ -1,0 +1,33 @@
+# Every `critical` path from docs/IMPLEMENTATION_PLAN.md §6.4 (keep in sync with tool/risk_label.sh).
+# Owner: @michael11albrecht; branch protection requires code-owner review.
+
+/.github/                          @michael11albrecht
+/.claude/                          @michael11albrecht
+/CLAUDE.md                         @michael11albrecht
+/AGENTS.md                         @michael11albrecht
+/Makefile                          @michael11albrecht
+/lefthook.yml                      @michael11albrecht
+analysis_options.yaml              @michael11albrecht
+/tool/*_gate.dart                  @michael11albrecht
+/tool/risk_label.sh                @michael11albrecht
+/tool/risk_label_test.sh           @michael11albrecht
+
+# Dependencies
+pubspec.yaml                       @michael11albrecht
+pubspec.lock                       @michael11albrecht
+package.json                       @michael11albrecht
+package-lock.json                  @michael11albrecht
+
+# Backend
+/supabase/                         @michael11albrecht
+
+# Sync / auth / debug
+/app/lib/features/sync/            @michael11albrecht
+/app/lib/core/auth/                @michael11albrecht
+/app/lib/debug/                    @michael11albrecht
+
+# Native platform + identity
+ios/                               @michael11albrecht
+android/                           @michael11albrecht
+/app/linux/                        @michael11albrecht
+/app/app_identity.yaml             @michael11albrecht

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mutation config for packages/domain. The files list is injected by tool/mutate.sh
+     (generated files are filtered out there). Built-in rules apply. -->
+<mutations version="1.2">
+@FILES@
+  <commands>
+    <command group="test" expected-return="0" timeout="120">dart test</command>
+  </commands>
+  <exclude>
+    <!-- comments, imports/exports and annotations are not mutated -->
+    <token begin="//" end="\n"/>
+    <token begin="import &apos;" end="&apos;;"/>
+    <token begin="export &apos;" end="&apos;;"/>
+    <token begin="part &apos;" end="&apos;;"/>
+  </exclude>
+  <!-- ratchet toward 85 per docs/IMPLEMENTATION_PLAN.md section 3 -->
+  <threshold failure="75"/>
+</mutations>

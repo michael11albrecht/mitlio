@@ -1,0 +1,57 @@
+# Labels PRs `safe` | `critical` (+ `ux-review`) via tool/risk_label.sh (§6.4).
+# Uses pull_request_target and runs the script from the BASE branch checkout, so a PR cannot
+# edit tool/risk_label.sh to label itself `safe`. The PR head is only fetched as git data
+# (never checked out / executed). Needs the label-gate in branch protection for full effect.
+name: risk-label
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write # labels are managed through the issues API
+
+concurrency:
+  group: risk-label-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  label:
+    name: risk-label
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4 # base branch (default for pull_request_target)
+        with:
+          fetch-depth: 0
+      - name: Fetch PR head (data only)
+        env:
+          PR: ${{ github.event.pull_request.number }}
+        run: git fetch --no-tags origin "refs/pull/${PR}/head:refs/remotes/pr/head"
+      - name: Compute risk
+        id: risk
+        env:
+          RISK_BASE: origin/${{ github.event.pull_request.base.ref }}
+          RISK_HEAD: refs/remotes/pr/head
+        run: |
+          bash tool/risk_label.sh --git | tee risk.txt
+          echo "risk=$(head -1 risk.txt)" >> "$GITHUB_OUTPUT"
+          if grep -qx ux-review risk.txt; then echo "ux=true" >> "$GITHUB_OUTPUT"; else echo "ux=false" >> "$GITHUB_OUTPUT"; fi
+      - name: Apply labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          RISK: ${{ steps.risk.outputs.risk }}
+          UX: ${{ steps.risk.outputs.ux }}
+        run: |
+          gh label create safe --color 0E8A16 --description "Mechanically low risk" --force
+          gh label create critical --color B60205 --description "Needs owner review" --force
+          gh label create ux-review --color 5319E7 --description "New screen or navigation change" --force
+          if [ "$RISK" = critical ]; then add=critical; remove=safe; else add=safe; remove=critical; fi
+          gh pr edit "$PR" --add-label "$add" --remove-label "$remove"
+          if [ "$UX" = true ]; then
+            gh pr edit "$PR" --add-label ux-review
+          else
+            gh pr edit "$PR" --remove-label ux-review
+          fi

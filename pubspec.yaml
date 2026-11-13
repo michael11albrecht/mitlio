@@ -9,6 +9,7 @@ workspace:
   - app
   - packages/domain
   - packages/drive_client
+  - packages/tooling
 
 dev_dependencies:
   very_good_analysis: ^10.0.0

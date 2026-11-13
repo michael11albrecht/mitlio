@@ -10,6 +10,7 @@ DART    ?= $(shell command -v dart 2>/dev/null || echo $(HOME)/sdk/flutter/bin/d
 
 DOMAIN := packages/domain
 DRIVE  := packages/drive_client
+TOOLING := packages/tooling
 APP    := app
 
 define not_yet
@@ -50,24 +51,29 @@ test-domain: ## Domain unit tests (fast TDD loop)
 test-drive: ## Drive client tests
 	cd $(DRIVE) && $(DART) test
 
+.PHONY: test-tooling
+test-tooling: ## Tests for repo tooling (gates)
+	cd $(TOOLING) && $(DART) test
+	tool/risk_label_test.sh
+
 .PHONY: test-app
 test-app: ## App unit + widget tests
 	cd $(APP) && $(FLUTTER) test
 
 .PHONY: test
-test: test-domain test-drive test-app ## All unit + widget tests
+test: test-domain test-drive test-tooling test-app ## All unit + widget tests
 
 .PHONY: cov
-cov: ## Tests with coverage + gates
-	$(call not_yet,coverage gate is P1-T02)
+cov: ## Tests with coverage + per-path gates (ARGS='--baseline f --write-summary f')
+	tool/coverage.sh $(ARGS)
 
 .PHONY: mutate
-mutate: ## Mutation tests (CHANGED=1 for changed files only)
-	$(call not_yet,mutation gate is P1-T03)
+mutate: ## Mutation tests on domain (CHANGED=1 for changed files only)
+	tool/mutate.sh $(if $(CHANGED),--changed,)
 
 .PHONY: arch
 arch: ## Architecture rules
-	$(call not_yet,architecture test is P1-T04)
+	cd $(APP) && $(FLUTTER) test test/architecture
 
 .PHONY: goldens goldens-update
 goldens: ## Golden tests
@@ -97,4 +103,4 @@ secrets: ## Scan for committed secrets
 check-fast: fmt-check lint test-domain ## Quick gate (agent Stop hook)
 
 .PHONY: check
-check: fmt-check lint arch test cov goldens secrets ## Definition of done
+check: fmt-check lint arch test-tooling cov goldens secrets ## Definition of done (cov runs all tests)
