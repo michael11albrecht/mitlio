@@ -1,6 +1,8 @@
 import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../support/domain_rules_examples.dart';
+
 const _members = [
   Member(id: 'A', position: 0),
   Member(id: 'B', position: 1),
@@ -57,63 +59,35 @@ extension _Gens on Any {
 
 void main() {
   group('computeTripCost examples (examples:trip)', () {
-    final rows = <Map<String, Object?>>[
-      {
-        'name': 'consumption, driver counts',
-        'input': _input(),
-        'fuel': 2923,
-        'total': 2923,
-        'shares': {'A': 975, 'B': 974, 'C': 974, 'D': 0},
-      },
-      {
-        'name': 'consumption, driver free',
-        'input': _input(driverCounts: false),
-        'fuel': 2923,
-        'total': 2923,
-        'shares': {'A': 0, 'B': 1462, 'C': 1461, 'D': 0},
-      },
-      {
-        'name': 'round trip rounds once on doubled distance',
-        'input': _input(roundTrip: true, passengers: {'B'}),
-        'fuel': 5847,
-        'total': 5847,
-        'shares': {'A': 2924, 'B': 2923, 'C': 0, 'D': 0},
-      },
-      {
-        'name': 'wear and tolls',
-        'input': _input(
-          mode: const Consumption(
-            consumptionMilliPer100km: 6500,
-            pricePerUnitMilli: 1799,
-            wearMilliPerKm: 50,
-          ),
-          tolls: 1150,
-          passengers: {'B'},
-        ),
-        'fuel': 2923,
-        'wear': 1250,
-        'total': 5323,
-        'shares': {'A': 2662, 'B': 2661, 'C': 0, 'D': 0},
-      },
-      {
-        'name': 'km rate',
-        'input': _input(
-          mode: const KmRate(300),
-          driverCounts: false,
-        ),
-        'kmRateCents': 7500,
-        'total': 7500,
-        'shares': {'A': 0, 'B': 3750, 'C': 3750, 'D': 0},
-      },
-    ];
+    // The doc's members are A, B, C; the tests' roster adds D (share 0).
+    TripInput inputOf(Map<String, dynamic> i) => TripInput(
+      distanceMeters: i['distanceMeters'] as int,
+      roundTrip: i['roundTrip'] as bool,
+      currency: Currency.eur,
+      mode: i.containsKey('kmRate')
+          ? KmRate(i['kmRate'] as int)
+          : Consumption(
+              consumptionMilliPer100km: i['consumption'] as int,
+              pricePerUnitMilli: i['price'] as int,
+              wearMilliPerKm: (i['wear'] as int?) ?? 0,
+            ),
+      tollsCents: (i['tollsCents'] as int?) ?? 0,
+      driverId: i['driver'] as String,
+      passengerIds: (i['passengers'] as List).cast<String>().toSet(),
+      driverCounts: i['driverCounts'] as bool,
+    );
+    final rows = domainRulesRows('trip');
     for (final row in rows) {
-      test(row['name']! as String, () {
-        final c = _ok(row['input']! as TripInput);
+      test(row['name'] as String, () {
+        final c = _ok(inputOf(row['input'] as Map<String, dynamic>));
         expect(c.fuelCents, row['fuel'] ?? 0);
         expect(c.wearCents, row['wear'] ?? 0);
         expect(c.kmRateCents, row['kmRateCents'] ?? 0);
         expect(c.totalCents, row['total']);
-        expect(c.shares, row['shares']);
+        expect(c.shares, {
+          for (final m in _members) m.id: 0,
+          ...(row['shares'] as Map).cast<String, int>(),
+        });
       });
     }
 

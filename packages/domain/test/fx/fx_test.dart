@@ -1,6 +1,8 @@
 import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../support/domain_rules_examples.dart';
+
 Currency _c(String code) => Currency.tryParse(code)!;
 
 void main() {
@@ -37,15 +39,14 @@ void main() {
   });
 
   group('convert examples (docs/domain-rules.md examples:fx)', () {
-    const rows = <(int, String, String, int, int)>[
-      (10000, 'USD', 'EUR', 920000, 9200),
-      (1000, 'JPY', 'EUR', 6200, 620),
-      (15, 'USD', 'EUR', 1100000, 16),
-      (25, 'USD', 'EUR', 1100000, 28),
-      (5, 'USD', 'EUR', 1100000, 6),
-      (1234, 'EUR', 'JPY', 160000000, 1974),
-    ];
-    for (final (cents, from, to, ppm, result) in rows) {
+    for (final e in domainRulesRows('fx')) {
+      final (cents, from, to, ppm, result) = (
+        e['cents'] as int,
+        e['from'] as String,
+        e['to'] as String,
+        e['ppm'] as int,
+        e['result'] as int,
+      );
       test('$cents $from -> $to @ $ppm = $result', () {
         expect(
           convert(Money(cents, _c(from)), _c(to), FxRate(ppm)),

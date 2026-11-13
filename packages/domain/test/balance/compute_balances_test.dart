@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../support/domain_rules_examples.dart';
+
 final _date = DateTime.utc(2026, 1, 2);
 
 List<Member> _abc() => [
@@ -44,21 +46,26 @@ Settlement _settlement(
   members: members,
 ) as Ok<Settlement, SettlementError>).value;
 
-/// Docs example expenses (examples:balances).
-List<Expense> _docExpenses(List<Member> m) => [
-  _expense(
-    members: m,
-    amount: 3000,
-    payers: {'A': 3000},
-    split: EqualSplit({'A', 'B', 'C'}),
-  ),
-  _expense(
-    members: m,
-    amount: 600,
-    payers: {'B': 600},
-    split: EqualSplit({'A', 'B'}),
-  ),
+List<Map<String, dynamic>> _rows(Object? raw) =>
+    (raw! as List).cast<Map<String, dynamic>>();
+
+Map<String, int> _ints(Object? raw) => (raw! as Map).cast<String, int>();
+
+/// Expenses from the doc's rows: explicit shares, amount = sum of payments.
+List<Expense> _docExpensesOf(Object? raw, List<Member> m) => [
+  for (final (n, x) in _rows(raw).indexed)
+    _expense(
+      members: m,
+      id: 'e$n',
+      amount: _ints(x['payers']).values.fold(0, (a, b) => a + b),
+      payers: _ints(x['payers']),
+      split: ExactSplit(_ints(x['shares'])),
+    ),
 ];
+
+/// Expenses of the first examples:balances row (members A, B, C).
+List<Expense> _docExpenses(List<Member> m) =>
+    _docExpensesOf(domainRulesRows('balances').first['expenses'], m);
 
 final class Group {
   Group(this.members, this.expenses, this.settlements);
@@ -128,29 +135,33 @@ Map<String, int> _balances(Group g) => computeBalances(
 
 void main() {
   group('computeBalances examples', () {
-    test('docs example 1: no settlements', () {
-      final m = _abc();
-      expect(
-        computeBalances(
-          members: m,
-          expenses: _docExpenses(m),
-          settlements: const [],
-        ),
-        {'A': 1700, 'B': -700, 'C': -1000},
-      );
-    });
-
-    test('docs example 2: C pays A 1000', () {
-      final m = _abc();
-      expect(
-        computeBalances(
-          members: m,
-          expenses: _docExpenses(m),
-          settlements: [_settlement(m, 'C', 'A', 1000)],
-        ),
-        {'A': 700, 'B': -700, 'C': 0},
-      );
-    });
+    for (final (i, e) in domainRulesRows('balances').indexed) {
+      test('docs example ${i + 1}', () {
+        final m = [
+          for (final (p, id) in (e['members'] as List).cast<String>().indexed)
+            Member(id: id, position: p),
+        ];
+        final expenses = _docExpensesOf(e['expenses'], m);
+        final settlements = [
+          for (final (n, s) in _rows(e['settlements']).indexed)
+            _settlement(
+              m,
+              s['from'] as String,
+              s['to'] as String,
+              s['amount'] as int,
+              id: 's$n',
+            ),
+        ];
+        expect(
+          computeBalances(
+            members: m,
+            expenses: expenses,
+            settlements: settlements,
+          ),
+          (e['balances'] as Map).cast<String, int>(),
+        );
+      });
+    }
   });
 
   group('computeBalances edge cases', () {

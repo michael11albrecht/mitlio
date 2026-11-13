@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../support/domain_rules_examples.dart';
+
 const _iban = 'DE89370400440532013000';
 
 Money _eur(int cents) => Money(cents, Currency.eur);
@@ -25,35 +27,20 @@ Result<String, EpcError> _err(EpcError e) => Err(e);
 
 void main() {
   group('buildEpcQrPayload examples', () {
-    test('row 1: spaced IBAN, remittance, no BIC', () {
-      expect(
-        buildEpcQrPayload(
-          name: 'Max Mustermann',
-          iban: 'DE89 3704 0044 0532 0130 00',
-          amount: _eur(1234),
-          remittance: 'mitlio: Urlaub',
-        ),
-        const Ok<String, EpcError>(
-          'BCD\n002\n1\nSCT\n\nMax Mustermann\nDE89370400440532013000\n'
-          'EUR12.34\n\n\nmitlio: Urlaub',
-        ),
-      );
-    });
-
-    test('row 2: lower-case BIC, 5 cents, no remittance', () {
-      expect(
-        buildEpcQrPayload(
-          name: 'Max Mustermann',
-          iban: _iban,
-          bic: 'cobadeffxxx',
-          amount: _eur(5),
-        ),
-        const Ok<String, EpcError>(
-          'BCD\n002\n1\nSCT\nCOBADEFFXXX\nMax Mustermann\n'
-          'DE89370400440532013000\nEUR0.05\n\n\n',
-        ),
-      );
-    });
+    for (final (i, e) in domainRulesRows('epc').indexed) {
+      test('row ${i + 1}: ${e['name']}', () {
+        expect(
+          buildEpcQrPayload(
+            name: e['name'] as String,
+            iban: e['iban'] as String,
+            bic: e['bic'] as String?,
+            amount: _eur(e['cents'] as int),
+            remittance: (e['remittance'] as String?) ?? '',
+          ),
+          Ok<String, EpcError>(e['payload'] as String),
+        );
+      });
+    }
   });
 
   group('name', () {
