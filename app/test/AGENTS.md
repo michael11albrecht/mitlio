@@ -10,6 +10,8 @@ Flutter unit/widget tests for the app, plus repo-wide architecture rule tests.
 | File | Description |
 |------|-------------|
 | `app_test.dart` | Smoke widget test: `MitlioApp` starts and shows "mitlio" |
+| `flutter_test_config.dart` | Alchemist config: CI goldens only (ADR 0022) |
+| `golden/` | Golden tests (tag `golden`, `make goldens`); images in `golden/goldens/` |
 
 ## Subdirectories
 | Directory | Purpose |
@@ -30,6 +32,6 @@ Flutter unit/widget tests for the app, plus repo-wide architecture rule tests.
 ## Dependencies
 
 ### External
-- `flutter_test`, `integration_test`
+- `flutter_test`, `integration_test`, `alchemist` (goldens, ADR 0022)
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->
