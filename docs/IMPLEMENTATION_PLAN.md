@@ -571,7 +571,7 @@ All in `packages/domain`. Pure Dart, `freezed` models allowed (or hand-written i
 | ID | Task | Accept | Risk |
 |---|---|---|---|
 | P2-T01 | `Money` (int cents + `Currency`), arithmetic, comparison, formatting-agnostic; `Currency` ISO list with minor units (JPY = 0) | overflow guarded; property: `a + b − b == a` | safe |
-| P2-T02 | `allocate(totalCents, weights, tieOrder)` — largest remainder, deterministic | property: Σ = total for all inputs; equal weights differ by ≤ 1 cent; same input → same output | safe |
+| P2-T02 | `allocate(total, weights)` — largest remainder, deterministic; index order = tie order (callers use `tieOrder`) | property: Σ = total for all inputs; equal weights differ by ≤ 1 cent; same input → same output | safe |
 | P2-T03 | `SplitSpec` + `computeShares` for equal / shares / percent / exact / exclusion; validation errors as sealed `SplitError` | examples from `domain-rules.md`; property: Σ shares = amount | safe |
 | P2-T04 | `Expense` aggregate with multiple payers; validation (payers sum, members in group, amount > 0) | invalid aggregates unconstructible (factory returns `Result`) | safe |
 | P2-T05 | `computeBalances(expenses, settlements, members)` | property: Σ balances = 0; settlement of full debt zeroes both | safe |
