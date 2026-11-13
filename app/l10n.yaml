@@ -1,0 +1,7 @@
+# Generated output is committed (app/lib/l10n/*.dart) so analyze/test work
+# without a generation step; `make gen` regenerates it (P3-T12).
+arb-dir: lib/l10n
+template-arb-file: app_de.arb
+output-localization-file: app_localizations.dart
+output-dir: lib/l10n
+nullable-getter: false
