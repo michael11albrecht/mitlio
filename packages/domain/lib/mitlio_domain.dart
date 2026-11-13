@@ -16,6 +16,8 @@ export 'src/money/currency.dart';
 export 'src/money/money.dart';
 export 'src/payment/epc_qr.dart';
 export 'src/payment/iban.dart';
+export 'src/payment/paypal_me.dart';
+export 'src/settle/simplify_debts.dart';
 export 'src/split/compute_shares.dart';
 export 'src/split/split_error.dart';
 export 'src/split/split_spec.dart';
