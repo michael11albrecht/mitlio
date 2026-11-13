@@ -7,18 +7,18 @@ sealed class SettlementError {
 }
 
 /// The amount is zero or negative.
-final class NonPositiveAmount extends SettlementError {
+final class SettlementNonPositiveAmount extends SettlementError {
   /// Creates the error.
-  const NonPositiveAmount();
+  const SettlementNonPositiveAmount();
 
   @override
-  bool operator ==(Object other) => other is NonPositiveAmount;
+  bool operator ==(Object other) => other is SettlementNonPositiveAmount;
 
   @override
-  int get hashCode => (NonPositiveAmount).hashCode;
+  int get hashCode => (SettlementNonPositiveAmount).hashCode;
 
   @override
-  String toString() => 'NonPositiveAmount()';
+  String toString() => 'SettlementNonPositiveAmount()';
 }
 
 /// Payer and recipient are the same member.

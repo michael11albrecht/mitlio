@@ -42,9 +42,9 @@ void main() {
       expect(s.toString(), 'Settlement(s1, A -> B, 500 EUR)');
     });
 
-    test('NonPositiveAmount', () {
-      expect(_err(_create(amount: 0)), const NonPositiveAmount());
-      expect(_err(_create(amount: -1)), const NonPositiveAmount());
+    test('SettlementNonPositiveAmount', () {
+      expect(_err(_create(amount: 0)), const SettlementNonPositiveAmount());
+      expect(_err(_create(amount: -1)), const SettlementNonPositiveAmount());
     });
 
     test('SelfTransfer', () {
@@ -59,7 +59,10 @@ void main() {
 
   group('Settlement check order', () {
     test('amount before self transfer', () {
-      expect(_err(_create(amount: 0, to: 'A')), const NonPositiveAmount());
+      expect(
+        _err(_create(amount: 0, to: 'A')),
+        const SettlementNonPositiveAmount(),
+      );
     });
 
     test('self transfer before unknown member', () {
@@ -94,10 +97,13 @@ void main() {
     test('error equality', () {
       expect(const SelfTransfer(), const SelfTransfer());
       expect(const SelfTransfer().hashCode, const SelfTransfer().hashCode);
-      expect(const NonPositiveAmount(), const NonPositiveAmount());
       expect(
-        const NonPositiveAmount().hashCode,
-        const NonPositiveAmount().hashCode,
+        const SettlementNonPositiveAmount(),
+        const SettlementNonPositiveAmount(),
+      );
+      expect(
+        const SettlementNonPositiveAmount().hashCode,
+        const SettlementNonPositiveAmount().hashCode,
       );
       expect(
         const SettlementUnknownMember('X'),
@@ -117,7 +123,7 @@ void main() {
     });
 
     Glados(any.intInRange(-1000000, 1)).test('non-positive are rejected', (a) {
-      expect(_err(_create(amount: a)), const NonPositiveAmount());
+      expect(_err(_create(amount: a)), const SettlementNonPositiveAmount());
     });
   });
 }

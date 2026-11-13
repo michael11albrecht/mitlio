@@ -30,7 +30,7 @@ final class Settlement {
     required DateTime date,
     required List<Member> members,
   }) {
-    if (amountCents <= 0) return const Err(NonPositiveAmount());
+    if (amountCents <= 0) return const Err(SettlementNonPositiveAmount());
     if (fromId == toId) return const Err(SelfTransfer());
     final ids = members.map((m) => m.id).toSet();
     if (!ids.contains(fromId)) return Err(SettlementUnknownMember(fromId));
