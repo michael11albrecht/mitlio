@@ -6,6 +6,10 @@ library;
 
 export 'src/allocation/allocate.dart';
 export 'src/core/result.dart';
+export 'src/expense/expense.dart';
+export 'src/expense/expense_error.dart';
+export 'src/expense/settlement.dart';
+export 'src/expense/settlement_error.dart';
 export 'src/fx/fx.dart';
 export 'src/members/member.dart';
 export 'src/money/currency.dart';
