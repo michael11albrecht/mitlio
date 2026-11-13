@@ -1,0 +1,14 @@
+name: mitlio_domain_web
+description: dart2js/js_interop facade over mitlio_domain for the web trip calculator.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.14.0
+
+dependencies:
+  mitlio_domain: any
+
+dev_dependencies:
+  coverage: ^1.11.0
+  test: ^1.25.6

@@ -8,6 +8,7 @@ environment:
 workspace:
   - app
   - packages/domain
+  - packages/domain_web
   - packages/drive_client
   - packages/tooling
 
