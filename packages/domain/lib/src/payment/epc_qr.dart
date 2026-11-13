@@ -1,6 +1,8 @@
 // Justification: all fields are final; no meta dependency for @immutable.
 // ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
 
+import 'dart:convert';
+
 import 'package:mitlio_domain/src/core/result.dart';
 import 'package:mitlio_domain/src/money/currency.dart';
 import 'package:mitlio_domain/src/money/money.dart';
@@ -106,17 +108,37 @@ final class RemittanceTooLong extends EpcError {
   String toString() => 'RemittanceTooLong';
 }
 
+/// The encoded payload exceeds the EPC069-12 limit of 331 UTF-8 bytes.
+final class PayloadTooLarge extends EpcError {
+  /// Creates the error with the actual size in [bytes].
+  const PayloadTooLarge(this.bytes);
+
+  /// Size of the rejected payload in UTF-8 bytes.
+  final int bytes;
+
+  @override
+  bool operator ==(Object other) =>
+      other is PayloadTooLarge && other.bytes == bytes;
+
+  @override
+  int get hashCode => Object.hash(PayloadTooLarge, bytes);
+
+  @override
+  String toString() => 'PayloadTooLarge($bytes)';
+}
+
 final _bicFormat = RegExp(r'^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$');
 final _lineBreaks = RegExp(r'[\r\n]+');
 
 const _maxName = 70;
 const _maxRemittance = 140;
 const _maxCents = 99999999999;
+const _maxPayloadBytes = 331;
 
 /// Builds the EPC069-12 (version 002, UTF-8) "SEPA credit transfer" QR text.
 ///
 /// Validation order (first failure wins): name, iban, bic, amount (currency
-/// before range), remittance.
+/// before range), remittance, then total payload size (<= 331 UTF-8 bytes).
 ///
 /// Lengths count Unicode code points. A [name] containing a line break is
 /// [InvalidName]; line breaks in [remittance] are replaced by a single space
@@ -161,19 +183,20 @@ Result<String, EpcError> buildEpcQrPayload({
 
   final euros = amount.cents ~/ 100;
   final cents = (amount.cents % 100).toString().padLeft(2, '0');
-  return Ok(
-    [
-      'BCD',
-      '002',
-      '1',
-      'SCT',
-      normalizedBic,
-      trimmedName,
-      normalizedIban,
-      'EUR$euros.$cents',
-      '',
-      '',
-      text,
-    ].join('\n'),
-  );
+  final payload = [
+    'BCD',
+    '002',
+    '1',
+    'SCT',
+    normalizedBic,
+    trimmedName,
+    normalizedIban,
+    'EUR$euros.$cents',
+    '',
+    '',
+    text,
+  ].join('\n');
+  final bytes = utf8.encode(payload).length;
+  if (bytes > _maxPayloadBytes) return Err(PayloadTooLarge(bytes));
+  return Ok(payload);
 }

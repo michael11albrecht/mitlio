@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -184,6 +186,39 @@ void main() {
     });
   });
 
+  group('payload size', () {
+    final name = 'é' * 70; // 140 bytes; fixed lines add 50 bytes
+    test('exactly 331 bytes is Ok', () {
+      final r = _build(name: name, remittance: '${'é' * 70}a');
+      final payload = (r as Ok<String, EpcError>).value;
+      expect(utf8.encode(payload), hasLength(331));
+    });
+    test('332 bytes is PayloadTooLarge(332)', () {
+      expect(
+        _build(name: name, remittance: 'é' * 71),
+        _err(const PayloadTooLarge(332)),
+      );
+    });
+    test('70 x e-acute name + 140 x e-acute remittance is 470 bytes', () {
+      expect(
+        _build(name: name, remittance: 'é' * 140),
+        _err(const PayloadTooLarge(470)),
+      );
+    });
+    test('ASCII maxima fit (70 + 140 chars)', () {
+      expect(
+        _build(name: 'a' * 70, remittance: 'a' * 140),
+        isA<Ok<String, EpcError>>(),
+      );
+    });
+    test('checked last: field errors win', () {
+      expect(
+        _build(name: name, remittance: 'é' * 141),
+        _err(const RemittanceTooLong()),
+      );
+    });
+  });
+
   group('validation order', () {
     final bad = (
       name: '',
@@ -234,6 +269,7 @@ void main() {
         NotEur(),
         AmountOutOfRange(),
         RemittanceTooLong(),
+        PayloadTooLarge(331),
       ];
       const copies = <EpcError>[
         InvalidName(),
@@ -242,6 +278,7 @@ void main() {
         NotEur(),
         AmountOutOfRange(),
         RemittanceTooLong(),
+        PayloadTooLarge(331),
       ];
       for (var i = 0; i < errors.length; i++) {
         for (var j = 0; j < errors.length; j++) {
@@ -263,6 +300,7 @@ void main() {
           'NotEur',
           'AmountOutOfRange',
           'RemittanceTooLong',
+          'PayloadTooLarge(331)',
         ],
       );
     });
