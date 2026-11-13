@@ -76,10 +76,11 @@ arch: ## Architecture rules
 	cd $(APP) && $(FLUTTER) test test/architecture
 
 .PHONY: goldens goldens-update
-goldens: ## Golden tests
-	$(call not_yet,golden setup is P1-T10)
+goldens: ## Verify golden tests (platform-independent CI goldens, ADR 0022)
+	cd $(APP) && $(FLUTTER) test --tags golden
 goldens-update: ## Update goldens (never in CI)
-	$(call not_yet,golden setup is P1-T10)
+	@test -z "$$CI" || { echo "make goldens-update must not run in CI"; exit 1; }
+	cd $(APP) && $(FLUTTER) test --tags golden --update-goldens
 
 .PHONY: it
 it: ## Desktop integration tests (Linux + xvfb only, runs in CI)
