@@ -35,6 +35,23 @@ void main() {
       expect(const Err<int, int>(1) == ok, isFalse);
     });
 
+    test('equality is symmetric across widened type arguments', () {
+      const narrowOk = Ok<int, String>(1);
+      const wideOk = Ok<num, Object>(1);
+      expect(narrowOk == wideOk, isTrue);
+      expect(wideOk == narrowOk, isTrue);
+      expect(narrowOk.hashCode, wideOk.hashCode);
+      const narrowErr = Err<int, String>('a');
+      const wideErr = Err<Object, Object>('a');
+      expect(narrowErr == wideErr, isTrue);
+      expect(wideErr == narrowErr, isTrue);
+      expect(narrowErr.hashCode, wideErr.hashCode);
+      expect(narrowOk == const Ok<num, Object>(2), isFalse);
+      expect(const Ok<num, Object>(2) == narrowOk, isFalse);
+      expect(narrowErr == const Err<Object, Object>('b'), isFalse);
+      expect(const Err<Object, Object>('b') == narrowErr, isFalse);
+    });
+
     test('toString', () {
       expect(const Ok<int, String>(1).toString(), 'Ok(1)');
       expect(const Err<int, String>('e').toString(), 'Err(e)');
