@@ -3,9 +3,14 @@ import 'package:mitlio_domain/mitlio_domain.dart';
 
 extension MoneyAny on Any {
   /// Money in EUR within ±maxAbsCents/4 so sums of three never overflow.
-  Generator<Money> get money => any
-      .intInRange(-Money.maxAbsCents ~/ 4, Money.maxAbsCents ~/ 4 + 1)
-      .map((c) => Money(c, Currency.eur));
+  /// No shrinking: glados shrinks ints by 1, which is hopeless at 1e14.
+  Generator<Money> get money => simple(
+    generate: (random, size) {
+      const bound = Money.maxAbsCents ~/ 4;
+      return Money(random.nextIntInRange(-bound, bound + 1), Currency.eur);
+    },
+    shrink: (_) => const [],
+  );
 }
 
 void main() {
