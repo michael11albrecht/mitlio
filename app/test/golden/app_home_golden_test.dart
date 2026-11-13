@@ -31,7 +31,12 @@ Future<void> _matrixGolden(Brightness brightness) async {
       addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
       await tester.pumpWidget(widget);
     },
-    builder: () => GoldenTestGroup(children: [_scale(1), _scale(2)]),
+    builder: () => GoldenTestGroup(
+      // Integer column widths: fractional intrinsic widths antialias the
+      // table border differently on macOS and Linux.
+      columnWidthBuilder: (_) => const FixedColumnWidth(256),
+      children: [_scale(1), _scale(2)],
+    ),
   );
 }
 
