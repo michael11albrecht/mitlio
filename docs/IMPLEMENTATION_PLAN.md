@@ -18,11 +18,39 @@
 
 ### Guiding principles
 
+0. **Simplicity and great UX above everything.** No ads, no dark patterns, no nagging, no feature that makes the common path slower. Every feature must justify the UI surface it adds (see §2.6).
 1. **Local-first, accounts later.** P0–P5 deliver a fully usable single-device app. Sync is added only after a real-trip test (P5).
 2. **Everything an agent needs is a command.** No step requires a GUI, a human eye or tribal knowledge. `make check` is the single source of truth for "done".
 3. **Logic lives below the View.** Views are dumb. Everything testable is reachable through the ViewModel/Repository API — the same API used by unit tests, integration tests *and* the DebugDrive agent bridge.
 4. **Mechanical gates over LLM judgement.** Coverage, mutation score, architecture rules, risk labels and migration safety are enforced by scripts, not by asking a model.
 5. **Integer cents everywhere.** No `double` touches money. Ever.
+
+### Product positioning
+
+**mitlio = the private taxometer.** Primary job: charge friends fairly for car rides — single trips (holiday, concert), recurring rides (daily commute carpool: who drove when, who rode along) — with general group expense splitting as the second pillar.
+
+**Acquisition funnel (SEO-first):**
+
+```
+Google: "Fahrtkosten berechnen", "Spritkosten teilen", "Fahrgemeinschaft Kosten aufteilen"
+   │
+   ▼
+mitlio web calculator (free, no ads, no popups, no signup, instant result)
+   │  "Jeder zahlt 12,40 €" + share via WhatsApp/link
+   │
+   ├─ one-off users: done, come back via bookmark/shared link
+   └─ repeat users (commuters, regular trips): prominent "Fahrten speichern & monatlich abrechnen → App"
+          │  deep link carries the calculated trip into the app (prefilled)
+          ▼
+       mitlio app: ride log, vehicles, recurring rides, monthly settlement, PayPal/SEPA
+```
+
+**Differentiators vs. existing calculators** (top-ranked German calculators are ad-heavy, popup-laden, and don't make the result obvious):
+1. **Live fuel prices that are clickable** — current average/nearby E5/E10/Diesel as chips; one tap puts the price into the calculation.
+2. **Result first** — the big number is *what each person pays*, then the breakdown. No "calculate" button; results update as you type.
+3. **No ads, no popups, no cookie banner** (no cookies, privacy-friendly analytics only).
+4. **Share result** as text/link (WhatsApp) with prefilled URL parameters, and **"open in app"** for people who do this regularly.
+5. Fast and mobile-first (Lighthouse ≥ 95, LCP < 1.5 s on 4G).
 
 ---
 
@@ -46,7 +74,9 @@
 | ADR-14 | Crash reporting | Sentry, EU region (`de.sentry.io`), PII scrubbing | Keeps all user data in EU (consistent with Supabase EU), good Dart/Flutter symbolication | — |
 | ADR-15 | Agent models | Open-weights implementer for `safe` tasks, Claude for `critical` tasks and as reviewer (different model family than the implementer) — chosen by measured eval, see §6.7 | Strong mechanical gates make a cheaper implementer viable; decorrelated reviewer catches more | Re-run eval quarterly |
 | ADR-16 | App identity | Name **mitlio**. Single source `app/app_identity.yaml`: display name `mitlio` (dev: `mitlio dev`), URL scheme `mitlio://`, bundle/application id `app.mitlio` / `app.mitlio.dev` (reverse-DNS is only a convention, no domain ownership needed; fixed forever after first store upload), DebugDrive namespace `ext.mitlio.*` | Consumed by flavors + fastlane; any change is one PR | — |
-| ADR-17 | Link domain | **No own domain.** Firebase Hosting free subdomain `mitlio.web.app` (Firebase project already exists for FCM) serves `/.well-known/apple-app-site-association`, `/.well-known/assetlinks.json`, a static invite fallback page (store badges) and the privacy policy/imprint. Invite URL: `https://mitlio.web.app/join/<token>`. Not Firebase Dynamic Links (shut down) | €0, HTTPS included, deploy via `firebase deploy --only hosting` from CI | If a custom domain is wanted: add it to Hosting; old invite links expire after 7 days anyway |
+| ADR-17 | Domain | **Own domain (revised 2026-11-13 for SEO)**, e.g. `mitlio.de` (DE-first audience; `mitlio.app` optional redirect), served by Firebase Hosting (free) — hosts the SEO web calculator, `/.well-known/apple-app-site-association`, `/.well-known/assetlinks.json`, invite fallback `/join/<token>`, privacy policy/imprint. Not Firebase Dynamic Links (shut down). Until the domain exists, `mitlio.web.app` works as a stand-in | A `*.web.app` subdomain ranks and converts worse, can't build brand backlinks, and moving later loses SEO equity. Cost ~€10–20/year | — |
+| ADR-19 | Web calculator stack | **Astro** static site (prerendered HTML per landing page, zero JS by default) + one small calculator island. Calculation logic = **the Dart domain compiled to JS** (`packages/domain_web`, `dart compile js`, exported via `dart:js_interop`) so web and app compute identical cents; parity additionally guarded by shared fixture tests | Flutter Web renders to canvas → poor SEO and heavy first load; a TS re-implementation would drift from the app | If dart2js bundle > 150 kB gz → TS port with fixture parity tests |
+| ADR-20 | Fuel prices | Germany: **Tankerkönig API** (MTS-K data, CC BY 4.0, free API key) proxied + cached by a Supabase Edge Function; Austria: E-Control Spritpreisrechner API; elsewhere: EU Weekly Oil Bulletin national averages; EV: manual kWh price with a sensible default. Client never sees API keys; attribution shown | Live clickable prices are the core differentiator; caching keeps us inside provider rate limits and terms | Verify terms + limits in P1-T01 spike before building |
 | ADR-18 | Cost policy | Lean budget with hard caps, see §6.8 | Owner wants minimum sensible spend | Monthly review of `docs/agent-metrics.md` |
 
 Each ADR becomes a file in `docs/adr/NNNN-title.md` in P0.
@@ -114,6 +144,7 @@ free-split/                       # repo name may stay; product name is mitlio
 │   └── drive-protocol.md         # ext.mitlio.* contract
 ├── packages/
 │   ├── domain/                   # pure Dart: Money, Split, Balance, Simplify, Fuel, EPC, PayPal
+│   ├── domain_web/               # dart2js/js_interop facade over domain for the web calculator
 │   └── drive_client/             # Dart CLI: VM-service client used by tool/drive.sh
 ├── app/
 │   ├── lib/
@@ -132,6 +163,7 @@ free-split/                       # repo name may stay; product name is mitlio
 │   ├── test/                     # unit + widget + golden
 │   ├── integration_test/         # on-device / desktop flows
 │   └── drift_schemas/            # exported schema versions for migration tests
+├── web/                        # Astro SEO site + calculator island (Playwright, Lighthouse CI)
 ├── supabase/
 │   ├── config.toml
 │   ├── migrations/               # SQL, append-only
@@ -160,6 +192,10 @@ Common columns on every synced table: `id uuid pk`, `group_id uuid`, `created_at
 | `expense_payers` | `expense_id`, `member_id`, `paid_cents` | Child of aggregate |
 | `expense_shares` | `expense_id`, `member_id`, `share_cents`, `weight` (for share/percent modes, for re-editing) | Child of aggregate |
 | `settlements` | `from_member`, `to_member`, `amount_cents`, `currency`, `date`, `method` (`paypal`/`sepa`/`cash`/`other`) | |
+| `vehicles` | `owner_member_id`, `name`, `fuel_type` (`e5`/`e10`/`diesel`/`lpg`/`electric`), `consumption_milli` (l or kWh per 100 km × 1000), `wear_rate_cents_per_km`, `default_pricing` (`consumption`/`km_rate`) | Per group; reused by rides |
+| `ride_templates` | `name` ("Arbeit"), `vehicle_id`, `distance_m`, `default_driver`, `default_passengers[]`, `return_trip bool` | Commute presets |
+| `rides` | `template_id?`, `vehicle_id`, `driver_member_id`, `passenger_ids[]`, `date`, `distance_m`, `fuel_price_milli` (per l/kWh, frozen), `price_source` (`manual`/`tankerkoenig`/…), `extras_cents`, `expense_id?` | One logged ride; aggregated into an `expense` per settlement period (or immediately for one-offs) |
+| `fuel_price_cache` | `region_key`, `fuel_type`, `price_milli`, `source`, `fetched_at` | Server only, public read (P6c) |
 | `expense_revisions` | `expense_id`, `revision int`, `snapshot jsonb`, `author_member_id`, `at` | Append-only history (P7) |
 | `group_invites` | `token_hash`, `expires_at`, `created_by` | Server only (P6) |
 | `local_outbox` | `entity`, `entity_id`, `op`, `payload`, `attempts` | Client only (P6) |
@@ -182,6 +218,34 @@ Invariants (enforced in domain + DB constraints + pgTAP):
 - **Trip cost:** `total = round(km × l_per_100km / 100 × price_per_litre_cents) + tolls + ferry + km × wear_rate_cents`; payer = driver; shares across selected passengers (+ driver if `driverCounts`). Alternative mode: flat km rate.
 - **Multi-currency:** `group_amount_cents = round_half_even(amount_cents × fx_rate_ppm / 1e6)`; rate frozen on the expense; split is computed on `group_amount_cents`.
 
+### 2.6 UX principles & enforceable UX guardrails
+
+**Principles**
+1. **One obvious next action per screen.** The primary action is reachable with the thumb; secondary actions live in overflow/sheets.
+2. **Result first.** Every calculation shows the answer ("Du bekommst 23,40 €", "Jede Person zahlt 12,40 €") before any breakdown.
+3. **Smart defaults over settings.** Last-used vehicle, driver, passengers, currency and split are pre-selected. Settings screens stay short.
+4. **No modal interruptions.** No rating prompts in the first weeks and never mid-task, no upsell, no permission prompt before the user needs the feature, no popups on the website.
+5. **Forgiving.** Every destructive action has undo (snackbar) instead of "Are you sure?" dialogs; soft delete makes this cheap.
+6. **Calm, honest UI.** No fake urgency, no badges for engagement's sake, notifications only for things other people did that affect your money.
+7. **Fast.** Cold start < 1.5 s on a mid-range Android, every interaction < 100 ms, no jank (no frames > 16 ms in scroll/animations).
+8. **Accessible by default.** Dynamic type up to 200 %, screen reader labels, contrast AA, works one-handed.
+
+**Mechanical guardrails** (so agents can't erode UX unnoticed)
+
+| Guardrail | Enforced by |
+|---|---|
+| **Tap budgets** per core flow: log commute ride ≤ 3 taps, add equal-split expense ≤ 5 taps + typing, mark transfer as paid ≤ 2 taps, web calculator result without pressing any button | integration tests count taps via a `TapCounter` test helper; budget table in `docs/ux-budgets.md` |
+| **No ads / trackers / dark-pattern SDKs** | dependency denylist check in CI (ad SDKs, attribution/tracking SDKs, `in_app_review` prompts outside the allowed trigger) — `tool/deps_policy.dart` |
+| **No blocking dialogs for destructive actions** | architecture test: `showDialog` only allowed in an allowlist of files; destructive VM commands must expose `undo` |
+| **Performance budgets** | `integration_test` with `traceAction` / `watchPerformance` on Linux + Android: frame build/raster p90 < 8 ms, no frame > 16 ms in core lists; cold-start measured in `android-e2e` |
+| **Visual consistency** | design system only (arch test: no raw `Color(0x…)`, `TextStyle(` or magic paddings outside `core/theme`); goldens for every screen in light/dark and text scale 1.0/2.0 |
+| **Copy quality** | all strings via ARB; `docs/copy-guide.md` (du-form, short, numbers formatted per locale); reviewer-agent checklist includes copy |
+| **Accessibility** | `meetsGuideline(textContrastGuideline / androidTapTargetGuideline / iOSTapTargetGuideline / labeledTapTargetGuideline)` in widget tests of every screen; axe on web |
+| **Empty/error/loading states** | every screen VM exposes them; golden per state |
+| **Human UX gate** | PRs that add a new screen or change navigation get label `ux-review` (path-based: `app/lib/**/ui/*_view.dart` new files, router changes) → `critical`, owner looks at the golden diff images attached by CI |
+
+**Design process for agents:** each UI task issue contains a small wireframe (ASCII or image) and the tap budget; the agent attaches before/after goldens to the PR; the reviewer agent checks against §2.6 principles.
+
 ---
 
 ## 3. Quality targets (hard gates)
@@ -198,6 +262,10 @@ Invariants (enforced in domain + DB constraints + pgTAP):
 | Mutation score | `packages/domain` | **≥ 85 %** killed (start 75 %, ratchet up) | `tool/mutation_gate.dart` | PR (changed files), nightly (full) |
 | Mutation score | ViewModels + sync merge logic | **≥ 70 %** | same | nightly |
 | Mutation score | Edge Function `_shared` TS | ≥ 80 % | StrykerJS `thresholds.break` | PR when touched |
+| Web parity | `web/` calculator vs Dart domain | 100 % of shared trip fixtures identical | `web` vitest over `tool/fixtures/trip_*.json` | PR touching `web/` or `packages/domain*` |
+| Web performance/SEO | all landing pages | Lighthouse Performance/SEO/Accessibility/Best-Practices ≥ 95, JS ≤ 150 kB gz | Lighthouse CI budgets | PR touching `web/` |
+| Web E2E + a11y | calculator flows | 0 failures, 0 axe violations | Playwright + `@axe-core/playwright` | PR touching `web/` |
+| SEO hygiene | built site | valid JSON-LD, sitemap, canonical, hreflang, no broken links | `tool/seo_check` (html parse) + `lychee` | PR touching `web/` |
 | DB tests | RLS + RPC | 100 % of tables have RLS deny + allow tests | `supabase test db` + `tool/rls_coverage.sql` | CI |
 | Migration safety | `supabase/migrations` | no unsafe ops (e.g. `DROP COLUMN` without expand/contract) | `squawk` | CI |
 | Drift migrations | local DB | every schema version upgrade tested | `drift_dev schema steps` + generated migration tests | CI |
@@ -316,6 +384,7 @@ Rules: handlers are ≤ 15 lines, parse/validate params, call one VM/repository 
 | Workflow | Trigger | Runner | Jobs |
 |---|---|---|---|
 | `ci.yml` | PR, push main | ubuntu | fmt, lint, arch, unit+widget+goldens, coverage gate, changed-files mutation, gitleaks, osv |
+| `web.yml` | PR touching `web/**` or `packages/domain*` | ubuntu | build domain_web, Astro build, vitest parity, Playwright + axe, Lighthouse CI, SEO check; deploy preview channel (Firebase Hosting) |
 | `backend.yml` | PR touching `supabase/**` | ubuntu + docker | `supabase start`, `db reset`, `supabase test db`, `squawk`, types-diff check, vitest + Stryker for functions |
 | `desktop-it.yml` | PR | ubuntu | `make it` under xvfb + drive smoke |
 | `android-e2e.yml` | PR (required on `critical` or `ui` label), main | ubuntu (KVM) | emulator via `reactivecircus/android-emulator-runner`, `integration_test` |
@@ -540,7 +609,23 @@ Shared infrastructure first, then vertical slices. Each slice = repository + Vie
 | P3-T10 | Slice **Balances**: per-person net, "who owes whom" (simplified), toggle raw vs simplified | IT: seed scenario `trip_4p` → expected transfers equal fixture | safe |
 | P3-T11 | Seed scenarios in `tool/fixtures/` (`empty`, `trip_4p`, `household_2p`, `rounding_edge`, `large_200_expenses`) | `ext.mitlio.seed` loads each; perf: balances for 200 expenses < 16 ms | safe |
 | P3-T12 | i18n setup (`flutter gen-l10n`) DE + EN, number/currency formatting via `intl` | no hardcoded strings (arch test) | safe |
+| P3-T14 | UX infrastructure: `TapCounter` test helper, `docs/ux-budgets.md`, `tool/deps_policy.dart`, golden matrix (light/dark × text scale), CI attaches golden diffs to PR | budgets enforced in at least one IT per flow | critical |
 | P3-T13 | Accessibility pass: semantics labels, text scaling 200 %, contrast; `meetsGuideline` tests | a11y guideline tests green | safe |
+
+### P3r — Rides / private taxometer (agent, ~4–5 days)
+
+The ride log is the app's headline feature for commuters.
+
+| ID | Task | Accept | Risk |
+|---|---|---|---|
+| P3r-T01 | Domain: `Vehicle`, `Ride`, `RideTemplate`; `rideCost(ride, vehicle, price)` incl. EV (kWh) and km-rate mode; return trip doubling | property: Σ shares = cost; fixtures shared with web (`tool/fixtures/trip_*.json`) | safe |
+| P3r-T02 | Domain: `aggregateRides(rides, period)` → one expense per (driver, period) with per-passenger shares, plus "driver counts" option; period = day/week/month/custom | property: Σ of aggregated expenses = Σ ride costs; deterministic | safe |
+| P3r-T03 | Drift tables `vehicles`, `ride_templates`, `rides` + repositories + contract tests | contract tests green | critical (schema) |
+| P3r-T04 | Vehicles UI: add/edit vehicle with consumption, fuel type, wear rate | VM + widget + goldens | safe |
+| P3r-T05 | **Quick log**: home-screen "Heute gefahren" — pick template, driver, toggle passengers, 2 taps to save; calendar view of who drove when | IT: log 10 commute days via UI and via `ext.mitlio.rides.log`; perf: open → saved < 3 taps | safe |
+| P3r-T06 | Period settlement: "Abrechnen für Oktober" turns rides into expenses (locked rides, undo possible) → flows into balances/settle | IT: month of rides → expected transfers fixture | safe |
+| P3r-T07 | Fairness view: per person km driven vs ridden, "wer ist als Nächstes dran" suggestion | VM tests | safe |
+| P3r-T08 | Deep link import `mitlio://ride?km=…&l100=…&price=…&n=…` (from web calculator) → prefilled ride form | IT via `ext.mitlio.navigate` with link | safe |
 
 ### P4 — Settle & pay (agent, ~1–2 days)
 
@@ -551,6 +636,35 @@ Shared infrastructure first, then vertical slices. Each slice = repository + Vie
 | P4-T03 | Settle screen: list simplified transfers, per transfer actions: PayPal link, EPC QR (`qr_flutter`, error correction M), copy IBAN, "mark as paid" (amount editable for partial payments) | IT: mark paid → balance zero; golden of QR sheet | safe |
 | P4-T04 | Settlement history + undo (soft delete) | VM + IT | safe |
 | P4-T05 | Share summary as text (share sheet) | widget test | safe |
+
+### PW — SEO web calculator (agent + human content review, ~5–7 days; start right after P2-T07)
+
+Go live **early** (before the app ships) — SEO needs months to compound. Until the app is in the stores, the CTA is "App kommt bald — Benachrichtigen" (email waitlist via Supabase table + double opt-in, or simply skip and show store badges once live).
+
+| ID | Task | Accept | Risk |
+|---|---|---|---|
+| PW-T01 | `packages/domain_web`: js_interop facade exporting `calculateTrip(input) → {total, perPerson[], breakdown}`, `dart compile js -O4`; size budget | bundle ≤ 150 kB gz; vitest parity over all trip fixtures | safe |
+| PW-T02 | Astro scaffold in `web/` (static output, de default + en, hreflang, sitemap, robots, canonical), design tokens shared with app theme | `npm run build` static; Lighthouse ≥ 95 | critical (new deps) |
+| PW-T03 | Calculator island: distance, consumption (l/100 km or kWh), fuel price, number of persons, driver pays share yes/no, return trip, tolls/extras; **result-first card "Jede Person zahlt X €"** + breakdown; live recalculation; state in URL params | Playwright: typing updates result; URL reload restores state | safe |
+| PW-T04 | **Clickable live fuel prices**: chips for E5/E10/Diesel (national average by default, "in meiner Nähe" via opt-in geolocation/PLZ) → tap fills price; source + timestamp + attribution shown | Playwright with mocked API; chip tap sets price | safe |
+| PW-T05 | Share: Web Share API / WhatsApp text ("Fahrt nach München: 4 Personen, je 18,20 €") + copy link | Playwright | safe |
+| PW-T06 | App CTA: sticky "Regelmäßig fahren? Fahrten speichern & monatlich abrechnen" → smart app banner (`apple-itunes-app` meta), Play badge, deep link carrying the trip (P3r-T08) | link format test | safe |
+| PW-T07 | Landing pages per search intent (each with calculator embedded + unique explanatory content + FAQ): `/fahrtkostenrechner`, `/spritkosten-teilen`, `/fahrgemeinschaft-kosten-aufteilen`, `/pendler-fahrgemeinschaft`, `/mitfahrer-kosten-berechnen`, `/kilometerpauschale-rechner`, `/elektroauto-ladekosten-teilen`; EN equivalents later | human reviews copy; each page unique title/description/H1 | safe |
+| PW-T08 | Structured data: `WebApplication`/`SoftwareApplication`, `FAQPage`, `HowTo`, `Organization`; OG/Twitter images generated at build | `tool/seo_check` validates JSON-LD; Rich Results Test manual once | safe |
+| PW-T09 | Privacy-friendly analytics without cookies (e.g. GoatCounter/Plausible/Cloudflare Web Analytics) — no consent banner needed; events: calculation done, share, app CTA click | no cookies set (Playwright asserts `document.cookie` empty) | critical (privacy) |
+| PW-T10 | Hosting: Firebase Hosting on own domain, preview channels per PR, cache headers, security headers (CSP), `/.well-known/*` for app links | headers test; preview URL commented on PR | critical |
+| PW-T11 | Google Search Console + Bing Webmaster verification, sitemap submission; monthly SEO report (impressions, CTR, top queries) into `docs/seo-metrics.md` | Search Console shows indexed pages | critical (human) |
+
+### P6c — Live fuel prices backend (agent + review, ~2–3 days; needed by PW-T04, can precede P6)
+
+| ID | Task | Accept | Risk |
+|---|---|---|---|
+| P6c-T01 | Spike result from P1-T01 applied: Tankerkönig terms, rate limits, attribution; E-Control (AT); EU Weekly Oil Bulletin for other countries | ADR-20 confirmed or amended | critical |
+| P6c-T02 | Migration `fuel_price_cache` (public read via RLS, write only service role) | pgTAP | critical |
+| P6c-T03 | Edge Function `fuel-prices`: `GET ?type=e5&lat=…&lng=…&radius=…` or `?plz=` or national average; cache TTL (e.g. 10 min nearby, 1 h average), never forwards client IP/location to provider beyond rounded coords | vitest + Stryker on `_shared/fuel.ts`; integration test against a provider stub | critical |
+| P6c-T04 | `pg_cron` job refreshing national/state averages periodically (computed from station data within provider limits) | pgTAP + function test | critical |
+| P6c-T05 | App `FuelPriceService` (+ fake): chips in ride/trip form, auto-fill per vehicle fuel type, price frozen on the ride; offline → last known value with age label | VM tests; IT via fake | safe |
+| P6c-T06 | Abuse protection: per-IP rate limit on the function, CORS restricted to own domain + app | test | critical |
 
 ### P5 — Real-world validation (human, 1 weekend + 1–2 days fixes)
 
@@ -747,7 +861,8 @@ tool/drive.sh ext.mitlio.balances.get '{"groupId":"<id>"}'
 | Milestone | Phases | Est. calendar time | Outcome |
 |---|---|---|---|
 | M0 Harness | P0–P1 | ~1 week | agents can safely produce PRs |
-| M1 Local MVP | P2–P5 | ~2–3 weeks | usable single-device app, field-tested |
+| M1 Local MVP | P2–P5 incl. P3r | ~3–4 weeks | usable single-device app incl. ride log, field-tested |
+| MW Web live | PW + P6c (parallel to M1) | ~1.5 weeks | SEO calculator with live fuel prices indexed, waitlist/app CTA |
 | M2 Shared groups | P6 + P6b (+P8 in parallel) | ~3–4 weeks | multi-device offline-first sync, push notifications, TestFlight/Play internal |
 | M3 Store release | P7 + P8-T04 | ~2 weeks | v1.0 in stores |
 | M4 Autonomy | P8-T07/T08 | ongoing | safe PRs auto-merge, nightly mutation loop self-heals |
@@ -762,7 +877,8 @@ tool/drive.sh ext.mitlio.balances.get '{"groupId":"<id>"}'
 | 4 | Models | open-weights preferred | ADR-15 / §6.7: open-weights for `safe`, Claude for `critical` + review, decided by P1-T11 eval |
 | 5 | Crash reporting | no preference | Sentry EU (ADR-14) |
 
-| 6 | Domain | don't care | ADR-17: no domain, `mitlio.web.app` via Firebase Hosting |
+| 6 | Domain | don't care → **revised: own domain recommended** because of the SEO funnel | ADR-17: e.g. `mitlio.de` (~€10–20/year) on Firebase Hosting; needs owner purchase before PW-T10 |
+| 8 | Positioning | private taxometer + SEO web calculator funnel, live clickable fuel prices | Product positioning section, P3r, PW, P6c, ADR-19/20 |
 | 7 | Monthly budget | as low as sensible | ADR-18 / §6.8: ~€45–80 dev, ~€30 maintenance; Claude via existing subscription, prepaid open-weights cap €20–40, GitHub spend limit $0 |
 
 No open owner questions remain for P0–P1.
