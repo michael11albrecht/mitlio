@@ -82,8 +82,12 @@ goldens-update: ## Update goldens (never in CI)
 	$(call not_yet,golden setup is P1-T10)
 
 .PHONY: it
-it: ## Desktop integration tests
-	$(call not_yet,desktop integration tests are P1-T09)
+it: ## Desktop integration tests (Linux + xvfb only, runs in CI)
+ifeq ($(shell uname -s),Linux)
+	cd $(APP) && xvfb-run -a $(FLUTTER) test integration_test -d linux
+else
+	@echo "make it: linux only, runs in CI (desktop-it workflow)"
+endif
 
 .PHONY: db-up db-test db-reset
 db-up db-test db-reset: ## Local Supabase
