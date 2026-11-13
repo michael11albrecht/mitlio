@@ -10,8 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_riverpod: ^3.5.0
+  go_router: ^18.1.4
   material_ui: ^1.1.0
   mitlio_domain: any
+  uuid: ^4.6.0
 
 dev_dependencies:
   alchemist: ^0.14.1

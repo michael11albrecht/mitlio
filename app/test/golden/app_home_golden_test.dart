@@ -1,5 +1,6 @@
 import 'package:alchemist/alchemist.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/app.dart';
 
@@ -17,7 +18,7 @@ Widget _scale(BuildContext context, double scale) {
       data: MediaQuery.of(
         context,
       ).copyWith(textScaler: TextScaler.linear(scale)),
-      child: const MitlioApp(),
+      child: const ProviderScope(child: MitlioApp()),
     ),
   );
 }
