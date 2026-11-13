@@ -16,6 +16,8 @@ tests that load this file, so the doc and the tests can never disagree. Until th
 - **Validation returns, programmer errors throw.** User-reachable invalid input → `Result.err(<sealed error>)`.
   Violated preconditions that callers must guarantee (negative weights passed internally, mismatched
   currencies in `Money` arithmetic) → `ArgumentError`.
+- **Error class names are unique across the package** (one barrel export). When a variant name is already taken by
+  another error family, prefix it with the family name, e.g. `SettlementUnknownMember`, `TripNoParticipants`.
 - **Layout:** one concept per file under `lib/src/<area>/`, exported from `lib/mitlio_domain.dart`
   (keep the export list sorted). Tests mirror it under `test/<area>/`.
 - **Every public function:** example tests (from this doc), ≥ 1 `glados` property test, edge cases.
@@ -153,7 +155,7 @@ final class Settlement {
   final DateTime date;
   static Result<Settlement, SettlementError> create({…, required List<Member> members});
 }
-// SettlementError: NonPositiveAmount, SelfTransfer, UnknownMember(id)
+// SettlementError: SettlementNonPositiveAmount, SelfTransfer, SettlementUnknownMember(id)
 ```
 
 - The constructor is private: an invalid `Expense`/`Settlement` cannot exist.
@@ -246,7 +248,7 @@ final class TripCost { final int fuelCents, wearCents, kmRateCents, tollsCents, 
                        final Map<String, int> shares; }
 Result<TripCost, TripError> computeTripCost(TripInput input, List<Member> members);
 Result<Expense, ExpenseError> tripToExpense(…);   // payer = driver (pays totalCents), split = the shares above
-// TripError: NonPositiveDistance, NegativeValue(field), NoParticipants, DriverIsPassenger, UnknownMember(id),
+// TripError: NonPositiveDistance, TripNegativeValue(field), TripNoParticipants, DriverIsPassenger, TripUnknownMember(id),
 //            UnsupportedCurrency (minorUnits > 3)
 ```
 
