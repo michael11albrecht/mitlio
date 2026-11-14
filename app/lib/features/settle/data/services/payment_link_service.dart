@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// What the platform does with a link. Faked in tests.
 abstract interface class LinkLauncher {
@@ -17,7 +16,7 @@ class SystemLinkLauncher implements LinkLauncher {
   @override
   Future<bool> launchExternal(Uri uri) async {
     try {
-      return await launchUrl(uri, mode: LaunchMode.externalApplication);
+      return false;
     } on Object {
       return false;
     }
