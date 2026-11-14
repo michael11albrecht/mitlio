@@ -1,6 +1,6 @@
 import type { Locale } from './index';
 
-/** Calculator island strings. Placeholders: {amount}, {high}, {low}, {nHigh}, {nLow}. */
+/** Calculator island strings. Placeholders: {amount}, {high}, {low}, {nHigh}, {nLow}, {n}, {who}, {each}, {total}. */
 export const calculatorMessages = {
   de: {
     energy: 'Antrieb',
@@ -45,6 +45,27 @@ export const calculatorMessages = {
     errLoad: 'Der Rechner konnte nicht geladen werden. Bitte die Seite neu laden.',
     noscript: 'Der Rechner braucht JavaScript. Es werden keine Daten gesendet.',
     loading: 'Wird berechnet …',
+    tripLabel: 'Wofür?',
+    tripOptional: 'optional',
+    tripPlaceholder: 'z. B. Fahrt nach München',
+    shareGroup: 'Ergebnis teilen',
+    share: 'Teilen',
+    shareWhatsapp: 'Per WhatsApp',
+    shareCopy: 'Link kopieren',
+    shareCopied: 'Kopiert',
+    shareCopyFailed: 'Kopieren nicht möglich.',
+    shareLead: 'Fahrtkosten',
+    shareWhoOne: '1 Person',
+    shareWhoMany: '{n} Personen',
+    shareWhoPassengers: '{n} Mitfahrende',
+    shareSummary: '{who}, je {each} (Gesamt {total})',
+    shareSummaryRounded: '{who}, je ca. {each} (Gesamt {total})',
+    shareFooter: 'berechnet mit mitlio',
+    ctaText: 'Fährst du regelmäßig? Mit der mitlio App speicherst du Fahrten und rechnest monatlich ab.',
+    ctaSoon: 'App kommt bald',
+    ctaOpen: 'In der App öffnen',
+    ctaAppStore: 'Laden im App Store',
+    ctaPlay: 'Jetzt bei Google Play',
   },
   en: {
     energy: 'Drive',
@@ -89,6 +110,27 @@ export const calculatorMessages = {
     errLoad: 'The calculator could not be loaded. Please reload the page.',
     noscript: 'The calculator needs JavaScript. No data is sent anywhere.',
     loading: 'Calculating …',
+    tripLabel: 'What for?',
+    tripOptional: 'optional',
+    tripPlaceholder: 'e.g. Trip to Munich',
+    shareGroup: 'Share result',
+    share: 'Share',
+    shareWhatsapp: 'Via WhatsApp',
+    shareCopy: 'Copy link',
+    shareCopied: 'Copied',
+    shareCopyFailed: 'Could not copy.',
+    shareLead: 'Trip costs',
+    shareWhoOne: '1 person',
+    shareWhoMany: '{n} people',
+    shareWhoPassengers: '{n} passengers',
+    shareSummary: '{who}, {each} each (total {total})',
+    shareSummaryRounded: '{who}, about {each} each (total {total})',
+    shareFooter: 'calculated with mitlio',
+    ctaText: 'Do you drive regularly? With the mitlio app you save trips and settle up monthly.',
+    ctaSoon: 'App coming soon',
+    ctaOpen: 'Open in the app',
+    ctaAppStore: 'Download on the App Store',
+    ctaPlay: 'Get it on Google Play',
   },
 } as const satisfies Record<Locale, Record<string, string>>;
 

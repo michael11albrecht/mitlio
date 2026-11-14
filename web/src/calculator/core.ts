@@ -16,9 +16,20 @@ export interface CalcState {
   extras: string;
   driverPays: boolean;
   roundTrip: boolean;
+  /** Optional trip name ("Wofür?"), raw as typed; sanitised when it leaves the page. */
+  trip: string;
 }
 
 export const MAX_PERSONS = 100;
+export const MAX_TRIP_NAME = 60;
+
+/** Trims, drops control characters, collapses whitespace and caps at 60 characters. */
+export function sanitizeTripName(raw: string): string {
+  return [...raw.replace(/[\p{Cc}\p{Cf}]/gu, ' ').replace(/\s+/g, ' ').trim()]
+    .slice(0, MAX_TRIP_NAME)
+    .join('')
+    .trim();
+}
 
 export const energyDefaults: Record<Energy, { cons: string; price: string }> = {
   fuel: { cons: '7', price: '1.80' },
@@ -35,6 +46,7 @@ export function defaultState(energy: Energy = 'fuel'): CalcState {
     extras: '',
     driverPays: true,
     roundTrip: false,
+    trip: '',
   };
 }
 
@@ -215,7 +227,7 @@ export function fill(template: string, values: Record<string, string | number>):
   return template.replace(/\{(\w+)\}/g, (_, k: string) => String(values[k] ?? ''));
 }
 
-// ---- URL state: ?km=&l100=&p=&n=&d=&rt=&x=&ev= (numbers use "." as decimal separator) ----
+// ---- URL state: ?km=&l100=&p=&n=&d=&rt=&x=&ev=&t= (numbers use "." as decimal separator) ----
 
 export function stateToParams(state: CalcState): URLSearchParams {
   const params = new URLSearchParams();
@@ -232,6 +244,8 @@ export function stateToParams(state: CalcState): URLSearchParams {
   params.set('rt', state.roundTrip ? '1' : '0');
   put('x', state.extras);
   if (state.energy === 'ev') params.set('ev', '1');
+  const trip = sanitizeTripName(state.trip);
+  if (trip !== '') params.set('t', trip);
   return params;
 }
 
@@ -253,6 +267,7 @@ export function paramsToState(search: string): CalcState {
   if (n !== null && parsePersons(n) !== null) state.persons = n.trim();
   if (q.get('d') === '0') state.driverPays = false;
   if (q.get('rt') === '1') state.roundTrip = true;
+  state.trip = sanitizeTripName(q.get('t') ?? '');
   return state;
 }
 

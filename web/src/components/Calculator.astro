@@ -1,7 +1,9 @@
 ---
 import { calculatorMessages } from '../i18n/calculator';
 import { messages, type Locale } from '../i18n';
-import { defaultState } from '../calculator/core';
+import { defaultState, MAX_TRIP_NAME } from '../calculator/core';
+import { APP_STORE_URL, PLAY_STORE_URL } from '../../site.config.mjs';
+import { buildDeepLink } from '../lib/deeplink';
 
 interface Props {
   locale: Locale;
@@ -13,6 +15,15 @@ const label = messages[locale].calculatorLabel;
 // Static defaults so the page is stable before the island runs.
 const d = defaultState();
 const decimal = (v: string) => (locale === 'de' ? v.replace('.', ',') : v);
+const storesLive = APP_STORE_URL !== '' || PLAY_STORE_URL !== '';
+const ctaDeepLink = buildDeepLink({
+  km: Number(d.km),
+  l100: Number(d.cons),
+  price: Number(d.price),
+  n: Number(d.persons),
+  d: d.driverPays,
+  rt: d.roundTrip,
+});
 ---
 
 <div id="calculator" role="region" aria-label={label} data-locale={locale}>
@@ -40,6 +51,14 @@ const decimal = (v: string) => (locale === 'de' ? v.replace('.', ',') : v);
         </div>
       </dl>
     </details>
+    <div class="share" id="calc-share" hidden>
+      <button type="button" class="btn" id="calc-share-native" hidden>{m.share}</button>
+      <div class="share-fallback" id="calc-share-fallback" role="group" aria-label={m.shareGroup} hidden>
+        <a class="btn" id="calc-share-wa" href="https://wa.me/" target="_blank" rel="noopener noreferrer">{m.shareWhatsapp}</a>
+        <button type="button" class="btn" id="calc-share-copy">{m.shareCopy}</button>
+      </div>
+      <p class="share-status" id="calc-share-status" role="status"></p>
+    </div>
   </div>
 
   <form class="inputs" novalidate onsubmit="return false">
@@ -113,7 +132,38 @@ const decimal = (v: string) => (locale === 'de' ? v.replace('.', ',') : v);
       </div>
       <p class="error" id="calc-extras-error" hidden></p>
     </div>
+
+    <div class="field">
+      <label for="calc-trip">{m.tripLabel} <span class="optional">({m.tripOptional})</span></label>
+      <input
+        id="calc-trip"
+        type="text"
+        maxlength={MAX_TRIP_NAME}
+        autocomplete="off"
+        placeholder={m.tripPlaceholder}
+        value=""
+      />
+    </div>
   </form>
+
+  <aside class="cta" id="calc-cta" aria-label="mitlio App">
+    <p>{m.ctaText}</p>
+    {
+      storesLive ? (
+        <div class="cta-actions">
+          {APP_STORE_URL && (
+            <a class="btn" href={APP_STORE_URL} rel="noopener">{m.ctaAppStore}</a>
+          )}
+          {PLAY_STORE_URL && (
+            <a class="btn" href={PLAY_STORE_URL} rel="noopener">{m.ctaPlay}</a>
+          )}
+          <a class="btn" id="calc-cta-open" href={ctaDeepLink}>{m.ctaOpen}</a>
+        </div>
+      ) : (
+        <p class="cta-soon">{m.ctaSoon}</p>
+      )
+    }
+  </aside>
 
   <noscript><p class="error">{m.noscript}</p></noscript>
 </div>
@@ -216,6 +266,74 @@ const decimal = (v: string) => (locale === 'de' ? v.replace('.', ',') : v);
     border-top: 1px solid color-mix(in srgb, currentColor 35%, transparent);
     margin-top: var(--space-1);
     padding-top: var(--space-2);
+  }
+
+  .share {
+    margin-top: var(--space-4);
+    border-top: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+    padding-top: var(--space-4);
+  }
+
+  .share-fallback {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .share-status {
+    margin: var(--space-2) 0 0;
+    min-height: 1.4em;
+    font-size: 0.9rem;
+  }
+
+  /* Outlined so it reads on the coloured result card and on the plain CTA card. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding-inline: var(--space-4);
+    font: inherit;
+    font-weight: 600;
+    color: inherit;
+    text-decoration: none;
+    background: transparent;
+    border: 2px solid currentColor;
+    border-radius: 0.5rem;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    background: color-mix(in srgb, currentColor 12%, transparent);
+  }
+
+  .btn:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .cta {
+    padding: var(--space-6);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .cta p {
+    margin: 0;
+  }
+
+  .cta-soon {
+    margin-top: var(--space-2);
+    font-weight: 700;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    color: var(--color-primary);
   }
 
   .inputs {

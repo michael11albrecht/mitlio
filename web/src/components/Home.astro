@@ -11,7 +11,7 @@ const { locale } = Astro.props;
 const t = messages[locale];
 ---
 
-<Layout locale={locale} route="home" title={t.homeTitle} description={t.homeDescription}>
+<Layout locale={locale} route="home" title={t.homeTitle} description={t.homeDescription} appBanner>
   <h1>{t.heroTitle}</h1>
   <p class="lead">{t.heroLead}</p>
   <Calculator locale={locale} />
