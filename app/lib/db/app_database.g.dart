@@ -6477,6 +6477,492 @@ class RidesCompanion extends UpdateCompanion<RideRow> {
   }
 }
 
+class $ExpenseRevisionsTable extends ExpenseRevisions
+    with TableInfo<$ExpenseRevisionsTable, ExpenseRevisionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExpenseRevisionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _expenseIdMeta = const VerificationMeta(
+    'expenseId',
+  );
+  @override
+  late final GeneratedColumn<String> expenseId = GeneratedColumn<String>(
+    'expense_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES expenses (id)',
+    ),
+  );
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES "groups" (id)',
+    ),
+  );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(revision).isBiggerThanValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _changedAtMeta = const VerificationMeta(
+    'changedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> changedAt = GeneratedColumn<DateTime>(
+    'changed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _authorMemberIdMeta = const VerificationMeta(
+    'authorMemberId',
+  );
+  @override
+  late final GeneratedColumn<String> authorMemberId = GeneratedColumn<String>(
+    'author_member_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _snapshotMeta = const VerificationMeta(
+    'snapshot',
+  );
+  @override
+  late final GeneratedColumn<String> snapshot = GeneratedColumn<String>(
+    'snapshot',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    expenseId,
+    groupId,
+    revision,
+    changedAt,
+    authorMemberId,
+    snapshot,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'expense_revisions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExpenseRevisionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('expense_id')) {
+      context.handle(
+        _expenseIdMeta,
+        expenseId.isAcceptableOrUnknown(data['expense_id']!, _expenseIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_expenseIdMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_revisionMeta);
+    }
+    if (data.containsKey('changed_at')) {
+      context.handle(
+        _changedAtMeta,
+        changedAt.isAcceptableOrUnknown(data['changed_at']!, _changedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_changedAtMeta);
+    }
+    if (data.containsKey('author_member_id')) {
+      context.handle(
+        _authorMemberIdMeta,
+        authorMemberId.isAcceptableOrUnknown(
+          data['author_member_id']!,
+          _authorMemberIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('snapshot')) {
+      context.handle(
+        _snapshotMeta,
+        snapshot.isAcceptableOrUnknown(data['snapshot']!, _snapshotMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_snapshotMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExpenseRevisionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExpenseRevisionRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      expenseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}expense_id'],
+      )!,
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
+      )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      changedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}changed_at'],
+      )!,
+      authorMemberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}author_member_id'],
+      ),
+      snapshot: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}snapshot'],
+      )!,
+    );
+  }
+
+  @override
+  $ExpenseRevisionsTable createAlias(String alias) {
+    return $ExpenseRevisionsTable(attachedDatabase, alias);
+  }
+}
+
+class ExpenseRevisionRow extends DataClass
+    implements Insertable<ExpenseRevisionRow> {
+  final String id;
+  final String expenseId;
+  final String groupId;
+
+  /// 1 for the first change of an expense, then increasing.
+  final int revision;
+  final DateTime changedAt;
+
+  /// Null while nobody is signed in (no accounts yet).
+  final String? authorMemberId;
+
+  /// JSON of an `ExpenseSnapshot`. Never contains bank data.
+  final String snapshot;
+  const ExpenseRevisionRow({
+    required this.id,
+    required this.expenseId,
+    required this.groupId,
+    required this.revision,
+    required this.changedAt,
+    this.authorMemberId,
+    required this.snapshot,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['expense_id'] = Variable<String>(expenseId);
+    map['group_id'] = Variable<String>(groupId);
+    map['revision'] = Variable<int>(revision);
+    map['changed_at'] = Variable<DateTime>(changedAt);
+    if (!nullToAbsent || authorMemberId != null) {
+      map['author_member_id'] = Variable<String>(authorMemberId);
+    }
+    map['snapshot'] = Variable<String>(snapshot);
+    return map;
+  }
+
+  ExpenseRevisionsCompanion toCompanion(bool nullToAbsent) {
+    return ExpenseRevisionsCompanion(
+      id: Value(id),
+      expenseId: Value(expenseId),
+      groupId: Value(groupId),
+      revision: Value(revision),
+      changedAt: Value(changedAt),
+      authorMemberId: authorMemberId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(authorMemberId),
+      snapshot: Value(snapshot),
+    );
+  }
+
+  factory ExpenseRevisionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExpenseRevisionRow(
+      id: serializer.fromJson<String>(json['id']),
+      expenseId: serializer.fromJson<String>(json['expenseId']),
+      groupId: serializer.fromJson<String>(json['groupId']),
+      revision: serializer.fromJson<int>(json['revision']),
+      changedAt: serializer.fromJson<DateTime>(json['changedAt']),
+      authorMemberId: serializer.fromJson<String?>(json['authorMemberId']),
+      snapshot: serializer.fromJson<String>(json['snapshot']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'expenseId': serializer.toJson<String>(expenseId),
+      'groupId': serializer.toJson<String>(groupId),
+      'revision': serializer.toJson<int>(revision),
+      'changedAt': serializer.toJson<DateTime>(changedAt),
+      'authorMemberId': serializer.toJson<String?>(authorMemberId),
+      'snapshot': serializer.toJson<String>(snapshot),
+    };
+  }
+
+  ExpenseRevisionRow copyWith({
+    String? id,
+    String? expenseId,
+    String? groupId,
+    int? revision,
+    DateTime? changedAt,
+    Value<String?> authorMemberId = const Value.absent(),
+    String? snapshot,
+  }) => ExpenseRevisionRow(
+    id: id ?? this.id,
+    expenseId: expenseId ?? this.expenseId,
+    groupId: groupId ?? this.groupId,
+    revision: revision ?? this.revision,
+    changedAt: changedAt ?? this.changedAt,
+    authorMemberId: authorMemberId.present
+        ? authorMemberId.value
+        : this.authorMemberId,
+    snapshot: snapshot ?? this.snapshot,
+  );
+  ExpenseRevisionRow copyWithCompanion(ExpenseRevisionsCompanion data) {
+    return ExpenseRevisionRow(
+      id: data.id.present ? data.id.value : this.id,
+      expenseId: data.expenseId.present ? data.expenseId.value : this.expenseId,
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      changedAt: data.changedAt.present ? data.changedAt.value : this.changedAt,
+      authorMemberId: data.authorMemberId.present
+          ? data.authorMemberId.value
+          : this.authorMemberId,
+      snapshot: data.snapshot.present ? data.snapshot.value : this.snapshot,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseRevisionRow(')
+          ..write('id: $id, ')
+          ..write('expenseId: $expenseId, ')
+          ..write('groupId: $groupId, ')
+          ..write('revision: $revision, ')
+          ..write('changedAt: $changedAt, ')
+          ..write('authorMemberId: $authorMemberId, ')
+          ..write('snapshot: $snapshot')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    expenseId,
+    groupId,
+    revision,
+    changedAt,
+    authorMemberId,
+    snapshot,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExpenseRevisionRow &&
+          other.id == this.id &&
+          other.expenseId == this.expenseId &&
+          other.groupId == this.groupId &&
+          other.revision == this.revision &&
+          other.changedAt == this.changedAt &&
+          other.authorMemberId == this.authorMemberId &&
+          other.snapshot == this.snapshot);
+}
+
+class ExpenseRevisionsCompanion extends UpdateCompanion<ExpenseRevisionRow> {
+  final Value<String> id;
+  final Value<String> expenseId;
+  final Value<String> groupId;
+  final Value<int> revision;
+  final Value<DateTime> changedAt;
+  final Value<String?> authorMemberId;
+  final Value<String> snapshot;
+  final Value<int> rowid;
+  const ExpenseRevisionsCompanion({
+    this.id = const Value.absent(),
+    this.expenseId = const Value.absent(),
+    this.groupId = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.changedAt = const Value.absent(),
+    this.authorMemberId = const Value.absent(),
+    this.snapshot = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ExpenseRevisionsCompanion.insert({
+    required String id,
+    required String expenseId,
+    required String groupId,
+    required int revision,
+    required DateTime changedAt,
+    this.authorMemberId = const Value.absent(),
+    required String snapshot,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       expenseId = Value(expenseId),
+       groupId = Value(groupId),
+       revision = Value(revision),
+       changedAt = Value(changedAt),
+       snapshot = Value(snapshot);
+  static Insertable<ExpenseRevisionRow> custom({
+    Expression<String>? id,
+    Expression<String>? expenseId,
+    Expression<String>? groupId,
+    Expression<int>? revision,
+    Expression<DateTime>? changedAt,
+    Expression<String>? authorMemberId,
+    Expression<String>? snapshot,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (expenseId != null) 'expense_id': expenseId,
+      if (groupId != null) 'group_id': groupId,
+      if (revision != null) 'revision': revision,
+      if (changedAt != null) 'changed_at': changedAt,
+      if (authorMemberId != null) 'author_member_id': authorMemberId,
+      if (snapshot != null) 'snapshot': snapshot,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ExpenseRevisionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? expenseId,
+    Value<String>? groupId,
+    Value<int>? revision,
+    Value<DateTime>? changedAt,
+    Value<String?>? authorMemberId,
+    Value<String>? snapshot,
+    Value<int>? rowid,
+  }) {
+    return ExpenseRevisionsCompanion(
+      id: id ?? this.id,
+      expenseId: expenseId ?? this.expenseId,
+      groupId: groupId ?? this.groupId,
+      revision: revision ?? this.revision,
+      changedAt: changedAt ?? this.changedAt,
+      authorMemberId: authorMemberId ?? this.authorMemberId,
+      snapshot: snapshot ?? this.snapshot,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (expenseId.present) {
+      map['expense_id'] = Variable<String>(expenseId.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (changedAt.present) {
+      map['changed_at'] = Variable<DateTime>(changedAt.value);
+    }
+    if (authorMemberId.present) {
+      map['author_member_id'] = Variable<String>(authorMemberId.value);
+    }
+    if (snapshot.present) {
+      map['snapshot'] = Variable<String>(snapshot.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseRevisionsCompanion(')
+          ..write('id: $id, ')
+          ..write('expenseId: $expenseId, ')
+          ..write('groupId: $groupId, ')
+          ..write('revision: $revision, ')
+          ..write('changedAt: $changedAt, ')
+          ..write('authorMemberId: $authorMemberId, ')
+          ..write('snapshot: $snapshot, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -6493,6 +6979,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $VehiclesTable vehicles = $VehiclesTable(this);
   late final $RideTemplatesTable rideTemplates = $RideTemplatesTable(this);
   late final $RidesTable rides = $RidesTable(this);
+  late final $ExpenseRevisionsTable expenseRevisions = $ExpenseRevisionsTable(
+    this,
+  );
   late final Index membersGroupId = Index(
     'members_group_id',
     'CREATE INDEX members_group_id ON members (group_id)',
@@ -6541,6 +7030,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'rides_group_date',
     'CREATE INDEX rides_group_date ON rides (group_id, date)',
   );
+  late final Index expenseRevisionsExpenseRevision = Index(
+    'expense_revisions_expense_revision',
+    'CREATE UNIQUE INDEX expense_revisions_expense_revision ON expense_revisions (expense_id, revision)',
+  );
+  late final Index expenseRevisionsGroupId = Index(
+    'expense_revisions_group_id',
+    'CREATE INDEX expense_revisions_group_id ON expense_revisions (group_id)',
+  );
   late final GroupsDao groupsDao = GroupsDao(this as AppDatabase);
   late final MembersDao membersDao = MembersDao(this as AppDatabase);
   late final ExpensesDao expensesDao = ExpensesDao(this as AppDatabase);
@@ -6567,6 +7064,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     vehicles,
     rideTemplates,
     rides,
+    expenseRevisions,
     membersGroupId,
     expensesGroupId,
     expensePayersExpenseId,
@@ -6579,6 +7077,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     vehiclesGroupId,
     rideTemplatesGroupId,
     ridesGroupDate,
+    expenseRevisionsExpenseRevision,
+    expenseRevisionsGroupId,
   ];
   @override
   DriftDatabaseOptions get options =>
@@ -6751,6 +7251,26 @@ final class $$GroupsTableReferences
     ).filter((f) => f.groupId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_ridesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ExpenseRevisionsTable, List<ExpenseRevisionRow>>
+  _expenseRevisionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.expenseRevisions,
+    aliasName: 'groups__id__expense_revisions__group_id',
+  );
+
+  $$ExpenseRevisionsTableProcessedTableManager get expenseRevisionsRefs {
+    final manager = $$ExpenseRevisionsTableTableManager(
+      $_db,
+      $_db.expenseRevisions,
+    ).filter((f) => f.groupId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _expenseRevisionsRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -6992,6 +7512,31 @@ class $$GroupsTableFilterComposer
           }) => $$RidesTableFilterComposer(
             $db: $db,
             $table: $db.rides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> expenseRevisionsRefs(
+    Expression<bool> Function($$ExpenseRevisionsTableFilterComposer f) f,
+  ) {
+    final $$ExpenseRevisionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.expenseRevisions,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpenseRevisionsTableFilterComposer(
+            $db: $db,
+            $table: $db.expenseRevisions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -7276,6 +7821,31 @@ class $$GroupsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> expenseRevisionsRefs<T extends Object>(
+    Expression<T> Function($$ExpenseRevisionsTableAnnotationComposer a) f,
+  ) {
+    final $$ExpenseRevisionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.expenseRevisions,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpenseRevisionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.expenseRevisions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$GroupsTableTableManager
@@ -7300,6 +7870,7 @@ class $$GroupsTableTableManager
             bool vehiclesRefs,
             bool rideTemplatesRefs,
             bool ridesRefs,
+            bool expenseRevisionsRefs,
           })
         > {
   $$GroupsTableTableManager(_$AppDatabase db, $GroupsTable table)
@@ -7371,6 +7942,7 @@ class $$GroupsTableTableManager
                 vehiclesRefs = false,
                 rideTemplatesRefs = false,
                 ridesRefs = false,
+                expenseRevisionsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -7383,6 +7955,7 @@ class $$GroupsTableTableManager
                     if (vehiclesRefs) db.vehicles,
                     if (rideTemplatesRefs) db.rideTemplates,
                     if (ridesRefs) db.rides,
+                    if (expenseRevisionsRefs) db.expenseRevisions,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -7543,6 +8116,26 @@ class $$GroupsTableTableManager
                           referencedColumn: 'group_id',
                           typedResults: items,
                         ),
+                      if (expenseRevisionsRefs)
+                        await $_getPrefetchedDataByColumns<
+                          GroupRow,
+                          $GroupsTable,
+                          ExpenseRevisionRow,
+                          $ExpenseRevisionsTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GroupsTableReferences
+                              ._expenseRevisionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GroupsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).expenseRevisionsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'group_id',
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -7572,6 +8165,7 @@ typedef $$GroupsTableProcessedTableManager =
         bool vehiclesRefs,
         bool rideTemplatesRefs,
         bool ridesRefs,
+        bool expenseRevisionsRefs,
       })
     >;
 typedef $$MembersTableCreateCompanionBuilder = MembersCompanion Function({
@@ -8747,6 +9341,26 @@ final class $$ExpensesTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$ExpenseRevisionsTable, List<ExpenseRevisionRow>>
+  _expenseRevisionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.expenseRevisions,
+    aliasName: 'expenses__id__expense_revisions__expense_id',
+  );
+
+  $$ExpenseRevisionsTableProcessedTableManager get expenseRevisionsRefs {
+    final manager = $$ExpenseRevisionsTableTableManager(
+      $_db,
+      $_db.expenseRevisions,
+    ).filter((f) => f.expenseId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _expenseRevisionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$ExpensesTableFilterComposer
@@ -8917,6 +9531,31 @@ class $$ExpensesTableFilterComposer
           }) => $$RidesTableFilterComposer(
             $db: $db,
             $table: $db.rides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> expenseRevisionsRefs(
+    Expression<bool> Function($$ExpenseRevisionsTableFilterComposer f) f,
+  ) {
+    final $$ExpenseRevisionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.expenseRevisions,
+      getReferencedColumn: (t) => t.expenseId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpenseRevisionsTableFilterComposer(
+            $db: $db,
+            $table: $db.expenseRevisions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -9182,6 +9821,31 @@ class $$ExpensesTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> expenseRevisionsRefs<T extends Object>(
+    Expression<T> Function($$ExpenseRevisionsTableAnnotationComposer a) f,
+  ) {
+    final $$ExpenseRevisionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.expenseRevisions,
+      getReferencedColumn: (t) => t.expenseId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpenseRevisionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.expenseRevisions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ExpensesTableTableManager
@@ -9202,6 +9866,7 @@ class $$ExpensesTableTableManager
             bool expensePayersRefs,
             bool expenseSharesRefs,
             bool ridesRefs,
+            bool expenseRevisionsRefs,
           })
         > {
   $$ExpensesTableTableManager(_$AppDatabase db, $ExpensesTable table)
@@ -9301,6 +9966,7 @@ class $$ExpensesTableTableManager
                 expensePayersRefs = false,
                 expenseSharesRefs = false,
                 ridesRefs = false,
+                expenseRevisionsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -9308,6 +9974,7 @@ class $$ExpensesTableTableManager
                     if (expensePayersRefs) db.expensePayers,
                     if (expenseSharesRefs) db.expenseShares,
                     if (ridesRefs) db.rides,
+                    if (expenseRevisionsRefs) db.expenseRevisions,
                   ],
                   addJoins:
                       <
@@ -9401,6 +10068,26 @@ class $$ExpensesTableTableManager
                           referencedColumn: 'settled_expense_id',
                           typedResults: items,
                         ),
+                      if (expenseRevisionsRefs)
+                        await $_getPrefetchedDataByColumns<
+                          ExpenseRow,
+                          $ExpensesTable,
+                          ExpenseRevisionRow,
+                          $ExpenseRevisionsTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ExpensesTableReferences
+                              ._expenseRevisionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ExpensesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).expenseRevisionsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'expense_id',
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -9426,6 +10113,7 @@ typedef $$ExpensesTableProcessedTableManager =
         bool expensePayersRefs,
         bool expenseSharesRefs,
         bool ridesRefs,
+        bool expenseRevisionsRefs,
       })
     >;
 typedef $$ExpensePayersTableCreateCompanionBuilder =
@@ -13582,6 +14270,458 @@ typedef $$RidesTableProcessedTableManager =
         bool settledExpenseId,
       })
     >;
+typedef $$ExpenseRevisionsTableCreateCompanionBuilder =
+    ExpenseRevisionsCompanion Function({
+      required String id,
+      required String expenseId,
+      required String groupId,
+      required int revision,
+      required DateTime changedAt,
+      Value<String?> authorMemberId,
+      required String snapshot,
+      Value<int> rowid,
+    });
+typedef $$ExpenseRevisionsTableUpdateCompanionBuilder =
+    ExpenseRevisionsCompanion Function({
+      Value<String> id,
+      Value<String> expenseId,
+      Value<String> groupId,
+      Value<int> revision,
+      Value<DateTime> changedAt,
+      Value<String?> authorMemberId,
+      Value<String> snapshot,
+      Value<int> rowid,
+    });
+
+final class $$ExpenseRevisionsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $ExpenseRevisionsTable,
+          ExpenseRevisionRow
+        > {
+  $$ExpenseRevisionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ExpensesTable _expenseIdTable(_$AppDatabase db) =>
+      db.expenses.createAlias('expense_revisions__expense_id__expenses__id');
+
+  $$ExpensesTableProcessedTableManager get expenseId {
+    final $_column = $_itemColumn<String>('expense_id')!;
+
+    final manager = $$ExpensesTableTableManager(
+      $_db,
+      $_db.expenses,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_expenseIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $GroupsTable _groupIdTable(_$AppDatabase db) =>
+      db.groups.createAlias('expense_revisions__group_id__groups__id');
+
+  $$GroupsTableProcessedTableManager get groupId {
+    final $_column = $_itemColumn<String>('group_id')!;
+
+    final manager = $$GroupsTableTableManager(
+      $_db,
+      $_db.groups,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_groupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ExpenseRevisionsTableFilterComposer
+    extends Composer<_$AppDatabase, $ExpenseRevisionsTable> {
+  $$ExpenseRevisionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get changedAt => $composableBuilder(
+    column: $table.changedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get authorMemberId => $composableBuilder(
+    column: $table.authorMemberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get snapshot => $composableBuilder(
+    column: $table.snapshot,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ExpensesTableFilterComposer get expenseId {
+    final $$ExpensesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.expenseId,
+      referencedTable: $db.expenses,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpensesTableFilterComposer(
+            $db: $db,
+            $table: $db.expenses,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$GroupsTableFilterComposer get groupId {
+    final $$GroupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableFilterComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ExpenseRevisionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExpenseRevisionsTable> {
+  $$ExpenseRevisionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get changedAt => $composableBuilder(
+    column: $table.changedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get authorMemberId => $composableBuilder(
+    column: $table.authorMemberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get snapshot => $composableBuilder(
+    column: $table.snapshot,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ExpensesTableOrderingComposer get expenseId {
+    final $$ExpensesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.expenseId,
+      referencedTable: $db.expenses,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpensesTableOrderingComposer(
+            $db: $db,
+            $table: $db.expenses,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$GroupsTableOrderingComposer get groupId {
+    final $$GroupsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableOrderingComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ExpenseRevisionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExpenseRevisionsTable> {
+  $$ExpenseRevisionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get changedAt =>
+      $composableBuilder(column: $table.changedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get authorMemberId => $composableBuilder(
+    column: $table.authorMemberId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get snapshot =>
+      $composableBuilder(column: $table.snapshot, builder: (column) => column);
+
+  $$ExpensesTableAnnotationComposer get expenseId {
+    final $$ExpensesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.expenseId,
+      referencedTable: $db.expenses,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpensesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.expenses,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$GroupsTableAnnotationComposer get groupId {
+    final $$GroupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ExpenseRevisionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ExpenseRevisionsTable,
+          ExpenseRevisionRow,
+          $$ExpenseRevisionsTableFilterComposer,
+          $$ExpenseRevisionsTableOrderingComposer,
+          $$ExpenseRevisionsTableAnnotationComposer,
+          $$ExpenseRevisionsTableCreateCompanionBuilder,
+          $$ExpenseRevisionsTableUpdateCompanionBuilder,
+          (ExpenseRevisionRow, $$ExpenseRevisionsTableReferences),
+          ExpenseRevisionRow,
+          PrefetchHooks Function({bool expenseId, bool groupId})
+        > {
+  $$ExpenseRevisionsTableTableManager(
+    _$AppDatabase db,
+    $ExpenseRevisionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExpenseRevisionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExpenseRevisionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExpenseRevisionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> expenseId = const Value.absent(),
+                Value<String> groupId = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<DateTime> changedAt = const Value.absent(),
+                Value<String?> authorMemberId = const Value.absent(),
+                Value<String> snapshot = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ExpenseRevisionsCompanion(
+                id: id,
+                expenseId: expenseId,
+                groupId: groupId,
+                revision: revision,
+                changedAt: changedAt,
+                authorMemberId: authorMemberId,
+                snapshot: snapshot,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String expenseId,
+                required String groupId,
+                required int revision,
+                required DateTime changedAt,
+                Value<String?> authorMemberId = const Value.absent(),
+                required String snapshot,
+                Value<int> rowid = const Value.absent(),
+              }) => ExpenseRevisionsCompanion.insert(
+                id: id,
+                expenseId: expenseId,
+                groupId: groupId,
+                revision: revision,
+                changedAt: changedAt,
+                authorMemberId: authorMemberId,
+                snapshot: snapshot,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ExpenseRevisionsTable, ExpenseRevisionRow>(
+                    table,
+                  ),
+                  $$ExpenseRevisionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({expenseId = false, groupId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (expenseId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.expenseId,
+                        referencedTable: $$ExpenseRevisionsTableReferences
+                            ._expenseIdTable(db),
+                        referencedColumn: $$ExpenseRevisionsTableReferences
+                            ._expenseIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+                    if (groupId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.groupId,
+                        referencedTable: $$ExpenseRevisionsTableReferences
+                            ._groupIdTable(db),
+                        referencedColumn: $$ExpenseRevisionsTableReferences
+                            ._groupIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ExpenseRevisionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ExpenseRevisionsTable,
+      ExpenseRevisionRow,
+      $$ExpenseRevisionsTableFilterComposer,
+      $$ExpenseRevisionsTableOrderingComposer,
+      $$ExpenseRevisionsTableAnnotationComposer,
+      $$ExpenseRevisionsTableCreateCompanionBuilder,
+      $$ExpenseRevisionsTableUpdateCompanionBuilder,
+      (ExpenseRevisionRow, $$ExpenseRevisionsTableReferences),
+      ExpenseRevisionRow,
+      PrefetchHooks Function({bool expenseId, bool groupId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -13608,4 +14748,6 @@ class $AppDatabaseManager {
       $$RideTemplatesTableTableManager(_db, _db.rideTemplates);
   $$RidesTableTableManager get rides =>
       $$RidesTableTableManager(_db, _db.rides);
+  $$ExpenseRevisionsTableTableManager get expenseRevisions =>
+      $$ExpenseRevisionsTableTableManager(_db, _db.expenseRevisions);
 }

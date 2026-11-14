@@ -219,6 +219,36 @@ class LocalMemberBank extends Table {
   Set<Column<Object>> get primaryKey => {memberId};
 }
 
+/// Edit history of an expense (P7-T03, schema v3): one row per update or
+/// soft delete, holding the aggregate as it was *before* the change.
+/// Local-only for now: the server writes its own revisions from a trigger and
+/// a pull of those is a later sync task. Creation writes no row.
+@DataClassName('ExpenseRevisionRow')
+@TableIndex(
+  name: 'expense_revisions_expense_revision',
+  columns: {#expenseId, #revision},
+  unique: true,
+)
+@TableIndex(name: 'expense_revisions_group_id', columns: {#groupId})
+class ExpenseRevisions extends Table {
+  TextColumn get id => text()();
+  TextColumn get expenseId => text().references(Expenses, #id)();
+  TextColumn get groupId => text().references(Groups, #id)();
+
+  /// 1 for the first change of an expense, then increasing.
+  IntColumn get revision => integer().check(revision.isBiggerThanValue(0))();
+  DateTimeColumn get changedAt => dateTime()();
+
+  /// Null while nobody is signed in (no accounts yet).
+  TextColumn get authorMemberId => text().nullable()();
+
+  /// JSON of an `ExpenseSnapshot`. Never contains bank data.
+  TextColumn get snapshot => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 /// Pending sync operations (P6). Present from v1, unused until then.
 @DataClassName('LocalOutboxRow')
 class LocalOutbox extends Table {

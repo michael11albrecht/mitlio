@@ -2,6 +2,7 @@
 // ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
 
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/features/expenses/data/expense_revision.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 /// What was actually paid in a foreign currency, and the rate frozen on the
@@ -158,6 +159,122 @@ abstract interface class ExpensesRepository {
 
   /// [NotFound] for unknown ids, [Conflict] if the expense is not deleted.
   Future<RepoResult<void>> restore(String id);
+
+  /// Edit history of a live expense, newest first (at most
+  /// [expenseRevisionLimit]). Every [update] and [softDelete] adds one entry
+  /// holding the state before the change; creation adds none. [NotFound] if
+  /// the expense is missing or deleted.
+  Future<RepoResult<List<ExpenseRevision>>> revisions(String expenseId);
+
+  /// "Diese Version wiederherstellen": applies the snapshot of [revisionId]
+  /// through a normal [update] (so it adds a revision itself). The returned
+  /// [Undo] puts the replaced state back, again as an update. [NotFound] for
+  /// an unknown expense or revision; [InvalidData] if the snapshot no longer
+  /// validates (e.g. a participant has since been removed).
+  Future<RepoResult<Undo>> restoreRevision(
+    String expenseId,
+    String revisionId,
+  );
+}
+
+/// Shared implementation of [ExpensesRepository.restoreRevision].
+Future<RepoResult<Undo>> restoreRevisionVia(
+  ExpensesRepository repo,
+  String expenseId,
+  String revisionId,
+) async {
+  final ExpenseEntry current;
+  switch (await repo.get(expenseId)) {
+    case Err<ExpenseEntry, RepositoryError>(:final error):
+      return Err(error);
+    case Ok<ExpenseEntry, RepositoryError>(:final value):
+      current = value;
+  }
+  final List<ExpenseRevision> history;
+  switch (await repo.revisions(expenseId)) {
+    case Err<List<ExpenseRevision>, RepositoryError>(:final error):
+      return Err(error);
+    case Ok<List<ExpenseRevision>, RepositoryError>(:final value):
+      history = value;
+  }
+  final target = history.where((r) => r.id == revisionId).firstOrNull;
+  if (target == null) return Err(NotFound('expense revision', revisionId));
+  final draft = draftFromSnapshot(target.snapshot, current.expense.currency);
+  if (draft == null) {
+    return Err(InvalidData('revision $revisionId: unreadable snapshot'));
+  }
+  final previous = draftFromEntry(current);
+  return switch (await repo.update(expenseId, draft)) {
+    Ok<ExpenseEntry, RepositoryError>() => Ok(
+      Undo(() async {
+        final back = await repo.update(expenseId, previous);
+        return switch (back) {
+          Ok<ExpenseEntry, RepositoryError>() => const Ok(null),
+          Err<ExpenseEntry, RepositoryError>(:final error) => Err(error),
+        };
+      }),
+    ),
+    Err<ExpenseEntry, RepositoryError>(:final error) => Err(error),
+  };
+}
+
+/// The draft that recreates [entry] exactly (used to undo a restore).
+ExpenseDraft draftFromEntry(ExpenseEntry entry) => ExpenseDraft(
+  title: entry.expense.title,
+  amountCents: entry.expense.amountCents,
+  currency: entry.expense.currency,
+  date: entry.expense.date,
+  payers: entry.expense.payers,
+  split: entry.split,
+  category: entry.category,
+  tripMeta: entry.tripMeta,
+  foreign: entry.foreign,
+);
+
+/// The draft that re-applies [s] to a group of [groupCurrency]; null for an
+/// unknown currency or split mode.
+ExpenseDraft? draftFromSnapshot(ExpenseSnapshot s, Currency groupCurrency) {
+  final currency = Currency.tryParse(s.currency);
+  final split = splitFromWeights(s.splitMode, s.weights);
+  if (currency == null || split == null) return null;
+  return ExpenseDraft(
+    title: s.title,
+    amountCents: s.groupAmountCents,
+    currency: groupCurrency,
+    date: s.date,
+    payers: s.payers,
+    split: split,
+    category: s.category,
+    tripMeta: s.tripMeta,
+    foreign: currency == groupCurrency
+        ? null
+        : ForeignAmount(
+            currency: currency,
+            amountCents: s.amountCents,
+            ratePpm: s.fxRatePpm,
+          ),
+  );
+}
+
+/// The state of [entry] as a revision snapshot.
+ExpenseSnapshot snapshotOfEntry(ExpenseEntry entry) {
+  final e = entry.expense;
+  final foreign = entry.foreign;
+  return ExpenseSnapshot(
+    title: e.title,
+    amountCents: foreign?.amountCents ?? e.amountCents,
+    currency: (foreign?.currency ?? e.currency).code,
+    fxRatePpm: foreign?.ratePpm ?? 1000000,
+    groupAmountCents: e.amountCents,
+    date: e.date,
+    category: entry.category,
+    type: entry.tripMeta == null ? 'regular' : 'trip',
+    splitMode: splitModeOf(entry.split),
+    tripMeta: entry.tripMeta,
+    payers: e.payers,
+    shares: e.shares,
+    weights: {for (final m in e.shares.keys) m: splitWeightOf(entry.split, m)},
+  );
 }
 
 /// Validates [draft] against the domain. Shared by every implementation so

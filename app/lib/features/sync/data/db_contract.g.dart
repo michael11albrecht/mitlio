@@ -15,6 +15,7 @@ class DbColumn {
 /// Table names of the server schema (`public`).
 abstract final class DbTables {
   static const expensePayers = 'expense_payers';
+  static const expenseRevisions = 'expense_revisions';
   static const expenseShares = 'expense_shares';
   static const expenses = 'expenses';
   static const fuelPriceCache = 'fuel_price_cache';
@@ -35,6 +36,17 @@ abstract final class DbExpensePayersCols {
   static const groupId = 'group_id';
   static const memberId = 'member_id';
   static const paidCents = 'paid_cents';
+}
+
+/// Column names of `expense_revisions`.
+abstract final class DbExpenseRevisionsCols {
+  static const authorMemberId = 'author_member_id';
+  static const changedAt = 'changed_at';
+  static const expenseId = 'expense_id';
+  static const groupId = 'group_id';
+  static const id = 'id';
+  static const revision = 'revision';
+  static const snapshot = 'snapshot';
 }
 
 /// Column names of `expense_shares`.
@@ -209,6 +221,15 @@ const dbContract = <String, Map<String, DbColumn>>{
     'group_id': DbColumn(DbColumnType.string, nullable: false),
     'member_id': DbColumn(DbColumnType.string, nullable: false),
     'paid_cents': DbColumn(DbColumnType.number, nullable: false),
+  },
+  'expense_revisions': {
+    'author_member_id': DbColumn(DbColumnType.string, nullable: true),
+    'changed_at': DbColumn(DbColumnType.string, nullable: false),
+    'expense_id': DbColumn(DbColumnType.string, nullable: false),
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'revision': DbColumn(DbColumnType.number, nullable: false),
+    'snapshot': DbColumn(DbColumnType.json, nullable: false),
   },
   'expense_shares': {
     'expense_id': DbColumn(DbColumnType.string, nullable: false),

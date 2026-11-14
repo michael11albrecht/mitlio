@@ -19,7 +19,8 @@ select is_empty(
      select unnest(array[
        'groups', 'members', 'expenses', 'expense_payers', 'expense_shares',
        'settlements', 'vehicles', 'ride_templates', 'rides',
-       'group_memberships', 'group_invites', 'fuel_price_cache', 'rate_limits'
+       'group_memberships', 'group_invites', 'fuel_price_cache', 'rate_limits',
+       'expense_revisions'
      ])$q$,
   'every table in public is in the RLS test registry (add new tables here and in rls_policies.sql)');
 
@@ -27,7 +28,8 @@ select is_empty(
   $q$select unnest(array[
        'groups', 'members', 'expenses', 'expense_payers', 'expense_shares',
        'settlements', 'vehicles', 'ride_templates', 'rides',
-       'group_memberships', 'group_invites', 'fuel_price_cache', 'rate_limits'
+       'group_memberships', 'group_invites', 'fuel_price_cache', 'rate_limits',
+       'expense_revisions'
      ])
      except
      select tablename from pg_tables where schemaname = 'public'$q$,
@@ -45,9 +47,9 @@ select is_empty(
             end
             or has_table_privilege('authenticated', c.oid,
               'delete, truncate, references, trigger')
-            or (c.relname = 'fuel_price_cache' and has_table_privilege('authenticated', c.oid,
-              'insert, update')))$q$,
-  'anon has no table privileges (fuel_price_cache: select only); authenticated has no delete/truncate/references/trigger');
+            or (c.relname in ('fuel_price_cache', 'expense_revisions')
+                and has_table_privilege('authenticated', c.oid, 'insert, update')))$q$,
+  'anon has no table privileges (fuel_price_cache: select only); authenticated has no delete/truncate/references/trigger, and no write on fuel_price_cache / expense_revisions');
 
 select is_empty(
   $q$select tablename, policyname from pg_policies

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/hlc.dart';
@@ -5,6 +7,7 @@ import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/daos/expenses_dao.dart';
+import 'package:mitlio/features/expenses/data/expense_revision.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
@@ -84,6 +87,36 @@ class DriftExpensesRepository implements ExpensesRepository {
       ),
     };
   }
+
+  ExpenseSnapshot _snapshotOf(ExpenseWithChildren stored) {
+    final row = stored.expense;
+    return ExpenseSnapshot(
+      title: row.title,
+      amountCents: row.amountCents,
+      currency: row.currency,
+      fxRatePpm: row.fxRatePpm,
+      groupAmountCents: row.groupAmountCents,
+      date: row.date.toUtc(),
+      category: row.category,
+      type: row.type,
+      splitMode: row.splitMode,
+      tripMeta: row.tripMeta,
+      payers: {for (final p in stored.payers) p.memberId: p.paidCents},
+      shares: {for (final s in stored.shares) s.memberId: s.shareCents},
+      weights: {for (final s in stored.shares) s.memberId: s.weight},
+    );
+  }
+
+  /// Records the state before a change. Call it inside the transaction of
+  /// that change.
+  Future<void> _recordRevision(ExpenseWithChildren before) => _dao.addRevision(
+    id: _ids.newId(),
+    expenseId: before.expense.id,
+    groupId: before.expense.groupId,
+    changedAt: _clock.now().toUtc(),
+    snapshot: jsonEncode(_snapshotOf(before).toJson()),
+    keep: expenseRevisionLimit,
+  );
 
   Future<List<Member>> _allMembers(String groupId) async => [
     for (final m in await _db.membersDao.listAllByGroup(groupId))
@@ -233,23 +266,31 @@ class DriftExpensesRepository implements ExpensesRepository {
           case Err<dynamic, RepositoryError>(:final error):
             return Err(error);
           case Ok(:final value):
-            await _dao.replaceExpense(
-              id,
-              value.root,
-              value.payers,
-              value.shares,
-            );
+            await _db.transaction(() async {
+              await _recordRevision(current);
+              await _dao.replaceExpense(
+                id,
+                value.root,
+                value.payers,
+                value.shares,
+              );
+            });
             return _load(id);
         }
       });
 
   @override
   Future<RepoResult<Undo>> softDelete(String id) => guardStorage(() async {
-    final ok = await _dao.softDelete(
-      id: id,
-      deletedAt: _clock.now().toUtc(),
-      updatedAt: Hlc.now(_clock),
-    );
+    final before = await _dao.findById(id);
+    if (before == null) return Err(NotFound('expense', id));
+    final ok = await _db.transaction(() async {
+      await _recordRevision(before);
+      return _dao.softDelete(
+        id: id,
+        deletedAt: _clock.now().toUtc(),
+        updatedAt: Hlc.now(_clock),
+      );
+    });
     return ok ? Ok(Undo(() => restore(id))) : Err(NotFound('expense', id));
   });
 
@@ -261,4 +302,34 @@ class DriftExpensesRepository implements ExpensesRepository {
         ? const Err(Conflict('expense is not deleted'))
         : Err(NotFound('expense', id));
   });
+
+  @override
+  Future<RepoResult<List<ExpenseRevision>>> revisions(String expenseId) =>
+      guardStorage(() async {
+        if (await _dao.findById(expenseId) == null) {
+          return Err(NotFound('expense', expenseId));
+        }
+        return Ok(
+          List<ExpenseRevision>.unmodifiable([
+            for (final r in await _dao.revisionsOf(expenseId))
+              ExpenseRevision(
+                id: r.id,
+                expenseId: r.expenseId,
+                groupId: r.groupId,
+                revision: r.revision,
+                changedAt: r.changedAt.toUtc(),
+                authorMemberId: r.authorMemberId,
+                snapshot: ExpenseSnapshot.fromJson(
+                  jsonDecode(r.snapshot) as Map<String, Object?>,
+                ),
+              ),
+          ]),
+        );
+      });
+
+  @override
+  Future<RepoResult<Undo>> restoreRevision(
+    String expenseId,
+    String revisionId,
+  ) => restoreRevisionVia(this, expenseId, revisionId);
 }

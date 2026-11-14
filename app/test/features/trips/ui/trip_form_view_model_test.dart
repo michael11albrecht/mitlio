@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/features/expenses/data/expense_revision.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_providers.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
@@ -51,6 +52,16 @@ class _FlakyExpenses implements ExpensesRepository {
 
   @override
   Future<RepoResult<void>> restore(String id) => _inner.restore(id);
+
+  @override
+  Future<RepoResult<List<ExpenseRevision>>> revisions(String expenseId) =>
+      _inner.revisions(expenseId);
+
+  @override
+  Future<RepoResult<Undo>> restoreRevision(
+    String expenseId,
+    String revisionId,
+  ) => _inner.restoreRevision(expenseId, revisionId);
 }
 
 void main() {
