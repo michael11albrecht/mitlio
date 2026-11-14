@@ -1,11 +1,13 @@
 import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../support/no_shrink.dart';
+
 extension MemberAny on Any {
   /// Small position and id ranges to provoke ties.
   Generator<Member> get member => any.combine2(
-    any.intInRange(0, 4),
-    any.intInRange(0, 6),
+    any.intNoShrink(0, 4),
+    any.intNoShrink(0, 6),
     (pos, id) => Member(id: 'm$id', position: pos),
   );
 }

@@ -2,6 +2,7 @@ import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../support/domain_rules_examples.dart';
+import '../support/no_shrink.dart';
 
 const _maxCents = 999999999999999;
 
@@ -12,8 +13,8 @@ List<int> _valid(List<int> ws) => _sum(ws) == 0 ? [1, ...ws.skip(1)] : ws;
 
 extension _Gens on Any {
   Generator<List<int>> get weights =>
-      nonEmptyList(intInRange(0, 50)).map(_valid);
-  Generator<int> get total => intInRange(0, 100000);
+      nonEmptyList(intNoShrink(0, 50)).map(_valid);
+  Generator<int> get total => intNoShrink(0, 100000);
 }
 
 void main() {
@@ -103,7 +104,7 @@ void main() {
       expect(allocate(t, ws), allocate(t, List.of(ws)));
     });
 
-    Glados2(any.total, any.intInRange(1, 30)).test(
+    Glados2(any.total, any.intNoShrink(1, 30)).test(
       'equal weights differ by at most 1',
       (t, n) {
         final r = allocate(t, List.filled(n, 1));

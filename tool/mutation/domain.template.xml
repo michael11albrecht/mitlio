@@ -14,5 +14,5 @@
     <token begin="part &apos;" end="&apos;;"/>
   </exclude>
   <!-- ratchet toward 85 per docs/IMPLEMENTATION_PLAN.md section 3 -->
-  <threshold failure="75"/>
+  <threshold failure="85"/>
 </mutations>
