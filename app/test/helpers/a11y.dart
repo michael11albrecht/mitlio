@@ -26,6 +26,8 @@ void forEachMode(
 
 /// Standard guideline set from plan §2.6.
 Future<void> expectAccessible(WidgetTester tester) async {
+  // Overflow or clipping errors (e.g. at text scale 2.0) surface as exceptions.
+  expect(tester.takeException(), isNull);
   await expectLater(tester, meetsGuideline(textContrastGuideline));
   await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
   await expectLater(tester, meetsGuideline(androidTapTargetGuideline));

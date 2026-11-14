@@ -203,6 +203,36 @@ List<Rule> buildRules({required List<String> showDialogAllowlist}) => [
       ];
     },
   ),
+  Rule(
+    id: 'screen-has-a11y-test',
+    description:
+        'every *_view.dart needs a test that calls expectAccessible and '
+        'names its primary widget class',
+    check: (tree) {
+      final tests = [
+        for (final f in tree.where(
+          (p) => _inDir(p, 'app/test/') && p.endsWith('_test.dart'),
+        ))
+          if (f.codeLines.any((l) => l.contains('expectAccessible('))) f,
+      ];
+      final widgetClass = RegExp(
+        r'^class\s+([A-Z]\w*)\s+extends\s+\w*(?:Widget|Sheet)\b',
+      );
+      return [
+        for (final f in tree.where(
+          (p) => _inDir(p, 'app/lib/') && p.endsWith('_view.dart'),
+        ))
+          if (!_hasA11yTest(f, tests, widgetClass))
+            Violation(
+              'screen-has-a11y-test',
+              f.path,
+              1,
+              'no test calls expectAccessible for the screen widget of '
+                  '${f.basename}',
+            ),
+      ];
+    },
+  ),
   codeRule(
     id: 'no-raw-style',
     description: 'Color(0x...)/TextStyle( only in app/lib/core/theme',
@@ -306,3 +336,14 @@ List<Rule> buildRules({required List<String> showDialogAllowlist}) => [
     },
   ),
 ];
+
+bool _hasA11yTest(SourceFile view, List<SourceFile> tests, RegExp widgetClass) {
+  final name = widgetClass
+      .firstMatch(
+        view.codeLines.firstWhere(widgetClass.hasMatch, orElse: () => ''),
+      )
+      ?.group(1);
+  if (name == null) return false;
+  final usage = RegExp('\\b$name\\b');
+  return tests.any((t) => t.codeLines.any(usage.hasMatch));
+}

@@ -13,6 +13,7 @@ import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../../../helpers/a11y.dart';
+import '../../../helpers/themed_app.dart';
 import 'rides_fixtures.dart';
 
 /// Contrast, labelled and large-enough tap targets, in light/dark and at
@@ -51,6 +52,28 @@ void main() {
     ),
     (tester, _, _) => expectAccessible(tester),
   );
+
+  testWidgets('calendar days announce who drove', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await tester.pumpWidget(
+      themedApp(
+        RideCalendar(
+          state: dataRides,
+          onPreviousMonth: () {},
+          onNextMonth: () {},
+          onDay: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.bySemanticsLabel(
+        RegExp(r'^Mo\., 2\. März, Anna Berg ist gefahren$'),
+      ),
+      findsWidgets,
+    );
+    semantics.dispose();
+  });
 
   group('settlement sheet', () {
     for (final (name, state) in <(String, RidesLoaded)>[

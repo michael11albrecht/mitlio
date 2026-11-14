@@ -266,7 +266,7 @@ void main() {
       expect(find.text('März 2026'), findsOneWidget);
       expect(find.byType(RideCalendar), findsOneWidget);
       expect(
-        find.bySemanticsLabel(RegExp(r'^1\. März 2026: ?$|Ann$')),
+        find.bySemanticsLabel(RegExp(r'^1\. März 2026$|Ann ist gefahren$')),
         findsWidgets,
       );
       // Two rides in March, newest first; February's is not listed.
