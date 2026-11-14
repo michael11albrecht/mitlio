@@ -39,7 +39,7 @@ export type Database = {
           expense_id: string
           group_id: string
           member_id: string
-          paid_cents: string
+          paid_cents: number
         }
         Insert: {
           expense_id: string
