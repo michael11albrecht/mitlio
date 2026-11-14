@@ -98,7 +98,7 @@ void registerDebugDrive(ProviderContainer container) {
       errors: container.read(errorSinkProvider),
       router: container.read(routerProvider),
       data: container.read(debugDataControlProvider),
-      snapshots: container.read(debugSnapshotRegistryProvider),
+      snapshots: buildSnapshotRegistry(container),
     ),
     ...groupsDriveHandlers(container),
   };

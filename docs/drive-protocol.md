@@ -29,7 +29,7 @@ Contract for driving a running **debug** build of the app through the same ViewM
 `reset` and `seed` go through the `DebugDataControl` interface; the default implementation (`DriftDebugDataControl`) works on the
 real database and repositories.
 
-`ext.mitlio.state` screens registered so far: `groups` (home list) and `group` (detail of the group last opened). Both report
+`ext.mitlio.state` screens registered so far (wired in `app/lib/debug/debug_snapshots.dart`, ViewModels never import `debug/`): `groups` (home list) and `group` (detail of the group in the current route, `{"status":"not_open"}` otherwise). Both report
 `status` (`loading`, `error`, `empty`, `data`).
 
 Feature handlers (`groups.create`, `expenses.add`, ...) are added with each slice and must be listed here.

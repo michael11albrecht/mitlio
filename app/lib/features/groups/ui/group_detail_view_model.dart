@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mitlio/core/json_map.dart';
 import 'package:mitlio/core/repository_error.dart';
-import 'package:mitlio/debug/debug_snapshots.dart';
-import 'package:mitlio/debug/drive_types.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
@@ -78,8 +77,6 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
   MemberInUse? _notice;
   RepositoryError? _failure;
 
-  String get _screen => 'group';
-
   bool get _hasEntries =>
       (_expenseMemberIds?.isNotEmpty ?? false) ||
       (_settlementMemberIds?.isNotEmpty ?? false);
@@ -93,8 +90,6 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
     _settlementMemberIds = null;
     _notice = null;
     _failure = null;
-    final registry = ref.watch(debugSnapshotRegistryProvider)
-      ..register(_screen, debugSnapshot);
     final subs = [
       _listen(ref.watch(groupsRepositoryProvider).watchGroups(), (groups) {
         _group = groups.where((g) => g.id == groupId).firstOrNull;
@@ -123,7 +118,6 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
       for (final s in subs) {
         unawaited(s.cancel());
       }
-      registry.unregister(_screen);
     });
     return const GroupDetailLoading();
   }
@@ -287,7 +281,7 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
     return result;
   }
 
-  DriveResult debugSnapshot() => switch (state) {
+  JsonMap debugSnapshot() => switch (state) {
     GroupDetailLoading() => {'status': 'loading', 'groupId': groupId},
     GroupDetailFailure(:final error) => {
       'status': 'error',

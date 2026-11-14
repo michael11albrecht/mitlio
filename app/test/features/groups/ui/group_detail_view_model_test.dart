@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
-import 'package:mitlio/debug/debug_snapshots.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
@@ -135,14 +134,6 @@ void main() {
         ],
         'notice': null,
       });
-    });
-
-    test('registers and unregisters its snapshot', () async {
-      final registry = container.read(debugSnapshotRegistryProvider);
-      await open();
-      expect(registry.screens, ['group']);
-      container.dispose();
-      expect(registry.screens, isEmpty);
     });
   });
 

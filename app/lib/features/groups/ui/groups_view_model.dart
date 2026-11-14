@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mitlio/core/json_map.dart';
 import 'package:mitlio/core/repository_error.dart';
-import 'package:mitlio/debug/debug_snapshots.dart';
-import 'package:mitlio/debug/drive_types.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
@@ -39,8 +38,6 @@ const localOwnerId = 'local';
 class GroupsViewModel extends Notifier<GroupsState> {
   @override
   GroupsState build() {
-    final registry = ref.watch(debugSnapshotRegistryProvider)
-      ..register('groups', debugSnapshot);
     final sub = ref
         .watch(groupsRepositoryProvider)
         .watchGroups()
@@ -49,10 +46,7 @@ class GroupsViewModel extends Notifier<GroupsState> {
           onError: (Object e) =>
               _set(GroupsFailure(e is RepositoryError ? e : Storage(e))),
         );
-    ref.onDispose(() {
-      unawaited(sub.cancel());
-      registry.unregister('groups');
-    });
+    ref.onDispose(() => unawaited(sub.cancel()));
     return const GroupsLoading();
   }
 
@@ -104,7 +98,7 @@ class GroupsViewModel extends Notifier<GroupsState> {
   Future<RepoResult<Undo>> archive(String id) =>
       ref.read(groupsRepositoryProvider).softDelete(id);
 
-  DriveResult debugSnapshot() => switch (state) {
+  JsonMap debugSnapshot() => switch (state) {
     GroupsLoading() => {'status': 'loading'},
     GroupsFailure(:final error) => {
       'status': 'error',

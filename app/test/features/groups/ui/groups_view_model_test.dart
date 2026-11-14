@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
-import 'package:mitlio/debug/debug_snapshots.dart';
 import 'package:mitlio/features/groups/ui/groups_view_model.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -153,22 +152,5 @@ void main() {
       app.groups.watchError = const Storage('db down');
       expect(err(await vm().list()), const Storage('db down'));
     });
-  });
-
-  test('registers its snapshot for ext.mitlio.state while alive', () async {
-    final registry = container.read(debugSnapshotRegistryProvider);
-    expect(registry.screens, isEmpty);
-    await open();
-    expect(registry.snapshot('groups'), isNotNull);
-    container.invalidate(groupsViewModelProvider);
-    await pumpEventQueue();
-    expect(registry.snapshot('groups'), isNotNull);
-  });
-
-  test('unregisters its snapshot on dispose', () async {
-    final registry = container.read(debugSnapshotRegistryProvider);
-    await open();
-    container.dispose();
-    expect(registry.screens, isEmpty);
   });
 }
