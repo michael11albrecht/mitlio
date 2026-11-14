@@ -12,10 +12,26 @@ const pages = [
   { slug: 'elektroauto-ladekosten-teilen', km: '200', cons: '19', price: '0,45', persons: '3', driverPays: true, ev: true },
 ] as const;
 
-for (const p of pages) {
-  test.describe(`/${p.slug}/`, () => {
+// English twins (PW-T07 EN): the preset uses English decimal points.
+const pagesEn = [
+  { slug: 'fuel-cost-calculator', de: 'fahrtkostenrechner', km: '250', cons: '6.5', price: '1.80', persons: '3', driverPays: true },
+  { slug: 'split-fuel-costs', de: 'spritkosten-teilen', km: '400', cons: '6.8', price: '1.79', persons: '4', driverPays: true },
+  { slug: 'carpool-cost-split', de: 'fahrgemeinschaft-kosten-aufteilen', km: '320', cons: '7', price: '1.80', persons: '5', driverPays: true, extras: '18' },
+  { slug: 'commuter-carpool', de: 'pendler-fahrgemeinschaft', km: '28', cons: '5.8', price: '1.80', persons: '3', driverPays: true, roundTrip: true },
+  { slug: 'passenger-cost-calculator', de: 'mitfahrer-kosten-berechnen', km: '150', cons: '7.5', price: '1.80', persons: '3', driverPays: false },
+  { slug: 'mileage-rate-calculator', de: 'kilometerpauschale-rechner', km: '120', price: '0.30', persons: '3', driverPays: true, rate: true },
+  { slug: 'ev-charging-cost-split', de: 'elektroauto-ladekosten-teilen', km: '200', cons: '19', price: '0.45', persons: '3', driverPays: true, ev: true },
+] as const;
+
+const all = [
+  ...pages.map((p) => ({ ...p, base: '' })),
+  ...pagesEn.map((p) => ({ ...p, base: '/en' })),
+];
+
+for (const p of all) {
+  test.describe(`${p.base}/${p.slug}/`, () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto(`/${p.slug}/`);
+      await page.goto(`${p.base}/${p.slug}/`);
       await expect(page.locator('#calculator')).toHaveAttribute('data-ready', 'true');
     });
 
@@ -81,10 +97,10 @@ test('EV page uses kWh units and the URL still wins over the preset', async ({ p
   await expect(page.locator('#calc-cons')).toHaveValue('7');
 });
 
-test('landing pages are indexable, have a canonical, structured data and no language alternates', async ({ page }) => {
+test('landing pages are indexable, have a canonical, structured data and DE/EN alternates', async ({ page }) => {
   await page.goto('/fahrtkostenrechner/');
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/fahrtkostenrechner\/$/);
-  await expect(page.locator('link[rel="alternate"][hreflang]')).toHaveCount(0);
+  await expect(page.locator('link[rel="alternate"][hreflang]')).toHaveCount(3);
   await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
   const types = await page
     .locator('script[type="application/ld+json"]')
@@ -96,4 +112,32 @@ test('landing pages are indexable, have a canonical, structured data and no lang
 test('the home page links to every landing page', async ({ page }) => {
   await page.goto('/');
   for (const p of pages) await expect(page.locator(`nav.related a[href="/${p.slug}/"]`)).toHaveCount(1);
+});
+
+for (const p of pagesEn) {
+  test(`/en/${p.slug}/ and /${p.de}/ link each other with hreflang, x-default is German`, async ({ page }) => {
+    await page.goto(`/en/${p.slug}/`);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`/en/${p.slug}/$`));
+    await expect(page.locator('link[hreflang="de-DE"]')).toHaveAttribute('href', new RegExp(`/${p.de}/$`));
+    await expect(page.locator('link[hreflang="en"]')).toHaveAttribute('href', new RegExp(`/en/${p.slug}/$`));
+    await expect(page.locator('link[hreflang="x-default"]')).toHaveAttribute('href', new RegExp(`/${p.de}/$`));
+    await expect(page.locator('a.lang')).toHaveAttribute('href', `/${p.de}/`);
+    await page.goto(`/${p.de}/`);
+    await expect(page.locator('link[hreflang="en"]')).toHaveAttribute('href', new RegExp(`/en/${p.slug}/$`));
+    await expect(page.locator('a.lang')).toHaveAttribute('href', `/en/${p.slug}/`);
+  });
+}
+
+test('English km-rate page asks for a rate per km, not for consumption', async ({ page }) => {
+  await page.goto('/en/mileage-rate-calculator/');
+  await expect(page.locator('#calculator')).toHaveAttribute('data-ready', 'true');
+  await expect(page.locator('#calc-cons')).toBeHidden();
+  await expect(page.locator('#calc-price-label')).toHaveText('Rate per km (€/km)');
+  await expect(page.locator('#calc-result-amount')).toHaveText(/^€12\.00$/);
+});
+
+test('the English home page links to every English landing page', async ({ page }) => {
+  await page.goto('/en/');
+  for (const p of pagesEn) await expect(page.locator(`nav.related a[href="/en/${p.slug}/"]`)).toHaveCount(1);
 });

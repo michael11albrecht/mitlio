@@ -1,101 +1,13 @@
 ---
-import { getCollection, render, type CollectionEntry } from 'astro:content';
-import Calculator from '../components/Calculator.astro';
-import Layout from '../layouts/Layout.astro';
-import { exampleValues, fillStrict, presetFromExample } from '../lib/landing';
-import { faqPage, howTo, organization, webApplication } from '../lib/jsonld';
+import { getCollection } from 'astro:content';
+import Landing from '../components/Landing.astro';
 
 export async function getStaticPaths() {
   const pages = await getCollection('landing');
   return pages.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
-interface Props {
-  entry: CollectionEntry<'landing'>;
-}
-
 const { entry } = Astro.props;
-const d = entry.data;
-const { Content } = await render(entry);
-
-const values = exampleValues(d.example.input, d.example.compare);
-const exampleParagraphs = fillStrict(d.example.text, values)
-  .split(/\n\s*\n/)
-  .map((p) => p.trim())
-  .filter(Boolean);
-const faq = d.faq.map(({ q, a }) => ({ q, a: fillStrict(a, values) }));
-const howto = d.howto && {
-  name: d.howto.name,
-  steps: d.howto.steps.map(({ name, text }) => ({ name, text: fillStrict(text, values) })),
-};
-
-const all = await getCollection('landing');
-const siblings = d.related.map((slug) => {
-  const sibling = all.find((e) => e.id === slug);
-  if (!sibling) throw new Error(`${entry.id}: related page "${slug}" does not exist`);
-  return { href: `/${sibling.id}/`, label: sibling.data.linkLabel };
-});
-
-const path = `/${entry.id}/`;
-const url = new URL(path, Astro.site!).href;
-const jsonLd = [
-  organization(Astro.site!.href),
-  webApplication({ name: d.h1, url, description: d.description, lang: 'de-DE' }),
-  faqPage(faq),
-  ...(howto ? [howTo(howto)] : []),
-];
 ---
 
-<Layout
-  locale="de"
-  title={d.title}
-  description={d.description}
-  path={path}
-  ogImage={`/og/${entry.id}.png`}
-  jsonLd={jsonLd}
-  appBanner={!d.rate}
->
-  <h1>{d.h1}</h1>
-  <p class="lead">{d.lead}</p>
-  <Calculator locale="de" preset={presetFromExample(d.example.input)} rate={d.rate} />
-
-  <article class="prose">
-    <Content />
-
-    <h2>Rechenbeispiel</h2>
-    {exampleParagraphs.map((p) => <p>{p}</p>)}
-
-    {
-      howto && (
-        <>
-          <h2>{howto.name}</h2>
-          <ol>
-            {howto.steps.map((s) => (
-              <li>
-                <strong>{s.name}.</strong> {s.text}
-              </li>
-            ))}
-          </ol>
-        </>
-      )
-    }
-
-    <h2>Häufige Fragen</h2>
-    {
-      faq.map((item) => (
-        <>
-          <h3>{item.q}</h3>
-          <p>{item.a}</p>
-        </>
-      ))
-    }
-  </article>
-
-  <nav class="related" aria-labelledby="related-heading">
-    <h2 id="related-heading">Weitere Rechner und Ratgeber</h2>
-    <ul>
-      {siblings.map((s) => <li><a href={s.href}>{s.label}</a></li>)}
-      <li><a href="/">Der allgemeine Fahrtkostenrechner</a></li>
-    </ul>
-  </nav>
-</Layout>
+<Landing locale="de" entry={entry} />
