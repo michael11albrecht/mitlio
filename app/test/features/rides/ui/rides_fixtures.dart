@@ -17,6 +17,7 @@ import 'package:mitlio/features/rides/data/repositories/fake_ride_templates_repo
 import 'package:mitlio/features/rides/data/repositories/fake_rides_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_vehicles_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
+import 'package:mitlio/features/rides/data/repositories/rides_repository.dart';
 import 'package:mitlio/features/rides/ui/rides_calculator.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_view_model.dart';
@@ -38,7 +39,8 @@ class FlakyRides extends FakeRidesRepository {
     required super.clock,
   });
 
-  /// Fails `log`, `update` and `softDelete` while set.
+  /// Fails `log`, `update`, `softDelete`, `settlePeriod` and `unsettle`
+  /// while set.
   RepositoryError? failWith;
 
   /// Makes `watchRides` emit this error while set.
@@ -57,6 +59,17 @@ class FlakyRides extends FakeRidesRepository {
   @override
   Future<RepoResult<Undo>> softDelete(String id) async =>
       failWith != null ? Err(failWith!) : super.softDelete(id);
+
+  @override
+  Future<RepoResult<List<ExpenseEntry>>> settlePeriod(
+    String groupId,
+    List<PeriodSettlement> items,
+  ) async =>
+      failWith != null ? Err(failWith!) : super.settlePeriod(groupId, items);
+
+  @override
+  Future<RepoResult<void>> unsettle(List<String> expenseIds) async =>
+      failWith != null ? Err(failWith!) : super.unsettle(expenseIds);
 }
 
 /// Vehicles fake whose commands can be made to fail.
@@ -520,6 +533,7 @@ RidesLoaded loadedRides({
   List<RideTemplate>? templates,
   List<RideEntry>? entries,
   QuickLog? quick,
+  DateTime? today,
 }) {
   final ts = templates ?? [sampleTemplate];
   return RidesLoaded(
@@ -535,7 +549,7 @@ RidesLoaded loadedRides({
           sampleEntry('r-3', 4, 0, [1, 2]),
         ],
     month: const Month(2026, 3),
-    today: DateTime.utc(2026, 3),
+    today: today ?? DateTime.utc(2026, 3),
     quick: ts.isEmpty ? null : (quick ?? sampleQuick(template: ts.first)),
   );
 }
@@ -560,6 +574,19 @@ final RidesLoaded doneTodayRides = loadedRides(
     sampleEntry('r-3', 4, 0, [1], settled: 'x-1'),
   ],
   quick: sampleQuick(collapsed: true),
+);
+
+/// March is over: the settlement card is offered.
+final RidesLoaded settleDueRides = loadedRides(today: DateTime.utc(2026, 4, 2));
+
+/// March is over and already settled: no card, the sheet has nothing to do.
+final RidesLoaded settledMonthRides = loadedRides(
+  today: DateTime.utc(2026, 4, 2),
+  entries: [
+    sampleEntry('r-1', 2, 0, [1], settled: 'x-1'),
+    sampleEntry('r-2', 3, 1, [0], settled: 'x-2'),
+    sampleEntry('r-3', 4, 0, [1, 2], settled: 'x-1'),
+  ],
 );
 
 final onboardingRides = RidesLoaded(

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/rides/ui/ride_calendar.dart';
+import 'package:mitlio/features/rides/ui/ride_settle_widgets.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_view.dart';
@@ -23,6 +24,8 @@ void main() {
       ('several routes', severalTemplatesRides),
       ('route not picked', pickRouteRides),
       ('done today with a locked ride', doneTodayRides),
+      ('settlement due', settleDueRides),
+      ('month settled', settledMonthRides),
       ('first run', onboardingRides),
       ('no members', noMembersRides),
       ('error', const RidesFailure(Storage('x'))),
@@ -48,6 +51,22 @@ void main() {
     ),
     (tester, _, _) => expectAccessible(tester),
   );
+
+  group('settlement sheet', () {
+    for (final (name, state) in <(String, RidesLoaded)>[
+      ('preview', settleDueRides),
+      ('nothing to settle', settledMonthRides),
+    ]) {
+      forEachMode(
+        name,
+        () => scopedRides(
+          ridesStateOverride(state),
+          const RideSettleSheet(groupId: 'g-1'),
+        ),
+        (tester, _, _) => expectAccessible(tester),
+      );
+    }
+  });
 
   group('cars and routes', () {
     for (final (name, state) in <(String, RidesSetupState)>[

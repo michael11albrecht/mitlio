@@ -169,4 +169,71 @@ class FakeRidesRepository implements RidesRepository {
     _changes.add(null);
     return const Ok(null);
   }
+
+  @override
+  Future<RepoResult<List<ExpenseEntry>>> settlePeriod(
+    String groupId,
+    List<PeriodSettlement> items,
+  ) async {
+    final seen = <String>{};
+    for (final item in items) {
+      if (item.rideIds.isEmpty) {
+        return const Err(InvalidData('a settlement needs at least one ride'));
+      }
+      for (final id in item.rideIds) {
+        final e = _live(id);
+        if (e == null) return Err(NotFound('ride', id));
+        if (e.isSettled || !seen.add(id)) return Err(Locked('ride', id));
+      }
+    }
+    final created = <ExpenseEntry>[];
+    Future<RepoResult<List<ExpenseEntry>>> undone(RepositoryError error) async {
+      // Compensates for the missing transaction of the in-memory store.
+      await unsettle([for (final e in created) e.expense.id]);
+      return Err(error);
+    }
+
+    for (final item in items) {
+      final made = await _expenses.create(groupId, item.draft);
+      if (made case Err<ExpenseEntry, RepositoryError>(:final error)) {
+        return undone(error);
+      }
+      final entry = (made as Ok<ExpenseEntry, RepositoryError>).value;
+      created.add(entry);
+      final marked = await markSettled(item.rideIds, entry.expense.id);
+      if (marked case Err<void, RepositoryError>(:final error)) {
+        return undone(error);
+      }
+    }
+    return Ok(List.unmodifiable(created));
+  }
+
+  @override
+  Future<RepoResult<void>> unsettle(List<String> expenseIds) async {
+    for (final id in expenseIds) {
+      if (await _expenses.get(id) case Err<ExpenseEntry, RepositoryError>(
+        :final error,
+      )) {
+        return Err(error);
+      }
+    }
+    for (final id in expenseIds) {
+      if (await _expenses.softDelete(id) case Err<Undo, RepositoryError>(
+        :final error,
+      )) {
+        return Err(error);
+      }
+    }
+    for (final e in _entries.values.toList()) {
+      if (expenseIds.contains(e.settledExpenseId)) {
+        _entries[e.ride.id] = RideEntry(
+          groupId: e.groupId,
+          ride: e.ride,
+          createdAt: e.createdAt,
+        );
+      }
+    }
+    _changes.add(null);
+    return const Ok(null);
+  }
 }

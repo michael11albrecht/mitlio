@@ -265,4 +265,76 @@ void main() {
       expect((await h['rides.delete']!({}))['error'], 'invalid_params');
     });
   });
+
+  group('rides.settle and rides.fairness', () {
+    Future<void> log(String work, String date, int driver) async {
+      await h['rides.log']!({
+        'groupId': app.group.id,
+        'templateId': work,
+        'driverId': id(driver),
+        'date': date,
+        'priceMilli': '1750',
+      });
+    }
+
+    test('settles a month, then fairness shows the rides', () async {
+      final work = (await createWork())['id']! as String;
+      await log(work, '2026-02-02', 0);
+      await log(work, '2026-02-03', 1);
+      await log(work, '2026-02-04', 0);
+      final r = await h['rides.settle']!({
+        'groupId': app.group.id,
+        'month': '2026-02',
+      });
+      expect(r['month'], '2026-02');
+      expect(r['rideCount'], 3);
+      expect(r['expenseIds'], hasLength(2));
+      final list = await h['rides.list']!({
+        'groupId': app.group.id,
+        'month': '2026-02',
+      });
+      expect(
+        [
+          for (final e in list['rides']! as List<Object?>)
+            (e! as Map)['locked'],
+        ],
+        [true, true, true],
+      );
+      final f = await h['rides.fairness']!({
+        'groupId': app.group.id,
+        'month': '2026-02',
+      });
+      expect(f['month'], '2026-02');
+      expect(
+        (f['rows']! as List<Object?>).first,
+        containsPair('memberId', id(0)),
+      );
+      // Nothing left: settling again is an error, not a duplicate.
+      final again = await h['rides.settle']!({
+        'groupId': app.group.id,
+        'month': '2026-02',
+      });
+      expect(again['error'], 'invalid_params');
+    });
+
+    test('report usage problems', () async {
+      for (final key in ['rides.settle', 'rides.fairness']) {
+        expect((await h[key]!({}))['error'], 'invalid_params');
+        expect(
+          (await h[key]!({
+            'groupId': app.group.id,
+            'month': '2026-13',
+          }))['error'],
+          'invalid_params',
+        );
+        expect(
+          (await h[key]!({
+            'groupId': app.group.id,
+            'month': '2026-1',
+          }))['error'],
+          'invalid_params',
+        );
+      }
+    });
+  });
 }

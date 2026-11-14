@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:ui' show Locale;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/debug/drive_types.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
+import 'package:mitlio/features/rides/ui/ride_settle_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_view_model.dart';
+import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 DriveResult _result<T>(RepoResult<T> r, DriveResult Function(T) ok) =>
@@ -37,6 +40,14 @@ DateTime? _day(String? raw) {
           int.parse(m.group(2)!),
           int.parse(m.group(3)!),
         );
+}
+
+Month? _month(String? raw) {
+  final m = RegExp(r'^(\d{4})-(\d{2})$').firstMatch(raw ?? '');
+  final month = m == null ? null : int.parse(m.group(2)!);
+  return m == null || month! < 1 || month > 12
+      ? null
+      : Month(int.parse(m.group(1)!), month);
 }
 
 const _logUsage =
@@ -105,6 +116,41 @@ Map<String, DriveHandler> ridesDriveHandlers(ProviderContainer c) {
       return _result(
         await rides(groupId).list(period),
         (list) => {'rides': list.map(rideJson).toList()},
+      );
+    },
+    'rides.settle': (p) async {
+      final groupId = p['groupId'];
+      final month = _month(p['month']);
+      if (groupId == null || month == null) {
+        return invalidParams('need groupId and month (YYYY-MM)');
+      }
+      final l10n = lookupAppLocalizations(const Locale('de'));
+      return _result(
+        await c
+            .read(rideSettleViewModelProvider(groupId).notifier)
+            .settle(
+              month,
+              titleOf: (name, m) =>
+                  l10n.ridesSettleExpenseTitle(monthKey(m), name),
+            ),
+        (done) => {
+          'month': monthKey(done.month),
+          'rideCount': done.rideCount,
+          'expenseIds': [for (final e in done.expenses) e.expense.id],
+        },
+      );
+    },
+    'rides.fairness': (p) async {
+      final groupId = p['groupId'];
+      final month = _month(p['month']);
+      if (groupId == null || month == null) {
+        return invalidParams('need groupId and month (YYYY-MM)');
+      }
+      return _result(
+        await c
+            .read(rideSettleViewModelProvider(groupId).notifier)
+            .fairness(month),
+        (json) => json,
       );
     },
     'rides.delete': (p) async {

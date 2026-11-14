@@ -249,5 +249,21 @@
   "templateErrorDistance": "Enter the distance",
   "templateNoVehicle": "Add a car first.",
   "templateNoVehicleAction": "Add a car",
-  "templateSave": "Save"
+  "templateSave": "Save",
+
+  "@@x-feature-rides-settle": "rides-settle",
+  "ridesSettleCardTitle": "Settle {month} · {count, plural, =1{1 ride} other{{count} rides}}",
+  "ridesSettleCardAction": "Review",
+  "ridesSettleMenu": "Settle month",
+  "ridesMonthMenu": "Month menu",
+  "ridesSettleNothing": "This month is already settled or has no rides.",
+  "ridesSettleTitle": "Settle {month}",
+  "ridesSettleDriverLine": "{name} gets {amount} for {count, plural, =1{1 ride} other{{count} rides}}",
+  "ridesSettleNote": "One expense per driver. You can undo it right away.",
+  "ridesSettleAction": "Settle",
+  "ridesSettleDone": "{month} settled",
+  "ridesSettleExpenseTitle": "Rides {period} · {name}",
+  "ridesFairnessTitle": "Fairness",
+  "ridesFairnessNext": "Up next: {name}",
+  "ridesFairnessKm": "{driven} km driven · {ridden} km ridden"
 }

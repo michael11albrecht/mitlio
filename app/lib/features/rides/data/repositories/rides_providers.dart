@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/db/database_provider.dart';
+import 'package:mitlio/features/expenses/data/repositories/expenses_providers.dart';
 import 'package:mitlio/features/rides/data/repositories/drift_ride_templates_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/drift_rides_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/drift_vehicles_repository.dart';
@@ -31,5 +32,6 @@ final ridesRepositoryProvider = Provider<RidesRepository>(
   (ref) => DriftRidesRepository(
     db: ref.watch(appDatabaseProvider),
     clock: ref.watch(clockProvider),
+    expenses: ref.watch(expensesRepositoryProvider),
   ),
 );

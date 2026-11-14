@@ -12,6 +12,7 @@ class RideCalendar extends StatelessWidget {
     required this.onPreviousMonth,
     required this.onNextMonth,
     required this.onDay,
+    this.onSettle,
     super.key,
   });
 
@@ -19,6 +20,10 @@ class RideCalendar extends StatelessWidget {
   final VoidCallback onPreviousMonth;
   final VoidCallback onNextMonth;
   final ValueChanged<DateTime> onDay;
+
+  /// "Monat abrechnen" in the month menu; null while there is nothing to
+  /// settle (the menu entry is then disabled).
+  final VoidCallback? onSettle;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +60,16 @@ class RideCalendar extends StatelessWidget {
               tooltip: l10n.ridesMonthNext,
               icon: const Icon(Icons.chevron_right),
               onPressed: onNextMonth,
+            ),
+            PopupMenuButton<void>(
+              tooltip: l10n.ridesMonthMenu,
+              itemBuilder: (_) => [
+                PopupMenuItem<void>(
+                  enabled: onSettle != null,
+                  onTap: onSettle,
+                  child: Text(l10n.ridesSettleMenu),
+                ),
+              ],
             ),
           ],
         ),

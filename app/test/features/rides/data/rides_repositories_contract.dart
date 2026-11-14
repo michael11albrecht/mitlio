@@ -523,6 +523,164 @@ void runRidesRepositoriesContract(
           expect(ok(await r.rides.get('r1')).settledExpenseId, isNull);
         },
       );
+
+      PeriodSettlement item(String title, List<String> rideIds) =>
+          PeriodSettlement(
+            rideIds: rideIds,
+            draft: ExpenseDraft(
+              title: title,
+              amountCents: 600,
+              currency: eur,
+              date: DateTime.utc(2026, 3, 31),
+              payers: {m[0].id: 600},
+              split: ExactSplit({m[0].id: 200, m[1].id: 200, m[2].id: 200}),
+              tripMeta: '{"v":2}',
+            ),
+          );
+
+      Future<List<ExpenseEntry>> expenses() async => StreamProbe(
+        r.expenses.watchExpenses(gid),
+      ).next();
+
+      test('settlePeriod creates the expenses and locks the rides', () async {
+        await log(ride('r1'));
+        await log(ride('r2'));
+        await log(ride('r3'));
+        final made = ok(
+          await r.rides.settlePeriod(gid, [
+            item('A', ['r1', 'r2']),
+            item('B', ['r3']),
+          ]),
+        );
+        expect(made.map((e) => e.expense.title), ['A', 'B']);
+        expect(made.first.tripMeta, '{"v":2}');
+        expect(
+          ok(await r.rides.get('r1')).settledExpenseId,
+          made[0].expense.id,
+        );
+        expect(
+          ok(await r.rides.get('r2')).settledExpenseId,
+          made[0].expense.id,
+        );
+        expect(
+          ok(await r.rides.get('r3')).settledExpenseId,
+          made[1].expense.id,
+        );
+        expect(await expenses(), hasLength(2));
+      });
+
+      test('settlePeriod rolls back when anything fails', () async {
+        await log(ride('r1'));
+        await log(ride('r2'));
+        final y = await expenseId();
+        ok(await r.rides.markSettled(['r2'], y));
+        final before = (await expenses()).length;
+
+        expect(
+          err(
+            await r.rides.settlePeriod(gid, [
+              item('A', ['r1']),
+              item('B', ['r2']),
+            ]),
+          ),
+          const Locked('ride', 'r2'),
+        );
+        expect(
+          err(
+            await r.rides.settlePeriod(gid, [
+              item('A', ['r1']),
+              item('B', ['nope']),
+            ]),
+          ),
+          const NotFound('ride', 'nope'),
+        );
+        expect(
+          err(await r.rides.settlePeriod(gid, [item('A', [])])),
+          isA<InvalidData>(),
+        );
+        expect(
+          err(
+            await r.rides.settlePeriod(gid, [
+              item('A', ['r1']),
+              item('A2', ['r1']),
+            ]),
+          ),
+          isA<Locked>(),
+        );
+        expect(ok(await r.rides.get('r1')).settledExpenseId, isNull);
+        expect(await expenses(), hasLength(before));
+      });
+
+      test('settlePeriod rolls back an invalid expense draft', () async {
+        await log(ride('r1'));
+        await log(ride('r2'));
+        final before = (await expenses()).length;
+        final bad = PeriodSettlement(
+          rideIds: const ['r2'],
+          draft: ExpenseDraft(
+            title: '',
+            amountCents: 600,
+            currency: eur,
+            date: DateTime.utc(2026, 3, 31),
+            payers: {m[0].id: 600},
+            split: ExactSplit({m[0].id: 600}),
+          ),
+        );
+        expect(
+          err(
+            await r.rides.settlePeriod(gid, [
+              item('A', ['r1']),
+              bad,
+            ]),
+          ),
+          isA<InvalidData>(),
+        );
+        expect(ok(await r.rides.get('r1')).settledExpenseId, isNull);
+        expect(ok(await r.rides.get('r2')).settledExpenseId, isNull);
+        expect(await expenses(), hasLength(before));
+      });
+
+      test('settlePeriod of nothing is nothing', () async {
+        expect(ok(await r.rides.settlePeriod(gid, const [])), isEmpty);
+      });
+
+      test('unsettle deletes the expenses and unlocks the rides', () async {
+        await log(ride('r1'));
+        await log(ride('r2'));
+        final before = (await expenses()).length;
+        final made = ok(
+          await r.rides.settlePeriod(gid, [
+            item('A', ['r1']),
+            item('B', ['r2']),
+          ]),
+        );
+        ok(await r.rides.unsettle([for (final e in made) e.expense.id]));
+        expect(ok(await r.rides.get('r1')).isSettled, isFalse);
+        expect(ok(await r.rides.get('r2')).isSettled, isFalse);
+        expect(await expenses(), hasLength(before));
+        ok(await r.rides.softDelete('r1'));
+        ok(
+          await r.rides.settlePeriod(gid, [
+            item('C', ['r2']),
+          ]),
+        );
+        expect(ok(await r.rides.get('r2')).isSettled, isTrue);
+      });
+
+      test('unsettle changes nothing for an unknown expense', () async {
+        await log(ride('r1'));
+        final made = ok(
+          await r.rides.settlePeriod(gid, [
+            item('A', ['r1']),
+          ]),
+        );
+        expect(
+          err(await r.rides.unsettle([made.single.expense.id, 'nope'])),
+          const NotFound('expense', 'nope'),
+        );
+        expect(ok(await r.rides.get('r1')).isSettled, isTrue);
+        expect(await expenses(), hasLength(1));
+      });
     });
   });
 }
