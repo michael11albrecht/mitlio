@@ -94,7 +94,7 @@ select throws_ok(
              '00000000-0000-0000-0002-000000000001', '00000000-0000-0000-0002-000000000001', 1, 'EUR', now(), 'bitcoin')$q$,
   '23514'::char(5), null, 'settlements.method is restricted');
 select throws_ok(
-  $q$insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per_100km)
+  $q$insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per100km)
      values ('00000000-0000-0000-0005-000000000001', '00000000-0000-0000-0001-000000000001', 'h1', 'v', 'coal', 1)$q$,
   '23514'::char(5), null, 'vehicles.fuel_type is restricted');
 select throws_ok(

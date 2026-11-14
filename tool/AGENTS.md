@@ -15,6 +15,7 @@ Shell gates, agent hooks and gate config. Invoked from `Makefile`, CI workflows,
 | `risk_label.sh` | Labels PR `critical`/`safe` (+ optional `ux-review`) from changed paths and line count (limit 400) |
 | `risk_label_test.sh` | Self-test for `risk_label.sh` (`bash tool/risk_label_test.sh`) |
 | `drive.sh` | Calls `ext.mitlio.*` on the running debug app via `packages/drive_client` (reads `.drive/uri`) |
+| `gen_db_contract.dart` | Parses `supabase/types/database.ts` into `app/lib/features/sync/data/db_contract.g.dart` (`make db-types`; db workflow fails on a stale file) |
 | `check_release_strip.sh` | Fails if a Linux release bundle contains `ext.mitlio` (Linux only, skips elsewhere) |
 
 ## Subdirectories
