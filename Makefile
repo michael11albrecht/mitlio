@@ -92,6 +92,11 @@ test-drive: ## Drive client tests
 test-tooling: ## Tests for repo tooling (gates)
 	cd $(TOOLING) && $(DART) test
 	tool/risk_label_test.sh
+	tool/agent_metrics_test.sh
+
+.PHONY: agent-metrics
+agent-metrics: ## Regenerate docs/agent-metrics.md from merged PRs (needs gh + jq)
+	tool/agent_metrics.sh --write
 
 .PHONY: test-app
 test-app: ## App unit + widget tests
