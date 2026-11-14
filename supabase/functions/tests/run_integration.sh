@@ -44,9 +44,11 @@ run_phase() {
   serve_pid=$!
   local ready=""
   for _ in $(seq 1 90); do
-    code="$(curl -s -o /dev/null -w '%{http_code}' -X OPTIONS "$FUNCTION_URL" \
-      -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANON_KEY" -H 'Origin: https://mitlio.app' || true)"
-    if [ "$code" = 204 ]; then ready=1; break; fi
+    # The gateway answers OPTIONS before the function is loaded, so probe with an invalid GET:
+    # only the function itself answers 400 invalid_params (own client address, own bucket).
+    code="$(curl -s -o /dev/null -w '%{http_code}' "$FUNCTION_URL?type=probe" \
+      -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANON_KEY" -H 'cf-connecting-ip: 192.0.2.250' || true)"
+    if [ "$code" = 400 ] || [ "$code" = 429 ]; then ready=1; break; fi
     sleep 2
   done
   [ -n "$ready" ] || { echo "function did not become ready"; exit 1; }
