@@ -138,3 +138,28 @@ test.describe('URL state', () => {
     expect(paramsToState('?ev=1')).toEqual(defaultState('ev'));
   });
 });
+
+test.describe('landing page presets and km-rate mode', () => {
+  const preset = { km: '250', persons: '3', roundTrip: true, extras: '12' };
+
+  test('preset is the starting point, URL params still win', () => {
+    expect(paramsToState('', preset)).toEqual({ ...defaultState(), ...preset });
+    const s = paramsToState('?km=80&rt=0', preset);
+    expect(s.km).toBe('80');
+    expect(s.roundTrip).toBe(false);
+    expect(s.persons).toBe('3');
+    expect(s.extras).toBe('12');
+  });
+  test('EV preset values do not leak into the fuel drive type', () => {
+    const ev = { energy: 'ev', cons: '19', price: '0.45' } as const;
+    expect(paramsToState('', ev)).toEqual({ ...defaultState('ev'), ...ev });
+    expect(paramsToState('?ev=0', ev)).toEqual(defaultState());
+  });
+  test('km-rate mode sends kmRate and does not require consumption', () => {
+    const state = { ...defaultState(), cons: '', price: '0.30' };
+    expect(buildInput(state, true)).toMatchObject({
+      input: { kmRate: 0.3, distanceKm: 100, persons: 2 },
+    });
+    expect('errors' in buildInput(state)).toBe(true);
+  });
+});

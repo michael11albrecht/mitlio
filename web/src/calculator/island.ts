@@ -36,6 +36,9 @@ const root = document.getElementById('calculator');
 if (root) {
   const locale: Locale = root.dataset.locale === 'en' ? 'en' : 'de';
   const m = calculatorMessages[locale];
+  // Landing pages: starting values and (km-rate page) the km-rate mode, set in Calculator.astro.
+  const rate = root.dataset.mode === 'rate';
+  const preset = JSON.parse(root.dataset.preset ?? '{}') as Partial<CalcState>;
   const $ = <T extends HTMLElement>(id: string): T => {
     const el = document.getElementById(id);
     if (!el) throw new Error(`calculator: missing #${id}`);
@@ -88,7 +91,7 @@ if (root) {
   let nativeFailed = false;
   let statusTimer: number | undefined;
 
-  let state: CalcState = localizeState(paramsToState(location.search), locale);
+  let state: CalcState = localizeState(paramsToState(location.search, preset), locale);
   const touched = new Set<FieldKey>();
 
   const writeStateToDom = () => {
@@ -126,6 +129,8 @@ if (root) {
   };
 
   const updateAppLinks = () => {
+    // The deep link contract has no km-rate mode.
+    if (rate) return;
     const extras = parseDecimal(state.extras);
     const km = parseDecimal(state.km);
     const l100 = parseDecimal(state.cons);
@@ -162,18 +167,24 @@ if (root) {
 
   const render = () => {
     const ev = state.energy === 'ev';
-    out.consLabel.textContent = `${ev ? m.consumptionEv : m.consumptionFuel} (${ev ? m.consumptionEvUnit : m.consumptionFuelUnit})`;
-    out.consUnit.textContent = ev ? m.consumptionEvUnit : m.consumptionFuelUnit;
-    out.priceLabel.textContent = `${ev ? m.priceEv : m.priceFuel} (${ev ? m.priceEvUnit : m.priceFuelUnit})`;
-    out.priceUnit.textContent = ev ? m.priceEvUnit : m.priceFuelUnit;
-    out.fuelLabel.textContent = ev ? m.rowEv : m.rowFuel;
+    if (rate) {
+      out.priceLabel.textContent = `${m.priceRate} (${m.priceRateUnit})`;
+      out.priceUnit.textContent = m.priceRateUnit;
+      out.fuelLabel.textContent = m.rowRate;
+    } else {
+      out.consLabel.textContent = `${ev ? m.consumptionEv : m.consumptionFuel} (${ev ? m.consumptionEvUnit : m.consumptionFuelUnit})`;
+      out.consUnit.textContent = ev ? m.consumptionEvUnit : m.consumptionFuelUnit;
+      out.priceLabel.textContent = `${ev ? m.priceEv : m.priceFuel} (${ev ? m.priceEvUnit : m.priceFuelUnit})`;
+      out.priceUnit.textContent = ev ? m.priceEvUnit : m.priceFuelUnit;
+      out.fuelLabel.textContent = ev ? m.rowEv : m.rowFuel;
+    }
 
     const api = globalThis.mitlio;
     if (!api) {
       showNoResult(m.errLoad);
       return;
     }
-    const built = buildInput(state);
+    const built = buildInput(state, rate);
     let errors: FieldErrors = 'errors' in built ? built.errors : {};
     let result: FacadeResult | null = null;
     if ('input' in built) {
@@ -307,7 +318,7 @@ if (root) {
   // Restore state after bfcache / back navigation.
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) {
-      state = localizeState(paramsToState(location.search), locale);
+      state = localizeState(paramsToState(location.search, preset), locale);
       writeStateToDom();
       render();
     }
