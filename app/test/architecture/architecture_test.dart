@@ -363,6 +363,29 @@ void main() {
         },
       ),
       (
+        'screen-has-a11y-test',
+        {
+          'app/lib/features/a/ui/a_view.dart':
+              'class AView extends StatelessWidget {}',
+          'app/test/a_test.dart': 'void main() { AView(); }',
+        },
+        {
+          'app/lib/features/a/ui/a_view.dart':
+              'class AView extends StatelessWidget {}',
+          'app/test/a_test.dart':
+              'void main() { AView(); expectAccessible(tester); }',
+        },
+      ),
+      (
+        'screen-has-a11y-test',
+        {
+          'app/lib/features/a/ui/a_view.dart':
+              'class AView extends ConsumerWidget {}',
+          'app/test/a_test.dart': 'void main() { expectAccessible(t); }',
+        },
+        {},
+      ),
+      (
         'dialog-allowlist',
         {'app/lib/features/a/ui/b_view.dart': 'x() => showDialog<void>(a);'},
         {},

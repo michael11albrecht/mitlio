@@ -199,7 +199,7 @@
   "ridesMonthPrev": "Previous month",
   "ridesMonthNext": "Next month",
   "ridesMonthEmpty": "No ride this month yet",
-  "ridesDayDrivers": "{date}: {names}",
+  "ridesDayDrivers": "{count, plural, =1{{date}, {names} drove} other{{date}, {names} drove}}",
   "ridesDayNoRides": "No ride on this day",
   "ridesDayLog": "Log a ride for this day",
   "ridesRideTitle": "{name} drove · {distance}",

@@ -1,4 +1,5 @@
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/features/settle/ui/settle_view.dart';
 import 'package:mitlio/features/settle/ui/settle_view_model.dart';
 import 'package:mitlio/features/settle/ui/transfer_sheet_view_model.dart';
 
@@ -17,7 +18,10 @@ void main() {
   for (final MapEntry(:key, :value) in screens.entries) {
     forEachMode(
       key,
-      () => scopedSettle(settleStateOverride(value), settleView),
+      () => scopedSettle(
+        settleStateOverride(value),
+        const SettleView(groupId: 'g-1'),
+      ),
       (tester, _, _) => expectAccessible(tester),
     );
   }
