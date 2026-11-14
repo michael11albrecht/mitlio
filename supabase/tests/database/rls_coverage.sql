@@ -34,11 +34,12 @@ select is_empty(
   'every table in the RLS test registry exists');
 
 select is_empty(
-  $q$select tablename from pg_tables
-     where schemaname = 'public'
-       and (has_table_privilege('anon', format('public.%I', tablename),
+  $q$select c.relname
+     from pg_class c join pg_namespace n on n.oid = c.relnamespace
+     where n.nspname = 'public' and c.relkind in ('r', 'p')
+       and (has_table_privilege('anon', c.oid,
               'select, insert, update, delete, truncate, references, trigger')
-            or has_table_privilege('authenticated', format('public.%I', tablename),
+            or has_table_privilege('authenticated', c.oid,
               'delete, truncate, references, trigger'))$q$,
   'anon has no table privileges; authenticated has no delete/truncate/references/trigger');
 
