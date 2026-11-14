@@ -11,8 +11,8 @@ mixin SyncColumns on Table {
 
   TextColumn get groupId => text().references(Groups, #id)();
 
-  /// Hybrid logical clock string.
-  TextColumn get createdAt => text()();
+  /// Creation time, UTC.
+  DateTimeColumn get createdAt => dateTime()();
 
   /// Hybrid logical clock string.
   TextColumn get updatedAt => text()();
@@ -32,7 +32,7 @@ class Groups extends Table {
   /// ISO 4217 code.
   TextColumn get currency => text()();
   TextColumn get createdBy => text()();
-  TextColumn get createdAt => text()();
+  DateTimeColumn get createdAt => dateTime()();
   TextColumn get updatedAt => text()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
 
@@ -82,22 +82,26 @@ class Expenses extends Table with SyncColumns {
 @TableIndex(name: 'expense_payers_expense_id', columns: {#expenseId})
 @TableIndex(name: 'expense_payers_group_id', columns: {#groupId})
 @TableIndex(name: 'expense_payers_member_id', columns: {#memberId})
-class ExpensePayers extends Table with SyncColumns {
+class ExpensePayers extends Table {
+  /// Aggregate child: no own sync metadata, replaced wholesale with the
+  /// parent expense. `group_id` is kept for RLS later.
+  TextColumn get groupId => text().references(Groups, #id)();
   TextColumn get expenseId => text().references(Expenses, #id)();
   TextColumn get memberId => text().references(Members, #id)();
   IntColumn get paidCents => integer().check(paidCents.isBiggerThanValue(0))();
 
   @override
-  List<Set<Column<Object>>> get uniqueKeys => [
-    {expenseId, memberId},
-  ];
+  Set<Column<Object>> get primaryKey => {expenseId, memberId};
 }
 
 @DataClassName('ExpenseShareRow')
 @TableIndex(name: 'expense_shares_expense_id', columns: {#expenseId})
 @TableIndex(name: 'expense_shares_group_id', columns: {#groupId})
 @TableIndex(name: 'expense_shares_member_id', columns: {#memberId})
-class ExpenseShares extends Table with SyncColumns {
+class ExpenseShares extends Table {
+  /// Aggregate child: no own sync metadata, replaced wholesale with the
+  /// parent expense. `group_id` is kept for RLS later.
+  TextColumn get groupId => text().references(Groups, #id)();
   TextColumn get expenseId => text().references(Expenses, #id)();
   TextColumn get memberId => text().references(Members, #id)();
   IntColumn get shareCents =>
@@ -107,9 +111,7 @@ class ExpenseShares extends Table with SyncColumns {
   IntColumn get weight => integer().check(weight.isBiggerThanValue(-1))();
 
   @override
-  List<Set<Column<Object>>> get uniqueKeys => [
-    {expenseId, memberId},
-  ];
+  Set<Column<Object>> get primaryKey => {expenseId, memberId};
 }
 
 @DataClassName('SettlementRow')
@@ -133,6 +135,11 @@ class Settlements extends Table with SyncColumns {
 class LocalMemberBank extends Table {
   TextColumn get memberId => text().references(Members, #id)();
   TextColumn get iban => text()();
+
+  /// Needed for EPC QR payloads (P4-T01).
+  TextColumn get bic => text().nullable()();
+  TextColumn get accountName => text().nullable()();
+
   TextColumn get updatedAt => text()();
 
   @override

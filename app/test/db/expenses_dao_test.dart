@@ -15,10 +15,10 @@ void main() {
   Future<void> insertDefault({String id = 'e1', DateTime? date}) =>
       db.expensesDao.insertExpense(
         newExpense(id, 'g1', date: date),
-        [newPayer('p-$id', 'g1', id, 'm1')],
+        [newPayer('g1', id, 'm1')],
         [
-          newShare('s1-$id', 'g1', id, 'm1'),
-          newShare('s2-$id', 'g1', id, 'm2'),
+          newShare('g1', id, 'm1'),
+          newShare('g1', id, 'm2'),
         ],
       );
 
@@ -36,10 +36,10 @@ void main() {
     await expectLater(
       db.expensesDao.insertExpense(
         newExpense('e1', 'g1'),
-        [newPayer('p1', 'g1', 'e1', 'm1')],
+        [newPayer('g1', 'e1', 'm1')],
         [
-          newShare('s1', 'g1', 'e1', 'm1'),
-          newShare('s2', 'g1', 'e1', 'ghost-member'), // FK violation
+          newShare('g1', 'e1', 'm1'),
+          newShare('g1', 'e1', 'ghost-member'), // FK violation
         ],
       ),
       throwsA(anything),
@@ -70,31 +70,64 @@ void main() {
       );
       await db.expensesDao.insertExpense(newExpense('e2', 'g1'), [], []);
       await expectLater(
-        db
-            .into(db.expensePayers)
-            .insert(newPayer('p', 'g1', 'e2', 'm1', paid: 0)),
+        db.into(db.expensePayers).insert(newPayer('g1', 'e2', 'm1', paid: 0)),
         throwsA(anything),
       );
       await expectLater(
-        db
-            .into(db.expenseShares)
-            .insert(newShare('s', 'g1', 'e2', 'm1', cents: -1)),
+        db.into(db.expenseShares).insert(newShare('g1', 'e2', 'm1', cents: -1)),
         throwsA(anything),
       );
     },
   );
 
-  test('unique (expense, member) per child table', () async {
+  test('duplicate (expense, member) child rows are rejected', () async {
     await db.expensesDao.insertExpense(newExpense('e1', 'g1'), [], []);
     await expectLater(
       db.expensesDao.insertExpense(
         newExpense('e2', 'g1'),
-        [newPayer('p1', 'g1', 'e2', 'm1'), newPayer('p2', 'g1', 'e2', 'm1')],
+        [newPayer('g1', 'e2', 'm1'), newPayer('g1', 'e2', 'm1')],
         [],
       ),
       throwsA(anything),
     );
     expect(await db.expensesDao.findById('e2'), isNull);
+  });
+
+  test('replaceExpense can remove and re-add the same member', () async {
+    await insertDefault();
+    Future<bool> replace(List<String> memberIds) =>
+        db.expensesDao.replaceExpense(
+          'e1',
+          const ExpensesCompanion(updatedAt: Value('0002')),
+          [newPayer('g1', 'e1', 'm1')],
+          [for (final m in memberIds) newShare('g1', 'e1', m)],
+        );
+
+    expect(await replace(['m1']), isTrue);
+    expect(
+      (await db.expensesDao.findById('e1'))!.shares.map((s) => s.memberId),
+      ['m1'],
+    );
+    expect(await replace(['m1', 'm2']), isTrue);
+    expect(
+      (await db.expensesDao.findById('e1'))!.shares.map((s) => s.memberId),
+      ['m1', 'm2'],
+    );
+  });
+
+  test('created_at keeps millisecond precision', () async {
+    final at = DateTime.utc(2026, 5, 6, 7, 8, 9, 123);
+    await db.expensesDao.insertExpense(
+      newExpense('e1', 'g1').copyWith(createdAt: Value(at)),
+      [],
+      [],
+    );
+    final row = (await db.expensesDao.findById('e1'))!.expense;
+    expect(row.createdAt.toUtc(), at);
+    final raw = await db
+        .customSelect('SELECT created_at FROM expenses')
+        .getSingle();
+    expect(raw.data['created_at'], '2026-05-06T07:08:09.123Z');
   });
 
   test('replaceExpense swaps root and children atomically', () async {
@@ -107,8 +140,8 @@ void main() {
         groupAmountCents: Value(600),
         updatedAt: Value('0002'),
       ),
-      [newPayer('p9', 'g1', 'e1', 'm2', paid: 600)],
-      [newShare('s9', 'g1', 'e1', 'm2', cents: 600)],
+      [newPayer('g1', 'e1', 'm2', paid: 600)],
+      [newShare('g1', 'e1', 'm2', cents: 600)],
     );
     expect(ok, isTrue);
     final e = (await db.expensesDao.findById('e1'))!;
@@ -125,14 +158,14 @@ void main() {
         db.expensesDao.replaceExpense(
           'e1',
           const ExpensesCompanion(title: Value('Changed')),
-          [newPayer('p9', 'g1', 'e1', 'ghost')],
+          [newPayer('g1', 'e1', 'ghost')],
           [],
         ),
         throwsA(anything),
       );
       final e = (await db.expensesDao.findById('e1'))!;
       expect(e.expense.title, 'Dinner');
-      expect(e.payers.single.id, 'p-e1');
+      expect(e.payers.single.paidCents, 1000);
       expect(e.shares, hasLength(2));
     },
   );

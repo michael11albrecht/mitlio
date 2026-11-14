@@ -116,12 +116,16 @@ void main() {
           memberId: 'm1',
           iban: 'DE02120300000000202051',
           updatedAt: '0002',
+          bic: const Value('BYLADEM1001'),
+          accountName: const Value('Ann'),
         ),
       );
       expect(
         (await db.localMemberBankDao.findByMember('m1'))!.iban,
         'DE02120300000000202051',
       );
+      final row = (await db.localMemberBankDao.findByMember('m1'))!;
+      expect([row.bic, row.accountName], ['BYLADEM1001', 'Ann']);
       await db.localMemberBankDao.deleteByMember('m1');
       expect(await db.localMemberBankDao.findByMember('m1'), isNull);
     });

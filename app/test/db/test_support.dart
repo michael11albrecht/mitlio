@@ -4,6 +4,7 @@ import 'package:mitlio/db/app_database.dart';
 AppDatabase openTestDb() => AppDatabase(NativeDatabase.memory());
 
 const hlc = '0001';
+final createdAt0 = DateTime.utc(2026);
 
 GroupsCompanion newGroup(String id, {String name = 'Trip'}) =>
     GroupsCompanion.insert(
@@ -11,7 +12,7 @@ GroupsCompanion newGroup(String id, {String name = 'Trip'}) =>
       name: name,
       currency: 'EUR',
       createdBy: 'm1',
-      createdAt: hlc,
+      createdAt: createdAt0,
       updatedAt: hlc,
     );
 
@@ -19,7 +20,7 @@ MembersCompanion newMember(String id, String groupId, {int position = 0}) =>
     MembersCompanion.insert(
       id: id,
       groupId: groupId,
-      createdAt: hlc,
+      createdAt: createdAt0,
       updatedAt: hlc,
       name: 'Member $id',
       position: position,
@@ -33,7 +34,7 @@ ExpensesCompanion newExpense(
 }) => ExpensesCompanion.insert(
   id: id,
   groupId: groupId,
-  createdAt: hlc,
+  createdAt: createdAt0,
   updatedAt: hlc,
   title: 'Dinner',
   amountCents: amount,
@@ -46,32 +47,24 @@ ExpensesCompanion newExpense(
 );
 
 ExpensePayersCompanion newPayer(
-  String id,
   String groupId,
   String expenseId,
   String memberId, {
   int paid = 1000,
 }) => ExpensePayersCompanion.insert(
-  id: id,
   groupId: groupId,
-  createdAt: hlc,
-  updatedAt: hlc,
   expenseId: expenseId,
   memberId: memberId,
   paidCents: paid,
 );
 
 ExpenseSharesCompanion newShare(
-  String id,
   String groupId,
   String expenseId,
   String memberId, {
   int cents = 500,
 }) => ExpenseSharesCompanion.insert(
-  id: id,
   groupId: groupId,
-  createdAt: hlc,
-  updatedAt: hlc,
   expenseId: expenseId,
   memberId: memberId,
   shareCents: cents,
@@ -88,7 +81,7 @@ SettlementsCompanion newSettlement(
 }) => SettlementsCompanion.insert(
   id: id,
   groupId: groupId,
-  createdAt: hlc,
+  createdAt: createdAt0,
   updatedAt: hlc,
   fromMember: from,
   toMember: to,

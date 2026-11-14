@@ -4,7 +4,7 @@
     "version": "1.3.0"
   },
   "options": {
-    "store_date_time_values_as_text": false
+    "store_date_time_values_as_text": true
   },
   "entities": [
     {
@@ -58,7 +58,7 @@
           {
             "name": "created_at",
             "getter_name": "createdAt",
-            "moor_type": "string",
+            "moor_type": "dateTime",
             "nullable": false,
             "customConstraints": null,
             "default_dart": null,
@@ -143,7 +143,7 @@
           {
             "name": "created_at",
             "getter_name": "createdAt",
-            "moor_type": "string",
+            "moor_type": "dateTime",
             "nullable": false,
             "customConstraints": null,
             "default_dart": null,
@@ -278,7 +278,7 @@
           {
             "name": "created_at",
             "getter_name": "createdAt",
-            "moor_type": "string",
+            "moor_type": "dateTime",
             "nullable": false,
             "customConstraints": null,
             "default_dart": null,
@@ -512,16 +512,6 @@
         "was_declared_in_moor": false,
         "columns": [
           {
-            "name": "id",
-            "getter_name": "id",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
             "name": "group_id",
             "getter_name": "groupId",
             "moor_type": "string",
@@ -546,36 +536,6 @@
                 }
               }
             ]
-          },
-          {
-            "name": "created_at",
-            "getter_name": "createdAt",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "updated_at",
-            "getter_name": "updatedAt",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "deleted_at",
-            "getter_name": "deletedAt",
-            "moor_type": "dateTime",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
           },
           {
             "name": "expense_id",
@@ -663,13 +623,8 @@
         "without_rowid": false,
         "constraints": [],
         "explicit_pk": [
-          "id"
-        ],
-        "unique_keys": [
-          [
-            "expense_id",
-            "member_id"
-          ]
+          "expense_id",
+          "member_id"
         ]
       }
     },
@@ -685,16 +640,6 @@
         "name": "expense_shares",
         "was_declared_in_moor": false,
         "columns": [
-          {
-            "name": "id",
-            "getter_name": "id",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
           {
             "name": "group_id",
             "getter_name": "groupId",
@@ -720,36 +665,6 @@
                 }
               }
             ]
-          },
-          {
-            "name": "created_at",
-            "getter_name": "createdAt",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "updated_at",
-            "getter_name": "updatedAt",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "deleted_at",
-            "getter_name": "deletedAt",
-            "moor_type": "dateTime",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
           },
           {
             "name": "expense_id",
@@ -866,13 +781,8 @@
         "without_rowid": false,
         "constraints": [],
         "explicit_pk": [
-          "id"
-        ],
-        "unique_keys": [
-          [
-            "expense_id",
-            "member_id"
-          ]
+          "expense_id",
+          "member_id"
         ]
       }
     },
@@ -926,7 +836,7 @@
           {
             "name": "created_at",
             "getter_name": "createdAt",
-            "moor_type": "string",
+            "moor_type": "dateTime",
             "nullable": false,
             "customConstraints": null,
             "default_dart": null,
@@ -1128,6 +1038,26 @@
             "getter_name": "iban",
             "moor_type": "string",
             "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "bic",
+            "getter_name": "bic",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "account_name",
+            "getter_name": "accountName",
+            "moor_type": "string",
+            "nullable": true,
             "customConstraints": null,
             "default_dart": null,
             "default_client_dart": null,
@@ -1410,7 +1340,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"groups\" (\"id\" TEXT NOT NULL, \"name\" TEXT NOT NULL, \"currency\" TEXT NOT NULL, \"created_by\" TEXT NOT NULL, \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"deleted_at\" INTEGER NULL, PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"groups\" (\"id\" TEXT NOT NULL, \"name\" TEXT NOT NULL, \"currency\" TEXT NOT NULL, \"created_by\" TEXT NOT NULL, \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"deleted_at\" TEXT NULL, PRIMARY KEY (\"id\"));"
         }
       ]
     },
@@ -1419,7 +1349,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"members\" (\"id\" TEXT NOT NULL, \"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"deleted_at\" INTEGER NULL, \"name\" TEXT NOT NULL, \"position\" INTEGER NOT NULL, \"paypal_me\" TEXT NULL, \"user_id\" TEXT NULL, \"iban_hint\" TEXT NULL, PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"members\" (\"id\" TEXT NOT NULL, \"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"deleted_at\" TEXT NULL, \"name\" TEXT NOT NULL, \"position\" INTEGER NOT NULL, \"paypal_me\" TEXT NULL, \"user_id\" TEXT NULL, \"iban_hint\" TEXT NULL, PRIMARY KEY (\"id\"));"
         }
       ]
     },
@@ -1428,7 +1358,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"expenses\" (\"id\" TEXT NOT NULL, \"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"deleted_at\" INTEGER NULL, \"title\" TEXT NOT NULL, \"amount_cents\" INTEGER NOT NULL CHECK(\"amount_cents\" > 0), \"currency\" TEXT NOT NULL, \"fx_rate_ppm\" INTEGER NOT NULL CHECK(\"fx_rate_ppm\" > 0), \"group_amount_cents\" INTEGER NOT NULL CHECK(\"group_amount_cents\" > 0), \"date\" INTEGER NOT NULL, \"category\" TEXT NULL, \"type\" TEXT NOT NULL CHECK(\"type\" IN ('regular', 'trip', 'settlement')), \"split_mode\" TEXT NOT NULL CHECK(\"split_mode\" IN ('equal', 'shares', 'percent', 'exact')), \"trip_meta\" TEXT NULL, PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"expenses\" (\"id\" TEXT NOT NULL, \"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"deleted_at\" TEXT NULL, \"title\" TEXT NOT NULL, \"amount_cents\" INTEGER NOT NULL CHECK(\"amount_cents\" > 0), \"currency\" TEXT NOT NULL, \"fx_rate_ppm\" INTEGER NOT NULL CHECK(\"fx_rate_ppm\" > 0), \"group_amount_cents\" INTEGER NOT NULL CHECK(\"group_amount_cents\" > 0), \"date\" TEXT NOT NULL, \"category\" TEXT NULL, \"type\" TEXT NOT NULL CHECK(\"type\" IN ('regular', 'trip', 'settlement')), \"split_mode\" TEXT NOT NULL CHECK(\"split_mode\" IN ('equal', 'shares', 'percent', 'exact')), \"trip_meta\" TEXT NULL, PRIMARY KEY (\"id\"));"
         }
       ]
     },
@@ -1437,7 +1367,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"expense_payers\" (\"id\" TEXT NOT NULL, \"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"deleted_at\" INTEGER NULL, \"expense_id\" TEXT NOT NULL REFERENCES expenses (id), \"member_id\" TEXT NOT NULL REFERENCES members (id), \"paid_cents\" INTEGER NOT NULL CHECK(\"paid_cents\" > 0), PRIMARY KEY (\"id\"), UNIQUE (\"expense_id\", \"member_id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"expense_payers\" (\"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"expense_id\" TEXT NOT NULL REFERENCES expenses (id), \"member_id\" TEXT NOT NULL REFERENCES members (id), \"paid_cents\" INTEGER NOT NULL CHECK(\"paid_cents\" > 0), PRIMARY KEY (\"expense_id\", \"member_id\"));"
         }
       ]
     },
@@ -1446,7 +1376,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"expense_shares\" (\"id\" TEXT NOT NULL, \"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"deleted_at\" INTEGER NULL, \"expense_id\" TEXT NOT NULL REFERENCES expenses (id), \"member_id\" TEXT NOT NULL REFERENCES members (id), \"share_cents\" INTEGER NOT NULL CHECK(\"share_cents\" > -1), \"weight\" INTEGER NOT NULL CHECK(\"weight\" > -1), PRIMARY KEY (\"id\"), UNIQUE (\"expense_id\", \"member_id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"expense_shares\" (\"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"expense_id\" TEXT NOT NULL REFERENCES expenses (id), \"member_id\" TEXT NOT NULL REFERENCES members (id), \"share_cents\" INTEGER NOT NULL CHECK(\"share_cents\" > -1), \"weight\" INTEGER NOT NULL CHECK(\"weight\" > -1), PRIMARY KEY (\"expense_id\", \"member_id\"));"
         }
       ]
     },
@@ -1455,7 +1385,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"settlements\" (\"id\" TEXT NOT NULL, \"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"deleted_at\" INTEGER NULL, \"from_member\" TEXT NOT NULL REFERENCES members (id), \"to_member\" TEXT NOT NULL REFERENCES members (id), \"amount_cents\" INTEGER NOT NULL CHECK(\"amount_cents\" > 0), \"currency\" TEXT NOT NULL, \"date\" INTEGER NOT NULL, \"method\" TEXT NOT NULL CHECK(\"method\" IN ('paypal', 'sepa', 'cash', 'other')), PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"settlements\" (\"id\" TEXT NOT NULL, \"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"created_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, \"deleted_at\" TEXT NULL, \"from_member\" TEXT NOT NULL REFERENCES members (id), \"to_member\" TEXT NOT NULL REFERENCES members (id), \"amount_cents\" INTEGER NOT NULL CHECK(\"amount_cents\" > 0), \"currency\" TEXT NOT NULL, \"date\" TEXT NOT NULL, \"method\" TEXT NOT NULL CHECK(\"method\" IN ('paypal', 'sepa', 'cash', 'other')), PRIMARY KEY (\"id\"));"
         }
       ]
     },
@@ -1464,7 +1394,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"local_member_bank\" (\"member_id\" TEXT NOT NULL REFERENCES members (id), \"iban\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, PRIMARY KEY (\"member_id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"local_member_bank\" (\"member_id\" TEXT NOT NULL REFERENCES members (id), \"iban\" TEXT NOT NULL, \"bic\" TEXT NULL, \"account_name\" TEXT NULL, \"updated_at\" TEXT NOT NULL, PRIMARY KEY (\"member_id\"));"
         }
       ]
     },
