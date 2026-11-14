@@ -156,14 +156,26 @@ test.describe('calculator (de)', () => {
     );
   });
 
-  test('sets no cookies and makes no external requests', async ({ page, baseURL }) => {
+  test('sets no cookies and makes no external requests (except the configured fuel API, none here)', async ({
+    page,
+    baseURL,
+  }) => {
     const external: string[] = [];
+    // The only allowed foreign origin is the configured FUEL_API_URL (exposed on #calc-fuel when set).
+    let allowed = '';
     page.on('request', (r) => {
-      if (!r.url().startsWith(baseURL as string) && !r.url().startsWith('data:')) {
-        external.push(r.url());
-      }
+      const u = r.url();
+      if (u.startsWith(baseURL as string) || u.startsWith('data:')) return;
+      if (allowed !== '' && u.startsWith(`${allowed}/`)) return;
+      external.push(u);
     });
     await page.goto('/');
+    const fuel = page.locator('#calc-fuel');
+    const api = (await fuel.count()) > 0 ? await fuel.getAttribute('data-api') : null;
+    allowed = api ? new URL(api).origin : '';
+    // Without FUEL_API_URL (this build) the chips are not rendered and no API is contacted.
+    expect(allowed).toBe('');
+    await expect(page.locator('#calc-fuel')).toHaveCount(0);
     await typeFixtureTrip(page);
     await expect(amount(page)).toHaveText(/^9,75\s€$/);
     expect(await page.evaluate(() => document.cookie)).toBe('');

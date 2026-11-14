@@ -6,7 +6,9 @@
         "/index.html",
         "/en/index.html",
         "/fahrtkostenrechner/index.html",
-        "/kilometerpauschale-rechner/index.html"
+        "/kilometerpauschale-rechner/index.html",
+        "/en/fuel-cost-calculator/index.html",
+        "/en/mileage-rate-calculator/index.html"
       ],
       "numberOfRuns": 3,
       "settings": { "chromeFlags": "--no-sandbox --headless=new" }

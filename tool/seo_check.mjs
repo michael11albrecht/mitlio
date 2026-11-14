@@ -178,6 +178,25 @@ for (const p of indexable) {
       }
       if (!target.alternates.some((b) => b.href === self)) fail(p.route, `hreflang target ${a.href} does not link back`);
     }
+    // Reciprocal means the whole set is shared: the pair partner lists exactly the same hreflang entries.
+    const key = (alts) => alts.map((a) => `${a.lang}=${a.href}`).sort().join(' ');
+    for (const a of p.alternates) {
+      const target = pages.find((o) => o.route === urlToRoute(a.href));
+      if (target && key(target.alternates) !== key(p.alternates)) {
+        fail(p.route, `hreflang set differs from the one on ${a.href}`);
+      }
+    }
+    // x-default is the German page; each hreflang language matches the <html lang> of its target.
+    const xDefault = p.alternates.find((a) => a.lang === 'x-default');
+    if (!xDefault) fail(p.route, 'hreflang set without x-default');
+    else if (!p.alternates.some((a) => a.lang === 'de-DE' && a.href === xDefault.href)) {
+      fail(p.route, 'x-default must point to the German page');
+    }
+    for (const a of p.alternates.filter((x) => x.lang !== 'x-default')) {
+      const target = pages.find((o) => o.route === urlToRoute(a.href));
+      const htmlLang = /<html[^>]*\slang="([^"]*)"/.exec(target?.html ?? '')?.[1];
+      if (target && htmlLang !== a.lang) fail(p.route, `hreflang ${a.lang} targets a page with <html lang="${htmlLang}">`);
+    }
     if (p.alternates.filter((a) => a.lang !== 'x-default').length < 2) {
       fail(p.route, 'hreflang present but no alternate language exists (drop it)');
     }

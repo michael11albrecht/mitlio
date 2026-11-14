@@ -12,6 +12,7 @@ import {
   type CalcState,
   type FacadeResult,
 } from '../calculator/core';
+import type { Locale } from '../i18n';
 
 export interface ExampleInput {
   distanceKm: number;
@@ -55,7 +56,6 @@ function run(input: ExampleInput): ReturnType<typeof buildResultView> {
   return buildResultView(res, input.driverPays);
 }
 
-const de = (v: number, minFraction = 0) => formatField(v, 'de', minFraction);
 
 /**
  * Placeholder values for a landing page; every number comes from the facade or the example input.
@@ -70,7 +70,9 @@ export function exampleValues(
     roundTrip?: boolean | undefined;
     tollsEur?: number | undefined;
   },
+  locale: Locale = 'de',
 ): Record<string, string> {
+  const de = (v: number, minFraction = 0) => formatField(v, locale, minFraction);
   const view = run(input);
   const km = input.distanceKm * (input.roundTrip ? 2 : 1);
   const values: Record<string, string> = {
@@ -82,16 +84,16 @@ export function exampleValues(
     n: String(input.persons),
     payers: String(input.persons - (input.driverPays ? 0 : 1)),
     units: de(Math.round(((km * (input.consumptionPer100km ?? 0)) / 100) * 100) / 100),
-    tolls: formatMoney(Math.round((input.tollsEur ?? 0) * 100), 'de'),
-    total: formatMoney(view.totalCents, 'de'),
-    fuel: formatMoney(view.fuelCents, 'de'),
-    perPerson: formatMoney(view.perPersonCents, 'de'),
-    driverGets: formatMoney(view.driverGetsCents ?? 0, 'de'),
+    tolls: formatMoney(Math.round((input.tollsEur ?? 0) * 100), locale),
+    total: formatMoney(view.totalCents, locale),
+    fuel: formatMoney(view.fuelCents, locale),
+    perPerson: formatMoney(view.perPersonCents, locale),
+    driverGets: formatMoney(view.driverGetsCents ?? 0, locale),
   };
   if (compare) {
     const second = run(Object.assign({}, input, defined(compare)));
-    values['total2'] = formatMoney(second.totalCents, 'de');
-    values['perPerson2'] = formatMoney(second.perPersonCents, 'de');
+    values['total2'] = formatMoney(second.totalCents, locale);
+    values['perPerson2'] = formatMoney(second.perPersonCents, locale);
     values['n2'] = String(compare.persons ?? input.persons);
   }
   return values;

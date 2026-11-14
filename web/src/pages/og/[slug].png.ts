@@ -9,12 +9,15 @@ import { messages } from '../../i18n';
 const WIDTH = 1200;
 const HEIGHT = 630;
 const MAX_LINE = 22;
+const TAGLINE = { de: 'Kostenlos, ohne Anmeldung, ohne Werbung', en: 'Free, no sign-up, no ads' };
 
 export const getStaticPaths = (async () => {
   const pages = await getCollection('landing');
+  const pagesEn = await getCollection('landingEn');
   return [
-    { params: { slug: 'home' }, props: { title: messages.de.heroTitle } },
-    ...pages.map((e) => ({ params: { slug: e.id }, props: { title: e.data.h1 } })),
+    { params: { slug: 'home' }, props: { title: messages.de.heroTitle, tagline: TAGLINE.de } },
+    ...pages.map((e) => ({ params: { slug: e.id }, props: { title: e.data.h1, tagline: TAGLINE.de } })),
+    ...pagesEn.map((e) => ({ params: { slug: `en-${e.id}` }, props: { title: e.data.h1, tagline: TAGLINE.en } })),
   ];
 }) satisfies GetStaticPaths;
 
@@ -32,7 +35,7 @@ function wrap(title: string): string[] {
   return lines.slice(0, 3);
 }
 
-function ogSvg(title: string): string {
+function ogSvg(title: string, tagline: string): string {
   const lines = wrap(title);
   const first = 300 - ((lines.length - 1) * 84) / 2;
   const text = lines
@@ -42,11 +45,12 @@ function ogSvg(title: string): string {
   <rect width="${WIDTH}" height="${HEIGHT}" fill="#0f766e"/>
   <text x="80" y="110" font-family="Helvetica, Arial, DejaVu Sans, sans-serif" font-size="44" font-weight="700" fill="#ffffff">mitlio</text>
   <text font-family="Helvetica, Arial, DejaVu Sans, sans-serif" font-size="72" font-weight="700" fill="#ffffff">${text}</text>
-  <text x="80" y="560" font-family="Helvetica, Arial, DejaVu Sans, sans-serif" font-size="34" fill="#ccfbf1">Kostenlos, ohne Anmeldung, ohne Werbung</text>
+  <text x="80" y="560" font-family="Helvetica, Arial, DejaVu Sans, sans-serif" font-size="34" fill="#ccfbf1">${escapeXml(tagline)}</text>
 </svg>`;
 }
 
 export const GET: APIRoute = async ({ props }) => {
-  const png = await sharp(Buffer.from(ogSvg((props as { title: string }).title))).png().toBuffer();
+  const { title, tagline } = props as { title: string; tagline: string };
+  const png = await sharp(Buffer.from(ogSvg(title, tagline))).png().toBuffer();
   return new Response(new Uint8Array(png), { headers: { 'Content-Type': 'image/png' } });
 };
