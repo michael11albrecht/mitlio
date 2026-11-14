@@ -82,18 +82,26 @@ class PlatformSettleActionsRepository implements SettleActionsRepository {
   final LinkLauncher _launcher;
   final ShareService _share;
 
+  /// Runs [body] with the stored details of [memberId].
+  Future<RepoResult<T>> _withDetails<T>(
+    String memberId,
+    Future<RepoResult<T>> Function(PaymentDetails details) body,
+  ) async => switch (await _details.get(memberId)) {
+    Ok<PaymentDetails, RepositoryError>(:final value) => await body(value),
+    Err<PaymentDetails, RepositoryError>(:final error) => Err(error),
+  };
+
   @override
-  Future<RepoResult<PayoutOptions>> options(String memberId) async =>
-      switch (await _details.get(memberId)) {
-        Ok<PaymentDetails, RepositoryError>(:final value) => Ok(
-          PayoutOptions(
-            hasPaypal: value.paypalMe != null,
-            hasIban: value.iban != null,
-            ibanHint: value.ibanHint,
-          ),
-        ),
-        Err<PaymentDetails, RepositoryError>(:final error) => Err(error),
-      };
+  Future<RepoResult<PayoutOptions>> options(String memberId) => _withDetails(
+    memberId,
+    (d) async => Ok(
+      PayoutOptions(
+        hasPaypal: d.paypalMe != null,
+        hasIban: d.iban != null,
+        ibanHint: d.ibanHint,
+      ),
+    ),
+  );
 
   @override
   Future<RepoResult<String?>> epcPayload({
@@ -101,68 +109,45 @@ class PlatformSettleActionsRepository implements SettleActionsRepository {
     required String memberName,
     required Money amount,
     required String remittance,
-  }) async {
-    final PaymentDetails d;
-    switch (await _details.get(memberId)) {
-      case Err<PaymentDetails, RepositoryError>(:final error):
-        return Err(error);
-      case Ok<PaymentDetails, RepositoryError>(:final value):
-        d = value;
-    }
+  }) => _withDetails(memberId, (d) async {
     final iban = d.iban;
     if (iban == null) return const Ok(null);
-    return switch (_links.epcPayload(
+    final payload = _links.epcPayload(
       name: d.accountName ?? memberName,
       iban: iban,
       bic: d.bic,
       amount: amount,
       remittance: remittance,
-    )) {
-      Ok<String, EpcError>(:final value) => Ok(value),
-      Err<String, EpcError>() => const Ok(null),
-    };
-  }
+    );
+    return Ok(payload is Ok<String, EpcError> ? payload.value : null);
+  });
 
   @override
   Future<RepoResult<PayPalOutcome>> openPayPal(
     String memberId,
     Money amount,
-  ) async {
-    final PaymentDetails d;
-    switch (await _details.get(memberId)) {
-      case Err<PaymentDetails, RepositoryError>(:final error):
-        return Err(error);
-      case Ok<PaymentDetails, RepositoryError>(:final value):
-        d = value;
-    }
+  ) => _withDetails(memberId, (d) async {
     final handle = d.paypalMe;
     if (handle == null) return const Err(InvalidData('no PayPal.Me handle'));
-    return switch (await _links.openPayPal(handle, amount)) {
-      Ok<PaymentLinkOutcome, PayPalError>(:final value) => Ok(
-        value == PaymentLinkOutcome.opened
+    final opened = await _links.openPayPal(handle, amount);
+    if (opened is Ok<PaymentLinkOutcome, PayPalError>) {
+      return Ok(
+        opened.value == PaymentLinkOutcome.opened
             ? PayPalOutcome.opened
             : PayPalOutcome.copied,
-      ),
-      Err<PaymentLinkOutcome, PayPalError>() => const Err(
-        InvalidData('PayPal link'),
-      ),
-    };
-  }
+      );
+    }
+    return const Err(InvalidData('PayPal link'));
+  });
 
   @override
-  Future<RepoResult<void>> copyIban(String memberId) async {
-    final PaymentDetails d;
-    switch (await _details.get(memberId)) {
-      case Err<PaymentDetails, RepositoryError>(:final error):
-        return Err(error);
-      case Ok<PaymentDetails, RepositoryError>(:final value):
-        d = value;
-    }
-    final iban = d.iban;
-    if (iban == null) return const Err(InvalidData('no IBAN'));
-    await _launcher.copyToClipboard(iban);
-    return const Ok(null);
-  }
+  Future<RepoResult<void>> copyIban(String memberId) =>
+      _withDetails<void>(memberId, (d) async {
+        final iban = d.iban;
+        if (iban == null) return const Err(InvalidData('no IBAN'));
+        await _launcher.copyToClipboard(iban);
+        return const Ok(null);
+      });
 
   @override
   Future<RepoResult<void>> shareText(String text) => guardStorage(() async {

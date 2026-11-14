@@ -158,13 +158,11 @@ class SettleViewModel extends Notifier<SettleState> {
     SettlementMethod method = SettlementMethod.other,
   }) async {
     try {
-      final Group group;
-      switch (await ref.read(groupsRepositoryProvider).get(groupId)) {
-        case Err<Group, RepositoryError>(:final error):
-          return Err(error);
-        case Ok<Group, RepositoryError>(:final value):
-          group = value;
+      final found = await ref.read(groupsRepositoryProvider).get(groupId);
+      if (found case Err<Group, RepositoryError>(:final error)) {
+        return Err(error);
       }
+      final group = (found as Ok<Group, RepositoryError>).value;
       final now = ref.read(clockProvider).now().toUtc();
       final repo = ref.read(settlementsRepositoryProvider);
       final created = await repo.create(
