@@ -184,7 +184,13 @@ void main() {
             ),
           ),
         ),
-        throwsA(isA<MoneyOverflow>()),
+        throwsA(
+          isA<MoneyOverflow>().having(
+            (e) => e.cents,
+            'cents',
+            Money.maxAbsCents + 1,
+          ),
+        ),
       );
     });
 

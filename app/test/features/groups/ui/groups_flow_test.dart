@@ -8,6 +8,7 @@ import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../../../helpers/fake_app.dart';
 import '../../../helpers/pump_app.dart';
+import '../../../support/tap_counter.dart';
 import '../../repo_test_support.dart';
 
 /// UI flows of the groups slice on the real app, router and in-memory
@@ -41,8 +42,12 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> addMember(WidgetTester tester, String name) async {
-    await tester.enterText(
+  Future<void> addMember(
+    WidgetTester tester,
+    String name, [
+    TapCounter? taps,
+  ]) async {
+    await (taps?.enterText ?? tester.enterText)(
       find.widgetWithText(TextField, 'Name hinzufügen'),
       name,
     );
@@ -102,18 +107,20 @@ void main() {
       tester,
     ) async {
       await pumpMitlio(tester, app);
-      await tester.tap(find.text('Gruppe anlegen'));
+      final taps = TapCounter(tester);
+      await taps.tap(find.text('Gruppe anlegen'));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextField), 'Skiwochenende');
-      await tester.tap(find.text('Gruppe anlegen'));
+      await taps.enterText(find.byType(TextField), 'Skiwochenende');
+      await taps.tap(find.text('Gruppe anlegen'));
       await tester.pumpAndSettle();
 
       expect(find.text('Skiwochenende'), findsOneWidget);
       expect(find.text('Noch niemand dabei'), findsOneWidget);
       for (final name in ['Anna', 'Ben', 'Chiara', 'Dino']) {
-        await addMember(tester, name);
+        await addMember(tester, name, taps);
       }
+      taps.expectWithinBudget('create_group_with_members');
       expect(find.text('Noch niemand dabei'), findsNothing);
       for (final name in ['Anna', 'Ben', 'Chiara', 'Dino']) {
         expect(find.text(name), findsOneWidget);

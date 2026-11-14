@@ -1,4 +1,5 @@
 ---
+import Calculator from './Calculator.astro';
 import Layout from '../layouts/Layout.astro';
 import { messages, type Locale } from '../i18n';
 
@@ -13,6 +14,5 @@ const t = messages[locale];
 <Layout locale={locale} route="home" title={t.homeTitle} description={t.homeDescription}>
   <h1>{t.heroTitle}</h1>
   <p class="lead">{t.heroLead}</p>
-  <!-- Mount point for the calculator island (PW-T03). -->
-  <div id="calculator" role="region" aria-label={t.calculatorLabel}></div>
+  <Calculator locale={locale} />
 </Layout>

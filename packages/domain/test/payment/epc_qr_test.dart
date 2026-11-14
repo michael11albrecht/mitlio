@@ -4,6 +4,7 @@ import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../support/domain_rules_examples.dart';
+import '../support/no_shrink.dart';
 
 const _iban = 'DE89370400440532013000';
 
@@ -295,7 +296,7 @@ void main() {
 
   group('properties', () {
     Glados2<int, String>(
-      any.intInRange(1, 100000000000),
+      any.intNoShrink(1, 100000000000),
       any.letterOrDigits,
     ).test('valid input yields exactly 11 lines, no trailing newline', (
       cents,
@@ -308,7 +309,7 @@ void main() {
       expect(payload.split('\n')[10], text.trim());
     });
 
-    Glados<int>(any.intInRange(1, 100000000000)).test(
+    Glados<int>(any.intNoShrink(1, 100000000000)).test(
       'amount line equals cents / 100 with two decimals',
       (cents) {
         final r = _build(amount: _eur(cents)) as Ok<String, EpcError>;

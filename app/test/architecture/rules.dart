@@ -249,6 +249,10 @@ List<Rule> buildRules({required List<String> showDialogAllowlist}) => [
             ),
     ],
   ),
+  // TODO(P3-T14): once ViewModels with destructive commands exist (delete,
+  // remove member, ...), add a rule that each such command exposes an undo
+  // (convention documented in docs/ux-budgets.md, plan §2.6 #5). Not added
+  // yet: there is nothing to match, and a fake rule would give false comfort.
   Rule(
     id: 'skip-needs-issue',
     description: 'skip: in tests needs an issue link (#123 or issue URL)',

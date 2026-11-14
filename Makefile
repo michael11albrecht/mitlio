@@ -92,6 +92,11 @@ test-drive: ## Drive client tests
 test-tooling: ## Tests for repo tooling (gates)
 	cd $(TOOLING) && $(DART) test
 	tool/risk_label_test.sh
+	tool/agent_metrics_test.sh
+
+.PHONY: agent-metrics
+agent-metrics: ## Regenerate docs/agent-metrics.md from merged PRs (needs gh + jq)
+	tool/agent_metrics.sh --write
 
 .PHONY: test-app
 test-app: ## App unit + widget tests
@@ -107,6 +112,10 @@ cov: ## Tests with coverage + per-path gates (ARGS='--baseline f --write-summary
 .PHONY: mutate
 mutate: ## Mutation tests on domain (CHANGED=1 for changed files only)
 	tool/mutate.sh $(if $(CHANGED),--changed,)
+
+.PHONY: deps-policy
+deps-policy: ## Fail on ad/tracking/review-prompt SDKs in lockfiles (tool/deps_policy.yaml)
+	cd $(TOOLING) && $(DART) run bin/deps_policy.dart --root ../.. --policy ../../tool/deps_policy.yaml
 
 .PHONY: arch
 arch: ## Architecture rules
@@ -162,4 +171,4 @@ secrets: ## Scan for committed secrets
 check-fast: fmt-check lint test-domain ## Quick gate (agent Stop hook)
 
 .PHONY: check
-check: fmt-check lint arch test-tooling cov domain-web-test web-check goldens secrets ## Definition of done (cov runs all tests)
+check: fmt-check lint arch deps-policy test-tooling cov domain-web-test web-check goldens secrets ## Definition of done (cov runs all tests)

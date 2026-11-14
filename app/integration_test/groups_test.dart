@@ -11,6 +11,8 @@ import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/debug/debug_drive.dart';
 import 'package:mitlio/debug/handlers/groups.dart';
 
+import '../test/support/tap_counter.dart';
+
 /// Groups slice (P3-T06) on the Linux desktop device with an in-memory Drift
 /// database: once driven through the UI and asserted through DebugDrive, once
 /// driven through DebugDrive and asserted in the UI. The handlers are called
@@ -64,14 +66,16 @@ void main() {
     await start(tester);
     expect(find.text('Noch keine Gruppe'), findsOneWidget);
 
-    await tester.tap(find.text('Gruppe anlegen'));
+    final taps = TapCounter(tester);
+    await taps.tap(find.text('Gruppe anlegen'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'Skiwochenende');
-    await tester.tap(find.text('Gruppe anlegen'));
+    await taps.enterText(find.byType(TextField), 'Skiwochenende');
+    await taps.tap(find.text('Gruppe anlegen'));
     await tester.pumpAndSettle();
     for (final name in ['Anna', 'Ben', 'Chiara', 'Dino']) {
       await addMember(tester, name);
     }
+    taps.expectWithinBudget('create_group_with_members');
 
     final state = await drive['state']!({'screen': 'group'});
     final group = state['state']! as Map<String, Object?>;
