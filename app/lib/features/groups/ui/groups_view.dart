@@ -21,7 +21,16 @@ class GroupsView extends ConsumerWidget {
     final state = ref.watch(groupsViewModelProvider);
     void newGroup() => unawaited(context.push('/groups/new'));
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.appName)),
+      appBar: AppBar(
+        title: Text(l10n.appName),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: l10n.settingsTitle,
+            onPressed: () => unawaited(context.push('/settings')),
+          ),
+        ],
+      ),
       floatingActionButton: switch (state) {
         GroupsLoaded(isEmpty: false) => FloatingActionButton.extended(
           onPressed: newGroup,

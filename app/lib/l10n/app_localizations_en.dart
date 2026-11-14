@@ -1235,4 +1235,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportCategoryOther => 'Other';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get privacySection => 'Privacy';
+
+  @override
+  String get crashReportsLabel => 'Send crash reports';
+
+  @override
+  String get crashReportsHint =>
+      'Only on a crash: technical error data without names, amounts, notes or IBAN. Off by default.';
+
+  @override
+  String get crashReportsUnavailable => 'Not available in this version.';
 }
