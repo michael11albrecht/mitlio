@@ -1,0 +1,38 @@
+# supabase/
+
+Backend for mitlio (ADR-06): Postgres + RLS. Plan: `docs/IMPLEMENTATION_PLAN.md` §2.4 (data model), §8 (security).
+
+No hosted project is linked. `project_id` in `config.toml` only names the local Docker stack.
+Never run `supabase link` / `supabase db push` from an agent; deploys are an owner step.
+
+## Layout
+
+| Path | What |
+|---|---|
+| `config.toml` | Minimal local stack: db, auth (anonymous sign-ins on), rest, realtime. Storage, edge runtime, studio, inbucket, analytics are off. |
+| `migrations/0001_core.sql` | Server schema mirroring the client Drift schema v2, sync columns, RLS. Merged migrations are append-only. |
+| `tests/database/*.sql` | pgTAP: `rls_policies.sql` (per-table matrix), `rls_bootstrap.sql`, `rls_coverage.sql` (every table has RLS and tests), `schema_invariants.sql`. |
+
+## Run locally (needs Docker)
+
+CLI: **v2.70.0** (pinned in `.github/workflows/db.yml`; install the same version, e.g. a release tarball from
+<https://github.com/supabase/cli/releases/tag/v2.70.0>).
+
+```sh
+make db-up      # supabase start
+make db-reset   # re-apply migrations from scratch
+make db-test    # supabase test db (pgTAP)
+make db-lint    # squawk on migrations (no Docker; needs node)
+make help       # without Docker the Docker targets print "needs Docker" and exit 1
+```
+
+## What CI does
+
+`.github/workflows/db.yml` runs on PRs touching `supabase/**`: squawk, `supabase start`,
+`supabase db reset`, `supabase test db`. It is the only place these run for agents.
+
+## Rules for new tables
+
+- Enable RLS, grant `select, insert, update` to `authenticated` only (no `anon`, no `delete`: soft delete via `deleted_at`).
+- Add the table to the registry in `tests/database/rls_coverage.sql` and to `TABLES` coverage in `rls_policies.sql`, or CI fails.
+- Server-only data never mirrors client-only secrets: **no IBAN columns** (`members.iban_hint` is a masked hint, max 14 chars).
