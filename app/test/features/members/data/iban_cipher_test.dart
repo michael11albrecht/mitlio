@@ -89,6 +89,30 @@ void main() {
       );
     });
 
+    test(
+      'deleteKey makes stored values unreadable and a new key is used',
+      () async {
+        final cipher = SecureStorageIbanCipher(logger: log);
+        final stored = await cipher.encrypt(testIban);
+        await cipher.deleteKey();
+        await expectLater(cipher.decrypt(stored), throwsStateError);
+        final fresh = await cipher.encrypt(testIban);
+        expect(await cipher.decrypt(fresh), testIban);
+        expect(
+          await SecureStorageIbanCipher(logger: log).decrypt(fresh),
+          testIban,
+          reason: 'the new key was persisted, not only cached',
+        );
+      },
+    );
+
+    test('deleteKey without a key store does not throw', () async {
+      await SecureStorageIbanCipher(
+        logger: log,
+        storage: _BrokenStorage(),
+      ).deleteKey();
+    });
+
     test('a tampered value fails to decrypt', () async {
       final cipher = SecureStorageIbanCipher(logger: log);
       final stored = await cipher.encrypt(testIban);

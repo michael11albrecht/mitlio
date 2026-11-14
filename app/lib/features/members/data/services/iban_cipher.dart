@@ -12,6 +12,10 @@ abstract interface class IbanCipher {
 
   /// Throws if [stored] is encrypted and the key is gone.
   Future<String> decrypt(String stored);
+
+  /// Removes the key, so stored values can never be read again ("delete my
+  /// data"). An unavailable store holds no key, so that is not a failure.
+  Future<void> deleteKey();
 }
 
 const _prefix = 'enc1:';
@@ -25,6 +29,9 @@ class PlaintextIbanCipher implements IbanCipher {
 
   @override
   Future<String> decrypt(String stored) async => stored;
+
+  @override
+  Future<void> deleteKey() async {}
 }
 
 /// AES-256-GCM with a random key kept in `flutter_secure_storage` (Keychain,
@@ -91,5 +98,15 @@ class SecureStorageIbanCipher implements IbanCipher {
       macLength: _algorithm.macAlgorithm.macLength,
     );
     return utf8.decode(await _algorithm.decrypt(box, secretKey: key));
+  }
+
+  @override
+  Future<void> deleteKey() async {
+    _key = null;
+    try {
+      await _storage.delete(key: _keyName);
+    } on Object {
+      // No key store, no key.
+    }
   }
 }

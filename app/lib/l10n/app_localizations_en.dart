@@ -1389,6 +1389,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get crashReportsUnavailable => 'Not available in this version.';
 
   @override
+  String get deleteMyDataEntry => 'Delete all my data';
+
+  @override
+  String get deleteMyDataEntryHint =>
+      'Remove groups, expenses and rides from this device';
+
+  @override
+  String get deleteMyDataTitle => 'Delete all my data';
+
+  @override
+  String get deleteMyDataWhatTitle => 'What gets deleted';
+
+  @override
+  String get deleteMyDataWhat =>
+      'On this device: all groups, members, expenses, rides, settlements, payment details (including IBAN and its key) and your settings. Afterwards the app starts as if new.';
+
+  @override
+  String get deleteMyDataServer =>
+      'On the server: your links to groups and your account, if you have one.';
+
+  @override
+  String get deleteMyDataStaysTitle => 'What stays';
+
+  @override
+  String get deleteMyDataStays =>
+      'Shared group data that other members have on their devices stays with them. It belongs to the group, not to you alone.';
+
+  @override
+  String get deleteMyDataIrreversible => 'This cannot be undone.';
+
+  @override
+  String get deleteMyDataConfirmWord => 'DELETE';
+
+  @override
+  String get deleteMyDataConfirmLabel => 'Type DELETE to confirm';
+
+  @override
+  String get deleteMyDataAction => 'Delete everything for good';
+
+  @override
+  String get deleteMyDataFailed =>
+      'Deleting did not work. Nothing was deleted. Please try again.';
+
+  @override
   String get fuelChipsLabel => 'Use a fuel price';
 
   @override

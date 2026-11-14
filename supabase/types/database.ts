@@ -770,6 +770,7 @@ export type Database = {
         Returns: boolean
       }
       create_invite: { Args: { gid: string }; Returns: string }
+      delete_my_data: { Args: never; Returns: Json }
       is_group_member: { Args: { gid: string }; Returns: boolean }
       join_group: {
         Args: { claim_member_id?: string; token: string }

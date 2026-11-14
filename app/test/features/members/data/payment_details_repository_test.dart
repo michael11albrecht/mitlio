@@ -41,6 +41,9 @@ class _FailingCipher implements IbanCipher {
 
   @override
   Future<String> decrypt(String stored) async => throw StateError('no key');
+
+  @override
+  Future<void> deleteKey() async {}
 }
 
 Map<PaymentField, PaymentFieldError> _errors(

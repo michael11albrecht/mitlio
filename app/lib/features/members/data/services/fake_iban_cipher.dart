@@ -14,4 +14,7 @@ class FakeIbanCipher implements IbanCipher {
   Future<String> decrypt(String stored) async => stored.startsWith(marker)
       ? stored.substring(marker.length).split('').reversed.join()
       : stored;
+
+  @override
+  Future<void> deleteKey() async {}
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/features/settings/ui/crash_reporting_view_model.dart';
@@ -35,6 +36,16 @@ class SettingsView extends ConsumerWidget {
             onChanged: state.available
                 ? (v) => unawaited(vm.setEnabled(enabled: v))
                 : null,
+          ),
+          ListTile(
+            title: Text(
+              l10n.deleteMyDataEntry,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+            subtitle: Text(l10n.deleteMyDataEntryHint),
+            onTap: () => unawaited(context.push('/settings/delete-data')),
           ),
         ],
       ),
