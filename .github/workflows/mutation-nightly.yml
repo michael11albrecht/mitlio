@@ -6,9 +6,6 @@ on:
   schedule:
     - cron: "0 3 * * *"
   workflow_dispatch:
-  # TEMP-PR-TRIGGER (remove before merge)
-  pull_request:
-    paths: [.github/workflows/mutation-nightly.yml]
 
 permissions:
   contents: read
@@ -43,7 +40,6 @@ jobs:
           path: build/mutation/report
           if-no-files-found: warn
       - name: File survivor issues
-        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -69,7 +65,7 @@ jobs:
           for name, muts in groups[:MAX_ISSUES]:
               title = f"Mutation survivors in {name}"
               lines = [f"- line {l}: `{o}` -> `{m}`" for l, o, m in sorted(muts, key=lambda x: int(x[0]))]
-              body = (f"Surviving mutants in `{name}` ({len(muts)}), from the nightly run {run_url}.\n\n"
+              body = (f"Surviving mutants in `packages/domain/{name}` ({len(muts)}), from the nightly run {run_url}.\n\n"
                       + "\n".join(lines)
                       + "\n\n**Task:** kill them with behavioural tests (no production changes unless a mutant reveals a bug).\n")
               found = json.loads(gh("issue", "list", "--state", "open", "--search", f'"{title}" in:title',
