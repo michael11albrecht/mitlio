@@ -929,5 +929,63 @@
   "privacySection": "Datenschutz",
   "crashReportsLabel": "Absturzberichte senden",
   "crashReportsHint": "Nur bei einem Absturz: technische Fehlerdaten ohne Namen, Beträge, Notizen oder IBAN. Standardmäßig aus.",
-  "crashReportsUnavailable": "In dieser Version nicht verfügbar."
+  "crashReportsUnavailable": "In dieser Version nicht verfügbar.",
+  "fuelChipsLabel": "Spritpreis übernehmen",
+  "fuelGradeE5": "E5",
+  "fuelGradeE10": "E10",
+  "fuelGradeDiesel": "Diesel",
+  "fuelScopeNational": "Ø Deutschland",
+  "fuelScopePlz": "Ø PLZ {plz}",
+  "@fuelScopePlz": {
+    "placeholders": {
+      "plz": {
+        "type": "String"
+      }
+    }
+  },
+  "fuelScopeNearby": "Ø in deiner Nähe",
+  "fuelAgeNow": "gerade eben",
+  "fuelAgeMinutes": "vor {count} min",
+  "@fuelAgeMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fuelAgeHours": "vor {count} Std.",
+  "@fuelAgeHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fuelAgeDays": "vor {count} Tagen",
+  "@fuelAgeDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fuelAgeSince": "Stand {date}",
+  "@fuelAgeSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "fuelOfflineNote": "offline, zuletzt bekannt",
+  "fuelNoPrice": "Gerade kein aktueller Preis verfügbar. Trag ihn einfach selbst ein.",
+  "fuelNearby": "In meiner Nähe",
+  "fuelNearbyDenied": "Standort nicht freigegeben, es gilt der Bundesdurchschnitt.",
+  "fuelNearbyUnavailable": "Standort gerade nicht verfügbar.",
+  "fuelPlzAction": "PLZ eingeben",
+  "fuelPlzLabel": "Postleitzahl",
+  "fuelPlzInvalid": "Bitte fünf Ziffern",
+  "fuelPlzApply": "Übernehmen",
+  "fuelNationalAction": "Bundesweit",
+  "fuelAttributionFallback": "Spritpreisdaten"
 }

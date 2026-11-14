@@ -5,11 +5,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/app.dart';
+import 'package:mitlio/core/app_config.dart';
 import 'package:mitlio/core/crash/crash_reporter.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/debug/debug_drive.dart';
+import 'package:mitlio/features/fuel/data/repositories/fuel_providers.dart';
+import 'package:mitlio/features/fuel/data/services/fuel_price_service.dart';
 import 'package:path_provider/path_provider.dart';
 
 // TODO(P8-T01): read from AppConfig once the config files land. Empty in the
@@ -28,8 +31,18 @@ Future<void> main() async {
     store: FileCrashReportingStore(File('${dir.path}/crash_reporting_on')),
   );
   await crashReporter.start();
+  const config = AppConfig.fromEnvironment();
   final container = ProviderContainer(
     overrides: [
+      // No backend configured: the service reports unavailable and the
+      // price chips stay hidden.
+      if (config.hasBackend)
+        fuelPriceServiceProvider.overrideWithValue(
+          HttpFuelPriceService(
+            baseUrl: config.supabaseUrl,
+            anonKey: config.supabaseAnonKey,
+          ),
+        ),
       appDatabaseProvider.overrideWithValue(db),
       crashReporterProvider.overrideWithValue(crashReporter),
     ],

@@ -12,6 +12,7 @@ import 'package:mitlio/debug/drive_types.dart';
 import 'package:mitlio/debug/handlers/balances.dart';
 import 'package:mitlio/debug/handlers/expenses.dart';
 import 'package:mitlio/debug/handlers/export.dart';
+import 'package:mitlio/debug/handlers/fuel.dart';
 import 'package:mitlio/debug/handlers/groups.dart';
 import 'package:mitlio/debug/handlers/payment.dart';
 import 'package:mitlio/debug/handlers/rides.dart';
@@ -117,6 +118,7 @@ void registerDebugDrive(ProviderContainer container) {
     ...ridesDriveHandlers(container),
     ...exportDriveHandlers(container),
     ...statisticsDriveHandlers(container),
+    ...fuelDriveHandlers(container),
   };
   for (final entry in handlers.entries) {
     developer.registerExtension('ext.mitlio.${entry.key}', (_, params) async {

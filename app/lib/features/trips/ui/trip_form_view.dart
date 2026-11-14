@@ -12,6 +12,8 @@ import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/core/widgets/money_text.dart';
 import 'package:mitlio/core/widgets/result_card.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
+import 'package:mitlio/features/fuel/ui/fuel_price_chips.dart';
+import 'package:mitlio/features/fuel/ui/fuel_price_view_model.dart';
 import 'package:mitlio/features/trips/ui/trip_form_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -72,6 +74,16 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
     _tolls.text = local(inputs.tolls);
     _ferry.text = local(inputs.ferry);
     _title.text = inputs.title;
+  }
+
+  /// A price from the fuel chips: into the field and the ViewModel.
+  void _fillPrice(
+    int milli,
+    String decimalSeparator, {
+    required bool onlyIfEmpty,
+  }) {
+    final text = _vm.applyFuelPrice(milli, onlyIfEmpty: onlyIfEmpty);
+    if (text != null) _price.text = text.replaceAll('.', decimalSeparator);
   }
 
   Future<void> _save() async {
@@ -280,6 +292,16 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                     error: invalid.contains(TripField.price),
                     onChanged: vm.setPrice,
                   ),
+                  if (!electric && s.group.currency == Currency.eur)
+                    FuelPriceChips(
+                      grade: FuelGrade.e5,
+                      autoFill: true,
+                      onFill: (milli, {required auto}) => _fillPrice(
+                        milli,
+                        format.decimalSeparator,
+                        onlyIfEmpty: auto,
+                      ),
+                    ),
                   gap(),
                   _NumberField(
                     controller: _wear,
