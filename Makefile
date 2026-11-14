@@ -165,6 +165,12 @@ db-test: ## Run pgTAP tests in supabase/tests (needs Docker, run db-up first)
 db-lint: ## Lint migrations with squawk (no Docker)
 	$(SQUAWK) supabase/migrations/*.sql
 
+.PHONY: db-types
+db-types: ## Regenerate supabase/types/database.ts (needs Docker + db-up) and the Dart DB contract
+	$(call need_docker)
+	$(SUPABASE) gen types typescript --local > supabase/types/database.ts
+	$(DART) tool/gen_db_contract.dart
+
 DRIVE_DEVICE ?= linux
 DRIVE_WAIT   ?= 300
 ifeq ($(shell uname -s),Linux)
