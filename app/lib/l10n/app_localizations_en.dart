@@ -1152,9 +1152,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingTripOnly => 'Just calculate one trip';
 
   @override
-  String get tripStandaloneTitle => 'Calculate a trip';
-
-  @override
   String tripSeatName(int number) {
     return 'Person $number';
   }

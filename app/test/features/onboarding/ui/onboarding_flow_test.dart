@@ -118,7 +118,7 @@ void main() {
     await tester.tap(find.text('Nur eine Fahrt berechnen'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Fahrt berechnen'), findsOneWidget);
+    expect(find.widgetWithText(AppBar, 'Fahrt'), findsOneWidget);
     expect(find.text('Person 1'), findsWidgets);
     expect(find.text('Fahrt speichern'), findsNothing);
     final share = find.widgetWithText(FilledButton, 'Ergebnis teilen');

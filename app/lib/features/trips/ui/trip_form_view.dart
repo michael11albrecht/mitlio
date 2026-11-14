@@ -155,7 +155,7 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          standalone ? l10n.tripStandaloneTitle : l10n.tripFormTitle,
+          l10n.tripFormTitle,
         ),
       ),
       body: Column(

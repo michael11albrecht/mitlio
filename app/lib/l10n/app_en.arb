@@ -380,7 +380,6 @@
   "onboardingGroup": "Create a group for expenses",
   "onboardingGroupHint": "For trips, your flat or a night out together.",
   "onboardingTripOnly": "Just calculate one trip",
-  "tripStandaloneTitle": "Calculate a trip",
   "tripSeatName": "Person {number}",
   "@tripSeatName": {
     "placeholders": {

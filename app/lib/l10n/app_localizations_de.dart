@@ -1156,9 +1156,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboardingTripOnly => 'Nur eine Fahrt berechnen';
 
   @override
-  String get tripStandaloneTitle => 'Fahrt berechnen';
-
-  @override
   String tripSeatName(int number) {
     return 'Person $number';
   }

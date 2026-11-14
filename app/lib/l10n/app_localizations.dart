@@ -2048,12 +2048,6 @@ abstract class AppLocalizations {
   /// **'Nur eine Fahrt berechnen'**
   String get onboardingTripOnly;
 
-  /// No description provided for @tripStandaloneTitle.
-  ///
-  /// In de, this message translates to:
-  /// **'Fahrt berechnen'**
-  String get tripStandaloneTitle;
-
   /// No description provided for @tripSeatName.
   ///
   /// In de, this message translates to:

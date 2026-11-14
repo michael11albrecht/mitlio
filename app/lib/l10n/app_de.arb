@@ -798,7 +798,6 @@
   "onboardingGroup": "Gruppe für Ausgaben anlegen",
   "onboardingGroupHint": "Für Reisen, die WG oder einen Abend zu mehreren.",
   "onboardingTripOnly": "Nur eine Fahrt berechnen",
-  "tripStandaloneTitle": "Fahrt berechnen",
   "tripSeatName": "Person {number}",
   "@tripSeatName": {
     "placeholders": {
