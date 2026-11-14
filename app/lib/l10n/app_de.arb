@@ -656,5 +656,71 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@@x-feature-settle": "settle",
+  "settleOpen": "Ausgleichen",
+  "settleTitle": "Ausgleichen",
+  "settleOpenTitle": "Noch zu zahlen",
+  "settleTransfer": "{from} → {to}",
+  "@settleTransfer": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "settleSettledTitle": "Alles ausgeglichen",
+  "settleSettledMessage": "Niemand muss noch etwas zahlen.",
+  "settleHistoryTitle": "Ausgleiche",
+  "settleHistoryEmpty": "Noch nichts bezahlt. Sobald jemand zahlt, siehst du es hier.",
+  "settleHistoryDelete": "Ausgleich löschen",
+  "settleHistoryDeleted": "Ausgleich gelöscht",
+  "settleShare": "Zusammenfassung teilen",
+  "settlePaidDone": "{from} → {to} als bezahlt markiert",
+  "@settlePaidDone": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "settleAmountLabel": "Betrag",
+  "settleAmountTooHigh": "Das ist mehr als die offenen {amount}.",
+  "@settleAmountTooHigh": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "settlePartialHint": "Teilzahlung: Der Rest bleibt offen.",
+  "settlePayPal": "Mit PayPal zahlen",
+  "settleBankTitle": "Überweisung",
+  "settleQrHint": "Mit der Banking-App scannen",
+  "settleQrLabel": "QR-Code für die Überweisung an {name}",
+  "@settleQrLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "settleCopyIban": "IBAN kopieren",
+  "settleIbanCopied": "IBAN kopiert",
+  "settleNoDetails": "{name} hat noch keine Zahlungsdaten — trotzdem als bezahlt markieren?",
+  "@settleNoDetails": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "settleMarkPaid": "Als bezahlt markieren",
+  "settleActionFailed": "Das hat nicht geklappt. Versuch es nochmal."
 }

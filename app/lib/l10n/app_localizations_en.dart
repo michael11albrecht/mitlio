@@ -918,4 +918,87 @@ class AppLocalizationsEn extends AppLocalizations {
   String ridesFairnessKm(String driven, String ridden) {
     return '$driven km driven · $ridden km ridden';
   }
+
+  @override
+  String get settleOpen => 'Settle up';
+
+  @override
+  String get settleTitle => 'Settle up';
+
+  @override
+  String get settleOpenTitle => 'Still to pay';
+
+  @override
+  String settleTransfer(String from, String to) {
+    return '$from → $to';
+  }
+
+  @override
+  String get settleSettledTitle => 'All square';
+
+  @override
+  String get settleSettledMessage => 'Nobody has anything left to pay.';
+
+  @override
+  String get settleHistoryTitle => 'Settlements';
+
+  @override
+  String get settleHistoryEmpty =>
+      'Nothing paid yet. Once someone pays, you will see it here.';
+
+  @override
+  String get settleHistoryDelete => 'Delete settlement';
+
+  @override
+  String get settleHistoryDeleted => 'Settlement deleted';
+
+  @override
+  String get settleShare => 'Share summary';
+
+  @override
+  String settlePaidDone(String from, String to) {
+    return '$from → $to marked as paid';
+  }
+
+  @override
+  String get settleAmountLabel => 'Amount';
+
+  @override
+  String settleAmountTooHigh(String amount) {
+    return 'That is more than the $amount still open.';
+  }
+
+  @override
+  String get settlePartialHint => 'Partial payment: the rest stays open.';
+
+  @override
+  String get settlePayPal => 'Pay with PayPal';
+
+  @override
+  String get settleBankTitle => 'Bank transfer';
+
+  @override
+  String get settleQrHint => 'Scan with your banking app';
+
+  @override
+  String settleQrLabel(String name) {
+    return 'QR code for the bank transfer to $name';
+  }
+
+  @override
+  String get settleCopyIban => 'Copy IBAN';
+
+  @override
+  String get settleIbanCopied => 'IBAN copied';
+
+  @override
+  String settleNoDetails(String name) {
+    return '$name has no payment details yet — mark as paid anyway?';
+  }
+
+  @override
+  String get settleMarkPaid => 'Mark as paid';
+
+  @override
+  String get settleActionFailed => 'That did not work. Please try again.';
 }

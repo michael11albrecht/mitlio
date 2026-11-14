@@ -14,9 +14,13 @@ import 'package:mitlio/features/members/data/repositories/members_providers.dart
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_providers.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_repository.dart';
+import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/fake_settlements_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
+import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
+
+import 'fake_platform.dart';
 
 /// Groups fake whose commands and stream can be made to fail.
 class FlakyGroups extends FakeGroupsRepository {
@@ -102,6 +106,50 @@ class FlakyMembers extends FakeMembersRepository {
       failWith != null ? Err(failWith!) : super.softDelete(id);
 }
 
+/// Settlements fake whose commands and stream can be made to fail.
+class FlakySettlements extends FakeSettlementsRepository {
+  FlakySettlements({
+    required super.groups,
+    required super.members,
+    required super.clock,
+    required super.ids,
+  });
+
+  /// Fails `create` and `softDelete` while set.
+  RepositoryError? failWith;
+
+  /// Makes `watchSettlements` emit this error while set.
+  Object? watchError;
+
+  @override
+  Stream<List<SettlementEntry>> watchSettlements(String groupId) =>
+      watchError != null
+      ? Stream.error(watchError!)
+      : super.watchSettlements(groupId);
+
+  @override
+  Future<RepoResult<SettlementEntry>> create(
+    String groupId,
+    SettlementDraft draft,
+  ) async => failWith != null ? Err(failWith!) : super.create(groupId, draft);
+
+  @override
+  Future<RepoResult<Undo>> softDelete(String id) async =>
+      failWith != null ? Err(failWith!) : super.softDelete(id);
+}
+
+/// Payment details fake whose reads can be made to fail.
+class FlakyPayments extends FakePaymentDetailsRepository {
+  FlakyPayments({required super.members});
+
+  /// Fails `get` while set.
+  RepositoryError? failWith;
+
+  @override
+  Future<RepoResult<PaymentDetails>> get(String memberId) async =>
+      failWith != null ? Err(failWith!) : super.get(memberId);
+}
+
 /// All repositories in memory, wired together, plus the provider overrides
 /// that install them. One per test.
 class FakeApp {
@@ -120,13 +168,13 @@ class FakeApp {
         clock: clock,
         ids: ids,
       ),
-      FakeSettlementsRepository(
+      FlakySettlements(
         groups: groups,
         members: members,
         clock: clock,
         ids: ids,
       ),
-      FakePaymentDetailsRepository(members: members),
+      FlakyPayments(members: members),
     );
   }
 
@@ -143,8 +191,14 @@ class FakeApp {
   final FlakyGroups groups;
   final FlakyMembers members;
   final FakeExpensesRepository expenses;
-  final FakeSettlementsRepository settlements;
-  final FakePaymentDetailsRepository payments;
+  final FlakySettlements settlements;
+  final FlakyPayments payments;
+
+  /// Links opened and text copied by the payment actions.
+  final launcher = FakeLinkLauncher();
+
+  /// Texts handed to the share sheet.
+  final share = FakeShareService();
 
   List<Override> get overrides => overridesWith();
 
@@ -158,6 +212,8 @@ class FakeApp {
     membersRepositoryProvider.overrideWithValue(members),
     expensesRepositoryProvider.overrideWithValue(expenses),
     settlementsRepositoryProvider.overrideWithValue(settlements),
+    linkLauncherProvider.overrideWithValue(launcher),
+    shareServiceProvider.overrideWithValue(share),
   ];
 
   /// A container with these repositories; disposed by the caller.

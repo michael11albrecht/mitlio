@@ -921,4 +921,88 @@ class AppLocalizationsDe extends AppLocalizations {
   String ridesFairnessKm(String driven, String ridden) {
     return '$driven km gefahren · $ridden km mitgefahren';
   }
+
+  @override
+  String get settleOpen => 'Ausgleichen';
+
+  @override
+  String get settleTitle => 'Ausgleichen';
+
+  @override
+  String get settleOpenTitle => 'Noch zu zahlen';
+
+  @override
+  String settleTransfer(String from, String to) {
+    return '$from → $to';
+  }
+
+  @override
+  String get settleSettledTitle => 'Alles ausgeglichen';
+
+  @override
+  String get settleSettledMessage => 'Niemand muss noch etwas zahlen.';
+
+  @override
+  String get settleHistoryTitle => 'Ausgleiche';
+
+  @override
+  String get settleHistoryEmpty =>
+      'Noch nichts bezahlt. Sobald jemand zahlt, siehst du es hier.';
+
+  @override
+  String get settleHistoryDelete => 'Ausgleich löschen';
+
+  @override
+  String get settleHistoryDeleted => 'Ausgleich gelöscht';
+
+  @override
+  String get settleShare => 'Zusammenfassung teilen';
+
+  @override
+  String settlePaidDone(String from, String to) {
+    return '$from → $to als bezahlt markiert';
+  }
+
+  @override
+  String get settleAmountLabel => 'Betrag';
+
+  @override
+  String settleAmountTooHigh(String amount) {
+    return 'Das ist mehr als die offenen $amount.';
+  }
+
+  @override
+  String get settlePartialHint => 'Teilzahlung: Der Rest bleibt offen.';
+
+  @override
+  String get settlePayPal => 'Mit PayPal zahlen';
+
+  @override
+  String get settleBankTitle => 'Überweisung';
+
+  @override
+  String get settleQrHint => 'Mit der Banking-App scannen';
+
+  @override
+  String settleQrLabel(String name) {
+    return 'QR-Code für die Überweisung an $name';
+  }
+
+  @override
+  String get settleCopyIban => 'IBAN kopieren';
+
+  @override
+  String get settleIbanCopied => 'IBAN kopiert';
+
+  @override
+  String settleNoDetails(String name) {
+    return '$name hat noch keine Zahlungsdaten — trotzdem als bezahlt markieren?';
+  }
+
+  @override
+  String get settleMarkPaid => 'Als bezahlt markieren';
+
+  @override
+  String get settleActionFailed =>
+      'Das hat nicht geklappt. Versuch es nochmal.';
 }

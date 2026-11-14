@@ -265,5 +265,71 @@
   "ridesSettleExpenseTitle": "Rides {period} · {name}",
   "ridesFairnessTitle": "Fairness",
   "ridesFairnessNext": "Up next: {name}",
-  "ridesFairnessKm": "{driven} km driven · {ridden} km ridden"
+  "ridesFairnessKm": "{driven} km driven · {ridden} km ridden",
+  "@@x-feature-settle": "settle",
+  "settleOpen": "Settle up",
+  "settleTitle": "Settle up",
+  "settleOpenTitle": "Still to pay",
+  "settleTransfer": "{from} → {to}",
+  "@settleTransfer": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "settleSettledTitle": "All square",
+  "settleSettledMessage": "Nobody has anything left to pay.",
+  "settleHistoryTitle": "Settlements",
+  "settleHistoryEmpty": "Nothing paid yet. Once someone pays, you will see it here.",
+  "settleHistoryDelete": "Delete settlement",
+  "settleHistoryDeleted": "Settlement deleted",
+  "settleShare": "Share summary",
+  "settlePaidDone": "{from} → {to} marked as paid",
+  "@settlePaidDone": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "settleAmountLabel": "Amount",
+  "settleAmountTooHigh": "That is more than the {amount} still open.",
+  "@settleAmountTooHigh": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "settlePartialHint": "Partial payment: the rest stays open.",
+  "settlePayPal": "Pay with PayPal",
+  "settleBankTitle": "Bank transfer",
+  "settleQrHint": "Scan with your banking app",
+  "settleQrLabel": "QR code for the bank transfer to {name}",
+  "@settleQrLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "settleCopyIban": "Copy IBAN",
+  "settleIbanCopied": "IBAN copied",
+  "settleNoDetails": "{name} has no payment details yet — mark as paid anyway?",
+  "@settleNoDetails": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "settleMarkPaid": "Mark as paid",
+  "settleActionFailed": "That did not work. Please try again."
 }

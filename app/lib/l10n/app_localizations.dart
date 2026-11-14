@@ -1639,6 +1639,150 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'{driven} km gefahren · {ridden} km mitgefahren'**
   String ridesFairnessKm(String driven, String ridden);
+
+  /// No description provided for @settleOpen.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgleichen'**
+  String get settleOpen;
+
+  /// No description provided for @settleTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgleichen'**
+  String get settleTitle;
+
+  /// No description provided for @settleOpenTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch zu zahlen'**
+  String get settleOpenTitle;
+
+  /// No description provided for @settleTransfer.
+  ///
+  /// In de, this message translates to:
+  /// **'{from} → {to}'**
+  String settleTransfer(String from, String to);
+
+  /// No description provided for @settleSettledTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Alles ausgeglichen'**
+  String get settleSettledTitle;
+
+  /// No description provided for @settleSettledMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Niemand muss noch etwas zahlen.'**
+  String get settleSettledMessage;
+
+  /// No description provided for @settleHistoryTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgleiche'**
+  String get settleHistoryTitle;
+
+  /// No description provided for @settleHistoryEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch nichts bezahlt. Sobald jemand zahlt, siehst du es hier.'**
+  String get settleHistoryEmpty;
+
+  /// No description provided for @settleHistoryDelete.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgleich löschen'**
+  String get settleHistoryDelete;
+
+  /// No description provided for @settleHistoryDeleted.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgleich gelöscht'**
+  String get settleHistoryDeleted;
+
+  /// No description provided for @settleShare.
+  ///
+  /// In de, this message translates to:
+  /// **'Zusammenfassung teilen'**
+  String get settleShare;
+
+  /// No description provided for @settlePaidDone.
+  ///
+  /// In de, this message translates to:
+  /// **'{from} → {to} als bezahlt markiert'**
+  String settlePaidDone(String from, String to);
+
+  /// No description provided for @settleAmountLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Betrag'**
+  String get settleAmountLabel;
+
+  /// No description provided for @settleAmountTooHigh.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist mehr als die offenen {amount}.'**
+  String settleAmountTooHigh(String amount);
+
+  /// No description provided for @settlePartialHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Teilzahlung: Der Rest bleibt offen.'**
+  String get settlePartialHint;
+
+  /// No description provided for @settlePayPal.
+  ///
+  /// In de, this message translates to:
+  /// **'Mit PayPal zahlen'**
+  String get settlePayPal;
+
+  /// No description provided for @settleBankTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Überweisung'**
+  String get settleBankTitle;
+
+  /// No description provided for @settleQrHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Mit der Banking-App scannen'**
+  String get settleQrHint;
+
+  /// No description provided for @settleQrLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'QR-Code für die Überweisung an {name}'**
+  String settleQrLabel(String name);
+
+  /// No description provided for @settleCopyIban.
+  ///
+  /// In de, this message translates to:
+  /// **'IBAN kopieren'**
+  String get settleCopyIban;
+
+  /// No description provided for @settleIbanCopied.
+  ///
+  /// In de, this message translates to:
+  /// **'IBAN kopiert'**
+  String get settleIbanCopied;
+
+  /// No description provided for @settleNoDetails.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} hat noch keine Zahlungsdaten — trotzdem als bezahlt markieren?'**
+  String settleNoDetails(String name);
+
+  /// No description provided for @settleMarkPaid.
+  ///
+  /// In de, this message translates to:
+  /// **'Als bezahlt markieren'**
+  String get settleMarkPaid;
+
+  /// No description provided for @settleActionFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Das hat nicht geklappt. Versuch es nochmal.'**
+  String get settleActionFailed;
 }
 
 class _AppLocalizationsDelegate

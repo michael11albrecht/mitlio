@@ -14,6 +14,7 @@ import 'package:mitlio/debug/handlers/expenses.dart';
 import 'package:mitlio/debug/handlers/groups.dart';
 import 'package:mitlio/debug/handlers/payment.dart';
 import 'package:mitlio/debug/handlers/rides.dart';
+import 'package:mitlio/debug/handlers/settle.dart';
 import 'package:mitlio/debug/handlers/trips.dart';
 
 export 'package:mitlio/debug/debug_data_control.dart';
@@ -110,6 +111,7 @@ void registerDebugDrive(ProviderContainer container) {
     ...expensesDriveHandlers(container),
     ...balancesDriveHandlers(container),
     ...paymentDriveHandlers(container),
+    ...settleDriveHandlers(container),
     ...ridesDriveHandlers(container),
   };
   for (final entry in handlers.entries) {
