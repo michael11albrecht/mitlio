@@ -266,6 +266,83 @@
     }
   },
   "expenseExcluded": "Nicht dabei",
+  "@@x-feature": "trips",
+  "tripAdd": "Fahrt hinzufügen",
+  "tripFormTitle": "Fahrt",
+  "tripDefaultTitle": "Fahrt",
+  "tripResultCaption": "Jede Person zahlt",
+  "tripResultCaptionRounded": "Jede Person zahlt rund",
+  "tripResultDriverGets": "{name} bekommt {amount}",
+  "@tripResultDriverGets": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "tripHintFuel": "Trag Strecke, Verbrauch und Preis ein. Das Ergebnis siehst du sofort.",
+  "tripHintKmRate": "Trag Strecke und Kilometerpauschale ein. Das Ergebnis siehst du sofort.",
+  "tripNoParticipants": "Wähle mindestens eine Person, die mitfährt.",
+  "tripTooLarge": "Das ist zu viel zum Rechnen. Prüf die Zahlen.",
+  "tripNumberInvalid": "Das ist keine gültige Zahl",
+  "tripDistanceLabel": "Strecke (einfach)",
+  "tripUnitKm": "km",
+  "tripRoundTrip": "Hin- und Rückfahrt",
+  "tripEnergyFuel": "Benzin / Diesel",
+  "tripEnergyElectric": "Strom",
+  "tripConsumptionLabel": "Verbrauch",
+  "tripUnitLitersPer100": "l/100 km",
+  "tripUnitKwhPer100": "kWh/100 km",
+  "tripPriceFuelLabel": "Preis pro Liter",
+  "tripPriceElectricLabel": "Preis pro kWh",
+  "tripUnitPerLiter": "{symbol}/l",
+  "@tripUnitPerLiter": {
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
+  "tripUnitPerKwh": "{symbol}/kWh",
+  "@tripUnitPerKwh": {
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
+  "tripUnitPerKm": "{symbol}/km",
+  "@tripUnitPerKm": {
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
+  "tripWearLabel": "Verschleiß (optional)",
+  "tripKmRateToggle": "Kilometerpauschale",
+  "tripKmRateHint": "Ersetzt Sprit und Verschleiß",
+  "tripKmRateLabel": "Pauschale pro km",
+  "tripTollsLabel": "Maut (optional)",
+  "tripFerryLabel": "Fähre (optional)",
+  "tripDriverLabel": "Wer fährt?",
+  "tripPassengersLabel": "Wer fährt mit?",
+  "tripDriverPays": "Fahrer zahlt mit",
+  "tripTitleLabel": "Wohin ging’s? (optional)",
+  "tripSave": "Fahrt speichern",
+  "tripSaved": "Fahrt gespeichert",
+  "tripBreakdown": "Details",
+  "tripBreakdownFuel": "Sprit",
+  "tripBreakdownElectric": "Strom",
+  "tripBreakdownWear": "Verschleiß",
+  "tripBreakdownKmRate": "Kilometerpauschale",
+  "tripBreakdownTolls": "Maut",
+  "tripBreakdownFerry": "Fähre",
+  "tripBreakdownTotal": "Gesamt",
+  "tripBreakdownPerPerson": "Pro Person",
 
   "@@x-feature-rides": "rides",
   "tabRides": "Fahrten",

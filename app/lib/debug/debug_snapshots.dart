@@ -10,6 +10,7 @@ import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_view_model.dart';
 import 'package:mitlio/features/rides/ui/template_form_view_model.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
+import 'package:mitlio/features/trips/ui/trip_form_view_model.dart';
 
 /// Screen name to `debugSnapshot()` lookup behind `ext.mitlio.state`.
 /// ViewModels know nothing about it: this layer reads them.
@@ -33,6 +34,16 @@ String? _openGroupId(ProviderContainer c) {
   return segments.length >= 2 &&
           segments.first == 'groups' &&
           segments[1] != 'new'
+      ? segments[1]
+      : null;
+}
+
+/// Id of the group whose trip form is the current route.
+String? _openTripGroupId(ProviderContainer c) {
+  final segments = c.read(routerProvider).state.uri.pathSegments;
+  return segments.length == 3 &&
+          segments.first == 'groups' &&
+          segments[2] == 'trip'
       ? segments[1]
       : null;
 }
@@ -96,6 +107,12 @@ DebugSnapshotRegistry buildSnapshotRegistry(ProviderContainer c) =>
             : c
                   .read(expenseFormViewModelProvider(key).notifier)
                   .debugSnapshot();
+      })
+      ..register('trip', () {
+        final id = _openTripGroupId(c);
+        return id == null
+            ? {'status': 'not_open'}
+            : c.read(tripFormViewModelProvider(id).notifier).debugSnapshot();
       })
       ..register('balances', () {
         final id = _openGroupId(c);

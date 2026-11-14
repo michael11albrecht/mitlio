@@ -18,7 +18,7 @@ Contract for driving a running **debug** build of the app through the same ViewM
 |---|---|---|
 | `ext.mitlio.ping` | none | `{"version": "0.1.0", "buildSha": "dev"}`; `buildSha` from `--dart-define=BUILD_SHA` |
 | `ext.mitlio.reset` | none | `{"ok": true}`; deletes every row of the local database via `DebugDataControl.wipe()` |
-| `ext.mitlio.seed` | `scenario` (required; known: `groups`) | `{"ids": [...]}` from `DebugDataControl.seed(scenario)`; `groups` creates group "Wochenende" with Anna, Ben, Chiara, Dino (ids: group, then members) |
+| `ext.mitlio.seed` | `scenario` (required; known: `groups`, `empty`, `trip_4p`, `household_2p`, `rounding_edge`, `commute_3p`, `large_200_expenses`) | `{"ids": [...]}` from `DebugDataControl.seed(scenario)`; `groups` creates group "Wochenende" with Anna, Ben, Chiara, Dino (ids: group, then members). The file scenarios (`tool/fixtures/scenarios`, see `tool/fixtures/README.md`) are loaded through the repositories and also return `groupId` and `members` (name to id); `ids` = group, members, vehicles, templates, expenses, rides |
 | `ext.mitlio.state` | `screen` (optional) | without `screen`: `{"route": "/", "screens": [...]}`; with: `{"route", "screen", "state": {...}}` from the registered `debugSnapshot()` |
 | `ext.mitlio.navigate` | `route` (required, starts with `/`) | `{"route": "<resulting location>"}` |
 | `ext.mitlio.errors` | none | `{"errors": [{"time", "source", "error", "stackTrace"}]}`; returns and clears the captured errors |
