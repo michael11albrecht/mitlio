@@ -224,6 +224,33 @@ export type Database = {
         }
         Relationships: []
       }
+      fx_rates: {
+        Row: {
+          base: string
+          date: string
+          fetched_at: string
+          quote: string
+          rate_ppm: number
+          source_date: string
+        }
+        Insert: {
+          base: string
+          date: string
+          fetched_at?: string
+          quote: string
+          rate_ppm: number
+          source_date: string
+        }
+        Update: {
+          base?: string
+          date?: string
+          fetched_at?: string
+          quote?: string
+          rate_ppm?: number
+          source_date?: string
+        }
+        Relationships: []
+      }
       group_invites: {
         Row: {
           created_at: string

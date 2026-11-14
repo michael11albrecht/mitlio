@@ -41,7 +41,7 @@ jobs:
         run: |
           deno fmt --check
           deno lint
-          deno check fuel-prices/index.ts tests/*.ts _shared/*.ts
+          deno check fuel-prices/index.ts fx-rates/index.ts tests/*.ts _shared/*.ts
       - name: Edge Functions unit tests (coverage >= 90 %)
         run: supabase/functions/tests/coverage_gate.sh
       - name: Start local Supabase
