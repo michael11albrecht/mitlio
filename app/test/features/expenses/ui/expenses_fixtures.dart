@@ -90,7 +90,8 @@ class ExpensesApp {
     expensesRepositoryProvider.overrideWithValue(expenses),
   ];
 
-  ProviderContainer container() => ProviderContainer(overrides: overrides);
+  ProviderContainer container({List<Override> extra = const []}) =>
+      ProviderContainer(overrides: [...overrides, ...extra]);
 
   /// Creates the group with three members.
   Future<void> seedTrip({Currency currency = Currency.eur}) async {
@@ -390,6 +391,7 @@ Future<ProviderContainer> pumpExpenses(
   ExpensesApp app, {
   String? location,
   Locale locale = const Locale('de'),
+  List<Override> extra = const [],
 }) async {
   tester.platformDispatcher.localesTestValue = [locale];
   addTearDown(tester.platformDispatcher.clearLocalesTestValue);
@@ -397,7 +399,7 @@ Future<ProviderContainer> pumpExpenses(
   tester.view.physicalSize = const Size(800, 2400);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  final container = app.container();
+  final container = app.container(extra: extra);
   addTearDown(container.dispose);
   await tester.pumpWidget(
     UncontrolledProviderScope(container: container, child: const MitlioApp()),

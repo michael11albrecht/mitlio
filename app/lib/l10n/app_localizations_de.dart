@@ -537,6 +537,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rateInvalid => 'Das ist kein gültiger Kurs';
 
   @override
+  String expenseRateSuggestion(
+    String from,
+    String rate,
+    String symbol,
+    String date,
+  ) {
+    return '1 $from = $rate $symbol · EZB, $date';
+  }
+
+  @override
+  String get expenseRateUse => 'Übernehmen';
+
+  @override
   String expenseConverted(String amount) {
     return '= $amount (Gruppenwährung)';
   }
