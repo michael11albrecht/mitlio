@@ -18,3 +18,10 @@ coverage/
 # OS
 .DS_Store
 .claude/worktrees/
+
+# Web (Astro)
+web/node_modules/
+web/dist/
+web/.astro/
+web/public/mitlio_domain.js
+.lighthouseci/
