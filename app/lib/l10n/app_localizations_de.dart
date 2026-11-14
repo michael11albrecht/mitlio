@@ -801,4 +801,74 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get templateSave => 'Speichern';
+
+  @override
+  String ridesSettleCardTitle(String month, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Fahrten',
+      one: '1 Fahrt',
+    );
+    return '$month abrechnen · $_temp0';
+  }
+
+  @override
+  String get ridesSettleCardAction => 'Ansehen';
+
+  @override
+  String get ridesSettleMenu => 'Monat abrechnen';
+
+  @override
+  String get ridesMonthMenu => 'Monatsmenü';
+
+  @override
+  String get ridesSettleNothing =>
+      'Dieser Monat ist schon abgerechnet oder hat keine Fahrten.';
+
+  @override
+  String ridesSettleTitle(String month) {
+    return '$month abrechnen';
+  }
+
+  @override
+  String ridesSettleDriverLine(String name, String amount, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Fahrten',
+      one: '1 Fahrt',
+    );
+    return '$name bekommt $amount für $_temp0';
+  }
+
+  @override
+  String get ridesSettleNote =>
+      'Pro Fahrer entsteht eine Ausgabe. Du kannst das gleich rückgängig machen.';
+
+  @override
+  String get ridesSettleAction => 'Abrechnen';
+
+  @override
+  String ridesSettleDone(String month) {
+    return '$month abgerechnet';
+  }
+
+  @override
+  String ridesSettleExpenseTitle(String period, String name) {
+    return 'Fahrten $period · $name';
+  }
+
+  @override
+  String get ridesFairnessTitle => 'Fairness';
+
+  @override
+  String ridesFairnessNext(String name) {
+    return 'Als Nächstes dran: $name';
+  }
+
+  @override
+  String ridesFairnessKm(String driven, String ridden) {
+    return '$driven km gefahren · $ridden km mitgefahren';
+  }
 }

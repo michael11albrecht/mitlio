@@ -137,4 +137,11 @@ class RidesDao extends DatabaseAccessor<AppDatabase> with _$RidesDaoMixin {
 
   Future<List<RideRow>> findRides(List<String> ids) =>
       (select(rides)..where((r) => r.id.isIn(ids))).get();
+
+  /// Live rides locked under any of [expenseIds].
+  Future<List<RideRow>> findSettledBy(List<String> expenseIds) =>
+      (select(rides)..where(
+            (r) => r.settledExpenseId.isIn(expenseIds) & r.deletedAt.isNull(),
+          ))
+          .get();
 }

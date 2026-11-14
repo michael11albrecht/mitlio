@@ -1465,6 +1465,90 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Speichern'**
   String get templateSave;
+
+  /// No description provided for @ridesSettleCardTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'{month} abrechnen · {count, plural, =1{1 Fahrt} other{{count} Fahrten}}'**
+  String ridesSettleCardTitle(String month, int count);
+
+  /// No description provided for @ridesSettleCardAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Ansehen'**
+  String get ridesSettleCardAction;
+
+  /// No description provided for @ridesSettleMenu.
+  ///
+  /// In de, this message translates to:
+  /// **'Monat abrechnen'**
+  String get ridesSettleMenu;
+
+  /// No description provided for @ridesMonthMenu.
+  ///
+  /// In de, this message translates to:
+  /// **'Monatsmenü'**
+  String get ridesMonthMenu;
+
+  /// No description provided for @ridesSettleNothing.
+  ///
+  /// In de, this message translates to:
+  /// **'Dieser Monat ist schon abgerechnet oder hat keine Fahrten.'**
+  String get ridesSettleNothing;
+
+  /// No description provided for @ridesSettleTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'{month} abrechnen'**
+  String ridesSettleTitle(String month);
+
+  /// No description provided for @ridesSettleDriverLine.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} bekommt {amount} für {count, plural, =1{1 Fahrt} other{{count} Fahrten}}'**
+  String ridesSettleDriverLine(String name, String amount, int count);
+
+  /// No description provided for @ridesSettleNote.
+  ///
+  /// In de, this message translates to:
+  /// **'Pro Fahrer entsteht eine Ausgabe. Du kannst das gleich rückgängig machen.'**
+  String get ridesSettleNote;
+
+  /// No description provided for @ridesSettleAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Abrechnen'**
+  String get ridesSettleAction;
+
+  /// No description provided for @ridesSettleDone.
+  ///
+  /// In de, this message translates to:
+  /// **'{month} abgerechnet'**
+  String ridesSettleDone(String month);
+
+  /// No description provided for @ridesSettleExpenseTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrten {period} · {name}'**
+  String ridesSettleExpenseTitle(String period, String name);
+
+  /// No description provided for @ridesFairnessTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Fairness'**
+  String get ridesFairnessTitle;
+
+  /// No description provided for @ridesFairnessNext.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Nächstes dran: {name}'**
+  String ridesFairnessNext(String name);
+
+  /// No description provided for @ridesFairnessKm.
+  ///
+  /// In de, this message translates to:
+  /// **'{driven} km gefahren · {ridden} km mitgefahren'**
+  String ridesFairnessKm(String driven, String ridden);
 }
 
 class _AppLocalizationsDelegate

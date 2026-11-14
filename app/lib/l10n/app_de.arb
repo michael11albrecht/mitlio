@@ -553,5 +553,85 @@
   "templateErrorDistance": "Gib die Entfernung ein",
   "templateNoVehicle": "Lege zuerst ein Fahrzeug an.",
   "templateNoVehicleAction": "Fahrzeug anlegen",
-  "templateSave": "Speichern"
+  "templateSave": "Speichern",
+
+  "@@x-feature-rides-settle": "rides-settle",
+  "ridesSettleCardTitle": "{month} abrechnen · {count, plural, =1{1 Fahrt} other{{count} Fahrten}}",
+  "@ridesSettleCardTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ridesSettleCardAction": "Ansehen",
+  "ridesSettleMenu": "Monat abrechnen",
+  "ridesMonthMenu": "Monatsmenü",
+  "ridesSettleNothing": "Dieser Monat ist schon abgerechnet oder hat keine Fahrten.",
+  "ridesSettleTitle": "{month} abrechnen",
+  "@ridesSettleTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesSettleDriverLine": "{name} bekommt {amount} für {count, plural, =1{1 Fahrt} other{{count} Fahrten}}",
+  "@ridesSettleDriverLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ridesSettleNote": "Pro Fahrer entsteht eine Ausgabe. Du kannst das gleich rückgängig machen.",
+  "ridesSettleAction": "Abrechnen",
+  "ridesSettleDone": "{month} abgerechnet",
+  "@ridesSettleDone": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesSettleExpenseTitle": "Fahrten {period} · {name}",
+  "@ridesSettleExpenseTitle": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesFairnessTitle": "Fairness",
+  "ridesFairnessNext": "Als Nächstes dran: {name}",
+  "@ridesFairnessNext": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesFairnessKm": "{driven} km gefahren · {ridden} km mitgefahren",
+  "@ridesFairnessKm": {
+    "placeholders": {
+      "driven": {
+        "type": "String"
+      },
+      "ridden": {
+        "type": "String"
+      }
+    }
+  }
 }

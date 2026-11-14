@@ -1,6 +1,7 @@
 import 'package:alchemist/alchemist.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/rides/ui/ride_calendar.dart';
+import 'package:mitlio/features/rides/ui/ride_settle_widgets.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_view.dart';
@@ -77,6 +78,23 @@ Future<void> main() async {
   await tab('rides_data', dataRides);
   await tab('rides_pick_route', pickRouteRides);
   await tab('rides_done_today', doneTodayRides);
+  // Period settlement (P3r-T06) and the fairness view (P3r-T07).
+  await tab('rides_settle_due', settleDueRides, height: 1500);
+  await tab('rides_settled_month', settledMonthRides);
+  for (final (name, state) in [
+    ('ride_settle_sheet', settleDueRides),
+    ('ride_settle_sheet_nothing', settledMonthRides),
+  ]) {
+    await matrixGolden(
+      name,
+      () => scopedRides(
+        ridesStateOverride(state),
+        const RideSettleSheet(groupId: 'g-1'),
+      ),
+      width: _width,
+      height: 820,
+    );
+  }
 
   await matrixGolden(
     'ride_calendar',
