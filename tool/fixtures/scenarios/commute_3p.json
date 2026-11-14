@@ -1,0 +1,172 @@
+{
+  "group": "Fahrgemeinschaft",
+  "currency": "EUR",
+  "members": [
+    "Anna",
+    "Ben",
+    "Chiara"
+  ],
+  "vehicles": [
+    {
+      "name": "Golf",
+      "fuelType": "petrol",
+      "consumptionMilliPer100km": 6800,
+      "wearMilliPerKm": 60,
+      "kmRateMilliPerKm": 300
+    }
+  ],
+  "templates": [
+    {
+      "name": "Arbeit",
+      "distanceMeters": 23400,
+      "vehicle": "Golf",
+      "roundTrip": true,
+      "passengers": [
+        "Anna",
+        "Ben",
+        "Chiara"
+      ]
+    }
+  ],
+  "rides": [
+    {
+      "date": "2026-10-01",
+      "template": "Arbeit",
+      "driver": "Anna",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-02",
+      "template": "Arbeit",
+      "driver": "Ben",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-05",
+      "template": "Arbeit",
+      "driver": "Chiara",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-06",
+      "template": "Arbeit",
+      "driver": "Anna",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-07",
+      "template": "Arbeit",
+      "driver": "Ben",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-08",
+      "template": "Arbeit",
+      "driver": "Chiara",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-09",
+      "template": "Arbeit",
+      "driver": "Anna",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-12",
+      "template": "Arbeit",
+      "driver": "Ben",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-13",
+      "template": "Arbeit",
+      "driver": "Chiara",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-14",
+      "template": "Arbeit",
+      "driver": "Anna",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-15",
+      "template": "Arbeit",
+      "driver": "Ben",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-16",
+      "template": "Arbeit",
+      "driver": "Chiara",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-19",
+      "template": "Arbeit",
+      "driver": "Anna",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-20",
+      "template": "Arbeit",
+      "driver": "Ben",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-21",
+      "template": "Arbeit",
+      "driver": "Chiara",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-22",
+      "template": "Arbeit",
+      "driver": "Anna",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-23",
+      "template": "Arbeit",
+      "driver": "Ben",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-26",
+      "template": "Arbeit",
+      "driver": "Chiara",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-27",
+      "template": "Arbeit",
+      "driver": "Anna",
+      "pricePerUnitMilli": 1790
+    },
+    {
+      "date": "2026-10-28",
+      "template": "Arbeit",
+      "driver": "Ben",
+      "pricePerUnitMilli": 1790
+    }
+  ],
+  "expected": {
+    "balances": {
+      "Anna": 277,
+      "Ben": 277,
+      "Chiara": -554
+    },
+    "transfers": [
+      {
+        "from": "Chiara",
+        "to": "Anna",
+        "amountCents": 277
+      },
+      {
+        "from": "Chiara",
+        "to": "Ben",
+        "amountCents": 277
+      }
+    ]
+  }
+}

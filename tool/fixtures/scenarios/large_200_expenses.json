@@ -1,0 +1,69 @@
+{
+  "group": "Grosse Gruppe",
+  "currency": "EUR",
+  "members": [
+    "Anna",
+    "Ben",
+    "Chiara",
+    "Dino",
+    "Emma",
+    "Finn",
+    "Greta",
+    "Hugo"
+  ],
+  "generate": {
+    "seed": 20261114,
+    "count": 200,
+    "from": "2026-01-01",
+    "days": 180
+  },
+  "expected": {
+    "balances": {
+      "Anna": -80545,
+      "Ben": -69625,
+      "Chiara": -25919,
+      "Dino": 35108,
+      "Emma": 108764,
+      "Finn": 5407,
+      "Greta": 73875,
+      "Hugo": -47065
+    },
+    "transfers": [
+      {
+        "from": "Anna",
+        "to": "Emma",
+        "amountCents": 80545
+      },
+      {
+        "from": "Ben",
+        "to": "Greta",
+        "amountCents": 69625
+      },
+      {
+        "from": "Hugo",
+        "to": "Dino",
+        "amountCents": 35108
+      },
+      {
+        "from": "Chiara",
+        "to": "Emma",
+        "amountCents": 25919
+      },
+      {
+        "from": "Hugo",
+        "to": "Finn",
+        "amountCents": 5407
+      },
+      {
+        "from": "Hugo",
+        "to": "Greta",
+        "amountCents": 4250
+      },
+      {
+        "from": "Hugo",
+        "to": "Emma",
+        "amountCents": 2300
+      }
+    ]
+  }
+}
