@@ -53,4 +53,21 @@ class GroupsDao extends DatabaseAccessor<AppDatabase> with _$GroupsDaoMixin {
         );
     return n > 0;
   }
+
+  /// Undoes [softDelete]. Returns true if a soft-deleted row was revived.
+  Future<bool> restore({
+    required String id,
+    required String updatedAt,
+  }) async {
+    final n =
+        await (update(
+          groups,
+        )..where((r) => r.id.equals(id) & r.deletedAt.isNotNull())).write(
+          GroupsCompanion(
+            deletedAt: const Value(null),
+            updatedAt: Value(updatedAt),
+          ),
+        );
+    return n > 0;
+  }
 }
