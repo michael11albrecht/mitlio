@@ -53,6 +53,10 @@ View → ViewModel → Repository → Service. Views contain no logic. Every use
 - Coverage: ≥ 80 % overall, ≥ 90 % domain/data/ViewModels/sync. Mutation score enforced on domain.
 - All UI strings via ARB (l10n). Design tokens only from `core/theme`.
 
+## Known toolchain issues
+
+Read `docs/known-issues.md` before writing app code (e.g. a Linux release AOT crash pattern to avoid).
+
 ## Prohibitions
 
 - Do not edit merged files in `supabase/migrations/` (append new migrations only).
