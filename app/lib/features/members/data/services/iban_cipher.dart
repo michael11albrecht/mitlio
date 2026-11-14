@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mitlio/core/logging.dart';
 
 /// Encrypts the IBAN at rest. Stored values are opaque strings; a value
