@@ -1,4 +1,6 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/features/members/ui/member_payment_view.dart';
 import 'package:mitlio/features/members/ui/member_payment_view_model.dart';
 
 import '../../../helpers/a11y.dart';
@@ -10,7 +12,10 @@ void main() {
   forEachMode(
     'empty form',
     () => paymentSheet(emptyPayment),
-    (tester, _, _) => expectAccessible(tester),
+    (tester, _, _) async {
+      expect(find.byType(MemberPaymentSheet), findsOneWidget);
+      await expectAccessible(tester);
+    },
   );
   forEachMode(
     'filled form',

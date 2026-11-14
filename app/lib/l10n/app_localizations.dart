@@ -1253,8 +1253,8 @@ abstract class AppLocalizations {
   /// No description provided for @ridesDayDrivers.
   ///
   /// In de, this message translates to:
-  /// **'{date}: {names}'**
-  String ridesDayDrivers(String date, String names);
+  /// **'{count, plural, =1{{date}, {names} ist gefahren} other{{date}, {names} sind gefahren}}'**
+  String ridesDayDrivers(int count, String date, String names);
 
   /// No description provided for @ridesDayNoRides.
   ///

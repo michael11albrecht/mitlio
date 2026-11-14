@@ -470,9 +470,12 @@
   "ridesMonthPrev": "Vorheriger Monat",
   "ridesMonthNext": "Nächster Monat",
   "ridesMonthEmpty": "In diesem Monat noch keine Fahrt",
-  "ridesDayDrivers": "{date}: {names}",
+  "ridesDayDrivers": "{count, plural, =1{{date}, {names} ist gefahren} other{{date}, {names} sind gefahren}}",
   "@ridesDayDrivers": {
     "placeholders": {
+      "count": {
+        "type": "int"
+      },
       "date": {
         "type": "String"
       },

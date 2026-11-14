@@ -148,7 +148,11 @@ class _DayCell extends StatelessWidget {
     final date = MaterialLocalizations.of(context).formatMediumDate(day);
     final label = drivers.isEmpty
         ? date
-        : l10n.ridesDayDrivers(date, drivers.map((m) => m.name).join(', '));
+        : l10n.ridesDayDrivers(
+            drivers.length,
+            date,
+            drivers.map((m) => m.name).join(', '),
+          );
     return Semantics(
       button: true,
       label: label,

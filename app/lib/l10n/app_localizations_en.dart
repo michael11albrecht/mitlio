@@ -684,8 +684,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ridesMonthEmpty => 'No ride this month yet';
 
   @override
-  String ridesDayDrivers(String date, String names) {
-    return '$date: $names';
+  String ridesDayDrivers(int count, String date, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$date, $names drove',
+      one: '$date, $names drove',
+    );
+    return '$_temp0';
   }
 
   @override
