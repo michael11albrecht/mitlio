@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/theme/theme.dart';
-import 'package:mitlio/core/widgets/empty_state.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/features/groups/ui/groups_view_model.dart';
+import 'package:mitlio/features/onboarding/ui/onboarding_view.dart';
 import 'package:mitlio/features/rides/ui/rides_shortcut.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 
@@ -44,15 +44,8 @@ class GroupsView extends ConsumerWidget {
         GroupsFailure() => ErrorState(
           onRetry: ref.read(groupsViewModelProvider.notifier).retry,
         ),
-        GroupsLoaded(isEmpty: true) => EmptyState(
-          icon: Icons.groups_outlined,
-          title: l10n.groupsEmptyTitle,
-          message: l10n.groupsEmptyMessage,
-          action: FilledButton(
-            onPressed: newGroup,
-            child: Text(l10n.groupCreate),
-          ),
-        ),
+        // First run: no groups yet.
+        GroupsLoaded(isEmpty: true) => const OnboardingBody(),
         GroupsLoaded(:final groups) => ListView.separated(
           padding: Spacing.screen.copyWith(bottom: Sizes.fabClearance),
           itemCount: groups.length,

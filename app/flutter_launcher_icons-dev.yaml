@@ -1,0 +1,17 @@
+# Dev flavor icon (flutter_launcher_icons, `--flavor dev`): the same mark with
+# a small "dev" tag, so a dev build is never mistaken for the real app next to
+# it. Android goes to src/dev/res, iOS to AppIcon-dev. See docs/brand.md.
+#   cd app && dart run flutter_launcher_icons --flavor dev
+flutter_launcher_icons:
+  image_path: assets/brand/icon_dev.png
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  adaptive_icon_background: "#0B6B63"
+  adaptive_icon_foreground: assets/brand/icon_dev_foreground.png
+  web:
+    generate: false
+  windows:
+    generate: false
+  macos:
+    generate: false

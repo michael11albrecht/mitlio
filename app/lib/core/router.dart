@@ -7,6 +7,7 @@ import 'package:mitlio/features/expenses/ui/expense_form_view.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view.dart';
 import 'package:mitlio/features/groups/ui/group_form_view.dart';
 import 'package:mitlio/features/groups/ui/groups_view.dart';
+import 'package:mitlio/features/onboarding/ui/onboarding_view.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/template_form_view.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view.dart';
@@ -14,6 +15,8 @@ import 'package:mitlio/features/settings/ui/settings_view.dart';
 import 'package:mitlio/features/settle/ui/settle_view.dart';
 import 'package:mitlio/features/statistics/ui/statistics_view.dart';
 import 'package:mitlio/features/trips/ui/trip_form_view.dart';
+import 'package:mitlio/features/trips/ui/trip_form_view_model.dart'
+    show standaloneTripGroupId;
 
 /// App routes: home is the group list. Detail and edit nest under it, so
 /// back always returns to the list.
@@ -25,6 +28,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/',
         builder: (context, state) => const GroupsView(),
         routes: [
+          GoRoute(
+            path: 'welcome',
+            builder: (context, state) => const OnboardingView(),
+          ),
+          // The trip calculator without a group (first run).
+          GoRoute(
+            path: 'trip',
+            builder: (context, state) =>
+                const TripFormView(groupId: standaloneTripGroupId),
+          ),
           GoRoute(
             path: 'settings',
             builder: (context, state) => const SettingsView(),

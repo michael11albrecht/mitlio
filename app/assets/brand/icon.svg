@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="mitlio">
+  <!-- v1 placeholder (docs/brand.md): an open gauge with its needle, the taxometer.
+       Geometry mirrors core/widgets/brand_mark.dart; keep both in step. -->
+  <rect width="1024" height="1024" rx="228" fill="#0B6B63"/>
+  <!-- 270 degrees, open at the bottom -->
+  <path d="M 326.74 745.26 A 262 262 0 1 1 697.26 745.26" fill="none" stroke="#FFFFFF" stroke-width="86" stroke-linecap="round"/>
+  <!-- needle, 50 degrees above the horizon -->
+  <line x1="512" y1="560" x2="640.57" y2="406.84" stroke="#D3EEE9" stroke-width="66" stroke-linecap="round"/>
+  <circle cx="512" cy="560" r="64" fill="#FFFFFF"/>
+</svg>

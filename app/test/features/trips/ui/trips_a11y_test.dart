@@ -31,4 +31,15 @@ void main() {
       );
     }
   });
+
+  group('trip form without a group', () {
+    forEachMode(
+      'result and share',
+      () => tripScoped(
+        tripStateOverride(tripStandalone),
+        const TripFormView(groupId: standaloneTripGroupId),
+      ),
+      (tester, _, _) => expectAccessible(tester),
+    );
+  });
 }

@@ -1,0 +1,18 @@
+# App icon generator config (flutter_launcher_icons). v1 placeholder, see
+# docs/brand.md. Sources are rendered from assets/brand/icon.svg's geometry by
+# tool/render_brand_assets_test.dart. Regenerate:
+#   cd app && dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: assets/brand/icon.png
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  adaptive_icon_background: "#0B6B63"
+  adaptive_icon_foreground: assets/brand/icon_foreground.png
+  # No web/windows/macos targets ship from this app.
+  web:
+    generate: false
+  windows:
+    generate: false
+  macos:
+    generate: false
