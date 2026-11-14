@@ -25,6 +25,7 @@ export 'src/split/split_spec.dart';
 export 'src/trip/trip_cost.dart';
 export 'src/trip/trip_error.dart';
 export 'src/trip/trip_input.dart';
+export 'src/trip/trip_units.dart';
 
 /// Version of the domain rules, bumped whenever calculation semantics change.
 const domainRulesVersion = 1;

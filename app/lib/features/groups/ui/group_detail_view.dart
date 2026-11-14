@@ -44,6 +44,12 @@ class GroupDetailView extends ConsumerWidget {
           appBar: AppBar(
             title: Text(group.name),
             actions: [
+              IconButton(
+                tooltip: l10n.tripAdd,
+                icon: const Icon(Icons.directions_car_outlined),
+                onPressed: () =>
+                    unawaited(context.push('/groups/$groupId/trip')),
+              ),
               PopupMenuButton<_MenuAction>(
                 tooltip: l10n.groupMenu,
                 onSelected: (action) async {

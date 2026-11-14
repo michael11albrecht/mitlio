@@ -6,9 +6,6 @@ const int version = domainRulesVersion;
 /// Largest supported number of persons.
 const maxPersons = 100;
 
-// Upper bound for a converted integer input; keeps every intermediate exact.
-const _maxScaled = 1e12;
-
 /// Calculates a trip cost from a plain (JS-like) input map.
 ///
 /// Boundary conversion (decimal user input to the domain's integer units,
@@ -64,14 +61,15 @@ _Scaled _scaled(
   if (raw is! num || raw.isNaN || raw.isInfinite) {
     return (value: null, error: _fail('InvalidNumber', field));
   }
-  if (raw < 0) return (value: null, error: _fail('TripNegativeValue', field));
-  final scaled = raw * scale;
-  if (scaled > _maxScaled) {
-    return (value: null, error: _fail('InvalidNumber', field));
-  }
-  // Strip binary float noise (1.005 * 100 = 100.49999999999999) before
-  // rounding half up.
-  return (value: double.parse(scaled.toStringAsFixed(6)).round(), error: null);
+  final scaled = scaleDecimal(raw, scale);
+  return switch (scaled.failure) {
+    null => (value: scaled.units, error: null),
+    ScaleFailure.negative => (
+      value: null,
+      error: _fail('TripNegativeValue', field),
+    ),
+    ScaleFailure.invalid => (value: null, error: _fail('InvalidNumber', field)),
+  };
 }
 
 Map<String, Object?> _calculate(Map<String, Object?> input) {
@@ -89,20 +87,20 @@ Map<String, Object?> _calculate(Map<String, Object?> input) {
   if (roundTrip is! bool) return _fail('InvalidBoolean', 'roundTrip');
 
   final hasKmRate = input['kmRate'] != null;
-  final distance = _scaled(input, 'distanceKm', 1000, required: true);
+  final distance = _scaled(input, 'distanceKm', kmToMeters, required: true);
   // With a km rate, consumption, price and wear are ignored entirely.
   final consumption = hasKmRate
       ? (value: 0, error: null)
-      : _scaled(input, 'consumptionPer100km', 1000, required: true);
+      : _scaled(input, 'consumptionPer100km', unitToMilli, required: true);
   final price = hasKmRate
       ? (value: 0, error: null)
-      : _scaled(input, 'pricePerUnit', 1000, required: true);
+      : _scaled(input, 'pricePerUnit', unitToMilli, required: true);
   final wear = hasKmRate
       ? (value: 0, error: null)
-      : _scaled(input, 'wearPerKm', 1000, required: false);
-  final kmRate = _scaled(input, 'kmRate', 1000, required: false);
-  final tolls = _scaled(input, 'tollsEur', 100, required: false);
-  final extras = _scaled(input, 'extrasEur', 100, required: false);
+      : _scaled(input, 'wearPerKm', unitToMilli, required: false);
+  final kmRate = _scaled(input, 'kmRate', unitToMilli, required: false);
+  final tolls = _scaled(input, 'tollsEur', eurToCents, required: false);
+  final extras = _scaled(input, 'extrasEur', eurToCents, required: false);
   for (final r in [distance, consumption, price, wear, kmRate, tolls, extras]) {
     if (r.error != null) return r.error!;
   }

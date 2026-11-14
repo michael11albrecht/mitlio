@@ -31,7 +31,7 @@ void main() {
   ).id;
 
   test('lists the slice screens', () {
-    expect(registry.screens, ['groups', 'group']);
+    expect(registry.screens, ['groups', 'group', 'trip']);
   });
 
   test('groups reads the list ViewModel', () async {
@@ -72,5 +72,21 @@ void main() {
     unawaited(router.push('/groups/$id'));
     await tester.pumpAndSettle();
     expect(live.snapshot('group')!['groupId'], id);
+  });
+
+  testWidgets('trip follows the open trip form', (tester) async {
+    final c = await pumpMitlio(tester, app);
+    final live = buildSnapshotRegistry(c);
+    final id = await newGroup();
+    expect(live.snapshot('trip'), {'status': 'not_open'});
+
+    c.read(routerProvider).go('/groups/$id/trip');
+    await tester.pumpAndSettle();
+    expect(live.snapshot('trip')!['groupId'], id);
+    expect(live.snapshot('trip')!['status'], 'incomplete');
+
+    c.read(routerProvider).go('/groups/$id');
+    await tester.pumpAndSettle();
+    expect(live.snapshot('trip'), {'status': 'not_open'});
   });
 }

@@ -15,6 +15,7 @@ final class ExpenseDraft {
     required this.payers,
     required this.split,
     this.category,
+    this.tripMeta,
   });
 
   final String title;
@@ -28,6 +29,10 @@ final class ExpenseDraft {
   final Map<String, int> payers;
   final SplitSpec split;
   final String? category;
+
+  /// JSON of the trip inputs for a trip expense (stored as type `trip`, so
+  /// it can be re-edited); null for a regular expense.
+  final String? tripMeta;
 }
 
 /// A stored expense: the validated domain aggregate plus what it needs for
@@ -40,12 +45,16 @@ final class ExpenseEntry {
     required this.split,
     required this.createdAt,
     this.category,
+    this.tripMeta,
   });
 
   final String groupId;
   final Expense expense;
   final SplitSpec split;
   final String? category;
+
+  /// See `ExpenseDraft.tripMeta`.
+  final String? tripMeta;
 
   /// UTC.
   final DateTime createdAt;
@@ -57,10 +66,12 @@ final class ExpenseEntry {
       other.expense == expense &&
       other.split == split &&
       other.category == category &&
+      other.tripMeta == tripMeta &&
       other.createdAt == createdAt;
 
   @override
-  int get hashCode => Object.hash(groupId, expense, split, category, createdAt);
+  int get hashCode =>
+      Object.hash(groupId, expense, split, category, tripMeta, createdAt);
 
   @override
   String toString() => 'ExpenseEntry($groupId, ${expense.title})';

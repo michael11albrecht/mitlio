@@ -3,6 +3,7 @@ import 'package:mitlio/core/router.dart';
 import 'package:mitlio/debug/drive_types.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
 import 'package:mitlio/features/groups/ui/groups_view_model.dart';
+import 'package:mitlio/features/trips/ui/trip_form_view_model.dart';
 
 /// Screen name to `debugSnapshot()` lookup behind `ext.mitlio.state`.
 /// ViewModels know nothing about it: this layer reads them.
@@ -30,6 +31,16 @@ String? _openGroupId(ProviderContainer c) {
       : null;
 }
 
+/// Id of the group whose trip form is the current route.
+String? _openTripGroupId(ProviderContainer c) {
+  final segments = c.read(routerProvider).state.uri.pathSegments;
+  return segments.length == 3 &&
+          segments.first == 'groups' &&
+          segments[2] == 'trip'
+      ? segments[1]
+      : null;
+}
+
 /// The registry with every screen wired to its ViewModel. Add a line per
 /// slice. Only call under `kDebugMode`.
 DebugSnapshotRegistry buildSnapshotRegistry(ProviderContainer c) =>
@@ -43,4 +54,10 @@ DebugSnapshotRegistry buildSnapshotRegistry(ProviderContainer c) =>
         return id == null
             ? {'status': 'not_open'}
             : c.read(groupDetailViewModelProvider(id).notifier).debugSnapshot();
+      })
+      ..register('trip', () {
+        final id = _openTripGroupId(c);
+        return id == null
+            ? {'status': 'not_open'}
+            : c.read(tripFormViewModelProvider(id).notifier).debugSnapshot();
       });
