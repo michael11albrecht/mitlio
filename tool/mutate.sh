@@ -4,6 +4,7 @@
 #   tool/mutate.sh --changed  only files changed vs origin/main (or main)
 # Exit 0: score >= threshold or nothing to mutate. Exit 1: below threshold or error.
 # Threshold lives in tool/mutation/domain.template.xml (<threshold failure="N"/>).
+# MUTATION_FORMAT=all also writes the XML report (the nightly workflow parses survivors from it).
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
@@ -55,7 +56,7 @@ awk -v f="$out/files.xml" '/@FILES@/ { while ((getline l < f) > 0) print l; next
 echo "mutate: ${#files[@]} file(s): ${files[*]}"
 cd "$pkg"
 set +e
-dart run mutation_test --format html --output "$out/report" "$out/domain.xml"
+dart run mutation_test --format "${MUTATION_FORMAT:-html}" --output "$out/report" "$out/domain.xml"
 rc=$?
 set -e
 echo "mutate: report in build/mutation/report"
