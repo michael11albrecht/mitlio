@@ -33,12 +33,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: 2.1.4
+      - name: Edge Functions (fmt, lint, type-check)
+        working-directory: supabase/functions
+        run: |
+          deno fmt --check
+          deno lint
+          deno check fuel-prices/index.ts tests/*.ts _shared/*.ts
+      - name: Edge Functions unit tests (coverage >= 90 %)
+        run: supabase/functions/tests/coverage_gate.sh
       - name: Start local Supabase
         run: supabase start
       - name: Apply migrations from scratch
         run: supabase db reset
       - name: pgTAP (schema + RLS)
         run: supabase test db
+      - name: Edge Function integration test (functions serve + provider stub)
+        run: supabase/functions/tests/run_integration.sh
       - name: TS types are up to date
         run: |
           supabase gen types typescript --local > supabase/types/database.ts
