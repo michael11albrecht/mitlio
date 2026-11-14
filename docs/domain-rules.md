@@ -379,3 +379,97 @@ Result<String, EpcError> buildEpcQrPayload({
    "payload": "BCD\n002\n1\nSCT\nCOBADEFFXXX\nMax Mustermann\nDE89370400440532013000\nEUR0.05\n\n\n"}
 ]
 ```
+
+## Rides — the private taxometer (P3r-T01, P3r-T02)
+
+A **ride** is one logged drive, such as today's commute. Rides are cheap to log and are later aggregated into
+expenses per driver and period ("Abrechnen für Oktober"). All costs reuse the trip calculator, so a ride and a
+one-off trip with the same inputs always cost the same.
+
+```dart
+enum FuelType { petrol, diesel, electric, other }
+
+final class Vehicle {                // value equality
+  final String id; final String name; final FuelType fuelType;
+  final int consumptionMilliPer100km;  // l or kWh per 100 km × 1000, > 0
+  final int wearMilliPerKm;            // ≥ 0, default 0
+  final int? kmRateMilliPerKm;         // if set, rides with this vehicle default to km-rate mode
+}
+
+final class RideTemplate {           // "Arbeit", "Training" … — defaults for 2-tap logging
+  final String id; final String name; final int distanceMeters; final bool roundTrip;
+  final String vehicleId; final String? defaultDriverId; final Set<String> defaultPassengerIds;
+  final int tollsCents;
+}
+
+final class Ride {
+  final String id; final DateTime date;     // calendar date: only y/m/d are used (time ignored)
+  final int distanceMeters; final bool roundTrip; final int tollsCents;
+  final String vehicleId; final String driverId; final Set<String> passengerIds;
+  final bool driverCounts;
+  final int pricePerUnitMilli;              // frozen when the ride is logged (fuel price of that day)
+  final bool useKmRate;                     // true → vehicle.kmRateMilliPerKm must be set
+}
+
+Result<TripCost, TripError> rideCost(Ride ride, Vehicle vehicle, Currency currency, List<Member> members);
+```
+
+- `rideCost` builds a `TripInput` from ride and vehicle: `Consumption(vehicle.consumption, ride.price,
+  wearMilliPerKm: vehicle.wear)`, or `KmRate(vehicle.kmRate!)` if `useKmRate`. It then calls `computeTripCost`.
+  `useKmRate` without a vehicle km rate → new `TripError` variant `MissingKmRate`.
+- A mismatch between `ride.vehicleId` and `vehicle.id` → `ArgumentError`.
+
+### Aggregation
+
+```dart
+sealed class RidePeriod { }          // Day(date) | Week(isoYear, isoWeek) | Month(year, month) | Custom(from, to)
+final class RideAggregate {
+  final String driverId; final RidePeriod period; final List<String> rideIds;   // rideIds in (date, id) order
+  final int totalCents; final Map<String, int> shares;                          // every member a key
+}
+Result<List<RideAggregate>, TripError> aggregateRides({
+  required Iterable<Ride> rides, required Map<String, Vehicle> vehicles, required Currency currency,
+  required List<Member> members, required RidePeriod period,
+});
+```
+
+- Only rides whose date falls in `period` count. `Week` is the ISO-8601 week (Monday start). `Custom` is
+  inclusive on both ends.
+- Group by `driverId`: one aggregate per driver who drove in the period. Drivers are ordered by
+  `tieOrder(members)`.
+- **Per-ride fairness:** `shares[m] = Σ over rides of rideCost(ride).shares[m]`, and
+  `totalCents = Σ rideCost(ride).totalCents`. The total is **not** re-allocated, so every ride is split exactly
+  as if it had been entered on its own.
+- The first ride error wins (rides in (date, id) order).
+- Guarantees: `Σ aggregates.totalCents == Σ rideCost(r).totalCents`; per aggregate `Σ shares == totalCents`;
+  deterministic.
+- `rideAggregateToExpense({id, title, date, aggregate, members})` → `Expense.create` with payer = driver
+  (totalCents) and `ExactSplit(shares)`. The title is the caller's job (l10n).
+
+<!-- examples:rides -->
+```json
+{
+  "vehicle": {"id": "golf", "consumption": 6500, "wear": 0},
+  "members": ["A", "B", "C"],
+  "rides": [
+    {"id": "r1", "date": "2026-10-05", "distanceMeters": 20000, "roundTrip": true, "driver": "A",
+     "passengers": ["B"], "driverCounts": true, "price": 1799},
+    {"id": "r2", "date": "2026-10-06", "distanceMeters": 20000, "roundTrip": true, "driver": "B",
+     "passengers": ["A", "C"], "driverCounts": true, "price": 1759},
+    {"id": "r3", "date": "2026-10-07", "distanceMeters": 20000, "roundTrip": true, "driver": "A",
+     "passengers": ["B", "C"], "driverCounts": true, "price": 1799}
+  ],
+  "period": {"month": [2026, 10]},
+  "rideCosts": {"r1": 468, "r2": 457, "r3": 468},
+  "aggregates": [
+    {"driver": "A", "rideIds": ["r1", "r3"], "total": 936, "shares": {"A": 390, "B": 390, "C": 156}},
+    {"driver": "B", "rideIds": ["r2"],       "total": 457, "shares": {"A": 153, "B": 152, "C": 152}}
+  ]
+}
+```
+
+Check: 40 km × 6.5 l/100 km = 2.6 l. At 1.799 € that is 4.6774 € → 468 ct. At 1.759 € it is 4.5734 € → 457 ct.
+- r1 (A, B): 234/234.
+- r3 (A, B, C): 156/156/156.
+- So A gets 234 + 156 = 390 for the driver-A aggregate.
+- r2 (B, A, C in tie order A, B, C): 153/152/152.

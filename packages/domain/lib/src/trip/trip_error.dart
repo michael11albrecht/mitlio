@@ -102,3 +102,18 @@ final class UnsupportedCurrency extends TripError {
   @override
   String toString() => 'UnsupportedCurrency()';
 }
+
+/// A ride uses the km-rate mode but its vehicle has no km rate.
+final class MissingKmRate extends TripError {
+  /// Creates the error.
+  const MissingKmRate();
+
+  @override
+  bool operator ==(Object other) => other is MissingKmRate;
+
+  @override
+  int get hashCode => (MissingKmRate).hashCode;
+
+  @override
+  String toString() => 'MissingKmRate()';
+}

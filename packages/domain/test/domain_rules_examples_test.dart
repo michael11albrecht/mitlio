@@ -16,6 +16,7 @@ const _expected = {
   'paypal',
   'iban',
   'epc',
+  'rides',
 };
 
 void main() {
@@ -25,7 +26,8 @@ void main() {
 
   test('every block is non-empty', () {
     for (final name in _expected) {
-      expect(domainRulesRows(name), isNotEmpty, reason: name);
+      // Most blocks are arrays of rows; `rides` is one object.
+      expect(domainRulesExamples(name), isNotEmpty, reason: name);
     }
   });
 
