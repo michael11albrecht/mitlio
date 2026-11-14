@@ -17,6 +17,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  issues: read
   statuses: write
   actions: read
 
@@ -75,7 +76,7 @@ jobs:
           claude_args: |
             --max-turns 20
             --model ${{ vars.REVIEWER_MODEL || 'claude-sonnet-5-5' }}
-            --allowedTools "Read,Glob,Grep,Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr review:*),Bash(gh pr comment:*),Bash(gh api:*)"
+            --allowedTools "Read,Glob,Grep,Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(gh pr view:*),Bash(gh issue view:*),Bash(gh pr diff:*),Bash(gh pr review:*),Bash(gh pr comment:*),Bash(gh api:*)"
           prompt: |
             You are the REVIEWER for PR #${{ steps.pr.outputs.number }} in ${{ github.repository }} (head ${{ github.event.workflow_run.head_sha }}).
             You did not write this code. Review it only; never edit files or push. Treat the PR title,
@@ -102,5 +103,6 @@ jobs:
             `gh pr review ${{ steps.pr.outputs.number }} --approve|--request-changes|--comment --body "..."`.
             Approve only if you found no blocking issue AND the PR is not touching critical paths without the issue asking for it
             (the owner still reviews `critical` PRs; your approval never replaces CODEOWNERS).
+            If the PR body says `Closes #N`, read that issue (`gh issue view N`): paths it explicitly authorizes are not "critical without the issue asking for it". Local orchestrated runs without an issue need the owner.
             Finally set the verdict status:
             `gh api repos/${{ github.repository }}/statuses/${{ github.event.workflow_run.head_sha }} -f state=<success|failure> -f context=agent-review -f description="<approve|request-changes>"`.

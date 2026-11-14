@@ -41,6 +41,7 @@ jobs:
           cache: true
       - run: make bootstrap
       - run: make test
+      - run: make domain-web-test
 
   goldens:
     name: goldens
@@ -141,3 +142,25 @@ jobs:
           curl -sSfL -o osv-scanner "https://github.com/google/osv-scanner/releases/download/v${OSV_VERSION}/osv-scanner_linux_amd64"
           chmod +x osv-scanner
       - run: ./osv-scanner scan source --lockfile=pubspec.lock
+
+  # Not a required check (PW-T02). Builds web/ and runs Lighthouse CI (>= 0.95 per category).
+  web:
+    name: web (astro, lighthouse)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ASTRO_TELEMETRY_DISABLED: "1"
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22 # no .tool-versions yet: Node 22 LTS
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
+      - run: npm run lhci

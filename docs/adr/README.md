@@ -24,3 +24,4 @@ Source of truth for the summary table: `docs/IMPLEMENTATION_PLAN.md` §1. Each A
 | [ADR-19](0019-web-calculator-stack.md) | Web calculator stack |
 | [ADR-20](0020-fuel-prices.md) | Fuel prices |
 | [ADR-18](0018-cost-policy.md) | Cost policy |
+| [ADR-23](0023-riverpod-without-codegen.md) | Riverpod without codegen |
