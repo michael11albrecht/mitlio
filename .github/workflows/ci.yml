@@ -27,6 +27,7 @@ jobs:
       - run: make bootstrap
       - run: make fmt-check
       - run: make lint
+      - run: make identity-check
       - run: make arch
       - run: make deps-policy
 
@@ -220,3 +221,22 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
       - run: npm run lhci
+
+  # Not a required check (P8-T01). Debug dev-flavor APK, unsigned; iOS builds stay local until a
+  # macOS runner is budgeted (plan §6.8).
+  android-build:
+    name: android-build (dev apk)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          cache: true
+      - run: make bootstrap
+      - run: make build-android-dev

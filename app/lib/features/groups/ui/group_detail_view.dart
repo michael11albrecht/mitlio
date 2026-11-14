@@ -20,7 +20,7 @@ import 'package:mitlio_domain/mitlio_domain.dart';
 /// Number of tabs of the group detail (members, expenses, rides).
 const groupTabCount = 3;
 
-enum _MenuAction { edit, export, archive }
+enum _MenuAction { edit, statistics, export, archive }
 
 /// Group detail: tabs for the members and the expenses. Members tab: add by
 /// name (the field stays focused for the next one), tap a name to rename, drag
@@ -81,6 +81,8 @@ class GroupDetailView extends ConsumerWidget {
                     switch (action) {
                       case _MenuAction.edit:
                         unawaited(context.push('/groups/$groupId/edit'));
+                      case _MenuAction.statistics:
+                        unawaited(context.push('/groups/$groupId/statistics'));
                       case _MenuAction.export:
                         unawaited(showExportSheet(context, groupId));
                       case _MenuAction.archive:
@@ -100,6 +102,10 @@ class GroupDetailView extends ConsumerWidget {
                     PopupMenuItem(
                       value: _MenuAction.edit,
                       child: Text(l10n.groupEditTitle),
+                    ),
+                    PopupMenuItem(
+                      value: _MenuAction.statistics,
+                      child: Text(l10n.statsMenu),
                     ),
                     PopupMenuItem(
                       value: _MenuAction.export,

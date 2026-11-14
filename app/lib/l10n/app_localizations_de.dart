@@ -257,6 +257,113 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get statsMenu => 'Statistik';
+
+  @override
+  String get statsTitle => 'Statistik';
+
+  @override
+  String get statsPeriodLabel => 'Zeitraum';
+
+  @override
+  String get statsPeriodMonth => 'Monat';
+
+  @override
+  String get statsPeriod3Months => '3 Monate';
+
+  @override
+  String get statsPeriodYear => 'Jahr';
+
+  @override
+  String get statsPeriodAll => 'Alles';
+
+  @override
+  String get statsHeadlineMonth => 'Diesen Monat';
+
+  @override
+  String get statsHeadline3Months => 'Letzte 3 Monate';
+
+  @override
+  String get statsHeadlineYear => 'Dieses Jahr';
+
+  @override
+  String get statsHeadlineAll => 'Insgesamt';
+
+  @override
+  String statsTopCategory(String category, int percent) {
+    return 'meist $category ($percent %)';
+  }
+
+  @override
+  String statsExpenseCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Ausgaben',
+      one: '1 Ausgabe',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get statsEmptyTitle => 'Nichts in diesem Zeitraum';
+
+  @override
+  String get statsEmptyMessage =>
+      'Wähle einen anderen Zeitraum oder trag eine Ausgabe ein.';
+
+  @override
+  String get statsByCategory => 'Nach Kategorie';
+
+  @override
+  String get statsCategoryNone => 'Ohne Kategorie';
+
+  @override
+  String statsPercent(int percent) {
+    return '$percent %';
+  }
+
+  @override
+  String statsCategorySpoken(String category, String amount, int percent) {
+    return '$category: $amount, $percent Prozent';
+  }
+
+  @override
+  String get statsByMember => 'Pro Person';
+
+  @override
+  String get statsPaid => 'Bezahlt';
+
+  @override
+  String get statsConsumed => 'Verbraucht';
+
+  @override
+  String statsMemberSpoken(String name, String paid, String consumed) {
+    return '$name: bezahlt $paid, verbraucht $consumed';
+  }
+
+  @override
+  String get statsOverTime => 'Letzte 6 Monate';
+
+  @override
+  String statsMonthSpoken(String month, String amount) {
+    return '$month: $amount';
+  }
+
+  @override
+  String get statsRides => 'Fahrten';
+
+  @override
+  String statsKm(String km) {
+    return '$km km';
+  }
+
+  @override
+  String statsRideSpoken(String month, String km, String amount) {
+    return '$month: $km Kilometer, $amount';
+  }
+
+  @override
   String get tabMembers => 'Mitglieder';
 
   @override
