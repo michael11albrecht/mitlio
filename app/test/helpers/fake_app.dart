@@ -2,9 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/id_generator.dart';
+import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_providers.dart';
 import 'package:mitlio/features/expenses/data/repositories/fake_expenses_repository.dart';
+import 'package:mitlio/features/fuel/data/repositories/fuel_providers.dart';
+import 'package:mitlio/features/fuel/data/services/fake_fuel_price_service.dart';
+import 'package:mitlio/features/fuel/data/services/location_service.dart';
 import 'package:mitlio/features/groups/data/repositories/fake_groups_repository.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
@@ -237,6 +241,24 @@ class FakeApp {
     shareServiceProvider.overrideWithValue(share),
   ];
 
+  /// The fuel price backend and location, off by default (chips hidden):
+  /// pass [fuelOverrides] as `extra` to switch them on.
+  late final fuel = FakeFuelPriceService(now: clock.now);
+  final location = FakeLocationService();
+
+  List<Override> get fuelBackendOverrides => [
+    fuelPriceServiceProvider.overrideWithValue(fuel),
+    locationServiceProvider.overrideWithValue(location),
+  ];
+
+  /// [fuelBackendOverrides] plus the test clock (when the app has not
+  /// overridden it already).
+  List<Override> get fuelOverrides => [
+    clockProvider.overrideWithValue(clock),
+    ...fuelBackendOverrides,
+  ];
+
   /// A container with these repositories; disposed by the caller.
-  ProviderContainer container() => ProviderContainer(overrides: overrides);
+  ProviderContainer container({List<Override> extra = const []}) =>
+      ProviderContainer(overrides: [...overrides, ...extra]);
 }
