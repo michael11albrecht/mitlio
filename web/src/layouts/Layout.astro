@@ -11,12 +11,28 @@ interface Props {
   description: string;
   /** Route used for canonical + hreflang. Omit for pages without alternates (404). */
   route?: RouteKey;
+  /** Canonical path for indexable pages without a language alternate (no hreflang is emitted). */
+  path?: string;
+  /** Path of the Open Graph / Twitter card image (1200x630 PNG). Defaults to the home card. */
+  ogImage?: string;
+  /** Structured data objects, each emitted as its own application/ld+json script. */
+  jsonLd?: object[];
   noindex?: boolean;
   /** Emit the iOS smart app banner meta (only when APP_STORE_URL is configured). */
   appBanner?: boolean;
 }
 
-const { locale, title, description, route, noindex = false, appBanner = false } = Astro.props;
+const {
+  locale,
+  title,
+  description,
+  route,
+  path,
+  ogImage = '/og/home.png',
+  jsonLd = [],
+  noindex = false,
+  appBanner = false,
+} = Astro.props;
 const appId = /\/id(\d+)/.exec(APP_STORE_URL)?.[1];
 const d = defaultState();
 // The calculator island rewrites app-argument with the current trip.
@@ -32,7 +48,8 @@ const t = messages[locale];
 const other: Locale = locale === 'de' ? 'en' : 'de';
 const site = Astro.site!;
 const abs = (path: string) => new URL(path, site).href;
-const canonical = route ? abs(paths[route][locale]) : undefined;
+const canonical = route ? abs(paths[route][locale]) : path ? abs(path) : undefined;
+const ogUrl = abs(ogImage);
 ---
 
 <!doctype html>
@@ -56,6 +73,24 @@ const canonical = route ? abs(paths[route][locale]) : undefined;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     {canonical && <meta property="og:url" content={canonical} />}
+    {
+      !noindex && (
+        <>
+          <meta property="og:image" content={ogUrl} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={title} />
+          <meta name="twitter:description" content={description} />
+          <meta name="twitter:image" content={ogUrl} />
+        </>
+      )
+    }
+    {
+      jsonLd.map((data) => (
+        <script type="application/ld+json" set:html={JSON.stringify(data).replace(/</g, '\\u003c')} />
+      ))
+    }
     {
       appBanner && appId && (
         <meta id="apple-itunes-app" name="apple-itunes-app" content={`app-id=${appId}, app-argument=${appArgument}`} />

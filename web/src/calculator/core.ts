@@ -101,6 +101,8 @@ export interface TripInput {
   distanceKm: number;
   consumptionPer100km: number;
   pricePerUnit: number;
+  /** Km-rate mode: replaces consumption and price (the facade then ignores both). */
+  kmRate?: number;
   persons: number;
   driverPays: boolean;
   roundTrip: boolean;
@@ -117,7 +119,10 @@ const parseError = (p: Parsed): CalculatorMessageKey | null =>
         : null;
 
 /** Turns raw state into the facade input, or per-field errors. */
-export function buildInput(state: CalcState): { input: TripInput } | { errors: FieldErrors } {
+export function buildInput(
+  state: CalcState,
+  rate = false,
+): { input: TripInput } | { errors: FieldErrors } {
   const errors: FieldErrors = {};
   const num = (key: 'km' | 'cons' | 'price'): number => {
     const p = parseDecimal(state[key]);
@@ -126,7 +131,8 @@ export function buildInput(state: CalcState): { input: TripInput } | { errors: F
     return p.kind === 'ok' ? p.value : 0;
   };
   const distanceKm = num('km');
-  const consumptionPer100km = num('cons');
+  // Km-rate mode: "price" holds the EUR per km and consumption is not asked for.
+  const consumptionPer100km = rate ? 0 : num('cons');
   const pricePerUnit = num('price');
   const extras = parseDecimal(state.extras);
   const extrasErr = extras.kind === 'empty' ? null : parseError(extras);
@@ -139,6 +145,7 @@ export function buildInput(state: CalcState): { input: TripInput } | { errors: F
       distanceKm,
       consumptionPer100km,
       pricePerUnit,
+      ...(rate ? { kmRate: pricePerUnit } : {}),
       persons,
       driverPays: state.driverPays,
       roundTrip: state.roundTrip,
@@ -153,7 +160,13 @@ export interface FacadeResult {
   field?: string;
   totalCents?: number;
   perPersonCents?: number[];
-  breakdown?: { fuelCents: number; wearCents: number; tollsCents: number; ferryCents: number };
+  breakdown?: {
+    fuelCents: number;
+    wearCents: number;
+    kmRateCents?: number;
+    tollsCents: number;
+    ferryCents: number;
+  };
 }
 
 const facadeFieldToKey: Record<string, FieldKey> = {
@@ -201,7 +214,7 @@ export function buildResultView(res: FacadeResult, driverPays: boolean): ResultV
     rounding: high === low ? null : { high, nHigh, low, nLow: payers.length - nHigh },
     driverGetsCents: driverPays ? null : (res.totalCents ?? 0),
     totalCents: res.totalCents ?? 0,
-    fuelCents: (b?.fuelCents ?? 0) + (b?.wearCents ?? 0),
+    fuelCents: (b?.fuelCents ?? 0) + (b?.wearCents ?? 0) + (b?.kmRateCents ?? 0),
     extrasCents: (b?.tollsCents ?? 0) + (b?.ferryCents ?? 0),
   };
 }
@@ -249,10 +262,20 @@ export function stateToParams(state: CalcState): URLSearchParams {
   return params;
 }
 
-export function paramsToState(search: string): CalcState {
+/** `preset` is the page's starting point (landing pages); URL params still win over it. */
+export function paramsToState(search: string, preset: Partial<CalcState> = {}): CalcState {
   const q = new URLSearchParams(search);
-  const energy: Energy = q.get('ev') === '1' ? 'ev' : 'fuel';
-  const state = defaultState(energy);
+  const energy: Energy = q.has('ev') ? (q.get('ev') === '1' ? 'ev' : 'fuel') : (preset.energy ?? 'fuel');
+  // Preset consumption and price belong to the preset's drive type only.
+  const { cons, price, ...rest } = preset;
+  const sameDrive = energy === (preset.energy ?? 'fuel');
+  const state: CalcState = {
+    ...defaultState(energy),
+    ...rest,
+    ...(sameDrive && cons !== undefined ? { cons } : {}),
+    ...(sameDrive && price !== undefined ? { price } : {}),
+    energy,
+  };
   const num = (name: string): string | null => {
     const raw = q.get(name);
     if (raw === null) return null;
@@ -262,11 +285,11 @@ export function paramsToState(search: string): CalcState {
   state.km = num('km') ?? state.km;
   state.cons = num('l100') ?? state.cons;
   state.price = num('p') ?? state.price;
-  state.extras = num('x') ?? '';
+  state.extras = num('x') ?? preset.extras ?? '';
   const n = q.get('n');
   if (n !== null && parsePersons(n) !== null) state.persons = n.trim();
-  if (q.get('d') === '0') state.driverPays = false;
-  if (q.get('rt') === '1') state.roundTrip = true;
+  if (q.has('d')) state.driverPays = q.get('d') !== '0';
+  if (q.has('rt')) state.roundTrip = q.get('rt') === '1';
   state.trip = sanitizeTripName(q.get('t') ?? '');
   return state;
 }
