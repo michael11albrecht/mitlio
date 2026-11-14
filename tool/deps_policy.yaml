@@ -1,0 +1,59 @@
+# Dependency policy for packages/tooling/bin/deps_policy.dart (plan §2.6).
+# Checked against every pubspec.lock and web/package-lock.json (direct and transitive).
+# Do not remove denylist entries to get green (see CLAUDE.md).
+denylist:
+  - category: ads
+    reason: No ads, ever (product rule #0).
+    packages:
+      - google_mobile_ads
+      - applovin_max
+      - unity_ads_plugin
+      - facebook_audience_network
+      - admob_flutter
+      - ironsource_mediation
+      - appodeal_flutter
+      - startapp_sdk
+      - pangle_flutter
+      - vungle
+      - chartboost
+  - category: attribution
+    reason: No attribution or tracking SDKs; mitlio is the private taxometer.
+    packages:
+      - appsflyer_sdk
+      - adjust_sdk
+      - branch_sdk
+      - flutter_branch_sdk
+      - kochava_tracker
+      - singular_flutter_sdk
+      - tenjin_sdk
+  - category: analytics
+    reason: No third-party product analytics or user tracking.
+    packages:
+      - firebase_analytics
+      - amplitude_flutter
+      - mixpanel_flutter
+      - segment_analytics
+      - analytics_flutter
+      - posthog_flutter
+      - clarity_flutter
+      - mixpanel-browser
+      - amplitude-js
+      - "@amplitude/analytics-browser"
+      - posthog-js
+      - "@segment/analytics-next"
+      - react-ga
+      - react-ga4
+      - "@vercel/analytics"
+      - "@datadog/browser-rum"
+  - category: review-prompt
+    reason: >-
+      Rating prompts are never shown mid-task or in the first weeks (plan §2.6 #4);
+      allowlist only with the allowed trigger documented.
+    packages:
+      - in_app_review
+      - app_review
+      - rate_my_app
+allowlist: []
+# Allowlist entry format (reason is mandatory):
+#   - package: in_app_review
+#     reason: Prompt after the 5th settled trip, see issue #123.

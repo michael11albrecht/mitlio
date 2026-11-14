@@ -28,6 +28,7 @@ jobs:
       - run: make fmt-check
       - run: make lint
       - run: make arch
+      - run: make deps-policy
 
   test:
     name: test
@@ -47,6 +48,9 @@ jobs:
     name: goldens
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write # golden-diff comment (same-repo PRs only)
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -56,6 +60,7 @@ jobs:
       - run: make bootstrap
       - run: make goldens
       - name: Upload golden failure diffs
+        id: upload
         if: failure()
         uses: actions/upload-artifact@v4
         with:
@@ -63,6 +68,37 @@ jobs:
           path: app/test/**/failures/*.png
           if-no-files-found: ignore
           retention-days: 14
+      # One comment per PR, updated in place. Forks get a read-only token, so skip them.
+      - name: Comment golden diff summary on PR
+        if: >-
+          failure() && github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          marker='<!-- mitlio-golden-diff -->'
+          count=$(find app/test -path '*/failures/*.png' 2>/dev/null | wc -l | tr -d ' ')
+          if [ -n "$ARTIFACT_URL" ]; then
+            link="[golden-failures artifact]($ARTIFACT_URL)"
+          else
+            link="no diff images were produced (see the [run]($RUN_URL))"
+          fi
+          cat > comment.md <<EOF
+          $marker
+          **Golden tests failed** on \`${GITHUB_SHA::7}\`: $count diff image(s), $link.
+          Download the artifact to see the diff images, then either fix the UI or update the goldens (\`make goldens-update\`) and explain why in the PR body. Run: $RUN_URL
+          EOF
+          # Edit the existing comment (marker) if any, else create one.
+          id=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" --paginate \
+            --jq "[.[] | select(.body | contains(\"${marker}\"))][0].id // empty")
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${id}" -F body=@comment.md
+          else
+            gh pr comment "$PR" --body-file comment.md
+          fi
 
   coverage:
     name: coverage
