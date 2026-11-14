@@ -24,6 +24,7 @@ dart_cov() {
 }
 
 dart_cov packages/domain
+dart_cov packages/domain_web
 dart_cov packages/drive_client
 
 echo "==> coverage: app"
@@ -35,6 +36,7 @@ echo "==> coverage: app"
 echo "==> coverage gate"
 dart run packages/tooling/bin/coverage_gate.dart \
   --lcov "packages/domain/coverage/lcov.info=packages/domain" \
+  --lcov "packages/domain_web/coverage/lcov.info=packages/domain_web" \
   --lcov "packages/drive_client/coverage/lcov.info=packages/drive_client" \
   --lcov "app/coverage/lcov.info=app" \
   "$@"

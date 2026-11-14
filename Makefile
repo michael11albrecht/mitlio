@@ -10,6 +10,7 @@ DART    ?= $(shell command -v dart 2>/dev/null || echo $(HOME)/sdk/flutter/bin/d
 
 DOMAIN := packages/domain
 DRIVE  := packages/drive_client
+DOMAIN_WEB := packages/domain_web
 TOOLING := packages/tooling
 APP    := app
 
@@ -53,6 +54,15 @@ lint: ## Static analysis (infos are fatal)
 .PHONY: test-domain
 test-domain: ## Domain unit tests (fast TDD loop)
 	cd $(DOMAIN) && $(DART) test
+
+.PHONY: domain-web
+domain-web: ## Compile domain_web to JS (build/domain_web) + size budget
+	tool/build_domain_web.sh
+
+.PHONY: domain-web-test
+domain-web-test: domain-web ## domain_web VM tests + Node parity test on the compiled JS
+	cd $(DOMAIN_WEB) && $(DART) test
+	node --test $(DOMAIN_WEB)/test_js/parity.test.mjs
 
 .PHONY: test-drive
 test-drive: ## Drive client tests
@@ -115,4 +125,4 @@ secrets: ## Scan for committed secrets
 check-fast: fmt-check lint test-domain ## Quick gate (agent Stop hook)
 
 .PHONY: check
-check: fmt-check lint arch test-tooling cov goldens secrets ## Definition of done (cov runs all tests)
+check: fmt-check lint arch test-tooling cov domain-web-test goldens secrets ## Definition of done (cov runs all tests)
