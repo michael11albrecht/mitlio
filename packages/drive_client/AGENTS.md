@@ -4,14 +4,14 @@
 # drive_client (`mitlio_drive`)
 
 ## Purpose
-CLI that calls `ext.mitlio.*` VM service extensions on a running debug app (DebugDrive). Lets agents and CI drive the app through the same ViewModel/Repository API tests use. P0 skeleton; real client in P3-T04.
+CLI that calls `ext.mitlio.*` VM service extensions on a running debug app (DebugDrive). Lets agents and CI drive the app through the same ViewModel/Repository API tests use. Implemented in P3-T04.
 
 ## Key Files
 | File | Description |
 |------|-------------|
-| `lib/mitlio_drive.dart` | `extensionPrefix` (`ext.mitlio.`) and `extensionName()` qualifier |
+| `lib/mitlio_drive.dart` | Arg parsing, `callExtension`, `runDrive` (exit codes 0/1/2/64), `extensionName()` |
 | `lib/drive_client.dart` | Leftover `dart create` sample (`calculate()`); candidate for removal |
-| `bin/drive.dart` | `drive <extension> [json-params]` entry; currently exits 69 (not implemented) |
+| `bin/drive.dart` | `drive <extension> [json-params] [--uri-file] [--timeout]` entry |
 | `test/mitlio_drive_test.dart` | Tests for `extensionName` |
 
 ## For AI Agents
