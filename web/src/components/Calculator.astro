@@ -1,21 +1,31 @@
 ---
 import { calculatorMessages } from '../i18n/calculator';
 import { messages, type Locale } from '../i18n';
-import { defaultState, MAX_TRIP_NAME } from '../calculator/core';
+import { defaultState, MAX_TRIP_NAME, type CalcState } from '../calculator/core';
 import { APP_STORE_URL, PLAY_STORE_URL } from '../../site.config.mjs';
 import { buildDeepLink } from '../lib/deeplink';
 
 interface Props {
   locale: Locale;
+  /** Landing pages: starting values for the form (URL params still win in the island). */
+  preset?: Partial<CalcState>;
+  /** Km-rate mode: price field is the rate per km, consumption and drive type are hidden. */
+  rate?: boolean;
 }
 
-const { locale } = Astro.props;
+const { locale, preset = {}, rate = false } = Astro.props;
 const m = calculatorMessages[locale];
 const label = messages[locale].calculatorLabel;
 // Static defaults so the page is stable before the island runs.
-const d = defaultState();
+const d: CalcState = { ...defaultState(preset.energy ?? 'fuel'), ...preset };
 const decimal = (v: string) => (locale === 'de' ? v.replace('.', ',') : v);
 const storesLive = APP_STORE_URL !== '' || PLAY_STORE_URL !== '';
+const ev = d.energy === 'ev';
+const consLabel = `${ev ? m.consumptionEv : m.consumptionFuel} (${ev ? m.consumptionEvUnit : m.consumptionFuelUnit})`;
+const consUnit = ev ? m.consumptionEvUnit : m.consumptionFuelUnit;
+const priceLabel = rate ? `${m.priceRate} (${m.priceRateUnit})` : `${ev ? m.priceEv : m.priceFuel} (${ev ? m.priceEvUnit : m.priceFuelUnit})`;
+const priceUnit = rate ? m.priceRateUnit : ev ? m.priceEvUnit : m.priceFuelUnit;
+const rowLabel = rate ? m.rowRate : ev ? m.rowEv : m.rowFuel;
 const ctaDeepLink = buildDeepLink({
   km: Number(d.km),
   l100: Number(d.cons),
@@ -23,10 +33,18 @@ const ctaDeepLink = buildDeepLink({
   n: Number(d.persons),
   d: d.driverPays,
   rt: d.roundTrip,
+  ev: ev || undefined,
 });
 ---
 
-<div id="calculator" role="region" aria-label={label} data-locale={locale}>
+<div
+  id="calculator"
+  role="region"
+  aria-label={label}
+  data-locale={locale}
+  data-mode={rate ? 'rate' : undefined}
+  data-preset={Object.keys(preset).length > 0 ? JSON.stringify(preset) : undefined}
+>
   <div class="result" id="calc-result" data-state="loading">
     <div aria-live="polite" aria-atomic="true">
       <p class="result-lead" id="calc-result-lead">{m.loading}</p>
@@ -38,7 +56,7 @@ const ctaDeepLink = buildDeepLink({
       <summary>{m.breakdown}</summary>
       <dl>
         <div>
-          <dt id="calc-b-fuel-label">{m.rowFuel}</dt>
+          <dt id="calc-b-fuel-label">{rowLabel}</dt>
           <dd id="calc-b-fuel">–</dd>
         </div>
         <div id="calc-b-extras-row" hidden>
@@ -62,14 +80,14 @@ const ctaDeepLink = buildDeepLink({
   </div>
 
   <form class="inputs" novalidate onsubmit="return false">
-    <fieldset class="segmented">
+    <fieldset class="segmented" hidden={rate}>
       <legend>{m.energy}</legend>
       <label>
-        <input type="radio" name="energy" value="fuel" checked />
+        <input type="radio" name="energy" value="fuel" checked={!ev} />
         <span>{m.energyFuel}</span>
       </label>
       <label>
-        <input type="radio" name="energy" value="ev" />
+        <input type="radio" name="energy" value="ev" checked={ev} />
         <span>{m.energyEv}</span>
       </label>
     </fieldset>
@@ -84,20 +102,20 @@ const ctaDeepLink = buildDeepLink({
         <p class="error" id="calc-km-error" hidden></p>
       </div>
 
-      <div class="field">
-        <label for="calc-cons" id="calc-cons-label">{m.consumptionFuel} ({m.consumptionFuelUnit})</label>
+      <div class="field" hidden={rate}>
+        <label for="calc-cons" id="calc-cons-label">{consLabel}</label>
         <div class="control">
           <input id="calc-cons" type="text" inputmode="decimal" autocomplete="off" value={decimal(d.cons)} />
-          <span class="unit" id="calc-cons-unit" aria-hidden="true">{m.consumptionFuelUnit}</span>
+          <span class="unit" id="calc-cons-unit" aria-hidden="true">{consUnit}</span>
         </div>
         <p class="error" id="calc-cons-error" hidden></p>
       </div>
 
       <div class="field">
-        <label for="calc-price" id="calc-price-label">{m.priceFuel} ({m.priceFuelUnit})</label>
+        <label for="calc-price" id="calc-price-label">{priceLabel}</label>
         <div class="control">
           <input id="calc-price" type="text" inputmode="decimal" autocomplete="off" value={decimal(d.price)} />
-          <span class="unit" id="calc-price-unit" aria-hidden="true">{m.priceFuelUnit}</span>
+          <span class="unit" id="calc-price-unit" aria-hidden="true">{priceUnit}</span>
         </div>
         <p class="error" id="calc-price-error" hidden></p>
       </div>
@@ -116,18 +134,18 @@ const ctaDeepLink = buildDeepLink({
     <div class="switches">
       <label class="switch">
         <span>{m.driverPays}</span>
-        <input id="calc-driver-pays" type="checkbox" role="switch" checked />
+        <input id="calc-driver-pays" type="checkbox" role="switch" checked={d.driverPays} />
       </label>
       <label class="switch">
         <span>{m.roundTrip}</span>
-        <input id="calc-round-trip" type="checkbox" role="switch" />
+        <input id="calc-round-trip" type="checkbox" role="switch" checked={d.roundTrip} />
       </label>
     </div>
 
     <div class="field">
       <label for="calc-extras">{m.extras} <span class="optional">({m.extrasOptional})</span></label>
       <div class="control">
-        <input id="calc-extras" type="text" inputmode="decimal" autocomplete="off" placeholder="0" value="" />
+        <input id="calc-extras" type="text" inputmode="decimal" autocomplete="off" placeholder="0" value={decimal(d.extras)} />
         <span class="unit" aria-hidden="true">{m.extrasUnit}</span>
       </div>
       <p class="error" id="calc-extras-error" hidden></p>
@@ -157,7 +175,9 @@ const ctaDeepLink = buildDeepLink({
           {PLAY_STORE_URL && (
             <a class="btn" href={PLAY_STORE_URL} rel="noopener">{m.ctaPlay}</a>
           )}
-          <a class="btn" id="calc-cta-open" href={ctaDeepLink}>{m.ctaOpen}</a>
+          {!rate && (
+            <a class="btn" id="calc-cta-open" href={ctaDeepLink}>{m.ctaOpen}</a>
+          )}
         </div>
       ) : (
         <p class="cta-soon">{m.ctaSoon}</p>

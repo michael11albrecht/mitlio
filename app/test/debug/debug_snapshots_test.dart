@@ -31,7 +31,13 @@ void main() {
   ).id;
 
   test('lists the slice screens', () {
-    expect(registry.screens, ['groups', 'group', 'expenses', 'expense_form']);
+    expect(registry.screens, [
+      'groups',
+      'group',
+      'expenses',
+      'expense_form',
+      'balances',
+    ]);
   });
 
   test('groups reads the list ViewModel', () async {
@@ -97,5 +103,17 @@ void main() {
     await tester.pumpAndSettle();
     // An id that is not stored is a not-found failure, not "not open".
     expect(live.snapshot('expense_form')!['status'], 'error');
+  });
+
+  testWidgets('balances follows the open balances route', (tester) async {
+    final id = await newGroup();
+    final c = await pumpMitlio(tester, app);
+    final live = buildSnapshotRegistry(c);
+    expect(live.snapshot('balances'), {'status': 'not_open'});
+
+    c.read(routerProvider).go('/groups/$id/balances');
+    await tester.pumpAndSettle();
+    expect(live.snapshot('balances')!['status'], 'empty');
+    expect(live.snapshot('balances')!['groupId'], id);
   });
 }
