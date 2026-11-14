@@ -1,3 +1,6 @@
+-- squawk-ignore-file prefer-robust-stmts
+-- Justification: the Supabase CLI applies each migration file once, in a transaction; the two new
+-- tables are created here, so "enable row level security" cannot hit existing data or be re-run.
 -- 0005_fuel_prices: fuel price cache, rate limiter and cron jobs (P6c-T02, T04, T06; plan §7 P6c, ADR-20).
 --
 -- Privacy and abuse model:
@@ -23,8 +26,8 @@ create table if not exists public.fuel_price_cache (
   type text not null check (type in ('e5', 'e10', 'diesel')),
   scope text not null check (scope in ('nearby', 'plz', 'national')),
   scope_key text not null check (char_length(scope_key) between 1 and 32),
-  price_milli integer not null check (price_milli > 0 and price_milli < 10000),
-  stations integer not null check (stations >= 0),
+  price_milli bigint not null check (price_milli > 0 and price_milli < 10000),
+  stations bigint not null check (stations >= 0),
   fetched_at timestamptz not null default now(),
   source text not null default 'tankerkoenig' check (source in ('tankerkoenig', 'eu-oil-bulletin')),
   -- Date the data is valid for when that differs from the fetch time (weekly bulletin).

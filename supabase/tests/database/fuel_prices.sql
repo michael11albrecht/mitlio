@@ -1,17 +1,17 @@
 -- fuel_price_cache, rate_limits, consume_rate_limit and the cron jobs (P6c-T02, T04, T06).
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(24);
+select plan(23);
 
 insert into public.fuel_price_cache (type, scope, scope_key, price_milli, stations)
 values ('e5', 'national', 'de', 1799, 16);
 
 -- Reads: anon and authenticated.
 set local role anon;
-select is((select price_milli from public.fuel_price_cache where scope_key = 'de'), 1799,
+select is((select price_milli from public.fuel_price_cache where scope_key = 'de'), 1799::bigint,
   'anon can read the cache');
 set local role authenticated;
-select is((select price_milli from public.fuel_price_cache where scope_key = 'de'), 1799,
+select is((select price_milli from public.fuel_price_cache where scope_key = 'de'), 1799::bigint,
   'authenticated can read the cache');
 
 -- Writes: never from client roles.
