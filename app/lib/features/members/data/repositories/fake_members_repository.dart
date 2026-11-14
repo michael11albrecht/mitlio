@@ -102,6 +102,31 @@ class FakeMembersRepository implements MembersRepository {
   }
 
   @override
+  Future<RepoResult<void>> reorder(
+    String groupId,
+    List<String> orderedIds,
+  ) async {
+    final live = _of(groupId, includeDeleted: false);
+    if (!sameMembers(live.map((m) => m.id), orderedIds)) {
+      return const Err(InvalidData('orderedIds must be the live member ids'));
+    }
+    final positions = [for (final m in live) m.position];
+    for (var i = 0; i < orderedIds.length; i++) {
+      final m = _members[orderedIds[i]]!;
+      _members[m.id] = GroupMember(
+        id: m.id,
+        groupId: m.groupId,
+        name: m.name,
+        position: positions[i],
+        paypalMe: m.paypalMe,
+        ibanHint: m.ibanHint,
+      );
+    }
+    _changes.add(null);
+    return const Ok(null);
+  }
+
+  @override
   Future<RepoResult<Undo>> softDelete(String id) async {
     if (_live(id) == null) return Err(NotFound('member', id));
     _deleted.add(id);

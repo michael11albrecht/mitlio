@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 
+import 'package:mitlio_domain/mitlio_domain.dart';
+
 import '../../repo_test_support.dart';
 
 /// Behaviour every [GroupsRepository] must show; run against Drift and the
@@ -38,18 +40,27 @@ void runGroupsRepositoryContract(
       expect(err(await repo.get('nope')), const NotFound('group', 'nope'));
     });
 
-    test('rename updates the group', () async {
+    test('update changes name and currency', () async {
       final g = await newGroup();
-      final renamed = ok(await repo.rename(g.id, ' Ski '));
-      expect(renamed.name, 'Ski');
-      expect(renamed.id, g.id);
-      expect(ok(await repo.get(g.id)).name, 'Ski');
+      final updated = ok(
+        await repo.update(g.id, name: ' Ski ', currency: Currency.chf),
+      );
+      expect(updated.name, 'Ski');
+      expect(updated.currency, Currency.chf);
+      expect(updated.id, g.id);
+      expect(ok(await repo.get(g.id)), updated);
     });
 
-    test('rename validates and reports unknown ids', () async {
+    test('update validates and reports unknown ids', () async {
       final g = await newGroup();
-      expect(err(await repo.rename(g.id, '')), isA<InvalidData>());
-      expect(err(await repo.rename('nope', 'x')), isA<NotFound>());
+      expect(
+        err(await repo.update(g.id, name: '', currency: eur)),
+        isA<InvalidData>(),
+      );
+      expect(
+        err(await repo.update('nope', name: 'x', currency: eur)),
+        isA<NotFound>(),
+      );
     });
 
     test('soft delete hides the group and undo restores it', () async {
@@ -80,7 +91,7 @@ void runGroupsRepositoryContract(
       final g = await newGroup();
       expect(await probe.next(), [g]);
 
-      final renamed = ok(await repo.rename(g.id, 'Ski'));
+      final renamed = ok(await repo.update(g.id, name: 'Ski', currency: eur));
       expect(await probe.next(), [renamed]);
 
       final undo = ok(await repo.softDelete(g.id));

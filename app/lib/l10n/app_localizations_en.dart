@@ -61,4 +61,92 @@ class AppLocalizationsEn extends AppLocalizations {
   String moneySpokenNegative(String amount) {
     return 'minus $amount';
   }
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String get dismiss => 'Dismiss';
+
+  @override
+  String get groupsEmptyTitle => 'No group yet';
+
+  @override
+  String get groupsEmptyMessage => 'Create your first one.';
+
+  @override
+  String get groupNew => 'New group';
+
+  @override
+  String get groupCreate => 'Create group';
+
+  @override
+  String get groupEditTitle => 'Edit group';
+
+  @override
+  String get groupNameLabel => 'Name';
+
+  @override
+  String get groupNameHint => 'e.g. Weekend trip';
+
+  @override
+  String get groupNameRequired => 'Give the group a name';
+
+  @override
+  String get groupCurrencyLabel => 'Currency';
+
+  @override
+  String get groupCurrencyLocked =>
+      'The currency can\'t be changed once there are expenses.';
+
+  @override
+  String get groupSave => 'Save';
+
+  @override
+  String get groupMenu => 'More';
+
+  @override
+  String get groupArchive => 'Archive group';
+
+  @override
+  String groupArchived(String name) {
+    return '“$name” archived';
+  }
+
+  @override
+  String get membersEmptyTitle => 'Nobody here yet';
+
+  @override
+  String get membersEmptyMessage => 'Add the people you share with.';
+
+  @override
+  String get memberAddLabel => 'Add a name';
+
+  @override
+  String get memberAdd => 'Add';
+
+  @override
+  String get memberNameLabel => 'Name';
+
+  @override
+  String get memberRenameSave => 'Save name';
+
+  @override
+  String memberRemove(String name) {
+    return 'Remove $name';
+  }
+
+  @override
+  String memberRemoved(String name) {
+    return '“$name” removed';
+  }
+
+  @override
+  String get memberOrderHint =>
+      'Drag to reorder. When a split leaves spare cents, people higher up pay the extra cent first.';
+
+  @override
+  String memberInUse(String name) {
+    return '$name has expenses or payments, so they stay in the group.';
+  }
 }

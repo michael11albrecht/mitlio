@@ -6,63 +6,20 @@ import 'package:go_router/go_router.dart';
 import 'package:mitlio/core/logging.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/router.dart';
+import 'package:mitlio/debug/debug_data_control.dart';
+import 'package:mitlio/debug/debug_snapshots.dart';
+import 'package:mitlio/debug/drive_types.dart';
+import 'package:mitlio/debug/handlers/groups.dart';
+
+export 'package:mitlio/debug/debug_data_control.dart';
+export 'package:mitlio/debug/debug_snapshots.dart';
+export 'package:mitlio/debug/drive_types.dart';
 
 /// Build identifier injected with `--dart-define=BUILD_SHA=<sha>`.
 const buildSha = String.fromEnvironment('BUILD_SHA', defaultValue: 'dev');
 
 /// App version reported by `ext.mitlio.ping`.
 const appVersion = '0.1.0';
-
-typedef DriveResult = Map<String, Object?>;
-typedef DriveHandler = Future<DriveResult> Function(Map<String, String> params);
-
-/// Wipes and seeds local data for DebugDrive (`reset` / `seed`).
-abstract interface class DebugDataControl {
-  Future<void> wipe();
-
-  /// Returns the ids of the created entities.
-  Future<DriveResult> seed(String scenario);
-}
-
-/// Placeholder until the Drift DB lands.
-// TODO(P3-T02): implement DebugDataControl on AppDatabase (wipe) and seed via
-// repositories from tool/fixtures/*.json, then override debugDataControlProvider.
-class NoopDebugDataControl implements DebugDataControl {
-  const NoopDebugDataControl();
-
-  @override
-  Future<void> wipe() async {}
-
-  @override
-  Future<DriveResult> seed(String scenario) async => {'ids': <String>[]};
-}
-
-final debugDataControlProvider = Provider<DebugDataControl>(
-  (ref) => const NoopDebugDataControl(),
-);
-
-/// ViewModels register their `debugSnapshot()` here (empty until slices land).
-class DebugSnapshotRegistry {
-  final _snapshots = <String, DriveResult Function()>{};
-
-  void register(String screen, DriveResult Function() snapshot) =>
-      _snapshots[screen] = snapshot;
-
-  void unregister(String screen) => _snapshots.remove(screen);
-
-  Iterable<String> get screens => _snapshots.keys;
-
-  DriveResult? snapshot(String screen) => _snapshots[screen]?.call();
-}
-
-final debugSnapshotRegistryProvider = Provider<DebugSnapshotRegistry>(
-  (ref) => DebugSnapshotRegistry(),
-);
-
-DriveResult invalidParams(String message) => {
-  'error': 'invalid_params',
-  'message': message,
-};
 
 /// Builds the handler table (keys without the `ext.mitlio.` prefix).
 Map<String, DriveHandler> buildDriveHandlers({
@@ -136,12 +93,15 @@ Future<DriveResult> runDriveHandler(
 
 /// Registers every `ext.mitlio.*` extension. Call only under `kDebugMode`.
 void registerDebugDrive(ProviderContainer container) {
-  final handlers = buildDriveHandlers(
-    errors: container.read(errorSinkProvider),
-    router: container.read(routerProvider),
-    data: container.read(debugDataControlProvider),
-    snapshots: container.read(debugSnapshotRegistryProvider),
-  );
+  final handlers = {
+    ...buildDriveHandlers(
+      errors: container.read(errorSinkProvider),
+      router: container.read(routerProvider),
+      data: container.read(debugDataControlProvider),
+      snapshots: container.read(debugSnapshotRegistryProvider),
+    ),
+    ...groupsDriveHandlers(container),
+  };
   for (final entry in handlers.entries) {
     developer.registerExtension('ext.mitlio.${entry.key}', (_, params) async {
       final result = await runDriveHandler(entry.value, params);

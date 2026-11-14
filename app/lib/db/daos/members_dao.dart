@@ -64,6 +64,24 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
     return n > 0;
   }
 
+  /// Moves a live member to [position]. Returns true if a live row changed.
+  Future<bool> setPosition({
+    required String id,
+    required int position,
+    required String updatedAt,
+  }) async {
+    final n =
+        await (update(
+          members,
+        )..where((m) => m.id.equals(id) & m.deletedAt.isNull())).write(
+          MembersCompanion(
+            position: Value(position),
+            updatedAt: Value(updatedAt),
+          ),
+        );
+    return n > 0;
+  }
+
   Future<bool> softDelete({
     required String id,
     required DateTime deletedAt,

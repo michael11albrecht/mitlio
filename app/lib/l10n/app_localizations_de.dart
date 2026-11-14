@@ -61,4 +61,93 @@ class AppLocalizationsDe extends AppLocalizations {
   String moneySpokenNegative(String amount) {
     return 'minus $amount';
   }
+
+  @override
+  String get undo => 'Rückgängig';
+
+  @override
+  String get dismiss => 'Schließen';
+
+  @override
+  String get groupsEmptyTitle => 'Noch keine Gruppe';
+
+  @override
+  String get groupsEmptyMessage => 'Leg die erste an.';
+
+  @override
+  String get groupNew => 'Neue Gruppe';
+
+  @override
+  String get groupCreate => 'Gruppe anlegen';
+
+  @override
+  String get groupEditTitle => 'Gruppe bearbeiten';
+
+  @override
+  String get groupNameLabel => 'Name';
+
+  @override
+  String get groupNameHint => 'z. B. Wochenendtrip';
+
+  @override
+  String get groupNameRequired => 'Gib der Gruppe einen Namen';
+
+  @override
+  String get groupCurrencyLabel => 'Währung';
+
+  @override
+  String get groupCurrencyLocked =>
+      'Die Währung lässt sich nicht mehr ändern, sobald es Ausgaben gibt.';
+
+  @override
+  String get groupSave => 'Speichern';
+
+  @override
+  String get groupMenu => 'Mehr';
+
+  @override
+  String get groupArchive => 'Gruppe archivieren';
+
+  @override
+  String groupArchived(String name) {
+    return '„$name“ archiviert';
+  }
+
+  @override
+  String get membersEmptyTitle => 'Noch niemand dabei';
+
+  @override
+  String get membersEmptyMessage =>
+      'Füge die Leute hinzu, mit denen du teilst.';
+
+  @override
+  String get memberAddLabel => 'Name hinzufügen';
+
+  @override
+  String get memberAdd => 'Hinzufügen';
+
+  @override
+  String get memberNameLabel => 'Name';
+
+  @override
+  String get memberRenameSave => 'Namen speichern';
+
+  @override
+  String memberRemove(String name) {
+    return '$name entfernen';
+  }
+
+  @override
+  String memberRemoved(String name) {
+    return '„$name“ entfernt';
+  }
+
+  @override
+  String get memberOrderHint =>
+      'Zum Sortieren ziehen. Wer weiter oben steht, zahlt bei Restcents zuerst einen Cent mehr.';
+
+  @override
+  String memberInUse(String name) {
+    return '$name hat Ausgaben oder Zahlungen und bleibt deshalb in der Gruppe.';
+  }
 }

@@ -11,27 +11,101 @@
   "currencyName": "{code, select, EUR{Euro} USD{US-Dollar} GBP{Pfund} CHF{Franken} other{{code}}}",
   "@currencyName": {
     "description": "Spoken name of a currency for screen readers.",
-    "placeholders": {"code": {"type": "String"}}
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
   },
   "moneySpoken": "{whole} {currency}",
   "@moneySpoken": {
     "description": "Screen reader text of a whole amount, e.g. '12 Euro'.",
     "placeholders": {
-      "whole": {"type": "int", "format": "decimalPattern"},
-      "currency": {"type": "String"}
+      "whole": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "currency": {
+        "type": "String"
+      }
     }
   },
   "moneySpokenWithFraction": "{whole} {currency} {fraction}",
   "@moneySpokenWithFraction": {
     "description": "Screen reader text with minor units, e.g. '12 Euro 34'.",
     "placeholders": {
-      "whole": {"type": "int", "format": "decimalPattern"},
-      "currency": {"type": "String"},
-      "fraction": {"type": "String"}
+      "whole": {
+        "type": "int",
+        "format": "decimalPattern"
+      },
+      "currency": {
+        "type": "String"
+      },
+      "fraction": {
+        "type": "String"
+      }
     }
   },
   "moneySpokenNegative": "minus {amount}",
   "@moneySpokenNegative": {
-    "placeholders": {"amount": {"type": "String"}}
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "undo": "Rückgängig",
+  "dismiss": "Schließen",
+  "groupsEmptyTitle": "Noch keine Gruppe",
+  "groupsEmptyMessage": "Leg die erste an.",
+  "groupNew": "Neue Gruppe",
+  "groupCreate": "Gruppe anlegen",
+  "groupEditTitle": "Gruppe bearbeiten",
+  "groupNameLabel": "Name",
+  "groupNameHint": "z. B. Wochenendtrip",
+  "groupNameRequired": "Gib der Gruppe einen Namen",
+  "groupCurrencyLabel": "Währung",
+  "groupCurrencyLocked": "Die Währung lässt sich nicht mehr ändern, sobald es Ausgaben gibt.",
+  "groupSave": "Speichern",
+  "groupMenu": "Mehr",
+  "groupArchive": "Gruppe archivieren",
+  "groupArchived": "„{name}“ archiviert",
+  "@groupArchived": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "membersEmptyTitle": "Noch niemand dabei",
+  "membersEmptyMessage": "Füge die Leute hinzu, mit denen du teilst.",
+  "memberAddLabel": "Name hinzufügen",
+  "memberAdd": "Hinzufügen",
+  "memberNameLabel": "Name",
+  "memberRenameSave": "Namen speichern",
+  "memberRemove": "{name} entfernen",
+  "@memberRemove": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberRemoved": "„{name}“ entfernt",
+  "@memberRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberOrderHint": "Zum Sortieren ziehen. Wer weiter oben steht, zahlt bei Restcents zuerst einen Cent mehr.",
+  "memberInUse": "{name} hat Ausgaben oder Zahlungen und bleibt deshalb in der Gruppe.",
+  "@memberInUse": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/app.dart';
 
+import '../helpers/fake_app.dart';
+
 /// Golden matrix (plan §2.6): light/dark x text scale 1.0/2.0.
 /// Brightness comes from the platform dispatcher (what `ThemeMode.system`
 /// reads), text scale from a per-column `MediaQuery`.
@@ -18,7 +20,10 @@ Widget _scale(BuildContext context, double scale) {
       data: MediaQuery.of(
         context,
       ).copyWith(textScaler: TextScaler.linear(scale)),
-      child: const ProviderScope(child: MitlioApp()),
+      child: ProviderScope(
+        overrides: FakeApp().overrides,
+        child: const MitlioApp(),
+      ),
     ),
   );
 }

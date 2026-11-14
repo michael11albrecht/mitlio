@@ -21,17 +21,22 @@ class GroupsDao extends DatabaseAccessor<AppDatabase> with _$GroupsDaoMixin {
   Stream<List<GroupRow>> watchGroups() =>
       (select(groups)..where((g) => g.deletedAt.isNull())).watch();
 
-  /// Returns true if a live row was updated.
+  /// Returns true if a live row was updated. A null [currency] keeps it.
   Future<bool> updateGroup({
     required String id,
     required String name,
     required String updatedAt,
+    String? currency,
   }) async {
     final n =
         await (update(
           groups,
         )..where((g) => g.id.equals(id) & g.deletedAt.isNull())).write(
-          GroupsCompanion(name: Value(name), updatedAt: Value(updatedAt)),
+          GroupsCompanion(
+            name: Value(name),
+            currency: currency == null ? const Value.absent() : Value(currency),
+            updatedAt: Value(updatedAt),
+          ),
         );
     return n > 0;
   }

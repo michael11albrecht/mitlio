@@ -43,4 +43,8 @@ abstract final class Sizes {
   static const double avatar = 40;
   static const double avatarSmall = 28;
   static const double stateIcon = 56;
+
+  /// Bottom padding of lists with an extended floating action button, so the
+  /// last row can scroll clear of it.
+  static const double fabClearance = 88;
 }
