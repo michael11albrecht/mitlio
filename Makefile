@@ -31,6 +31,7 @@ bootstrap: ## Install deps and git hooks
 
 .PHONY: gen
 gen: ## Run code generation
+	cd $(APP) && $(FLUTTER) gen-l10n
 	cd app && $(DART) run build_runner build --delete-conflicting-outputs
 
 .PHONY: db-schema
