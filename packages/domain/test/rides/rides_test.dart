@@ -236,6 +236,35 @@ void main() {
       expect(() => mk(1, 0, -1), throwsArgumentError);
       expect(mk(1, 0, 0).kmRateMilliPerKm, 0);
     });
+
+    test('validation errors name the offending field, value and reason', () {
+      Vehicle mk(int c, int w, int? k) => Vehicle(
+        id: 'v',
+        name: 'n',
+        fuelType: FuelType.petrol,
+        consumptionMilliPer100km: c,
+        wearMilliPerKm: w,
+        kmRateMilliPerKm: k,
+      );
+      Matcher rejects(String name, Object? value, String message) => throwsA(
+        isA<ArgumentError>()
+            .having((e) => e.name, 'name', name)
+            .having((e) => e.invalidValue, 'invalidValue', value)
+            .having((e) => e.message, 'message', message),
+      );
+      expect(
+        () => mk(0, 0, null),
+        rejects('consumptionMilliPer100km', 0, 'must be > 0'),
+      );
+      expect(
+        () => mk(1, -1, null),
+        rejects('wearMilliPerKm', -1, 'must be >= 0'),
+      );
+      expect(
+        () => mk(1, 0, -1),
+        rejects('kmRateMilliPerKm', -1, 'must be >= 0'),
+      );
+    });
   });
 
   group('rideCost', () {
