@@ -6,7 +6,7 @@ import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/crash/crash_reporter.dart';
 import 'package:mitlio/core/crash/route_breadcrumbs.dart';
 import 'package:mitlio/core/logging.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:sentry/sentry.dart';
 
 class FakeGateway extends SentryGateway {
   final calls = <String>[];
@@ -123,14 +123,12 @@ void main() {
   });
 
   test('options are locked down and scrubbed', () {
-    final o = SentryFlutterOptions();
+    final o = SentryOptions();
     configureSentryOptions(o, 'https://k@de.sentry.io/1');
     expect(o.dsn, 'https://k@de.sentry.io/1');
     expect(o.beforeSend, isNotNull);
     expect(o.beforeBreadcrumb, isNotNull);
     expect(o.sendDefaultPii, isFalse);
-    expect(o.autoInitializeNativeSdk, isFalse);
-    expect(o.attachScreenshot, isFalse);
     expect(o.tracesSampleRate, isNull);
     final names = o.integrations.map((i) => i.runtimeType.toString());
     expect(names, isNot(contains('FlutterErrorIntegration')));

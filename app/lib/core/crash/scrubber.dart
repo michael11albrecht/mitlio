@@ -1,4 +1,4 @@
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:sentry/sentry.dart';
 
 /// PII scrubber for crash reports (P7-T08, plan §8). Everything here is a pure
 /// function over event data; it runs in `beforeSend` / `beforeBreadcrumb`, so

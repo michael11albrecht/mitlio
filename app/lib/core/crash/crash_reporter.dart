@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:mitlio/core/crash/scrubber.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:sentry/sentry.dart';
 
 /// Where the opt-in choice lives. Default (nothing stored) is off.
 abstract interface class CrashReportingStore {
@@ -45,7 +45,7 @@ class MemoryCrashReportingStore implements CrashReportingStore {
 class SentryGateway {
   const SentryGateway();
 
-  Future<void> init(String dsn) => SentryFlutter.init(
+  Future<void> init(String dsn) => Sentry.init(
     (o) => configureSentryOptions(o, dsn),
   );
 
@@ -60,21 +60,12 @@ class SentryGateway {
 
 /// Locked-down Sentry options: scrubbed, Dart-only, no performance data, no
 /// automatic breadcrumbs or attachments, errors only via [CrashReporter].
-void configureSentryOptions(SentryFlutterOptions o, String dsn) {
+void configureSentryOptions(SentryOptions o, String dsn) {
   o
     ..dsn = dsn
     ..sendDefaultPii = false
     ..beforeSend = scrubEvent
     ..beforeBreadcrumb = scrubBreadcrumb
-    ..autoInitializeNativeSdk = false
-    ..enableNativeCrashHandling = false
-    ..enableAutoNativeBreadcrumbs = false
-    ..enableUserInteractionBreadcrumbs = false
-    ..enableUserInteractionTracing = false
-    ..enableAutoPerformanceTracing = false
-    ..enableFramesTracking = false
-    ..attachScreenshot = false
-    ..attachViewHierarchy = false
     ..attachThreads = false
     ..captureFailedRequests = false
     ..sendClientReports = false
@@ -82,7 +73,9 @@ void configureSentryOptions(SentryFlutterOptions o, String dsn) {
   // ErrorSink forwards errors; the SDK must not hook the global handlers.
   for (final i in o.integrations) {
     final name = i.runtimeType.toString();
-    if (name == 'FlutterErrorIntegration' || name == 'OnErrorIntegration') {
+    if (name == 'FlutterErrorIntegration' ||
+        name == 'OnErrorIntegration' ||
+        name == 'IsolateErrorIntegration') {
       o.removeIntegration(i);
     }
   }

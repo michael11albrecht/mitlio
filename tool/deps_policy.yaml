@@ -54,7 +54,7 @@ denylist:
       - app_review
       - rate_my_app
 allowlist:
-  - package: sentry_flutter
+  - package: sentry
     reason: crash reports, opt-in, scrubbed (P7-T08, ADR-14); DSN empty until the owner sets it.
 # Allowlist entry format (reason is mandatory):
 #   - package: in_app_review
