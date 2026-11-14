@@ -1,5 +1,8 @@
 ---
 import '../styles/global.css';
+import { APP_STORE_URL } from '../../site.config.mjs';
+import { defaultState } from '../calculator/core';
+import { buildDeepLink } from '../lib/deeplink';
 import { htmlLang, locales, messages, paths, type Locale, type RouteKey } from '../i18n';
 
 interface Props {
@@ -9,9 +12,22 @@ interface Props {
   /** Route used for canonical + hreflang. Omit for pages without alternates (404). */
   route?: RouteKey;
   noindex?: boolean;
+  /** Emit the iOS smart app banner meta (only when APP_STORE_URL is configured). */
+  appBanner?: boolean;
 }
 
-const { locale, title, description, route, noindex = false } = Astro.props;
+const { locale, title, description, route, noindex = false, appBanner = false } = Astro.props;
+const appId = /\/id(\d+)/.exec(APP_STORE_URL)?.[1];
+const d = defaultState();
+// The calculator island rewrites app-argument with the current trip.
+const appArgument = buildDeepLink({
+  km: Number(d.km),
+  l100: Number(d.cons),
+  price: Number(d.price),
+  n: Number(d.persons),
+  d: d.driverPays,
+  rt: d.roundTrip,
+});
 const t = messages[locale];
 const other: Locale = locale === 'de' ? 'en' : 'de';
 const site = Astro.site!;
@@ -40,6 +56,11 @@ const canonical = route ? abs(paths[route][locale]) : undefined;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     {canonical && <meta property="og:url" content={canonical} />}
+    {
+      appBanner && appId && (
+        <meta id="apple-itunes-app" name="apple-itunes-app" content={`app-id=${appId}, app-argument=${appArgument}`} />
+      )
+    }
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body>

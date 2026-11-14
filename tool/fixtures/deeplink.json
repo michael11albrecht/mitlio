@@ -1,0 +1,11 @@
+[
+  {"name": "minimal fuel trip, driver pays, one way",
+   "input": {"km": 250, "l100": 6.5, "price": 1.799, "n": 3, "d": true, "rt": false},
+   "expected": "mitlio://ride?km=250&l100=6.5&price=1.799&n=3&d=1&rt=0"},
+  {"name": "round trip, driver free, tolls and trip name needing percent-encoding",
+   "input": {"km": 120.5, "l100": 7, "price": 1.8, "n": 4, "d": false, "rt": true, "x": 11.5, "t": "Fahrt nach München & zurück"},
+   "expected": "mitlio://ride?km=120.5&l100=7&price=1.8&n=4&d=0&rt=1&x=11.5&t=Fahrt%20nach%20M%C3%BCnchen%20%26%20zur%C3%BCck"},
+  {"name": "electric trip, zero extras omitted, name trimmed and whitespace collapsed",
+   "input": {"km": 200, "l100": 18, "price": 0.35, "n": 2, "d": true, "rt": false, "x": 0, "t": "  City   trip ", "ev": true},
+   "expected": "mitlio://ride?km=200&l100=18&price=0.35&n=2&d=1&rt=0&t=City%20trip&ev=1"}
+]
