@@ -9,6 +9,7 @@ import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/template_form_view.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view.dart';
 import 'package:mitlio/features/settle/ui/settle_view.dart';
+import 'package:mitlio/features/statistics/ui/statistics_view.dart';
 import 'package:mitlio/features/trips/ui/trip_form_view.dart';
 
 /// App routes: home is the group list. Detail and edit nest under it, so
@@ -35,6 +36,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'balances',
                 builder: (context, state) =>
                     BalancesView(groupId: state.pathParameters['id']!),
+              ),
+              GoRoute(
+                path: 'statistics',
+                builder: (context, state) =>
+                    StatisticsView(groupId: state.pathParameters['id']!),
               ),
               GoRoute(
                 path: 'settle',

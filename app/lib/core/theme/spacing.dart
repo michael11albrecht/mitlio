@@ -55,6 +55,9 @@ abstract final class Sizes {
   /// three-letter code).
   static const double currencyPicker = 112;
 
+  /// Thickness of a bar in the statistics bar lists.
+  static const double barHeight = 8;
+
   /// Height of one day of the rides calendar (day number plus an avatar).
   static const double calendarCell = 64;
 }

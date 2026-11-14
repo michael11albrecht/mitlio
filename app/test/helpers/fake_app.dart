@@ -14,6 +14,9 @@ import 'package:mitlio/features/members/data/repositories/members_providers.dart
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_providers.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/fake_rides_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/fake_vehicles_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
 import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/fake_settlements_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
@@ -158,15 +161,25 @@ class FakeApp {
     final ids = SequentialIdGenerator();
     final groups = FlakyGroups(clock: clock, ids: ids);
     final members = FlakyMembers(groups: groups, ids: ids);
+    final expenses = FakeExpensesRepository(
+      groups: groups,
+      members: members,
+      clock: clock,
+      ids: ids,
+    );
+    final vehicles = FakeVehiclesRepository(groups: groups, ids: ids);
     return FakeApp._(
       clock,
       groups,
       members,
-      FakeExpensesRepository(
+      expenses,
+      vehicles,
+      FakeRidesRepository(
         groups: groups,
         members: members,
+        vehicles: vehicles,
+        expenses: expenses,
         clock: clock,
-        ids: ids,
       ),
       FlakySettlements(
         groups: groups,
@@ -183,6 +196,8 @@ class FakeApp {
     this.groups,
     this.members,
     this.expenses,
+    this.vehicles,
+    this.rides,
     this.settlements,
     this.payments,
   );
@@ -191,6 +206,10 @@ class FakeApp {
   final FlakyGroups groups;
   final FlakyMembers members;
   final FakeExpensesRepository expenses;
+
+  /// Empty unless a test adds to them; screens that read rides need them.
+  final FakeVehiclesRepository vehicles;
+  final FakeRidesRepository rides;
   final FlakySettlements settlements;
   final FlakyPayments payments;
 
@@ -211,6 +230,8 @@ class FakeApp {
     groupsRepositoryProvider.overrideWithValue(groups),
     membersRepositoryProvider.overrideWithValue(members),
     expensesRepositoryProvider.overrideWithValue(expenses),
+    vehiclesRepositoryProvider.overrideWithValue(vehicles),
+    ridesRepositoryProvider.overrideWithValue(rides),
     settlementsRepositoryProvider.overrideWithValue(settlements),
     linkLauncherProvider.overrideWithValue(launcher),
     shareServiceProvider.overrideWithValue(share),

@@ -38,6 +38,7 @@ void main() {
       'expense_form',
       'trip',
       'balances',
+      'statistics',
       'settle',
       'rides',
       'rides_setup',
@@ -137,6 +138,18 @@ void main() {
     await tester.pumpAndSettle();
     expect(live.snapshot('balances')!['status'], 'empty');
     expect(live.snapshot('balances')!['groupId'], id);
+  });
+
+  testWidgets('statistics follows the open statistics route', (tester) async {
+    final id = await newGroup();
+    final c = await pumpMitlio(tester, app);
+    final live = buildSnapshotRegistry(c);
+    expect(live.snapshot('statistics'), {'status': 'not_open'});
+
+    c.read(routerProvider).go('/groups/$id/statistics');
+    await tester.pumpAndSettle();
+    expect(live.snapshot('statistics')!['status'], 'empty');
+    expect(live.snapshot('statistics')!['groupId'], id);
   });
 
   testWidgets('settle follows the open settle route', (tester) async {

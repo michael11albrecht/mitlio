@@ -88,7 +88,7 @@ void main() {
       await spend(
         4600,
         date: '2026-03-01',
-        foreign: ForeignAmount(
+        foreign: const ForeignAmount(
           currency: Currency.usd,
           amountCents: 5000,
           ratePpm: 920000,

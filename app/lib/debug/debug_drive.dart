@@ -16,6 +16,7 @@ import 'package:mitlio/debug/handlers/groups.dart';
 import 'package:mitlio/debug/handlers/payment.dart';
 import 'package:mitlio/debug/handlers/rides.dart';
 import 'package:mitlio/debug/handlers/settle.dart';
+import 'package:mitlio/debug/handlers/statistics.dart';
 import 'package:mitlio/debug/handlers/trips.dart';
 
 export 'package:mitlio/debug/debug_data_control.dart';
@@ -115,6 +116,7 @@ void registerDebugDrive(ProviderContainer container) {
     ...settleDriveHandlers(container),
     ...ridesDriveHandlers(container),
     ...exportDriveHandlers(container),
+    ...statisticsDriveHandlers(container),
   };
   for (final entry in handlers.entries) {
     developer.registerExtension('ext.mitlio.${entry.key}', (_, params) async {

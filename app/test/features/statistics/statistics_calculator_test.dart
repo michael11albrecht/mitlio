@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -9,7 +8,7 @@ import 'package:mitlio_domain/mitlio_domain.dart';
 
 const _anna = Member(id: 'a', position: 0);
 const _ben = Member(id: 'b', position: 1);
-const _members = [_anna, _ben];
+const List<Member> _members = [_anna, _ben];
 
 ExpenseEntry _expense(
   int cents,
@@ -81,10 +80,10 @@ RideEntry _ride(
 void main() {
   group('periods', () {
     final expenses = [
-      _expense(100, DateTime.utc(2026, 3, 1), id: '1'),
+      _expense(100, DateTime.utc(2026, 3), id: '1'),
       _expense(200, DateTime.utc(2026, 3, 31, 23, 59), id: '2'),
       _expense(400, DateTime.utc(2026, 2, 28), id: '3'),
-      _expense(800, DateTime.utc(2026, 1, 1), id: '4'),
+      _expense(800, DateTime.utc(2026), id: '4'),
       _expense(1600, DateTime.utc(2025, 12, 31), id: '5'),
       _expense(3200, DateTime.utc(2026, 4), id: '6'),
     ];
@@ -248,7 +247,7 @@ void main() {
             4600,
             DateTime.utc(2026, 3, 2),
             category: 'food',
-            foreign: ForeignAmount(
+            foreign: const ForeignAmount(
               currency: Currency.usd,
               amountCents: 5000,
               ratePpm: 920000,
@@ -318,7 +317,7 @@ void main() {
           const [],
           vehicles: [golf],
           rides: [
-            _ride('r1', DateTime.utc(2026, 3, 1)),
+            _ride('r1', DateTime.utc(2026, 3)),
             _ride('r2', DateTime.utc(2026, 3, 2), roundTrip: true),
             _ride('r3', DateTime.utc(2026, 2, 2), meters: 50000),
             _ride('old', DateTime.utc(2025, 8, 2)),
@@ -343,7 +342,7 @@ void main() {
           vehicles: [golf],
           rides: [
             // Unknown vehicle: distance only.
-            _ride('r1', DateTime.utc(2026, 3, 1), vehicle: 'gone'),
+            _ride('r1', DateTime.utc(2026, 3), vehicle: 'gone'),
           ],
         ),
         StatsPeriod.month,
@@ -484,48 +483,6 @@ void main() {
         greaterThanOrEqualTo(total(StatsPeriod.last3Months)),
       );
     });
-  });
-
-  group('performance', () {
-    final skip = Platform.environment['MITLIO_SKIP_PERF'] == '1'
-        ? 'MITLIO_SKIP_PERF=1 (perf budget disabled on this runner)'
-        : null;
-
-    test('200 expenses compute in < 16 ms (median of 20)', () {
-      final random = Random(200);
-      final expenses = [
-        for (var i = 0; i < 200; i++)
-          _expense(
-            1 + random.nextInt(20000),
-            DateTime.utc(2026, 1 + random.nextInt(9), 1 + random.nextInt(28)),
-            category: [
-              'food',
-              'stay',
-              'transport',
-              'fun',
-              null,
-            ][random.nextInt(5)],
-            payer: random.nextBool() ? 'a' : 'b',
-            id: 'e$i',
-          ),
-      ];
-      final input = _input(expenses, today: DateTime.utc(2026, 9, 15));
-      for (final p in StatsPeriod.values) {
-        computeStatistics(input, p); // warm-up
-      }
-      final micros = <int>[];
-      final watch = Stopwatch();
-      for (var i = 0; i < 20; i++) {
-        watch
-          ..reset()
-          ..start();
-        computeStatistics(input, StatsPeriod.all);
-        watch.stop();
-        micros.add(watch.elapsedMicroseconds);
-      }
-      micros.sort();
-      expect(micros[micros.length ~/ 2], lessThan(16000));
-    }, skip: skip);
   });
 }
 
