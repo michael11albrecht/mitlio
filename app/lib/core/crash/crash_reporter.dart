@@ -116,8 +116,9 @@ class CrashReporter {
   }
 
   Future<void> setEnabled({required bool enabled}) async {
-    _enabled = enabled;
+    // Persist first: if saving fails the choice (and reporting) stays as is.
     await store.save(enabled: enabled);
+    _enabled = enabled;
     await _sync();
   }
 

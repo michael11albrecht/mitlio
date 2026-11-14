@@ -24,7 +24,11 @@ class CrashReportingViewModel extends Notifier<CrashReportingState> {
   }
 
   Future<void> setEnabled({required bool enabled}) async {
-    await ref.read(crashReporterProvider).setEnabled(enabled: enabled);
+    try {
+      await ref.read(crashReporterProvider).setEnabled(enabled: enabled);
+    } on Object {
+      // Not saved: the switch snaps back to the stored choice below.
+    }
     if (ref.mounted) state = _read();
   }
 }

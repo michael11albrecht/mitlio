@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,7 +35,28 @@ ProviderContainer _container(CrashReporter r) {
   return c;
 }
 
+class _FailingStore extends MemoryCrashReportingStore {
+  @override
+  Future<void> save({required bool enabled}) async =>
+      throw const FileSystemException('disk full');
+}
+
 void main() {
+  test('store failure keeps the choice off and reporting inactive', () async {
+    final r = CrashReporter(
+      dsn: 'https://k@de.sentry.io/1',
+      store: _FailingStore(),
+      gateway: _NoopGateway(),
+    );
+    final c = _container(r);
+    await c
+        .read(crashReportingViewModelProvider.notifier)
+        .setEnabled(enabled: true);
+    expect(c.read(crashReportingViewModelProvider).enabled, isFalse);
+    expect(r.isEnabled, isFalse);
+    expect(r.isActive, isFalse);
+  });
+
   test('default is off and available with a DSN', () {
     final s = _container(_reporter()).read(crashReportingViewModelProvider);
     expect(s.enabled, isFalse);

@@ -16,3 +16,7 @@ TODO (owner, needs a `.github/workflows/**` change, therefore not part of P7-T08
 2. Upload debug symbols in the release workflow: build with `--split-debug-info=build/symbols`
    `--obfuscate`, then `dart run sentry_dart_plugin` (org, project and `SENTRY_AUTH_TOKEN` as secrets).
 3. Verify with a forced crash in a staging build that the event arrives scrubbed and symbolicated.
+
+Note: `configureSentryOptions` removes the SDK's global error integrations by class name. With `--obfuscate`
+these names may be mangled and the integrations then stay installed. Events still pass the scrubber and the
+opt-in gate; verify this in the staging crash test above.
