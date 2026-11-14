@@ -209,7 +209,8 @@ class RidesApp {
     ridesRepositoryProvider.overrideWithValue(rides),
   ];
 
-  ProviderContainer container() => ProviderContainer(overrides: overrides);
+  ProviderContainer container({List<Override> extra = const []}) =>
+      ProviderContainer(overrides: [...overrides, ...extra]);
 
   String get today => '2026-03-01';
 
@@ -679,13 +680,14 @@ Future<ProviderContainer> pumpRides(
   RidesApp app, {
   String? location,
   Locale locale = const Locale('de'),
+  List<Override> extra = const [],
 }) async {
   tester.platformDispatcher.localesTestValue = [locale];
   addTearDown(tester.platformDispatcher.clearLocalesTestValue);
   tester.view.physicalSize = const Size(800, 2400);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  final container = app.container();
+  final container = app.container(extra: extra);
   addTearDown(container.dispose);
   await tester.pumpWidget(
     UncontrolledProviderScope(container: container, child: const MitlioApp()),

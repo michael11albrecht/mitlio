@@ -72,6 +72,34 @@ void main() {
       expect(() => _h(0, 0, ''), throwsArgumentError);
     });
 
+    test('reports the offending field, value and reason', () {
+      void expectRejected(
+        void Function() body,
+        String name,
+        Object? value,
+        String message,
+      ) {
+        expect(
+          body,
+          throwsA(
+            isA<ArgumentError>()
+                .having((e) => e.name, 'name', name)
+                .having((e) => e.invalidValue, 'invalidValue', value)
+                .having((e) => e.message, 'message', message),
+          ),
+        );
+      }
+
+      expectRejected(
+        () => _h(Hlc.maxWallMillis + 1, 0),
+        'wallMillis',
+        Hlc.maxWallMillis + 1,
+        'out of range',
+      );
+      expectRejected(() => _h(0, -1), 'counter', -1, 'out of range');
+      expectRejected(() => _h(0, 0, ''), 'nodeId', '', 'must not be empty');
+    });
+
     test('accepts the bounds', () {
       expect(
         _h(Hlc.minWallMillis, 0).toString(),
