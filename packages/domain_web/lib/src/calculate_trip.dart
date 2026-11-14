@@ -153,6 +153,8 @@ Map<String, Object?> _calculate(Map<String, Object?> input) {
       DriverIsPassenger() => _fail('DriverIsPassenger'),
       TripUnknownMember() => _fail('TripUnknownMember'),
       UnsupportedCurrency() => _fail('UnsupportedCurrency'),
+      // Rides only; the trip calculator never sets a km rate on a vehicle.
+      MissingKmRate() => _fail('MissingKmRate'),
     },
   };
 }
