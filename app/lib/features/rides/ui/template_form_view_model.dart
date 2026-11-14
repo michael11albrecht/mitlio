@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mitlio/core/first_value.dart';
 import 'package:mitlio/core/json_map.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
@@ -111,10 +112,9 @@ class TemplateFormViewModel extends Notifier<TemplateFormState> {
       final members =
           (await ref.read(membersRepositoryProvider).list(key.groupId))
               .orThrow();
-      final vehicles = await ref
-          .read(vehiclesRepositoryProvider)
-          .watchVehicles(key.groupId)
-          .first;
+      final vehicles = await firstValue(
+        ref.read(vehiclesRepositoryProvider).watchVehicles(key.groupId),
+      );
       RideTemplate? stored;
       final id = key.templateId;
       if (id != null) {

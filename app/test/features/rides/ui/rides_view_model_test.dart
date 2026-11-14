@@ -142,7 +142,7 @@ void main() {
       expect(quick().canSave, isFalse);
       expect(quick().driverId, isNull);
       expect(
-        (await vm().saveQuickLog()),
+        await vm().saveQuickLog(),
         isA<Err<LoggedRide, RepositoryError>>(),
       );
 
@@ -491,7 +491,7 @@ void main() {
         isA<InvalidData>(),
       );
       expect(
-        app.rides.watchRides(app.group.id, Month(2026, 3)),
+        app.rides.watchRides(app.group.id, const Month(2026, 3)),
         emits(isEmpty),
       );
     });

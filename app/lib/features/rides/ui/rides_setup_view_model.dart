@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mitlio/core/first_value.dart';
 import 'package:mitlio/core/json_map.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
@@ -176,10 +177,9 @@ class RidesSetupViewModel extends Notifier<RidesSetupState> {
 
   /// Soft delete; [Conflict] while a template still rides on the vehicle.
   Future<RepoResult<Undo>> deleteVehicle(String id) async {
-    final templates = await ref
-        .read(rideTemplatesRepositoryProvider)
-        .watchTemplates(groupId)
-        .first;
+    final templates = await firstValue(
+      ref.read(rideTemplatesRepositoryProvider).watchTemplates(groupId),
+    );
     if (templates.any((t) => t.vehicleId == id)) {
       return const Err(Conflict('vehicle is used by a template'));
     }

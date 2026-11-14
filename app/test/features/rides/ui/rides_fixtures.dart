@@ -8,18 +8,15 @@ import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/core/router.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_providers.dart';
+import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:mitlio/features/expenses/data/repositories/fake_expenses_repository.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
-import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_ride_templates_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_rides_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_vehicles_repository.dart';
-import 'package:mitlio/features/rides/data/repositories/ride_templates_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
-import 'package:mitlio/features/rides/data/repositories/rides_repository.dart';
-import 'package:mitlio/features/rides/data/repositories/vehicles_repository.dart';
 import 'package:mitlio/features/rides/ui/rides_calculator.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_view_model.dart';
@@ -173,6 +170,17 @@ class RidesApp {
   final FakeExpensesRepository expenses;
   late Group group;
   late List<GroupMember> people;
+
+  /// Set inside `testWidgets`: the seeding helpers then run on the real
+  /// event loop (`runAsync`), because the fake clock of widget tests never
+  /// resolves their futures.
+  WidgetTester? tester;
+
+  Future<T> _real<T>(Future<T> Function() body) async {
+    final t = tester;
+    return t == null ? body() : (await t.runAsync(body)) as T;
+  }
+
   late Vehicle golf;
   late RideTemplate work;
 
@@ -193,7 +201,10 @@ class RidesApp {
   String get today => '2026-03-01';
 
   /// The group with three members and nothing else.
-  Future<void> seedGroup({Currency currency = Currency.eur}) async {
+  Future<void> seedGroup({Currency currency = Currency.eur}) =>
+      _real(() => _seedGroup(currency));
+
+  Future<void> _seedGroup(Currency currency) async {
     group = ok(
       await base.groups.create(
         name: 'Pendler',
@@ -208,8 +219,10 @@ class RidesApp {
   }
 
   /// The group plus the car "Golf" (6,5 l, petrol).
-  Future<void> seedVehicle() async {
-    await seedGroup();
+  Future<void> seedVehicle() => _real(_seedVehicle);
+
+  Future<void> _seedVehicle() async {
+    await _seedGroup(Currency.eur);
     golf = ok(
       await vehicles.add(
         group.id,
@@ -224,8 +237,13 @@ class RidesApp {
   Future<void> seedCommute({
     String? defaultDriver = 'Ann',
     Set<String> passengers = const {'Ben'},
-  }) async {
-    await seedVehicle();
+  }) => _real(() => _seedCommute(defaultDriver, passengers));
+
+  Future<void> _seedCommute(
+    String? defaultDriver,
+    Set<String> passengers,
+  ) async {
+    await _seedVehicle();
     String idOf(String name) => people.firstWhere((p) => p.name == name).id;
     work = ok(
       await templates.add(
@@ -243,6 +261,61 @@ class RidesApp {
     );
   }
 
+  /// A second route on the "Golf".
+  Future<RideTemplate> addRoute(
+    String name, {
+    int meters = 8000,
+    int? driver,
+  }) => _real(
+    () async => ok(
+      await templates.add(
+        group.id,
+        RideTemplate(
+          id: '',
+          name: name,
+          distanceMeters: meters,
+          vehicleId: golf.id,
+          defaultDriverId: driver == null ? null : people[driver].id,
+        ),
+      ),
+    ),
+  );
+
+  /// A group without members.
+  Future<void> seedMemberless() => _real(() async {
+    group = ok(
+      await base.groups.create(
+        name: 'Leer',
+        currency: Currency.eur,
+        createdBy: 'dev',
+      ),
+    );
+  });
+
+  /// The rides inside [period] as stored.
+  Future<List<RideEntry>> entriesIn(RidePeriod period) =>
+      _real(() => rides.watchRides(group.id, period).first);
+
+  /// Locks [rideIds] under a fresh expense, as a period settlement would.
+  Future<void> settle(List<String> rideIds) => _real(() => _settle(rideIds));
+
+  Future<void> _settle(List<String> rideIds) async {
+    final expense = ok(
+      await expenses.create(
+        group.id,
+        ExpenseDraft(
+          title: 'Abrechnung',
+          amountCents: 100,
+          currency: group.currency,
+          date: DateTime.utc(2026, 3, 31),
+          payers: {people[0].id: 100},
+          split: EqualSplit({people[0].id, people[1].id}),
+        ),
+      ),
+    );
+    ok(await rides.markSettled(rideIds, expense.expense.id));
+  }
+
   /// Stores a ride of the "Arbeit" route directly through the repository.
   Future<RideEntry> ride({
     required String date,
@@ -251,18 +324,20 @@ class RidesApp {
     int priceMilli = 1750,
     int meters = 20000,
     bool roundTrip = true,
-  }) async => ok(
-    await rides.log(
-      group.id,
-      Ride(
-        id: ids.newId(),
-        date: DateTime.parse('${date}T00:00:00Z'),
-        distanceMeters: meters,
-        roundTrip: roundTrip,
-        vehicleId: golf.id,
-        driverId: people[driver].id,
-        passengerIds: {for (final p in passengers) people[p].id},
-        pricePerUnitMilli: priceMilli,
+  }) => _real(
+    () async => ok(
+      await rides.log(
+        group.id,
+        Ride(
+          id: ids.newId(),
+          date: DateTime.parse('${date}T00:00:00Z'),
+          distanceMeters: meters,
+          roundTrip: roundTrip,
+          vehicleId: golf.id,
+          driverId: people[driver].id,
+          passengerIds: {for (final p in passengers) people[p].id},
+          pricePerUnitMilli: priceMilli,
+        ),
       ),
     ),
   );
@@ -355,17 +430,17 @@ final sampleVehicle = Vehicle(
   consumptionMilliPer100km: 6500,
 );
 
-final sampleTemplate = RideTemplate(
+const sampleTemplate = RideTemplate(
   id: 't-1',
   name: 'Arbeit',
   distanceMeters: 20000,
   roundTrip: true,
   vehicleId: 'v-1',
   defaultDriverId: 'm-0',
-  defaultPassengerIds: const {'m-1'},
+  defaultPassengerIds: {'m-1'},
 );
 
-final sampleTemplate2 = RideTemplate(
+const sampleTemplate2 = RideTemplate(
   id: 't-2',
   name: 'Training',
   distanceMeters: 8000,
@@ -394,7 +469,7 @@ RideEntry sampleEntry(
   ),
 );
 
-final _everyone = [for (final m in sampleMembers) m.toDomain()];
+final List<Member> _everyone = [for (final m in sampleMembers) m.toDomain()];
 
 QuickLog sampleQuick({
   RideTemplate? template,
@@ -465,20 +540,20 @@ RidesLoaded loadedRides({
   );
 }
 
-final dataRides = loadedRides();
+final RidesLoaded dataRides = loadedRides();
 
-final severalTemplatesRides = loadedRides(
+final RidesLoaded severalTemplatesRides = loadedRides(
   templates: [sampleTemplate, sampleTemplate2],
   quick: sampleQuick(),
 );
 
 /// Several routes and none picked yet.
-final pickRouteRides = loadedRides(
+final RidesLoaded pickRouteRides = loadedRides(
   templates: [sampleTemplate, sampleTemplate2],
   quick: sampleQuick(passengers: const {}),
 );
 
-final doneTodayRides = loadedRides(
+final RidesLoaded doneTodayRides = loadedRides(
   entries: [
     sampleEntry('r-1', 1, 0, [1]),
     sampleEntry('r-2', 2, 1, [0]),
@@ -509,14 +584,14 @@ final noMembersRides = RidesLoaded(
   quick: null,
 );
 
-final setupData = RidesSetupLoaded(
+final RidesSetupLoaded setupData = RidesSetupLoaded(
   group: sampleGroup,
   members: sampleMembers,
   vehicles: [sampleVehicle],
   templates: [sampleTemplate, sampleTemplate2],
 );
 
-final setupEmpty = RidesSetupLoaded(
+final RidesSetupLoaded setupEmpty = RidesSetupLoaded(
   group: sampleGroup,
   members: sampleMembers,
   vehicles: const [],

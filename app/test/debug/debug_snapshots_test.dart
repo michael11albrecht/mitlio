@@ -37,6 +37,10 @@ void main() {
       'expenses',
       'expense_form',
       'balances',
+      'rides',
+      'rides_setup',
+      'vehicle_form',
+      'template_form',
     ]);
   });
 

@@ -144,23 +144,28 @@ class _QuickLogCardState extends State<QuickLogCard> {
   String _price(int milli, Currency currency) {
     final money = MoneyFormat.of(context);
     final number = formatPriceMilli(milli, separator: money.decimalSeparator);
-    return '$number ${money.currencySymbol(currency)}';
+    return '$number\u00a0${money.currencySymbol(currency)}';
   }
 
   Widget _done(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
-    final today = widget.state
-        .entriesOn(widget.state.today)
-        .map((e) => widget.state.member(e.ride.driverId)?.name ?? '')
-        .toList();
-    return Row(
+    final drivers = {
+      for (final id in widget.state.driversOn(widget.state.today))
+        widget.state.member(id)?.name ?? '',
+    };
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ExcludeSemantics(
-          child: Icon(Icons.check_circle, color: scheme.primary),
+        Row(
+          children: [
+            ExcludeSemantics(
+              child: Icon(Icons.check_circle, color: scheme.primary),
+            ),
+            const SizedBox(width: Spacing.sm),
+            Expanded(child: Text(l10n.quickLogDone(drivers.join(', ')))),
+          ],
         ),
-        const SizedBox(width: Spacing.sm),
-        Expanded(child: Text(l10n.quickLogDone(today.join(', ')))),
         TextButton(
           onPressed: widget.vm.expand,
           child: Text(l10n.quickLogAnother),

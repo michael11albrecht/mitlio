@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mitlio/core/first_value.dart';
 import 'package:mitlio/core/json_map.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/repository_error.dart';
@@ -582,7 +583,7 @@ class RidesViewModel extends Notifier<RidesState> {
     final members = (await ref.read(membersRepositoryProvider).list(groupId))
         .orThrow();
     final history = [
-      for (final e in await rides.watchRides(groupId, _everything).first)
+      for (final e in await firstValue(rides.watchRides(groupId, _everything)))
         e.ride,
     ];
 
@@ -655,10 +656,9 @@ class RidesViewModel extends Notifier<RidesState> {
   Future<RepoResult<List<RideEntry>>> list(Month month) async {
     try {
       return Ok(
-        await ref
-            .read(ridesRepositoryProvider)
-            .watchRides(groupId, month)
-            .first,
+        await firstValue(
+          ref.read(ridesRepositoryProvider).watchRides(groupId, month),
+        ),
       );
     } on Object catch (e) {
       return Err(e is RepositoryError ? e : Storage(e));
