@@ -712,6 +712,7 @@ export type Database = {
     Functions: {
       can_bootstrap_group: { Args: { gid: string }; Returns: boolean }
       cleanup_fuel_tables: { Args: never; Returns: undefined }
+      cleanup_fx_rates: { Args: never; Returns: undefined }
       consume_rate_limit: {
         Args: { p_capacity: number; p_key: string; p_refill_per_sec: number }
         Returns: boolean
@@ -725,6 +726,7 @@ export type Database = {
       revoke_invite: { Args: { invite_id: string }; Returns: undefined }
       upsert_expense: { Args: { payload: Json }; Returns: Json }
       warm_fuel_national: { Args: never; Returns: undefined }
+      warm_fx_rates: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
