@@ -373,6 +373,24 @@
   "expenseRateLabel": "Rate",
   "expenseErrorRate": "Enter the exchange rate",
   "rateInvalid": "That is not a valid rate",
+  "expenseRateSuggestion": "1 {from} = {rate} {symbol} · ECB, {date}",
+  "@expenseRateSuggestion": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      },
+      "symbol": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseRateUse": "Use",
   "expenseConverted": "= {amount} (group currency)",
   "@expenseConverted": {
     "placeholders": {

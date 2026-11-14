@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 min=90
 dir="$(mktemp -d)"
 deno test --allow-read=_shared/testdata --coverage="$dir/cov" _shared/
-deno coverage "$dir/cov" --include='_shared/(fuel|oil_bulletin)\.ts' --lcov > "$dir/lcov.info"
+deno coverage "$dir/cov" --include='_shared/(fuel|oil_bulletin|fx)\.ts' --lcov > "$dir/lcov.info"
 awk -F: -v min="$min" '
   /^LF:/ { lf += $2 } /^LH:/ { lh += $2 }
   END {

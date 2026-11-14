@@ -543,6 +543,24 @@
   "expenseRateLabel": "Kurs",
   "expenseErrorRate": "Gib den Kurs ein",
   "rateInvalid": "Das ist kein gültiger Kurs",
+  "expenseRateSuggestion": "1 {from} = {rate} {symbol} · EZB, {date}",
+  "@expenseRateSuggestion": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      },
+      "symbol": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseRateUse": "Übernehmen",
   "expenseConverted": "= {amount} (Gruppenwährung)",
   "@expenseConverted": {
     "placeholders": {

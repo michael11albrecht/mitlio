@@ -276,6 +276,33 @@ export type Database = {
         }
         Relationships: []
       }
+      fx_rates: {
+        Row: {
+          base: string
+          date: string
+          fetched_at: string
+          quote: string
+          rate_ppm: number
+          source_date: string
+        }
+        Insert: {
+          base: string
+          date: string
+          fetched_at?: string
+          quote: string
+          rate_ppm: number
+          source_date: string
+        }
+        Update: {
+          base?: string
+          date?: string
+          fetched_at?: string
+          quote?: string
+          rate_ppm?: number
+          source_date?: string
+        }
+        Relationships: []
+      }
       group_invites: {
         Row: {
           created_at: string
@@ -737,6 +764,7 @@ export type Database = {
     Functions: {
       can_bootstrap_group: { Args: { gid: string }; Returns: boolean }
       cleanup_fuel_tables: { Args: never; Returns: undefined }
+      cleanup_fx_rates: { Args: never; Returns: undefined }
       consume_rate_limit: {
         Args: { p_capacity: number; p_key: string; p_refill_per_sec: number }
         Returns: boolean
@@ -750,6 +778,7 @@ export type Database = {
       revoke_invite: { Args: { invite_id: string }; Returns: undefined }
       upsert_expense: { Args: { payload: Json }; Returns: Json }
       warm_fuel_national: { Args: never; Returns: undefined }
+      warm_fx_rates: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

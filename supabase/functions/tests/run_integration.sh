@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Integration test for the fuel-prices Edge Function (P6c). Needs a running local stack
+# Integration test for the fuel-prices (P6c) and fx-rates (P7-T02) Edge Functions. Needs a running local stack
 # (`supabase start`), `supabase` and `deno` on PATH. Run from anywhere; CI: .github/workflows/db.yml.
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
@@ -32,6 +32,12 @@ FUEL_RATE_LIMIT_CAPACITY=6
 FUEL_RATE_LIMIT_PER_MIN=1
 FUEL_RATE_LIMIT_SALT=integration-test-salt
 FUEL_WARM_TOKEN=warm-secret
+FX_PROVIDER_URL=http://host.docker.internal:8787
+FX_ALLOWED_ORIGINS=https://mitlio.app,https://www.mitlio.app
+FX_RATE_LIMIT_CAPACITY=6
+FX_RATE_LIMIT_PER_MIN=1
+FX_RATE_LIMIT_SALT=integration-test-salt
+FX_WARM_TOKEN=fx-warm-secret
 EOF
 }
 
@@ -57,6 +63,12 @@ run_phase() {
   [ -n "$ready" ] || { echo "function did not become ready"; exit 1; }
   PHASE="$phase" deno test --allow-net --allow-env --allow-read=supabase/functions/_shared/testdata \
     supabase/functions/tests/integration_test.ts
+  if [ "$phase" = key ]; then
+    # The fx-rates function runs in the same `functions serve` instance (P7-T02).
+    FX_FUNCTION_URL="$API_URL/functions/v1/fx-rates" \
+      deno test --allow-net --allow-env \
+      supabase/functions/tests/fx_integration_test.ts
+  fi
   kill "$serve_pid" 2>/dev/null || true
   wait "$serve_pid" 2>/dev/null || true
   serve_pid=""

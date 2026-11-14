@@ -1,0 +1,120 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Calculator from './Calculator.astro';
+import Layout from '../layouts/Layout.astro';
+import { htmlLang, landingPath, type Locale } from '../i18n';
+import { exampleValues, fillStrict, presetFromExample } from '../lib/landing';
+import { faqPage, howTo, organization, webApplication } from '../lib/jsonld';
+
+// One landing page in either language (PW-T07). German pages find their English twin through
+// the `de` field of the English entry; every EN page has a DE twin, so hreflang is always paired.
+interface Props {
+  locale: Locale;
+  entry: CollectionEntry<'landing'> | CollectionEntry<'landingEn'>;
+}
+
+const { locale, entry } = Astro.props;
+const strings = {
+  de: {
+    example: 'Rechenbeispiel',
+    faq: 'Häufige Fragen',
+    more: 'Weitere Rechner und Ratgeber',
+    general: 'Der allgemeine Fahrtkostenrechner',
+  },
+  en: {
+    example: 'Worked example',
+    faq: 'Frequently asked questions',
+    more: 'More calculators and guides',
+    general: 'The general trip cost calculator',
+  },
+}[locale];
+
+const d = entry.data;
+const { Content } = await render(entry);
+
+const values = exampleValues(d.example.input, d.example.compare, locale);
+const exampleParagraphs = fillStrict(d.example.text, values)
+  .split(/\n\s*\n/)
+  .map((p) => p.trim())
+  .filter(Boolean);
+const faq = d.faq.map(({ q, a }) => ({ q, a: fillStrict(a, values) }));
+const howto = d.howto && {
+  name: d.howto.name,
+  steps: d.howto.steps.map(({ name, text }) => ({ name, text: fillStrict(text, values) })),
+};
+
+const all = await getCollection(locale === 'de' ? 'landing' : 'landingEn');
+const siblings = d.related.map((slug) => {
+  const sibling = all.find((e) => e.id === slug);
+  if (!sibling) throw new Error(`${entry.id}: related page "${slug}" does not exist`);
+  return { href: landingPath(locale, sibling.id), label: sibling.data.linkLabel };
+});
+
+// Paired alternates: DE slug <-> EN slug.
+const enEntries = await getCollection('landingEn');
+const deSlug = 'de' in d ? d.de : entry.id;
+const enSlug = locale === 'en' ? entry.id : enEntries.find((e) => e.data.de === entry.id)?.id;
+if (!enSlug) throw new Error(`${entry.id}: no English counterpart (landing-en/*.md with de: ${entry.id})`);
+const alternates = { de: landingPath('de', deSlug), en: landingPath('en', enSlug) };
+const url = new URL(alternates[locale], Astro.site!).href;
+const jsonLd = [
+  organization(Astro.site!.href),
+  webApplication({ name: d.h1, url, description: d.description, lang: htmlLang[locale] }),
+  faqPage(faq),
+  ...(howto ? [howTo(howto)] : []),
+];
+---
+
+<Layout
+  locale={locale}
+  title={d.title}
+  description={d.description}
+  alternates={alternates}
+  ogImage={`/og/${locale === 'de' ? '' : 'en-'}${entry.id}.png`}
+  jsonLd={jsonLd}
+  appBanner={!d.rate}
+>
+  <h1>{d.h1}</h1>
+  <p class="lead">{d.lead}</p>
+  <Calculator locale={locale} preset={presetFromExample(d.example.input)} rate={d.rate} />
+
+  <article class="prose">
+    <Content />
+
+    <h2>{strings.example}</h2>
+    {exampleParagraphs.map((p) => <p>{p}</p>)}
+
+    {
+      howto && (
+        <>
+          <h2>{howto.name}</h2>
+          <ol>
+            {howto.steps.map((s) => (
+              <li>
+                <strong>{s.name}.</strong> {s.text}
+              </li>
+            ))}
+          </ol>
+        </>
+      )
+    }
+
+    <h2>{strings.faq}</h2>
+    {
+      faq.map((item) => (
+        <>
+          <h3>{item.q}</h3>
+          <p>{item.a}</p>
+        </>
+      ))
+    }
+  </article>
+
+  <nav class="related" aria-labelledby="related-heading">
+    <h2 id="related-heading">{strings.more}</h2>
+    <ul>
+      {siblings.map((s) => <li><a href={s.href}>{s.label}</a></li>)}
+      <li><a href={landingPath(locale)}>{strings.general}</a></li>
+    </ul>
+  </nav>
+</Layout>

@@ -380,7 +380,7 @@ select throws_ok($q$delete from public.group_invites where group_id = '00000000-
 reset role;
 select is_empty($q$
   select tablename from pg_tables where schemaname = 'public'
-  except select unnest(array['groups', 'members', 'expenses', 'expense_payers', 'expense_shares', 'settlements', 'vehicles', 'ride_templates', 'rides', 'group_memberships', 'group_invites', 'fuel_price_cache', 'rate_limits', 'expense_revisions'])
-$q$, 'every public table has a block in this matrix (fuel_price_cache, rate_limits: fuel_prices.sql; expense_revisions: expense_revisions.sql)');
+  except select unnest(array['groups', 'members', 'expenses', 'expense_payers', 'expense_shares', 'settlements', 'vehicles', 'ride_templates', 'rides', 'group_memberships', 'group_invites', 'fuel_price_cache', 'fx_rates', 'rate_limits', 'expense_revisions'])
+$q$, 'every public table has a block in this matrix (fuel_price_cache, rate_limits: fuel_prices.sql; fx_rates: fx_rates.sql; expense_revisions: expense_revisions.sql)');
 select * from finish();
 rollback;

@@ -13,6 +13,8 @@ interface Props {
   route?: RouteKey;
   /** Canonical path for indexable pages without a language alternate (no hreflang is emitted). */
   path?: string;
+  /** Paired landing pages: path per locale, replaces `route`. x-default points to German. */
+  alternates?: Record<Locale, string>;
   /** Path of the Open Graph / Twitter card image (1200x630 PNG). Defaults to the home card. */
   ogImage?: string;
   /** Structured data objects, each emitted as its own application/ld+json script. */
@@ -28,6 +30,7 @@ const {
   description,
   route,
   path,
+  alternates,
   ogImage = '/og/home.png',
   jsonLd = [],
   noindex = false,
@@ -48,7 +51,8 @@ const t = messages[locale];
 const other: Locale = locale === 'de' ? 'en' : 'de';
 const site = Astro.site!;
 const abs = (path: string) => new URL(path, site).href;
-const canonical = route ? abs(paths[route][locale]) : path ? abs(path) : undefined;
+const pair = alternates ?? (route ? paths[route] : undefined);
+const canonical = pair ? abs(pair[locale]) : path ? abs(path) : undefined;
 const ogUrl = abs(ogImage);
 ---
 
@@ -64,10 +68,9 @@ const ogUrl = abs(ogImage);
     {noindex && <meta name="robots" content="noindex" />}
     {canonical && <link rel="canonical" href={canonical} />}
     {
-      route &&
-        locales.map((l) => <link rel="alternate" hreflang={htmlLang[l]} href={abs(paths[route][l])} />)
+      pair && locales.map((l) => <link rel="alternate" hreflang={htmlLang[l]} href={abs(pair[l])} />)
     }
-    {route && <link rel="alternate" hreflang="x-default" href={abs(paths[route].de)} />}
+    {pair && <link rel="alternate" hreflang="x-default" href={abs(pair.de)} />}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={t.siteName} />
     <meta property="og:title" content={title} />
@@ -103,7 +106,7 @@ const ogUrl = abs(ogImage);
     <header class="site-header">
       <div class="wrap">
         <a class="brand" href={paths.home[locale]}>{t.siteName}</a>
-        <a class="lang" href={paths[route ?? 'home'][other]} hreflang={htmlLang[other]} lang={t.otherLanguageLang}
+        <a class="lang" href={(pair ?? paths.home)[other]} hreflang={htmlLang[other]} lang={t.otherLanguageLang}
           >{t.otherLanguage}</a
         >
       </div>

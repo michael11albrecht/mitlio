@@ -15,13 +15,15 @@ const _localOnlyTables = {
 
 /// Server tables with no client mirror. Membership and invites are
 /// authorization data managed by RPCs (P6-T05), not synced rows. The fuel
-/// price cache and rate limiter are edge-function backend tables (P6c). The
-/// revisions are trigger-written history (P7-T03).
+/// price cache, the FX rate cache and the rate limiter are edge-function
+/// backend tables (P6c, P7-T02). The revisions are trigger-written history
+/// (P7-T03).
 const _serverOnlyTables = {
   'expense_revisions',
   'group_memberships',
   'group_invites',
   'fuel_price_cache',
+  'fx_rates',
   'rate_limits',
 };
 

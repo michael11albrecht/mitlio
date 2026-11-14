@@ -621,6 +621,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rateInvalid => 'That is not a valid rate';
 
   @override
+  String expenseRateSuggestion(
+    String from,
+    String rate,
+    String symbol,
+    String date,
+  ) {
+    return '1 $from = $rate $symbol · ECB, $date';
+  }
+
+  @override
+  String get expenseRateUse => 'Use';
+
+  @override
   String expenseConverted(String amount) {
     return '= $amount (group currency)';
   }
