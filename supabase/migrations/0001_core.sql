@@ -1,3 +1,8 @@
+-- squawk-ignore-file prefer-robust-stmts, require-concurrent-index-creation, require-lock-timeout, require-statement-timeout
+-- Justification for the ignores above: this is the first migration. Every table and index is created
+-- here on an empty database in one run (the Supabase CLI applies a migration file exactly once, in a
+-- transaction), so idempotent statements, CONCURRENTLY and lock/statement timeouts protect nothing.
+-- Later migrations that touch existing tables must NOT copy these ignores.
 -- 0001_core: server schema (plan §2.4) + deny-by-default RLS (plan §8). P6-T02, P6-T03.
 --
 -- Rules this migration enforces:
@@ -98,7 +103,7 @@ create table public.members (
   deleted_at timestamptz,
   server_seq bigint not null,
   name text not null check (char_length(name) <= 500),
-  position integer not null,
+  position bigint not null,
   paypal_me text check (char_length(paypal_me) <= 500),
   -- Not authorization data: group_memberships is. Set by the join RPC (P6-T05).
   user_id uuid,

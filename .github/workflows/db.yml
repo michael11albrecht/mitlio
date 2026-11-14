@@ -33,14 +33,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Lint migrations (squawk)
-        run: make db-lint
       - name: Start local Supabase
         run: supabase start
       - name: Apply migrations from scratch
         run: supabase db reset
       - name: pgTAP (schema + RLS)
         run: supabase test db
+      - name: Lint migrations (squawk)
+        if: ${{ !cancelled() }}
+        run: make db-lint
       - name: Stop local Supabase
         if: always()
         run: supabase stop --no-backup
