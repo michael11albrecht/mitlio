@@ -18,7 +18,7 @@ DriveResult driveError(RepositoryError error) => {
   'error': switch (error) {
     InvalidData() => 'invalid_params',
     NotFound() => 'not_found',
-    Conflict() => 'conflict',
+    Conflict() || Locked() => 'conflict',
     Storage() => 'internal',
   },
   'message': error.toString(),

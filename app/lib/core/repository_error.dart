@@ -43,6 +43,25 @@ final class Conflict extends RepositoryError {
   String toString() => 'Conflict($message)';
 }
 
+/// The entity is locked and cannot be edited or deleted, e.g. a ride that a
+/// period settlement already turned into an expense.
+final class Locked extends RepositoryError {
+  const Locked(this.entity, this.id);
+
+  final String entity;
+  final String id;
+
+  @override
+  bool operator ==(Object other) =>
+      other is Locked && other.entity == entity && other.id == id;
+
+  @override
+  int get hashCode => Object.hash(Locked, entity, id);
+
+  @override
+  String toString() => 'Locked($entity, $id)';
+}
+
 /// Input or stored data violates a domain or schema rule.
 final class InvalidData extends RepositoryError {
   const InvalidData(this.details);

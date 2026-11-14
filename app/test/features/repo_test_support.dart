@@ -15,18 +15,30 @@ import 'package:mitlio/features/groups/data/repositories/groups_repository.dart'
 import 'package:mitlio/features/members/data/repositories/drift_members_repository.dart';
 import 'package:mitlio/features/members/data/repositories/fake_members_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/drift_ride_templates_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/drift_rides_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/drift_vehicles_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/fake_ride_templates_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/fake_rides_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/fake_vehicles_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/ride_templates_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/rides_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/vehicles_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/drift_settlements_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/fake_settlements_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
-/// All four repositories wired to one store (Drift or in-memory).
+/// All repositories wired to one store (Drift or in-memory).
 class Repos {
   Repos({
     required this.groups,
     required this.members,
     required this.expenses,
     required this.settlements,
+    required this.vehicles,
+    required this.rideTemplates,
+    required this.rides,
     required this.clock,
     this.db,
   });
@@ -35,6 +47,9 @@ class Repos {
   final MembersRepository members;
   final ExpensesRepository expenses;
   final SettlementsRepository settlements;
+  final VehiclesRepository vehicles;
+  final RideTemplatesRepository rideTemplates;
+  final RidesRepository rides;
   final FixedClock clock;
 
   /// Only set for the Drift variant.
@@ -53,6 +68,13 @@ Future<Repos> driftRepos() async {
     members: DriftMembersRepository(db: db, clock: clock, ids: ids),
     expenses: DriftExpensesRepository(db: db, clock: clock, ids: ids),
     settlements: DriftSettlementsRepository(db: db, clock: clock, ids: ids),
+    vehicles: DriftVehiclesRepository(db: db, clock: clock, ids: ids),
+    rideTemplates: DriftRideTemplatesRepository(
+      db: db,
+      clock: clock,
+      ids: ids,
+    ),
+    rides: DriftRidesRepository(db: db, clock: clock),
     clock: clock,
     db: db,
   );
@@ -63,20 +85,36 @@ Future<Repos> fakeRepos() async {
   final ids = SequentialIdGenerator();
   final groups = FakeGroupsRepository(clock: clock, ids: ids);
   final members = FakeMembersRepository(groups: groups, ids: ids);
+  final expenses = FakeExpensesRepository(
+    groups: groups,
+    members: members,
+    clock: clock,
+    ids: ids,
+  );
+  final vehicles = FakeVehiclesRepository(groups: groups, ids: ids);
   return Repos(
     groups: groups,
     members: members,
-    expenses: FakeExpensesRepository(
-      groups: groups,
-      members: members,
-      clock: clock,
-      ids: ids,
-    ),
+    expenses: expenses,
     settlements: FakeSettlementsRepository(
       groups: groups,
       members: members,
       clock: clock,
       ids: ids,
+    ),
+    vehicles: vehicles,
+    rideTemplates: FakeRideTemplatesRepository(
+      groups: groups,
+      members: members,
+      vehicles: vehicles,
+      ids: ids,
+    ),
+    rides: FakeRidesRepository(
+      groups: groups,
+      members: members,
+      vehicles: vehicles,
+      expenses: expenses,
+      clock: clock,
     ),
     clock: clock,
   );
