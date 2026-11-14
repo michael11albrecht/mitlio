@@ -6,6 +6,10 @@ import 'package:mitlio/features/expenses/ui/expense_form_view_model.dart';
 import 'package:mitlio/features/expenses/ui/expenses_view_model.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
 import 'package:mitlio/features/groups/ui/groups_view_model.dart';
+import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
+import 'package:mitlio/features/rides/ui/rides_view_model.dart';
+import 'package:mitlio/features/rides/ui/template_form_view_model.dart';
+import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
 
 /// Screen name to `debugSnapshot()` lookup behind `ext.mitlio.state`.
 /// ViewModels know nothing about it: this layer reads them.
@@ -47,6 +51,24 @@ ExpenseFormKey? _openExpenseForm(ProviderContainer c) {
       : null;
 }
 
+/// The open rides form: `/groups/:id/rides/vehicles/:vehicleId` or
+/// `/groups/:id/rides/templates/:templateId` (`new` for a new one).
+({String groupId, String kind, String? id})? _openRidesForm(
+  ProviderContainer c,
+) {
+  final segments = c.read(routerProvider).state.uri.pathSegments;
+  return segments.length == 5 &&
+          segments.first == 'groups' &&
+          segments[2] == 'rides' &&
+          (segments[3] == 'vehicles' || segments[3] == 'templates')
+      ? (
+          groupId: segments[1],
+          kind: segments[3],
+          id: segments[4] == 'new' ? null : segments[4],
+        )
+      : null;
+}
+
 /// The registry with every screen wired to its ViewModel. Add a line per
 /// slice. Only call under `kDebugMode`.
 DebugSnapshotRegistry buildSnapshotRegistry(ProviderContainer c) =>
@@ -80,4 +102,42 @@ DebugSnapshotRegistry buildSnapshotRegistry(ProviderContainer c) =>
         return id == null
             ? {'status': 'not_open'}
             : c.read(balancesViewModelProvider(id).notifier).debugSnapshot();
+      })
+      ..register('rides', () {
+        final id = _openGroupId(c);
+        return id == null
+            ? {'status': 'not_open'}
+            : c.read(ridesViewModelProvider(id).notifier).debugSnapshot();
+      })
+      ..register('rides_setup', () {
+        final id = _openGroupId(c);
+        return id == null
+            ? {'status': 'not_open'}
+            : c.read(ridesSetupViewModelProvider(id).notifier).debugSnapshot();
+      })
+      ..register('vehicle_form', () {
+        final key = _openRidesForm(c);
+        return key == null || key.kind != 'vehicles'
+            ? {'status': 'not_open'}
+            : c
+                  .read(
+                    vehicleFormViewModelProvider((
+                      groupId: key.groupId,
+                      vehicleId: key.id,
+                    )).notifier,
+                  )
+                  .debugSnapshot();
+      })
+      ..register('template_form', () {
+        final key = _openRidesForm(c);
+        return key == null || key.kind != 'templates'
+            ? {'status': 'not_open'}
+            : c
+                  .read(
+                    templateFormViewModelProvider((
+                      groupId: key.groupId,
+                      templateId: key.id,
+                    )).notifier,
+                  )
+                  .debugSnapshot();
       });

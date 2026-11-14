@@ -47,4 +47,7 @@ abstract final class Sizes {
   /// Bottom padding of lists with an extended floating action button, so the
   /// last row can scroll clear of it.
   static const double fabClearance = 88;
+
+  /// Height of one day of the rides calendar (day number plus an avatar).
+  static const double calendarCell = 64;
 }

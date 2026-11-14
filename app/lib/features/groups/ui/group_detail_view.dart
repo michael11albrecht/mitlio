@@ -11,11 +11,12 @@ import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
 import 'package:mitlio/features/expenses/ui/expenses_view.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
+import 'package:mitlio/features/rides/ui/rides_view.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
-/// Number of tabs of the group detail (members, expenses).
-const groupTabCount = 2;
+/// Number of tabs of the group detail (members, expenses, rides).
+const groupTabCount = 3;
 
 enum _MenuAction { edit, archive }
 
@@ -23,9 +24,13 @@ enum _MenuAction { edit, archive }
 /// name (the field stays focused for the next one), tap a name to rename, drag
 /// to reorder, remove with undo.
 class GroupDetailView extends ConsumerWidget {
-  const GroupDetailView({required this.groupId, super.key});
+  const GroupDetailView({required this.groupId, this.initialTab, super.key});
 
   final String groupId;
+
+  /// `rides` or `expenses` opens that tab first (deep link, home shortcut);
+  /// anything else opens the members tab.
+  final String? initialTab;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,6 +52,11 @@ class GroupDetailView extends ConsumerWidget {
       ) =>
         DefaultTabController(
           length: groupTabCount,
+          initialIndex: switch (initialTab) {
+            'expenses' => 1,
+            'rides' => 2,
+            _ => 0,
+          },
           child: Scaffold(
             appBar: AppBar(
               title: Text(group.name),
@@ -94,6 +104,7 @@ class GroupDetailView extends ConsumerWidget {
                 tabs: [
                   Tab(text: l10n.tabMembers),
                   Tab(text: l10n.tabExpenses),
+                  Tab(text: l10n.tabRides),
                 ],
               ),
             ),
@@ -179,6 +190,7 @@ class GroupDetailView extends ConsumerWidget {
                   ],
                 ),
                 ExpensesView(groupId: groupId),
+                RidesView(groupId: groupId),
               ],
             ),
           ),

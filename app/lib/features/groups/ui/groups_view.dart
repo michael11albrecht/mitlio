@@ -7,6 +7,7 @@ import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/empty_state.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/features/groups/ui/groups_view_model.dart';
+import 'package:mitlio/features/rides/ui/rides_shortcut.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 
 /// Home: the groups of this device. One primary action, "new group": the
@@ -51,11 +52,16 @@ class GroupsView extends ConsumerWidget {
             final group = groups[i];
             return Card(
               clipBehavior: Clip.antiAlias,
-              child: ListTile(
-                title: Text(group.name),
-                subtitle: Text(l10n.currencyName(group.currency.code)),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => unawaited(context.push('/groups/${group.id}')),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(group.name),
+                    subtitle: Text(l10n.currencyName(group.currency.code)),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => unawaited(context.push('/groups/${group.id}')),
+                  ),
+                  RidesShortcut(groupId: group.id),
+                ],
               ),
             );
           },
