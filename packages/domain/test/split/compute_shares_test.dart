@@ -1,25 +1,7 @@
-import 'dart:convert';
-
 import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
-// Verbatim from docs/domain-rules.md (examples:split).
-const _examplesJson = '''
-[
-  {"amount": 1000, "spec": {"equal": ["A", "B", "C"]},                   "shares": {"A": 334, "B": 333, "C": 333}},
-  {"amount": 1000, "spec": {"equal": ["A", "C"]},                        "shares": {"A": 500, "B": 0, "C": 500}},
-  {"amount": 1000, "spec": {"shares": {"A": 2, "B": 1, "C": 1}},         "shares": {"A": 500, "B": 250, "C": 250}},
-  {"amount": 1000, "spec": {"shares": {"A": 1, "B": 0, "C": 1}},         "shares": {"A": 500, "B": 0, "C": 500}},
-  {"amount": 1000, "spec": {"percent": {"A": 5000, "B": 2500, "C": 2500}}, "shares": {"A": 500, "B": 250, "C": 250}},
-  {"amount": 1001, "spec": {"percent": {"A": 3333, "B": 3333, "C": 3334}}, "shares": {"A": 334, "B": 333, "C": 334}},
-  {"amount": 1000, "spec": {"exact": {"A": 600, "B": 400}},              "shares": {"A": 600, "B": 400, "C": 0}},
-  {"amount": 1000, "spec": {"exact": {"A": 600, "B": 300}},              "error": "ExactMismatch"},
-  {"amount": 1000, "spec": {"percent": {"A": 5000, "B": 4000}},          "error": "PercentNotFull"},
-  {"amount": 1000, "spec": {"equal": []},                                "error": "NoParticipants"},
-  {"amount": 1000, "spec": {"equal": ["A", "X"]},                        "error": "UnknownMember"},
-  {"amount": 0,    "spec": {"equal": ["A", "B"]},                        "error": "AmountNotPositive"}
-]
-''';
+import '../support/domain_rules_examples.dart';
 
 const _maxCents = 999999999999999;
 
@@ -104,9 +86,7 @@ extension _Gens on Any {
 
 void main() {
   group('examples', () {
-    final examples = (jsonDecode(_examplesJson) as List)
-        .cast<Map<String, dynamic>>();
-    for (final e in examples) {
+    for (final e in domainRulesRows('split')) {
       final amount = e['amount'] as int;
       final spec = _parseSpec(e['spec'] as Map<String, dynamic>);
       test('$amount ${e['spec']}', () {

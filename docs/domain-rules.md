@@ -3,8 +3,8 @@
 Normative spec for `packages/domain` (`mitlio_domain`). Agents implement exactly this; if something here is
 ambiguous, comment on the issue instead of guessing. Plan context: `IMPLEMENTATION_PLAN.md` §2.5, P2.
 
-The fenced `json` blocks marked `<!-- examples:NAME -->` are golden test data. P2-T11 wires them as table-driven
-tests that load this file, so the doc and the tests can never disagree. Until then, tests copy them verbatim.
+The fenced `json` blocks marked `<!-- examples:NAME -->` are golden test data. Table-driven tests load this file
+(`packages/domain/test/support/domain_rules_examples.dart`), so the doc and the tests can never disagree.
 
 ## Conventions
 

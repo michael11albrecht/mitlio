@@ -1,6 +1,8 @@
 import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../support/domain_rules_examples.dart';
+
 const _alnum = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 extension PayPalAny on Any {
@@ -36,39 +38,23 @@ void _err(Result<Uri, PayPalError> r, PayPalError e, {String? reason}) {
 
 void main() {
   group('PayPal.Me examples (domain-rules)', () {
-    test('maxmuster', () {
-      _ok(
-        'maxmuster',
-        1234,
-        Currency.eur,
-        'https://paypal.me/maxmuster/12.34EUR',
-      );
-    });
-    test('trim, @ and case preserved', () {
-      _ok(
-        ' @MaxMuster ',
-        5,
-        Currency.eur,
-        'https://paypal.me/MaxMuster/0.05EUR',
-      );
-    });
-    test('https + www + paypal.me + trailing slash, JPY', () {
-      _ok(
-        'https://www.paypal.me/max42/',
-        1000,
-        Currency.jpy,
-        'https://paypal.me/max42/1000JPY',
-      );
-    });
-    test('space inside is invalid', () {
-      _err(_build('max muster', 1234, Currency.eur), const InvalidHandle());
-    });
-    test('empty is invalid', () {
-      _err(_build('', 1234, Currency.eur), const InvalidHandle());
-    });
-    test('zero amount', () {
-      _err(_build('maxmuster', 0, Currency.eur), const NonPositiveAmount());
-    });
+    for (final e in domainRulesRows('paypal')) {
+      test('${e['handle']} ${e['cents']} ${e['currency']}', () {
+        final r = _build(
+          e['handle'] as String,
+          e['cents'] as int,
+          Currency.tryParse(e['currency'] as String)!,
+        );
+        if (e.containsKey('url')) {
+          expect(r, Ok<Uri, PayPalError>(Uri.parse(e['url'] as String)));
+        } else {
+          expect(
+            (r as Err<Uri, PayPalError>).error.runtimeType.toString(),
+            e['error'],
+          );
+        }
+      });
+    }
   });
 
   group('PayPal.Me edge cases', () {
