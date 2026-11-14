@@ -423,6 +423,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get expenseExcluded => 'Not included';
 
   @override
+  String get expenseCurrencyLabel => 'Currency';
+
+  @override
+  String get expenseRateLabel => 'Rate';
+
+  @override
+  String get expenseErrorRate => 'Enter the exchange rate';
+
+  @override
+  String get rateInvalid => 'That is not a valid rate';
+
+  @override
+  String expenseConverted(String amount) {
+    return '= $amount (group currency)';
+  }
+
+  @override
   String get tripAdd => 'Add a trip';
 
   @override

@@ -52,6 +52,7 @@ Future<void> main() async {
   await list('expenses_error', const ExpensesFailure(Storage('x')));
   await list('expenses_data', sampleExpenses);
   await list('expenses_filtered_empty', filteredExpenses);
+  await list('expenses_foreign', foreignExpenses);
 
   await form(
     'expense_form_loading',
@@ -62,4 +63,5 @@ Future<void> main() async {
   await form('expense_form_empty', emptyForm);
   await form('expense_form_equal', equalForm);
   await form('expense_form_exact_error', exactErrorForm);
+  await form('expense_form_foreign', foreignForm);
 }

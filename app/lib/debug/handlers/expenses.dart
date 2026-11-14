@@ -7,6 +7,7 @@ import 'package:mitlio/debug/drive_types.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_providers.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:mitlio/features/expenses/ui/expenses_view_model.dart';
+import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -65,8 +66,10 @@ DriveResult _result<T>(RepoResult<T> r, DriveResult Function(T) ok) =>
     };
 
 const _addUsage =
-    'need groupId, title, amountCents, payers (JSON {memberId: cents}); '
-    'optional currency (default EUR), date (YYYY-MM-DD, default today), '
+    'need groupId, title, amountCents, payers (JSON {memberId: cents in the '
+    'group currency}); optional currency (default: the group currency; '
+    'amountCents is in it) with fxRatePpm (required for a foreign currency: '
+    'group currency per 1 unit x 1e6), date (YYYY-MM-DD, default today), '
     'split (JSON, default equal among everyone), category';
 
 /// The draft described by the `expenses.add` params; null if any is missing
@@ -83,23 +86,50 @@ Future<ExpenseDraft?> _draft(
     Err() => const <GroupMember>[],
   };
   final title = p['title'];
-  final cents = int.tryParse(p['amountCents'] ?? '');
-  final currency = Currency.tryParse(p['currency'] ?? 'EUR');
+  final entered = int.tryParse(p['amountCents'] ?? '');
+  final groupCurrency = switch (await c
+      .read(groupsRepositoryProvider)
+      .get(groupId)) {
+    Ok(:final value) => value.currency,
+    Err() => null,
+  };
+  final currency = Currency.tryParse(
+    p['currency'] ?? groupCurrency?.code ?? 'EUR',
+  );
   final payers = _intMap(_json(p['payers']));
   final split = _split(p['split'], [for (final m in members) m.id]);
   final date = _day(p['date'], c.read(clockProvider).now());
   if (title == null ||
-      cents == null ||
+      entered == null ||
       currency == null ||
       payers == null ||
       split == null ||
       date == null) {
     return null;
   }
+  ForeignAmount? foreign;
+  var cents = entered;
+  // An unknown group stays the repository's NotFound.
+  final group = groupCurrency ?? currency;
+  if (currency != group) {
+    final ppm = int.tryParse(p['fxRatePpm'] ?? '');
+    if (ppm == null || ppm <= 0 || entered <= 0) return null;
+    foreign = ForeignAmount(
+      currency: currency,
+      amountCents: entered,
+      ratePpm: ppm,
+    );
+    try {
+      cents = foreign.toGroup(group).cents;
+    } on MoneyOverflow {
+      return null;
+    }
+  }
   return ExpenseDraft(
     title: title,
     amountCents: cents,
-    currency: currency,
+    currency: group,
+    foreign: foreign,
     date: date,
     payers: payers,
     split: split,

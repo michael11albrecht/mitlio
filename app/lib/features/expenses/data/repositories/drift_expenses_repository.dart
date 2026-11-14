@@ -31,6 +31,7 @@ class DriftExpensesRepository implements ExpensesRepository {
   RepoResult<ExpenseEntry> _map(
     ExpenseWithChildren stored,
     List<Member> members,
+    Currency groupCurrency,
   ) {
     final row = stored.expense;
     final currency = Currency.tryParse(row.currency);
@@ -50,8 +51,9 @@ class DriftExpensesRepository implements ExpensesRepository {
     final result = Expense.create(
       id: row.id,
       title: row.title,
-      amountCents: row.amountCents,
-      currency: currency,
+      // Balances and shares live in the group currency.
+      amountCents: row.groupAmountCents,
+      currency: groupCurrency,
       date: row.date.toUtc(),
       payers: {for (final p in stored.payers) p.memberId: p.paidCents},
       split: ExactSplit({
@@ -67,6 +69,13 @@ class DriftExpensesRepository implements ExpensesRepository {
           split: split,
           category: row.category,
           tripMeta: row.tripMeta,
+          foreign: currency == groupCurrency
+              ? null
+              : ForeignAmount(
+                  currency: currency,
+                  amountCents: row.amountCents,
+                  ratePpm: row.fxRatePpm,
+                ),
           createdAt: row.createdAt.toUtc(),
         ),
       ),
@@ -81,19 +90,37 @@ class DriftExpensesRepository implements ExpensesRepository {
       Member(id: m.id, position: m.position),
   ];
 
+  Future<RepoResult<Currency>> _groupCurrency(String groupId) async {
+    final group = await _db.groupsDao.findById(groupId);
+    if (group == null) return Err(NotFound('group', groupId));
+    final currency = Currency.tryParse(group.currency);
+    return currency == null
+        ? Err(InvalidData('group $groupId: unknown currency ${group.currency}'))
+        : Ok(currency);
+  }
+
   Future<RepoResult<ExpenseEntry>> _load(String id) async {
     final stored = await _dao.findById(id);
     if (stored == null) return Err(NotFound('expense', id));
-    return _map(stored, await _allMembers(stored.expense.groupId));
+    final groupId = stored.expense.groupId;
+    return switch (await _groupCurrency(groupId)) {
+      Ok<Currency, RepositoryError>(:final value) => _map(
+        stored,
+        await _allMembers(groupId),
+        value,
+      ),
+      Err<Currency, RepositoryError>(:final error) => Err(error),
+    };
   }
 
   @override
   Stream<List<ExpenseEntry>> watchExpenses(String groupId) =>
       _dao.watchByGroup(groupId).asyncMap((_) async {
         final members = await _allMembers(groupId);
+        final currency = (await _groupCurrency(groupId)).orThrow();
         return List<ExpenseEntry>.unmodifiable([
           for (final stored in await _dao.listByGroup(groupId))
-            _map(stored, members).orThrow(),
+            _map(stored, members, currency).orThrow(),
         ]);
       });
 
@@ -137,12 +164,13 @@ class DriftExpensesRepository implements ExpensesRepository {
       case Ok<Expense, RepositoryError>(:final value):
         expense = value;
     }
+    final foreign = draft.foreign;
     return Ok((
       root: ExpensesCompanion(
         title: Value(expense.title),
-        amountCents: Value(expense.amountCents),
-        currency: Value(expense.currency.code),
-        fxRatePpm: const Value(_unitFxPpm),
+        amountCents: Value(foreign?.amountCents ?? expense.amountCents),
+        currency: Value(foreign?.currency.code ?? expense.currency.code),
+        fxRatePpm: Value(foreign?.ratePpm ?? _unitFxPpm),
         groupAmountCents: Value(expense.amountCents),
         date: Value(expense.date),
         category: Value(draft.category),

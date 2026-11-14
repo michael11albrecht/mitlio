@@ -424,6 +424,23 @@ class AppLocalizationsDe extends AppLocalizations {
   String get expenseExcluded => 'Nicht dabei';
 
   @override
+  String get expenseCurrencyLabel => 'Währung';
+
+  @override
+  String get expenseRateLabel => 'Kurs';
+
+  @override
+  String get expenseErrorRate => 'Gib den Kurs ein';
+
+  @override
+  String get rateInvalid => 'Das ist kein gültiger Kurs';
+
+  @override
+  String expenseConverted(String amount) {
+    return '= $amount (Gruppenwährung)';
+  }
+
+  @override
   String get tripAdd => 'Fahrt hinzufügen';
 
   @override

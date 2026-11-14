@@ -11,8 +11,10 @@ import 'package:mitlio/core/router.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/debug/debug_drive.dart';
+import 'package:mitlio/debug/handlers/balances.dart';
 import 'package:mitlio/debug/handlers/expenses.dart';
 import 'package:mitlio/debug/handlers/groups.dart';
+import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../test/support/tap_counter.dart';
 
@@ -50,6 +52,7 @@ void main() {
       ),
       ...groupsDriveHandlers(container),
       ...expensesDriveHandlers(container),
+      ...balancesDriveHandlers(container),
     };
     await tester.pumpWidget(
       UncontrolledProviderScope(
@@ -213,6 +216,79 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Fondue'), findsNothing);
     expect(find.text('Noch keine Ausgabe'), findsOneWidget);
+    expect(await drive['errors']!({}), {'errors': <Object?>[]});
+  });
+
+  testWidgets('a dollar expense in a euro group: UI and DebugDrive agree, '
+      'balances sum to zero (P7-T01)', (tester) async {
+    await start(tester);
+    final groupId = await newGroup();
+    await drive['navigate']!({'route': '/groups/$groupId'});
+    await tester.pumpAndSettle();
+    final group =
+        (await drive['state']!({'screen': 'group'}))['state']!
+            as Map<String, Object?>;
+    final ids = [
+      for (final m in group['members']! as List<Object?>)
+        (m! as Map)['id']! as String,
+    ];
+
+    // In the UI: 10,00 $ at 0,92, paid by the first member.
+    await tester.tap(find.text('Ausgaben'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ausgabe hinzufügen'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(DropdownButtonFormField<Currency>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('USD').last);
+    await tester.pumpAndSettle();
+    for (final (label, text) in [
+      ('Betrag', '10'),
+      ('Kurs', '0,92'),
+      ('Wofür?', 'Taxi'),
+    ]) {
+      await tester.tap(find.widgetWithText(TextField, label));
+      await tester.pump();
+      await tester.enterText(find.widgetWithText(TextField, label), text);
+      await tester.pump();
+    }
+    expect(find.textContaining('(Gruppenwährung)'), findsOneWidget);
+    await tester.tap(find.text('Speichern'));
+    await tester.pumpAndSettle();
+
+    // Through DebugDrive: 20,00 $ at 0,91 = 18,20 EUR paid by Ben.
+    final added = await drive['expenses.add']!({
+      'groupId': groupId,
+      'title': 'Fähre',
+      'amountCents': '2000',
+      'currency': 'USD',
+      'fxRatePpm': '910000',
+      'payers': jsonEncode({ids[1]: 1820}),
+    });
+    expect(added['error'], isNull);
+    expect(added['amountCents'], 1820);
+    await tester.pumpAndSettle();
+
+    final taxi = (await expenses(groupId)).firstWhere(
+      (e) => e['title'] == 'Taxi',
+    );
+    expect(taxi['amountCents'], 920);
+    expect(taxi['currency'], 'EUR');
+    expect(taxi['foreign'], {
+      'currency': 'USD',
+      'amountCents': 1000,
+      'fxRatePpm': 920000,
+    });
+    expect(find.text('Fähre'), findsOneWidget);
+    expect(find.text(r'20,00 $'), findsOneWidget);
+
+    // 9,20 and 18,20 split three ways: 3,07 + 6,07 (twice), 3,06 + 6,06.
+    final got = await drive['balances.get']!({'groupId': groupId});
+    final balances = (got['balances']! as Map<String, Object?>).values
+        .cast<int>()
+        .toList();
+    expect(balances, [6, 906, -912]);
+    expect(balances.fold<int>(0, (a, b) => a + b), 0);
     expect(await drive['errors']!({}), {'errors': <Object?>[]});
   });
 }

@@ -64,6 +64,17 @@ class MoneyFormat {
         '${fraction == null ? '' : '$decimalSeparator$fraction'}';
   }
 
+  /// A rate in parts per million for editing: no grouping, trailing zeros
+  /// dropped (`0,92`, `1,0834`, `160`).
+  String formatRate(int ppm) {
+    final whole = ppm ~/ 1000000;
+    final fraction = (ppm % 1000000)
+        .toString()
+        .padLeft(6, '0')
+        .replaceFirst(RegExp(r'0+$'), '');
+    return fraction.isEmpty ? '$whole' : '$whole$decimalSeparator$fraction';
+  }
+
   /// Locale currency symbol (`€`, `$`, `CHF`).
   String currencySymbol(Currency currency) => NumberFormat.simpleCurrency(
     locale: locale,
