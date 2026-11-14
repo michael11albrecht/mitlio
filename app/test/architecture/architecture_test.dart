@@ -278,6 +278,23 @@ void main() {
         {'app/lib/features/a/x.dart': 'const s = DefaultTextStyle(x);'},
       ),
       (
+        'no-magic-spacing',
+        {'app/lib/features/a/x.dart': 'final p = EdgeInsets.all(12);'},
+        {'app/lib/features/a/x.dart': 'final p = EdgeInsets.all(Spacing.md);'},
+      ),
+      (
+        'no-magic-spacing',
+        {
+          'app/lib/core/x.dart': 'final p = EdgeInsets.symmetric(horizontal: Spacing.md, vertical: 8);',
+        },
+        {'app/lib/core/theme/x.dart': 'final p = EdgeInsets.all(12);'},
+      ),
+      (
+        'no-magic-spacing',
+        {'app/lib/core/x.dart': 'final s = SizedBox(height: 16);'},
+        {'app/lib/core/x.dart': 'final s = SizedBox(height: Spacing.md);'},
+      ),
+      (
         'no-hardcoded-strings',
         {'app/lib/features/a/ui/x.dart': "final w = Text('Hallo Welt');"},
         {'app/lib/features/a/ui/x.dart': 'final w = Text(l10n.hello);'},

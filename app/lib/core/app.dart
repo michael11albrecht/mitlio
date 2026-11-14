@@ -1,9 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/router.dart';
+import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 
-/// Root widget. Must sit under a `ProviderScope`. Theme arrives in P3-T05.
+/// App strings plus Material/Widgets/Cupertino framework strings (de, en).
+const mitlioLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
+  AppLocalizations.delegate,
+  ...GlobalMaterialLocalizations.delegates,
+];
+
+/// Root widget. Must sit under a `ProviderScope`. Light/dark theme follows
+/// the system.
 class MitlioApp extends ConsumerWidget {
   const MitlioApp({super.key});
 
@@ -12,10 +20,10 @@ class MitlioApp extends ConsumerWidget {
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).appName,
       routerConfig: ref.watch(routerProvider),
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        ...GlobalMaterialLocalizations.delegates,
-      ],
+      theme: MitlioTheme.light,
+      darkTheme: MitlioTheme.dark,
+      // themeMode stays at its default, ThemeMode.system.
+      localizationsDelegates: mitlioLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       // German is the default: any device language we do not ship resolves
       // to `de` (first supported locale), English devices get `en`.
