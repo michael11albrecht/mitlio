@@ -1005,4 +1005,109 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settleActionFailed =>
       'Das hat nicht geklappt. Versuch es nochmal.';
+
+  @override
+  String get exportMenu => 'Exportieren';
+
+  @override
+  String get exportTitle => 'Exportieren';
+
+  @override
+  String get exportCsv => 'Tabelle (CSV)';
+
+  @override
+  String get exportCsvHint => 'Alle Ausgaben und Salden';
+
+  @override
+  String get exportPdf => 'Abrechnung (PDF)';
+
+  @override
+  String get exportPdfHint => 'Wer wem wie viel zahlt, mit Ausgabenliste';
+
+  @override
+  String get exportFailed => 'Das hat nicht geklappt. Versuch es nochmal.';
+
+  @override
+  String get exportColDate => 'Datum';
+
+  @override
+  String get exportColTitle => 'Titel';
+
+  @override
+  String get exportColCategory => 'Kategorie';
+
+  @override
+  String get exportColAmount => 'Betrag';
+
+  @override
+  String get exportColCurrency => 'Währung';
+
+  @override
+  String get exportColPaidBy => 'Bezahlt von';
+
+  @override
+  String get exportColMember => 'Person';
+
+  @override
+  String get exportColBalance => 'Saldo';
+
+  @override
+  String get exportColPaid => 'Bezahlt';
+
+  @override
+  String get exportColShare => 'Anteil';
+
+  @override
+  String get exportBalances => 'Salden';
+
+  @override
+  String get exportReportTitle => 'Abrechnung';
+
+  @override
+  String exportPeriod(String from, String to) {
+    return 'Zeitraum: $from – $to';
+  }
+
+  @override
+  String get exportPeriodNone => 'Noch keine Ausgaben';
+
+  @override
+  String get exportMembers => 'Personen';
+
+  @override
+  String get exportTotals => 'Summen pro Person';
+
+  @override
+  String get exportTransfers => 'Ausgleich';
+
+  @override
+  String get exportAllSettled => 'Alles ausgeglichen';
+
+  @override
+  String get exportExpenses => 'Ausgaben';
+
+  @override
+  String exportPaypal(String handle) {
+    return 'PayPal: $handle';
+  }
+
+  @override
+  String exportIbanHint(String hint) {
+    return 'IBAN $hint';
+  }
+
+  @override
+  String get exportCategoryFood => 'Essen';
+
+  @override
+  String get exportCategoryStay => 'Unterkunft';
+
+  @override
+  String get exportCategoryTransport => 'Transport';
+
+  @override
+  String get exportCategoryFun => 'Freizeit';
+
+  @override
+  String get exportCategoryOther => 'Sonstiges';
 }

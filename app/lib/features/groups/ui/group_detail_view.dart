@@ -10,6 +10,7 @@ import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
 import 'package:mitlio/features/expenses/ui/expenses_view.dart';
+import 'package:mitlio/features/export/ui/export_sheet.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
 import 'package:mitlio/features/members/ui/member_payment_view.dart';
 import 'package:mitlio/features/rides/ui/rides_view.dart';
@@ -19,7 +20,7 @@ import 'package:mitlio_domain/mitlio_domain.dart';
 /// Number of tabs of the group detail (members, expenses, rides).
 const groupTabCount = 3;
 
-enum _MenuAction { edit, archive }
+enum _MenuAction { edit, export, archive }
 
 /// Group detail: tabs for the members and the expenses. Members tab: add by
 /// name (the field stays focused for the next one), tap a name to rename, drag
@@ -80,6 +81,8 @@ class GroupDetailView extends ConsumerWidget {
                     switch (action) {
                       case _MenuAction.edit:
                         unawaited(context.push('/groups/$groupId/edit'));
+                      case _MenuAction.export:
+                        unawaited(showExportSheet(context, groupId));
                       case _MenuAction.archive:
                         final result = await vm.archive();
                         if (!context.mounted) return;
@@ -97,6 +100,10 @@ class GroupDetailView extends ConsumerWidget {
                     PopupMenuItem(
                       value: _MenuAction.edit,
                       child: Text(l10n.groupEditTitle),
+                    ),
+                    PopupMenuItem(
+                      value: _MenuAction.export,
+                      child: Text(l10n.exportMenu),
                     ),
                     PopupMenuItem(
                       value: _MenuAction.archive,
