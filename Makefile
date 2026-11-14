@@ -29,7 +29,14 @@ bootstrap: ## Install deps and git hooks
 
 .PHONY: gen
 gen: ## Run code generation
-	$(call not_yet,build_runner arrives with freezed/drift/riverpod in P2/P3)
+	cd app && $(DART) run build_runner build --delete-conflicting-outputs
+
+.PHONY: db-schema
+db-schema: ## Dump Drift schema to app/drift_schemas + regenerate migration test helpers
+	cd app && $(DART) run drift_dev schema dump lib/db/app_database.dart drift_schemas/
+	cd app && $(DART) run drift_dev schema generate drift_schemas/ test/db/generated/
+	perl -pi -e 's/unused_import$$/unused_import,strict_raw_type/' app/test/db/generated/schema_v1.dart
+	$(DART) format app/test/db/generated
 
 .PHONY: fmt
 fmt: ## Format all Dart code
