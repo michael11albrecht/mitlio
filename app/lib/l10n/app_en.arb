@@ -34,5 +34,21 @@
   "memberRemove": "Remove {name}",
   "memberRemoved": "“{name}” removed",
   "memberOrderHint": "Drag to reorder. When a split leaves spare cents, people higher up pay the extra cent first.",
-  "memberInUse": "{name} has expenses or payments, so they stay in the group."
+  "memberInUse": "{name} has expenses or payments, so they stay in the group.",
+  "@@x-feature-balances": "balances",
+  "balancesTitle": "Balances",
+  "balancesOpen": "Who gets what",
+  "balanceGets": "{name} gets",
+  "balanceOwes": "{name} owes",
+  "balanceEven": "{name} is all square",
+  "balancesSettledTitle": "All square",
+  "balancesSettledMessage": "Nobody owes anybody anything.",
+  "balancesEmptyTitle": "Nothing to settle yet",
+  "balancesEmptyMessage": "Once there are expenses, you will see here who owes whom.",
+  "balancesTransfersTitle": "Who pays whom",
+  "balancesModeSimplified": "Simple",
+  "balancesModeDirect": "Direct",
+  "balancesModeSimplifiedHint": "As few payments as possible.",
+  "balancesModeDirectHint": "Every debt on its own, between the people involved.",
+  "balancesTransfer": "{from} pays {to}"
 }

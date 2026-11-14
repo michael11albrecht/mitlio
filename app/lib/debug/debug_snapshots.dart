@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/router.dart';
 import 'package:mitlio/debug/drive_types.dart';
+import 'package:mitlio/features/balances/ui/balances_view_model.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
 import 'package:mitlio/features/groups/ui/groups_view_model.dart';
 
@@ -43,4 +44,10 @@ DebugSnapshotRegistry buildSnapshotRegistry(ProviderContainer c) =>
         return id == null
             ? {'status': 'not_open'}
             : c.read(groupDetailViewModelProvider(id).notifier).debugSnapshot();
+      })
+      ..register('balances', () {
+        final id = _openGroupId(c);
+        return id == null
+            ? {'status': 'not_open'}
+            : c.read(balancesViewModelProvider(id).notifier).debugSnapshot();
       });

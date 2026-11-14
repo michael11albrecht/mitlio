@@ -9,6 +9,7 @@ import 'package:mitlio/core/router.dart';
 import 'package:mitlio/debug/debug_data_control.dart';
 import 'package:mitlio/debug/debug_snapshots.dart';
 import 'package:mitlio/debug/drive_types.dart';
+import 'package:mitlio/debug/handlers/balances.dart';
 import 'package:mitlio/debug/handlers/groups.dart';
 
 export 'package:mitlio/debug/debug_data_control.dart';
@@ -101,6 +102,7 @@ void registerDebugDrive(ProviderContainer container) {
       snapshots: buildSnapshotRegistry(container),
     ),
     ...groupsDriveHandlers(container),
+    ...balancesDriveHandlers(container),
   };
   for (final entry in handlers.entries) {
     developer.registerExtension('ext.mitlio.${entry.key}', (_, params) async {

@@ -307,6 +307,96 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'{name} hat Ausgaben oder Zahlungen und bleibt deshalb in der Gruppe.'**
   String memberInUse(String name);
+
+  /// No description provided for @balancesTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Salden'**
+  String get balancesTitle;
+
+  /// No description provided for @balancesOpen.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer bekommt was'**
+  String get balancesOpen;
+
+  /// No description provided for @balanceGets.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} bekommt'**
+  String balanceGets(String name);
+
+  /// No description provided for @balanceOwes.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} schuldet'**
+  String balanceOwes(String name);
+
+  /// No description provided for @balanceEven.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} ist ausgeglichen'**
+  String balanceEven(String name);
+
+  /// No description provided for @balancesSettledTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Alles ausgeglichen'**
+  String get balancesSettledTitle;
+
+  /// No description provided for @balancesSettledMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Niemand schuldet jemandem etwas.'**
+  String get balancesSettledMessage;
+
+  /// No description provided for @balancesEmptyTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch nichts zu verrechnen'**
+  String get balancesEmptyTitle;
+
+  /// No description provided for @balancesEmptyMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Sobald es Ausgaben gibt, siehst du hier, wer wem was schuldet.'**
+  String get balancesEmptyMessage;
+
+  /// No description provided for @balancesTransfersTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer zahlt wem'**
+  String get balancesTransfersTitle;
+
+  /// No description provided for @balancesModeSimplified.
+  ///
+  /// In de, this message translates to:
+  /// **'Einfach'**
+  String get balancesModeSimplified;
+
+  /// No description provided for @balancesModeDirect.
+  ///
+  /// In de, this message translates to:
+  /// **'Direkt'**
+  String get balancesModeDirect;
+
+  /// No description provided for @balancesModeSimplifiedHint.
+  ///
+  /// In de, this message translates to:
+  /// **'So wenige Zahlungen wie möglich.'**
+  String get balancesModeSimplifiedHint;
+
+  /// No description provided for @balancesModeDirectHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Jede Schuld einzeln, zwischen den Beteiligten.'**
+  String get balancesModeDirectHint;
+
+  /// No description provided for @balancesTransfer.
+  ///
+  /// In de, this message translates to:
+  /// **'{from} zahlt {to}'**
+  String balancesTransfer(String from, String to);
 }
 
 class _AppLocalizationsDelegate
