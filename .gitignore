@@ -24,6 +24,9 @@ web/node_modules/
 web/dist/
 web/.astro/
 web/public/mitlio_domain.js
+web/playwright-report/
+web/test-results/
+web/.playwright/
 .lighthouseci/
 app/test/golden/failures/
 **/test/**/failures/

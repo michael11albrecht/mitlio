@@ -17,6 +17,10 @@ body {
   background: var(--color-bg);
 }
 
+[hidden] {
+  display: none !important;
+}
+
 a {
   color: var(--color-primary);
 }
@@ -80,15 +84,7 @@ h1 {
 .lead {
   font-size: 1.125rem;
   color: var(--color-text-muted);
-  margin: 0 0 var(--space-8);
-}
-
-#calculator {
-  min-height: 12rem;
-  padding: var(--space-6);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  margin: 0 0 var(--space-6);
 }
 
 .site-footer {
