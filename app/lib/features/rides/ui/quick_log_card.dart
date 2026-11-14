@@ -6,6 +6,8 @@ import 'package:mitlio/core/money_format.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
+import 'package:mitlio/features/fuel/ui/fuel_price_chips.dart';
+import 'package:mitlio/features/fuel/ui/fuel_price_view_model.dart';
 import 'package:mitlio/features/rides/ui/milli_field.dart';
 import 'package:mitlio/features/rides/ui/rides_calculator.dart';
 import 'package:mitlio/features/rides/ui/rides_view_model.dart';
@@ -283,7 +285,15 @@ class _QuickLogCardState extends State<QuickLogCard> {
           ],
           if (!quick.usesKmRate) ...[
             const SizedBox(height: Spacing.sm),
-            if (_editingPrice)
+            if (_editingPrice) ...[
+              if (state.group.currency == Currency.eur &&
+                  quick.vehicle?.fuelType != FuelType.electric)
+                FuelPriceChips(
+                  grade: quick.vehicle?.fuelType == FuelType.diesel
+                      ? FuelGrade.diesel
+                      : FuelGrade.e5,
+                  onFill: (milli, {required auto}) => vm.setPrice(milli),
+                ),
               MilliField(
                 label: l10n.quickLogPriceLabel(unit),
                 suffix: money.currencySymbol(state.group.currency),
@@ -292,8 +302,8 @@ class _QuickLogCardState extends State<QuickLogCard> {
                 onChanged: (milli) {
                   if (milli != null) vm.setPrice(milli);
                 },
-              )
-            else
+              ),
+            ] else
               Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: ActionChip(

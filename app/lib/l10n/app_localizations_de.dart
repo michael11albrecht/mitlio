@@ -1293,4 +1293,85 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get crashReportsUnavailable => 'In dieser Version nicht verfügbar.';
+
+  @override
+  String get fuelChipsLabel => 'Spritpreis übernehmen';
+
+  @override
+  String get fuelGradeE5 => 'E5';
+
+  @override
+  String get fuelGradeE10 => 'E10';
+
+  @override
+  String get fuelGradeDiesel => 'Diesel';
+
+  @override
+  String get fuelScopeNational => 'Ø Deutschland';
+
+  @override
+  String fuelScopePlz(String plz) {
+    return 'Ø PLZ $plz';
+  }
+
+  @override
+  String get fuelScopeNearby => 'Ø in deiner Nähe';
+
+  @override
+  String get fuelAgeNow => 'gerade eben';
+
+  @override
+  String fuelAgeMinutes(int count) {
+    return 'vor $count min';
+  }
+
+  @override
+  String fuelAgeHours(int count) {
+    return 'vor $count Std.';
+  }
+
+  @override
+  String fuelAgeDays(int count) {
+    return 'vor $count Tagen';
+  }
+
+  @override
+  String fuelAgeSince(String date) {
+    return 'Stand $date';
+  }
+
+  @override
+  String get fuelOfflineNote => 'offline, zuletzt bekannt';
+
+  @override
+  String get fuelNoPrice =>
+      'Gerade kein aktueller Preis verfügbar. Trag ihn einfach selbst ein.';
+
+  @override
+  String get fuelNearby => 'In meiner Nähe';
+
+  @override
+  String get fuelNearbyDenied =>
+      'Standort nicht freigegeben, es gilt der Bundesdurchschnitt.';
+
+  @override
+  String get fuelNearbyUnavailable => 'Standort gerade nicht verfügbar.';
+
+  @override
+  String get fuelPlzAction => 'PLZ eingeben';
+
+  @override
+  String get fuelPlzLabel => 'Postleitzahl';
+
+  @override
+  String get fuelPlzInvalid => 'Bitte fünf Ziffern';
+
+  @override
+  String get fuelPlzApply => 'Übernehmen';
+
+  @override
+  String get fuelNationalAction => 'Bundesweit';
+
+  @override
+  String get fuelAttributionFallback => 'Spritpreisdaten';
 }

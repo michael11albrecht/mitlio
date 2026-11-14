@@ -167,6 +167,22 @@ void main() {
       expect((state() as TripFormFailure).error, isA<Storage>());
     });
 
+    test('a fuel chip price goes into the price field', () async {
+      await open();
+      expect(vm().applyFuelPrice(1799, onlyIfEmpty: false), '1.799');
+      expect(loaded().inputs.price, '1.799');
+      expect(vm().applyFuelPrice(1700, onlyIfEmpty: false), '1.7');
+    });
+
+    test('the automatic fill keeps a price that is already there', () async {
+      await open();
+      vm().setPrice('2,10');
+      expect(vm().applyFuelPrice(1799, onlyIfEmpty: true), isNull);
+      expect(loaded().inputs.price, '2,10');
+      vm().setPrice('');
+      expect(vm().applyFuelPrice(1799, onlyIfEmpty: true), '1.799');
+    });
+
     test('starts from the last trip: driver, passengers, vehicle', () async {
       await open();
       vm()
