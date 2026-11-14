@@ -1,12 +1,10 @@
 name: mitlio
 description: mitlio — the private taxometer. Share car rides and group expenses fairly.
 publish_to: none
-version: 0.1.0+1
+version: 0.2.0
 resolution: workspace
-
 environment:
   sdk: ^3.14.0
-
 dependencies:
   cryptography: ^2.9.0
   drift: ^2.35.4
@@ -28,25 +26,19 @@ dependencies:
   share_plus: ^13.3.1
   url_launcher: ^6.3.3
   uuid: ^4.6.0
-
 dev_dependencies:
   alchemist: ^0.14.1
   build_runner: ^2.17.1
   drift_dev: ^2.35.3
-  # Design-time generators for the launcher icon and native splash (P7-T06);
-  # they ship nothing in the app, see docs/brand.md.
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.8
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
-
 flutter:
   uses-material-design: true
   generate: true
   assets:
-    # Symlink to tool/fixtures/scenarios (single source of seed scenarios).
     - assets/scenarios/
-    # Roboto (Apache 2.0, see assets/fonts/Roboto_LICENSE.txt) for the PDF.
     - assets/fonts/
