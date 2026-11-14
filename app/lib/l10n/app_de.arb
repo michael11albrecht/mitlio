@@ -1,0 +1,7 @@
+{
+  "@@locale": "de",
+  "appName": "mitlio",
+  "@appName": {
+    "description": "Product name. Stays the same in every language."
+  }
+}

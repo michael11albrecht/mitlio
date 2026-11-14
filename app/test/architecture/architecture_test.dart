@@ -278,6 +278,21 @@ void main() {
         {'app/lib/features/a/x.dart': 'const s = DefaultTextStyle(x);'},
       ),
       (
+        'no-hardcoded-strings',
+        {'app/lib/features/a/ui/x.dart': "final w = Text('Hallo Welt');"},
+        {'app/lib/features/a/ui/x.dart': 'final w = Text(l10n.hello);'},
+      ),
+      (
+        'no-hardcoded-strings',
+        {'app/lib/core/x.dart': "final w = TextField(labelText: 'Betrag');"},
+        {'app/lib/core/x.dart': r"final w = Text('$a/${b}');"},
+      ),
+      (
+        'no-hardcoded-strings',
+        {'app/lib/core/x.dart': 'final w = Icon(i, semanticLabel: "Zurück");'},
+        {'app/lib/core/x.dart': "// Text('Hallo') in a comment"},
+      ),
+      (
         'dialog-allowlist',
         {'app/lib/features/a/ui/b_view.dart': 'x() => showDialog(context: c);'},
         {

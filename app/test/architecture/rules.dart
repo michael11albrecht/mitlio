@@ -184,6 +184,43 @@ List<Rule> buildRules({required List<String> showDialogAllowlist}) => [
     pattern: RegExp(r'\bColor\(\s*0x|\bTextStyle\('),
   ),
   Rule(
+    id: 'no-hardcoded-strings',
+    description:
+        'user-visible strings come from l10n (ARB), not literals in '
+        'Text()/labelText:/tooltip:/semanticLabel: ...',
+    check: (tree) {
+      final literal = RegExp(
+        r'''(?:\b(?:Text|SelectableText)\(|\b(?:labelText|hintText|helperText|errorText|semanticLabel|semanticsLabel|tooltip|title|label|prefixText|suffixText):)\s*r?(['"])((?:(?!\1).)*)\1''',
+      );
+      final interpolation = RegExp(r'\$\{[^}]*\}|\$\w+');
+      return [
+        for (final f in tree.where(
+          (p) =>
+              _inDir(p, 'app/lib/') &&
+              !_inDir(p, 'app/lib/debug/') &&
+              p != 'app/lib/main.dart',
+        ))
+          for (var i = 0; i < f.rawLines.length; i++)
+            // codeLines is blank for pure comment lines.
+            if (f.codeLines[i].trim().isNotEmpty)
+              for (final m in literal.allMatches(f.rawLines[i]))
+                if (m
+                    .group(2)!
+                    .replaceAll(interpolation, '')
+                    .contains(
+                      RegExp('[A-Za-z]'),
+                    ))
+                  Violation(
+                    'no-hardcoded-strings',
+                    f.path,
+                    i + 1,
+                    'hardcoded UI string, use AppLocalizations: '
+                        '${f.rawLines[i].trim()}',
+                  ),
+      ];
+    },
+  ),
+  Rule(
     id: 'dialog-allowlist',
     description: 'showDialog only in allowlisted files (undo, not confirm)',
     check: (tree) => [

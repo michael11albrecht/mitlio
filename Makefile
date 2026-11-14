@@ -31,7 +31,8 @@ bootstrap: ## Install deps and git hooks
 
 .PHONY: gen
 gen: ## Run code generation
-	$(call not_yet,build_runner arrives with freezed/drift/riverpod in P2/P3)
+	cd $(APP) && $(FLUTTER) gen-l10n
+	@echo "build_runner arrives with freezed/drift in P3"
 
 .PHONY: fmt
 fmt: ## Format all Dart code
