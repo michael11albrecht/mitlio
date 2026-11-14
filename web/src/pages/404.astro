@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { messages, paths } from '../i18n';
+
+const t = messages.de;
+---
+
+<Layout locale="de" title={t.notFoundTitle} description={t.notFoundLead} noindex>
+  <h1>{t.notFoundHeading}</h1>
+  <p class="lead">{t.notFoundLead}</p>
+  <p><a href={paths.home.de}>{t.backHome}</a></p>
+</Layout>

@@ -12,6 +12,7 @@ DOMAIN := packages/domain
 DRIVE  := packages/drive_client
 DOMAIN_WEB := packages/domain_web
 TOOLING := packages/tooling
+WEB    := web
 APP    := app
 
 define not_yet
@@ -56,6 +57,24 @@ domain-web: ## Compile domain_web to JS (build/domain_web) + size budget
 domain-web-test: domain-web ## domain_web VM tests + Node parity test on the compiled JS
 	cd $(DOMAIN_WEB) && $(DART) test
 	node --test $(DOMAIN_WEB)/test_js/parity.test.mjs
+
+.PHONY: web-install
+web-install: ## Install web/ dependencies (npm ci)
+	cd $(WEB) && npm ci
+
+$(WEB)/node_modules/.package-lock.json: $(WEB)/package-lock.json
+	cd $(WEB) && npm ci
+
+.PHONY: web-build
+web-build: $(WEB)/node_modules/.package-lock.json ## Build the Astro static site (web/dist)
+	cd $(WEB) && ASTRO_TELEMETRY_DISABLED=1 npm run build
+
+.PHONY: web-check
+web-check: ## astro check + static build (skipped when npm is missing)
+	@if command -v npm >/dev/null; then \
+	  $(MAKE) $(WEB)/node_modules/.package-lock.json && \
+	  (cd $(WEB) && ASTRO_TELEMETRY_DISABLED=1 npm run check && npm run build); \
+	else echo "npm not installed — web-check skipped"; fi
 
 .PHONY: test-drive
 test-drive: ## Drive client tests
@@ -118,4 +137,4 @@ secrets: ## Scan for committed secrets
 check-fast: fmt-check lint test-domain ## Quick gate (agent Stop hook)
 
 .PHONY: check
-check: fmt-check lint arch test-tooling cov domain-web-test goldens secrets ## Definition of done (cov runs all tests)
+check: fmt-check lint arch test-tooling cov domain-web-test web-check goldens secrets ## Definition of done (cov runs all tests)

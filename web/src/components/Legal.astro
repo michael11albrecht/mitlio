@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { messages, type Locale, type RouteKey } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  route: Extract<RouteKey, 'imprint' | 'privacy'>;
+}
+
+const { locale, route } = Astro.props;
+const t = messages[locale];
+const heading = t[route];
+---
+
+<Layout locale={locale} route={route} title={`${heading} | mitlio`} description={heading} noindex>
+  <h1>{heading}</h1>
+  <p>{t.legalPlaceholder}</p>
+</Layout>
