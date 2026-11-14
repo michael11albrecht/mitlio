@@ -19,6 +19,17 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
   Future<List<MemberRow>> listByGroup(String groupId) =>
       _byGroup(groupId).get();
 
+  /// All members of [groupId] including soft-deleted ones: expenses keep
+  /// referencing deleted members.
+  Future<List<MemberRow>> listAllByGroup(String groupId) =>
+      (select(members)
+            ..where((m) => m.groupId.equals(groupId))
+            ..orderBy([
+              (m) => OrderingTerm.asc(m.position),
+              (m) => OrderingTerm.asc(m.id),
+            ]))
+          .get();
+
   Stream<List<MemberRow>> watchByGroup(String groupId) =>
       _byGroup(groupId).watch();
 
@@ -64,6 +75,23 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
         )..where((m) => m.id.equals(id) & m.deletedAt.isNull())).write(
           MembersCompanion(
             deletedAt: Value(deletedAt),
+            updatedAt: Value(updatedAt),
+          ),
+        );
+    return n > 0;
+  }
+
+  /// Undoes [softDelete]. Returns true if a soft-deleted row was revived.
+  Future<bool> restore({
+    required String id,
+    required String updatedAt,
+  }) async {
+    final n =
+        await (update(
+          members,
+        )..where((r) => r.id.equals(id) & r.deletedAt.isNotNull())).write(
+          MembersCompanion(
+            deletedAt: const Value(null),
             updatedAt: Value(updatedAt),
           ),
         );

@@ -126,4 +126,21 @@ class ExpensesDao extends DatabaseAccessor<AppDatabase>
         );
     return n > 0;
   }
+
+  /// Undoes [softDelete]. Returns true if a soft-deleted row was revived.
+  Future<bool> restore({
+    required String id,
+    required String updatedAt,
+  }) async {
+    final n =
+        await (update(
+          expenses,
+        )..where((r) => r.id.equals(id) & r.deletedAt.isNotNull())).write(
+          ExpensesCompanion(
+            deletedAt: const Value(null),
+            updatedAt: Value(updatedAt),
+          ),
+        );
+    return n > 0;
+  }
 }
