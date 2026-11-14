@@ -92,6 +92,19 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
     }
   }
 
+  Future<void> _share(MoneyFormat format, TripFormLoaded s) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final currency = s.group.currency;
+    final result = await _vm.shareResult(
+      (cents) => l10n.tripShareText(format.format(cents, currency)),
+    );
+    if (!mounted) return;
+    if (result is Err) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.errorTitle)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -111,6 +124,10 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
           icon: Icons.person_add_alt_outlined,
           title: l10n.membersEmptyTitle,
           message: l10n.membersEmptyMessage,
+          action: FilledButton(
+            onPressed: context.pop,
+            child: Text(l10n.expensesNoMembersAction),
+          ),
         ),
       ),
       TripFormLoaded() => _form(context, state),
@@ -126,6 +143,8 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
     final invalid = s.evaluation.invalid;
     final electric = inputs.energy == TripEnergy.electric;
     final vm = _vm;
+    final standalone = vm.isStandalone;
+    String nameOf(GroupMember m) => tripMemberName(l10n, standalone, m);
 
     Widget gap() => const SizedBox(height: Spacing.md);
     Widget label(String text) => Padding(
@@ -134,14 +153,18 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.tripFormTitle)),
+      appBar: AppBar(
+        title: Text(
+          standalone ? l10n.tripStandaloneTitle : l10n.tripFormTitle,
+        ),
+      ),
       body: Column(
         children: [
           Expanded(
             child: ListView(
               padding: Spacing.screen,
               children: [
-                _ResultArea(state: s),
+                _ResultArea(state: s, nameOf: nameOf),
                 gap(),
                 _NumberField(
                   controller: _distance,
@@ -167,10 +190,10 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                       ChoiceChip(
                         avatar: MemberAvatar(
                           memberId: m.id,
-                          name: m.name,
+                          name: nameOf(m),
                           size: Sizes.avatarSmall,
                         ),
-                        label: Text(m.name),
+                        label: Text(nameOf(m)),
                         selected: m.id == inputs.driverId,
                         showCheckmark: false,
                         onSelected: (_) => vm.setDriver(m.id),
@@ -187,10 +210,10 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                         FilterChip(
                           avatar: MemberAvatar(
                             memberId: m.id,
-                            name: m.name,
+                            name: nameOf(m),
                             size: Sizes.avatarSmall,
                           ),
-                          label: Text(m.name),
+                          label: Text(nameOf(m)),
                           selected: inputs.passengerIds.contains(m.id),
                           onSelected: (_) => vm.togglePassenger(m.id),
                         ),
@@ -282,14 +305,16 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                   error: invalid.contains(TripField.ferry),
                   onChanged: vm.setFerry,
                 ),
-                gap(),
-                TextField(
-                  controller: _title,
-                  textCapitalization: TextCapitalization.sentences,
-                  textInputAction: TextInputAction.done,
-                  onChanged: vm.setTitle,
-                  decoration: InputDecoration(labelText: l10n.tripTitleLabel),
-                ),
+                if (!standalone) ...[
+                  gap(),
+                  TextField(
+                    controller: _title,
+                    textCapitalization: TextCapitalization.sentences,
+                    textInputAction: TextInputAction.done,
+                    onChanged: vm.setTitle,
+                    decoration: InputDecoration(labelText: l10n.tripTitleLabel),
+                  ),
+                ],
               ],
             ),
           ),
@@ -298,10 +323,18 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
               padding: Spacing.screen,
               child: SizedBox(
                 width: double.infinity,
-                child: FilledButton(
-                  onPressed: s.canSave ? () => unawaited(_save()) : null,
-                  child: Text(l10n.tripSave),
-                ),
+                child: standalone
+                    ? FilledButton.icon(
+                        onPressed: s.evaluation.cost == null
+                            ? null
+                            : () => unawaited(_share(format, s)),
+                        icon: const Icon(Icons.ios_share),
+                        label: Text(l10n.tripShare),
+                      )
+                    : FilledButton(
+                        onPressed: s.canSave ? () => unawaited(_save()) : null,
+                        child: Text(l10n.tripSave),
+                      ),
               ),
             ),
           ),
@@ -356,9 +389,10 @@ class _NumberField extends StatelessWidget {
 /// The answer: "Jede Person zahlt X" and what the driver gets, with the
 /// breakdown folded away; or one calm line telling what is still missing.
 class _ResultArea extends StatelessWidget {
-  const _ResultArea({required this.state});
+  const _ResultArea({required this.state, required this.nameOf});
 
   final TripFormLoaded state;
+  final String Function(GroupMember) nameOf;
 
   @override
   Widget build(BuildContext context) {
@@ -404,20 +438,21 @@ class _ResultArea extends StatelessWidget {
           cents: eval.perPersonCents!,
           currency: currency,
           detail: l10n.tripResultDriverGets(
-            driver.name,
+            nameOf(driver),
             format.format(eval.driverGetsCents!, currency),
           ),
         ),
-        _Breakdown(state: state),
+        _Breakdown(state: state, nameOf: nameOf),
       ],
     );
   }
 }
 
 class _Breakdown extends StatelessWidget {
-  const _Breakdown({required this.state});
+  const _Breakdown({required this.state, required this.nameOf});
 
   final TripFormLoaded state;
+  final String Function(GroupMember) nameOf;
 
   @override
   Widget build(BuildContext context) {
@@ -437,7 +472,7 @@ class _Breakdown extends StatelessWidget {
       if (cost.ferryCents > 0) (l10n.tripBreakdownFerry, cost.ferryCents),
     ];
     final shares = state.evaluation.participantShares!;
-    final names = {for (final m in state.members) m.id: m.name};
+    final names = {for (final m in state.members) m.id: nameOf(m)};
     return Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
@@ -490,3 +525,10 @@ class _Breakdown extends StatelessWidget {
     );
   }
 }
+
+/// Seats of the trip form without a group have no name; they are "Person 1".
+String tripMemberName(
+  AppLocalizations l10n,
+  bool standalone,
+  GroupMember member,
+) => standalone ? l10n.tripSeatName(member.position + 1) : member.name;

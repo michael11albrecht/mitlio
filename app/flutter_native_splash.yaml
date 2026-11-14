@@ -1,0 +1,17 @@
+# Splash generator config (flutter_native_splash). v1 placeholder, see
+# docs/brand.md. A plain theme-colour background (MitlioPalette.*Background)
+# with the mark. Regenerate:
+#   cd app && dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#F4F7F6"
+  image: assets/brand/splash_mark.png
+  color_dark: "#0C1413"
+  image_dark: assets/brand/splash_mark_dark.png
+  android_12:
+    color: "#F4F7F6"
+    image: assets/brand/splash_mark.png
+    color_dark: "#0C1413"
+    image_dark: assets/brand/splash_mark_dark.png
+  # No permission prompts or status-bar tricks: leave the system bars alone.
+  fullscreen: false
+  web: false

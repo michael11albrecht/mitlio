@@ -57,13 +57,14 @@ void main() {
   setUp(() => app = FakeApp());
 
   group('home', () {
-    testWidgets('empty: one calm action leads to the form', (tester) async {
+    testWidgets('empty: the first-run screen leads to the form', (
+      tester,
+    ) async {
       await pumpMitlio(tester, app);
-      expect(find.text('Noch keine Gruppe'), findsOneWidget);
-      expect(find.text('Leg die erste an.'), findsOneWidget);
+      expect(find.text('Willkommen bei mitlio'), findsOneWidget);
       expect(find.byType(FloatingActionButton), findsNothing);
 
-      await tester.tap(find.text('Gruppe anlegen'));
+      await tester.tap(find.text('Gruppe für Ausgaben anlegen'));
       await tester.pumpAndSettle();
       expect(find.text('Neue Gruppe'), findsOneWidget);
     });
@@ -98,7 +99,7 @@ void main() {
       app.groups.watchError = null;
       await tester.tap(find.text('Nochmal versuchen'));
       await tester.pumpAndSettle();
-      expect(find.text('Noch keine Gruppe'), findsOneWidget);
+      expect(find.text('Willkommen bei mitlio'), findsOneWidget);
     });
   });
 
@@ -108,7 +109,7 @@ void main() {
     ) async {
       await pumpMitlio(tester, app);
       final taps = TapCounter(tester);
-      await taps.tap(find.text('Gruppe anlegen'));
+      await taps.tap(find.text('Gruppe für Ausgaben anlegen'));
       await tester.pumpAndSettle();
 
       await taps.enterText(find.byType(TextField), 'Skiwochenende');
@@ -326,7 +327,7 @@ void main() {
       await tester.tap(find.text('Gruppe archivieren'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Noch keine Gruppe'), findsOneWidget);
+      expect(find.text('Willkommen bei mitlio'), findsOneWidget);
       expect(find.text('„Trip“ archiviert'), findsOneWidget);
       expect(find.byType(AlertDialog), findsNothing);
 
@@ -345,7 +346,7 @@ void main() {
 
   testWidgets('English strings', (tester) async {
     await pumpMitlio(tester, app, locale: const Locale('en'));
-    expect(find.text('No group yet'), findsOneWidget);
-    expect(find.text('Create group'), findsOneWidget);
+    expect(find.text('Welcome to mitlio'), findsOneWidget);
+    expect(find.text('Start a carpool'), findsOneWidget);
   });
 }

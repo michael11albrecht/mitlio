@@ -56,8 +56,6 @@
   },
   "undo": "Rückgängig",
   "dismiss": "Schließen",
-  "groupsEmptyTitle": "Noch keine Gruppe",
-  "groupsEmptyMessage": "Leg die erste an.",
   "groupNew": "Neue Gruppe",
   "groupCreate": "Gruppe anlegen",
   "groupEditTitle": "Gruppe bearbeiten",
@@ -791,5 +789,32 @@
   "exportCategoryStay": "Unterkunft",
   "exportCategoryTransport": "Transport",
   "exportCategoryFun": "Freizeit",
-  "exportCategoryOther": "Sonstiges"
+  "exportCategoryOther": "Sonstiges",
+  "onboardingTitle": "Willkommen bei mitlio",
+  "onboardingValue": "Fahrtkosten und Ausgaben fair teilen — ohne Anmeldung, ohne Werbung.",
+  "onboardingCommute": "Fahrgemeinschaft starten",
+  "onboardingCommuteHint": "Auto und Strecke einmal anlegen, dann reichen 2 Taps pro Fahrt.",
+  "onboardingCommuteGroupName": "Fahrgemeinschaft",
+  "onboardingGroup": "Gruppe für Ausgaben anlegen",
+  "onboardingGroupHint": "Für Reisen, die WG oder einen Abend zu mehreren.",
+  "onboardingTripOnly": "Nur eine Fahrt berechnen",
+  "tripStandaloneTitle": "Fahrt berechnen",
+  "tripSeatName": "Person {number}",
+  "@tripSeatName": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "tripShare": "Ergebnis teilen",
+  "tripShareText": "Fahrtkosten: jede Person zahlt {amount}",
+  "@tripShareText": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "balancesEmptyAction": "Ausgabe eintragen"
 }

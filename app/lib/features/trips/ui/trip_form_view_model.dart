@@ -10,12 +10,24 @@ import 'package:mitlio/features/expenses/data/repositories/expenses_providers.da
 import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
+import 'package:mitlio/features/groups/ui/groups_view_model.dart'
+    show localOwnerId;
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
+import 'package:mitlio/features/settle/data/repositories/settle_actions_providers.dart';
 import 'package:mitlio/features/trips/data/trip_meta.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+export 'package:mitlio/features/members/data/repositories/members_repository.dart'
+    show GroupMember;
 export 'package:mitlio/features/trips/data/trip_meta.dart' show TripEnergy;
+
+/// The group id of the trip form without a group ("only calculate a trip",
+/// first run). Nothing is stored in this mode; the result can be shared.
+const standaloneTripGroupId = 'standalone';
+
+/// Seats of the standalone trip form: the driver and up to four more.
+const _standaloneSeats = 5;
 
 /// Form fields that can hold a number the user typed.
 enum TripField { distance, consumption, price, wear, kmRate, tolls, ferry }
@@ -329,6 +341,9 @@ class TripFormViewModel extends Notifier<TripFormState> {
 
   final String groupId;
 
+  /// Whether this is the form without a group (see [standaloneTripGroupId]).
+  bool get isStandalone => groupId == standaloneTripGroupId;
+
   @override
   TripFormState build() {
     unawaited(_load());
@@ -346,7 +361,33 @@ class TripFormViewModel extends Notifier<TripFormState> {
     if (ref.mounted) state = next;
   }
 
+  /// Anonymous seats instead of members; the View names them ("Person 1").
+  TripFormState _standaloneState() {
+    final group = Group(
+      id: groupId,
+      name: '',
+      currency: Currency.eur,
+      createdBy: localOwnerId,
+      createdAt: ref.read(clockProvider).now(),
+    );
+    final seats = [
+      for (var i = 0; i < _standaloneSeats; i++)
+        GroupMember(
+          id: 'seat-${i + 1}',
+          groupId: groupId,
+          name: '',
+          position: i,
+        ),
+    ];
+    return _loaded(
+      group,
+      seats,
+      TripInputs(driverId: seats[0].id, passengerIds: {seats[1].id}),
+    );
+  }
+
   Future<TripFormState> _loadState() async {
+    if (isStandalone) return _standaloneState();
     final group = await ref.read(groupsRepositoryProvider).get(groupId);
     if (group is Err<Group, RepositoryError>) {
       return TripFormFailure(group.error);
@@ -531,6 +572,9 @@ class TripFormViewModel extends Notifier<TripFormState> {
     TripInputs inputs, {
     required String fallbackTitle,
   }) async {
+    if (isStandalone) {
+      return const Err(InvalidData('a trip without a group is not stored'));
+    }
     final groupResult = await ref.read(groupsRepositoryProvider).get(groupId);
     if (groupResult case Err(:final error)) return Err(error);
     final group = (groupResult as Ok<Group, RepositoryError>).value;
@@ -591,6 +635,17 @@ class TripFormViewModel extends Notifier<TripFormState> {
       ),
       Err<ExpenseEntry, RepositoryError>(:final error) => Err(error),
     };
+  }
+
+  /// Opens the share sheet with [text] for the per-person amount. Null
+  /// without a result.
+  Future<RepoResult<void>?> shareResult(
+    String Function(int perPersonCents) text,
+  ) async {
+    final s = state;
+    final cents = s is TripFormLoaded ? s.evaluation.perPersonCents : null;
+    if (cents == null) return null;
+    return ref.read(settleActionsRepositoryProvider).shareText(text(cents));
   }
 
   static TripMeta _meta(TripInput i, TripEnergy energy) => TripMeta(

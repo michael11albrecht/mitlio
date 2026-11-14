@@ -44,6 +44,12 @@ abstract final class Sizes {
   static const double avatarSmall = 28;
   static const double stateIcon = 56;
 
+  /// The brand mark on the first-run screen.
+  static const double brandMark = 72;
+
+  /// Widest a calm single-column screen gets on tablets and desktop.
+  static const double contentMaxWidth = 480;
+
   /// Edge of a payment QR code (large enough for banking apps to scan).
   static const double qrCode = 208;
 

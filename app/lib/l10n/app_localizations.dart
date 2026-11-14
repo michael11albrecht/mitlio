@@ -164,18 +164,6 @@ abstract class AppLocalizations {
   /// **'Schließen'**
   String get dismiss;
 
-  /// No description provided for @groupsEmptyTitle.
-  ///
-  /// In de, this message translates to:
-  /// **'Noch keine Gruppe'**
-  String get groupsEmptyTitle;
-
-  /// No description provided for @groupsEmptyMessage.
-  ///
-  /// In de, this message translates to:
-  /// **'Leg die erste an.'**
-  String get groupsEmptyMessage;
-
   /// No description provided for @groupNew.
   ///
   /// In de, this message translates to:
@@ -2011,6 +1999,84 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Sonstiges'**
   String get exportCategoryOther;
+
+  /// No description provided for @onboardingTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Willkommen bei mitlio'**
+  String get onboardingTitle;
+
+  /// No description provided for @onboardingValue.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrtkosten und Ausgaben fair teilen — ohne Anmeldung, ohne Werbung.'**
+  String get onboardingValue;
+
+  /// No description provided for @onboardingCommute.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrgemeinschaft starten'**
+  String get onboardingCommute;
+
+  /// No description provided for @onboardingCommuteHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Auto und Strecke einmal anlegen, dann reichen 2 Taps pro Fahrt.'**
+  String get onboardingCommuteHint;
+
+  /// No description provided for @onboardingCommuteGroupName.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrgemeinschaft'**
+  String get onboardingCommuteGroupName;
+
+  /// No description provided for @onboardingGroup.
+  ///
+  /// In de, this message translates to:
+  /// **'Gruppe für Ausgaben anlegen'**
+  String get onboardingGroup;
+
+  /// No description provided for @onboardingGroupHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Für Reisen, die WG oder einen Abend zu mehreren.'**
+  String get onboardingGroupHint;
+
+  /// No description provided for @onboardingTripOnly.
+  ///
+  /// In de, this message translates to:
+  /// **'Nur eine Fahrt berechnen'**
+  String get onboardingTripOnly;
+
+  /// No description provided for @tripStandaloneTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrt berechnen'**
+  String get tripStandaloneTitle;
+
+  /// No description provided for @tripSeatName.
+  ///
+  /// In de, this message translates to:
+  /// **'Person {number}'**
+  String tripSeatName(int number);
+
+  /// No description provided for @tripShare.
+  ///
+  /// In de, this message translates to:
+  /// **'Ergebnis teilen'**
+  String get tripShare;
+
+  /// No description provided for @tripShareText.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrtkosten: jede Person zahlt {amount}'**
+  String tripShareText(String amount);
+
+  /// No description provided for @balancesEmptyAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgabe eintragen'**
+  String get balancesEmptyAction;
 }
 
 class _AppLocalizationsDelegate

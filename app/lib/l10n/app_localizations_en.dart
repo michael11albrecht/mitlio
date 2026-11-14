@@ -69,12 +69,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dismiss => 'Dismiss';
 
   @override
-  String get groupsEmptyTitle => 'No group yet';
-
-  @override
-  String get groupsEmptyMessage => 'Create your first one.';
-
-  @override
   String get groupNew => 'New group';
 
   @override
@@ -1129,4 +1123,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportCategoryOther => 'Other';
+
+  @override
+  String get onboardingTitle => 'Welcome to mitlio';
+
+  @override
+  String get onboardingValue =>
+      'Split ride costs and expenses fairly — no sign-up, no ads.';
+
+  @override
+  String get onboardingCommute => 'Start a carpool';
+
+  @override
+  String get onboardingCommuteHint =>
+      'Set up the car and route once, then 2 taps per ride.';
+
+  @override
+  String get onboardingCommuteGroupName => 'Carpool';
+
+  @override
+  String get onboardingGroup => 'Create a group for expenses';
+
+  @override
+  String get onboardingGroupHint =>
+      'For trips, your flat or a night out together.';
+
+  @override
+  String get onboardingTripOnly => 'Just calculate one trip';
+
+  @override
+  String get tripStandaloneTitle => 'Calculate a trip';
+
+  @override
+  String tripSeatName(int number) {
+    return 'Person $number';
+  }
+
+  @override
+  String get tripShare => 'Share result';
+
+  @override
+  String tripShareText(String amount) {
+    return 'Trip cost: each person pays $amount';
+  }
+
+  @override
+  String get balancesEmptyAction => 'Add an expense';
 }

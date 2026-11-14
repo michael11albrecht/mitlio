@@ -8,7 +8,8 @@ import 'package:mitlio/features/expenses/data/repositories/expenses_repository.d
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
-import 'package:mitlio/features/members/data/repositories/members_repository.dart';
+import 'package:mitlio/features/members/data/repositories/payment_details_providers.dart';
+import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
 import 'package:mitlio/features/trips/data/trip_meta.dart';
 import 'package:mitlio/features/trips/ui/trip_form_view_model.dart';
@@ -65,6 +66,9 @@ void main() {
     membersRepositoryProvider.overrideWithValue(app.members),
     expensesRepositoryProvider.overrideWithValue(expenses),
     settlementsRepositoryProvider.overrideWithValue(app.settlements),
+    paymentDetailsRepositoryProvider.overrideWithValue(app.payments),
+    linkLauncherProvider.overrideWithValue(app.launcher),
+    shareServiceProvider.overrideWithValue(app.share),
   ];
 
   TripFormViewModel vm([String? id]) =>
@@ -73,6 +77,7 @@ void main() {
       container.read(tripFormViewModelProvider(id ?? grp.id));
   TripFormLoaded loaded() => state() as TripFormLoaded;
   TripEvaluation eval() => loaded().evaluation;
+  TripFormLoaded loaded0(String id) => state(id) as TripFormLoaded;
 
   Future<void> open([String? id]) async {
     container.listen(tripFormViewModelProvider(id ?? grp.id), (_, _) {});
@@ -547,6 +552,64 @@ void main() {
         ),
         isA<NotFound>(),
       );
+    });
+  });
+
+  group('standalone (no group)', () {
+    const id = standaloneTripGroupId;
+
+    test('opens with five anonymous seats, two of them taking part', () async {
+      await open(id);
+      final s = state(id) as TripFormLoaded;
+      expect(s.members, hasLength(5));
+      expect(s.inputs.driverId, s.members.first.id);
+      expect(s.inputs.passengerIds, {s.members[1].id});
+      expect(s.group.currency, Currency.eur);
+      expect(vm(id).isStandalone, isTrue);
+      expect(vm().isStandalone, isFalse);
+    });
+
+    test('shows the result like in a group', () async {
+      await open(id);
+      vm(id)
+        ..setDistance('250')
+        ..setConsumption('6,5')
+        ..setPrice('1.799');
+      final s = state(id) as TripFormLoaded;
+      expect(s.evaluation.cost, isNotNull);
+      expect(s.evaluation.cost!.totalCents, 2923);
+      expect(s.evaluation.perPersonCents, 1462);
+    });
+
+    test('nothing is stored: no group, no expense', () async {
+      await open(id);
+      vm(id)
+        ..setDistance('250')
+        ..setConsumption('6,5')
+        ..setPrice('1.799');
+      final result = await vm(id).add(
+        loaded0(id).inputs,
+        fallbackTitle: 'Fahrt',
+      );
+      expect(result, isA<Err<TripSaved, RepositoryError>>());
+      expect(await app.groups.watchGroups().first, [grp]);
+    });
+
+    test('shares the result through the share sheet', () async {
+      await open(id);
+      vm(id)
+        ..setDistance('250')
+        ..setConsumption('6,5')
+        ..setPrice('1.799');
+      final result = await vm(id).shareResult((perPerson) => 'pp $perPerson');
+      expect(result, isA<Ok<void, RepositoryError>>());
+      expect(app.share.shared, ['pp 1462']);
+    });
+
+    test('there is nothing to share without a result', () async {
+      await open(id);
+      expect(await vm(id).shareResult((_) => 'x'), isNull);
+      expect(app.share.shared, isEmpty);
     });
   });
 

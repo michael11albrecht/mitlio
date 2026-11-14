@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
-import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio/features/trips/ui/trip_form_view_model.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -112,3 +111,37 @@ final TripFormLoaded tripNoMembers = tripLoaded(
   const TripInputs(),
   members: const [],
 );
+
+/// The trip form without a group: anonymous seats, a result, nothing to save.
+final TripFormLoaded tripStandalone = () {
+  const inputs = TripInputs(
+    distance: '250',
+    consumption: '6,5',
+    price: '1,799',
+    driverId: 'seat-1',
+    passengerIds: {'seat-2'},
+  );
+  final seats = [
+    for (var i = 0; i < 5; i++)
+      GroupMember(
+        id: 'seat-${i + 1}',
+        groupId: standaloneTripGroupId,
+        name: '',
+        position: i,
+      ),
+  ];
+  return TripFormLoaded(
+    group: Group(
+      id: standaloneTripGroupId,
+      name: '',
+      currency: Currency.eur,
+      createdBy: 'local',
+      createdAt: DateTime.utc(2026),
+    ),
+    members: seats,
+    inputs: inputs,
+    evaluation: evaluateTrip(inputs, Currency.eur, [
+      for (final x in seats) x.toDomain(),
+    ]),
+  );
+}();
