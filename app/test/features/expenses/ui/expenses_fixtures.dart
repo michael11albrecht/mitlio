@@ -249,6 +249,37 @@ final sampleExpenses = ExpensesLoaded(
   today: DateTime.utc(2026, 3),
 );
 
+/// One expense paid in dollars (12,00 $ at 0,92 = 11,04 €) and one in euros.
+final foreignExpenses = ExpensesLoaded(
+  group: sampleGroup,
+  members: sampleMembers,
+  entries: [
+    ExpenseEntry(
+      groupId: 'g-1',
+      expense: (Expense.create(
+        id: 'e-4',
+        title: 'Eis in New York',
+        amountCents: 1104,
+        currency: Currency.eur,
+        date: DateTime.utc(2026, 3),
+        payers: {'m-1': 1104},
+        split: EqualSplit(_everyone),
+        members: [for (final m in sampleMembers) m.toDomain()],
+      ) as Ok<Expense, ExpenseError>).value,
+      split: EqualSplit(_everyone),
+      category: 'food',
+      foreign: const ForeignAmount(
+        currency: Currency.usd,
+        amountCents: 1200,
+        ratePpm: 920000,
+      ),
+      createdAt: DateTime.utc(2026, 3),
+    ),
+    sampleEntries.first,
+  ],
+  today: DateTime.utc(2026, 3),
+);
+
 final emptyExpenses = ExpensesLoaded(
   group: sampleGroup,
   members: sampleMembers,
@@ -285,6 +316,9 @@ ExpenseFormReady formReady({
   bool showErrors = false,
   String? category,
   bool editing = false,
+  Currency currency = Currency.eur,
+  int? ratePpm,
+  int? groupAmountCents,
 }) => ExpenseFormReady(
   group: sampleGroup,
   members: sampleMembers,
@@ -293,6 +327,14 @@ ExpenseFormReady formReady({
   amountCents: amountCents,
   date: DateTime.utc(2026, 3),
   today: DateTime.utc(2026, 3),
+  currency: currency,
+  ratePpm: ratePpm,
+  groupAmountCents: groupAmountCents ?? amountCents,
+  currencyOptions: [
+    Currency.eur,
+    for (final c in Currency.all)
+      if (c != Currency.eur) c,
+  ],
   category: category,
   multiPayer: multiPayer,
   payerId: 'm-0',
@@ -329,6 +371,17 @@ final ExpenseFormReady exactErrorForm = formReady(
 );
 
 final ExpenseFormReady emptyForm = formReady();
+
+/// 120,00 $ at 0,92: converted to 110,40 € which the split works on.
+final ExpenseFormReady foreignForm = formReady(
+  title: 'Abendessen',
+  amountCents: 12000,
+  currency: Currency.usd,
+  ratePpm: 920000,
+  groupAmountCents: 11040,
+  preview: {'m-0': 2760, 'm-1': 2760, 'm-2': 2760, 'm-3': 2760},
+  category: 'food',
+);
 
 /// Starts the real app on the repositories of [app] and optionally jumps to
 /// [location]; German unless [locale] says otherwise.

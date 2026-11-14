@@ -788,6 +788,36 @@ abstract class AppLocalizations {
   /// **'Nicht dabei'**
   String get expenseExcluded;
 
+  /// No description provided for @expenseCurrencyLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Währung'**
+  String get expenseCurrencyLabel;
+
+  /// No description provided for @expenseRateLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Kurs'**
+  String get expenseRateLabel;
+
+  /// No description provided for @expenseErrorRate.
+  ///
+  /// In de, this message translates to:
+  /// **'Gib den Kurs ein'**
+  String get expenseErrorRate;
+
+  /// No description provided for @rateInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist kein gültiger Kurs'**
+  String get rateInvalid;
+
+  /// No description provided for @expenseConverted.
+  ///
+  /// In de, this message translates to:
+  /// **'= {amount} (Gruppenwährung)'**
+  String expenseConverted(String amount);
+
   /// No description provided for @tripAdd.
   ///
   /// In de, this message translates to:

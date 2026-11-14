@@ -98,6 +98,59 @@ void main() {
       });
     }
 
+    test('a foreign currency with a frozen rate (P7-T01)', () async {
+      final r = await h['expenses.add']!(
+        params(
+          payers: {id(0): 920},
+          extra: {'currency': 'USD', 'fxRatePpm': '920000'},
+        ),
+      );
+      expect(r['error'], isNull);
+      expect(r['amountCents'], 920);
+      expect(r['currency'], 'EUR');
+      expect(r['payers'], {id(0): 920});
+      expect(r['shares'], {id(0): 307, id(1): 307, id(2): 306});
+      expect(r['foreign'], {
+        'currency': 'USD',
+        'amountCents': 1000,
+        'fxRatePpm': 920000,
+      });
+      final list = await h['expenses.list']!({'groupId': app.trip.id});
+      expect(((list['expenses']! as List).single as Map)['foreign'], isNotNull);
+    });
+
+    test('the group currency may be named explicitly', () async {
+      final r = await h['expenses.add']!(params(extra: {'currency': 'EUR'}));
+      expect(r['error'], isNull);
+      expect(r.containsKey('foreign'), isFalse);
+    });
+
+    test(
+      'a foreign currency needs a positive rate and matching payers',
+      () async {
+        Future<Map<String, Object?>> add(Map<String, String> extra) =>
+            h['expenses.add']!(params(payers: {id(0): 920}, extra: extra));
+        for (final extra in [
+          {'currency': 'USD'},
+          {'currency': 'USD', 'fxRatePpm': '0'},
+          {'currency': 'USD', 'fxRatePpm': 'x'},
+          {'currency': 'XXX', 'fxRatePpm': '920000'},
+          {'currency': 'USD', 'fxRatePpm': '999999999999999999'},
+        ]) {
+          expect(
+            (await add(extra))['error'],
+            'invalid_params',
+            reason: '$extra',
+          );
+        }
+        // Payers are in the group currency: 1000 would not match 9,20 EUR.
+        final r = await h['expenses.add']!(
+          params(extra: {'currency': 'USD', 'fxRatePpm': '920000'}),
+        );
+        expect(r['message'], contains('PayersMismatch'));
+      },
+    );
+
     test('several payers', () async {
       final r = await h['expenses.add']!(
         params(payers: {id(0): 600, id(1): 400}),

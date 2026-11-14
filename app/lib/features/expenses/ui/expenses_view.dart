@@ -4,6 +4,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/money_format.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/empty_state.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
@@ -306,9 +307,15 @@ class _ExpenseRow extends StatelessWidget {
         ? l10n.expensePaidBy(payerName)
         : l10n.expensePaidByMore(payerName, payers.length - 1);
     final category = entry.category;
-    final subtitle = category == null
-        ? paidBy
-        : '$paidBy · ${categoryLabel(l10n, category)}';
+    final foreign = entry.foreign;
+    // A foreign amount is shown as paid ("12,00 $"); what it is worth in the
+    // group currency leads the subtitle ("11,04 € · Ben hat bezahlt").
+    final subtitle = [
+      if (foreign != null)
+        MoneyFormat.of(context).format(expense.amountCents, expense.currency),
+      paidBy,
+      if (category != null) categoryLabel(l10n, category),
+    ].join(' · ');
     return Padding(
       padding: const EdgeInsets.only(bottom: Spacing.sm),
       child: ClipRRect(
@@ -353,8 +360,8 @@ class _ExpenseRow extends StatelessWidget {
                 title: Text(expense.title),
                 subtitle: Text(subtitle),
                 trailing: MoneyText(
-                  cents: expense.amountCents,
-                  currency: expense.currency,
+                  cents: foreign?.amountCents ?? expense.amountCents,
+                  currency: foreign?.currency ?? expense.currency,
                   style: theme.textTheme.titleMedium,
                 ),
                 onTap: () => unawaited(

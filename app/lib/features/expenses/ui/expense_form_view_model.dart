@@ -49,6 +49,10 @@ final class ExpenseFormReady extends ExpenseFormState {
     required this.amountCents,
     required this.date,
     required this.today,
+    required this.currency,
+    required this.ratePpm,
+    required this.groupAmountCents,
+    required this.currencyOptions,
     required this.category,
     required this.multiPayer,
     required this.payerId,
@@ -73,7 +77,23 @@ final class ExpenseFormReady extends ExpenseFormState {
   /// An existing expense is being edited.
   final bool editing;
   final String title;
+
+  /// In [currency] (the group currency unless a foreign one is picked).
   final int? amountCents;
+
+  /// What the amount is paid in.
+  final Currency currency;
+
+  /// Frozen rate (group currency per 1 [currency], times 1e6) while
+  /// [isForeign]; null until entered.
+  final int? ratePpm;
+
+  /// The amount converted into the group currency; what the split, the
+  /// payers and the shares work on. Null while amount or rate are missing.
+  final int? groupAmountCents;
+
+  /// Picker order: group currency, the last foreign one used here, the rest.
+  final List<Currency> currencyOptions;
 
   /// Midnight UTC of the expense day.
   final DateTime date;
@@ -110,8 +130,18 @@ final class ExpenseFormReady extends ExpenseFormState {
   final bool showErrors;
   final bool saving;
 
+  /// The amount is paid in a currency other than the group's.
+  bool get isForeign => currency != group.currency;
+
+  /// Foreign amount entered but no usable rate yet.
+  bool get rateMissing => isForeign && ratePpm == null;
+
   bool get hasIssues =>
-      titleMissing || amountMissing || splitError != null || payerError != null;
+      titleMissing ||
+      amountMissing ||
+      rateMissing ||
+      splitError != null ||
+      payerError != null;
 
   /// Stored categories first, plus the current one if it is a custom key.
   List<String> get categoryOptions => [
@@ -132,6 +162,13 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
   late List<GroupMember> _members;
   var _title = '';
   int? _amount;
+  late Currency _currency;
+  int? _ratePpm;
+
+  /// Newest frozen rate per foreign currency used in this group, and the
+  /// currency of the newest foreign expense.
+  final _lastRates = <Currency, int>{};
+  Currency? _lastForeign;
   late DateTime _date;
   late DateTime _today;
   String? _category;
@@ -190,6 +227,15 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
       _payerId =
           _lastPayer(entries) ?? (members.isEmpty ? '' : members.first.id);
       _participants = {for (final m in members) m.id};
+      _currency = _group.currency;
+      _lastForeign = null;
+      _lastRates.clear();
+      for (final e in entries) {
+        final f = e.foreign;
+        if (f == null) continue;
+        _lastForeign ??= f.currency;
+        _lastRates.putIfAbsent(f.currency, () => f.ratePpm);
+      }
       if (stored != null) _adopt(stored);
       _loaded = true;
       _emit();
@@ -222,7 +268,12 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
   void _adopt(ExpenseEntry stored) {
     final e = stored.expense;
     _title = e.title;
-    _amount = e.amountCents;
+    final foreign = stored.foreign;
+    _amount = foreign?.amountCents ?? e.amountCents;
+    if (foreign != null) {
+      _currency = foreign.currency;
+      _ratePpm = foreign.ratePpm;
+    }
     _date = DateTime.utc(e.date.year, e.date.month, e.date.day);
     _category = stored.category;
     if (e.payers.length > 1) {
@@ -275,23 +326,50 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
       if (e.value > 0) e.key: e.value,
   };
 
-  Map<String, int> _payers() {
+  bool get _foreign => _currency != _group.currency;
+
+  bool get _rateMissing => _foreign && _ratePpm == null;
+
+  /// The entered amount in the group currency: as entered, or converted at
+  /// the frozen rate. Null while amount or rate are missing, or if the
+  /// conversion is not a positive amount the domain can hold.
+  int? _groupAmount() {
     final amount = _amount;
+    if (amount == null || amount <= 0) return null;
+    if (!_foreign) return amount;
+    final rate = _ratePpm;
+    if (rate == null) return null;
+    try {
+      final converted = ForeignAmount(
+        currency: _currency,
+        amountCents: amount,
+        ratePpm: rate,
+      ).toGroup(_group.currency).cents;
+      return converted > 0 ? converted : null;
+    } on MoneyOverflow {
+      return null;
+    }
+  }
+
+  Map<String, int> _payers() {
+    final amount = _groupAmount();
     if (amount == null || amount <= 0) return const {};
     return _multiPayer ? _positive(_payerCents) : {_payerId: amount};
   }
 
   void _emit() {
     if (!_loaded || !ref.mounted) return;
-    final amount = _amount;
-    final amountMissing = amount == null || amount <= 0;
+    final amount = _groupAmount();
+    // A missing rate is its own finding (rateMissing).
+    final amountMissing =
+        _amount == null || _amount! <= 0 || (amount == null && !_rateMissing);
     final members = [for (final m in _members) m.toDomain()];
     final spec = _spec();
     final payers = _payers();
     SplitError? splitError;
     ExpenseError? payerError;
     var preview = const <String, int>{};
-    if (!amountMissing) {
+    if (amount != null) {
       switch (computeShares(
         amountCents: amount,
         spec: spec,
@@ -328,6 +406,10 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
         amountCents: _amount,
         date: _date,
         today: _today,
+        currency: _currency,
+        ratePpm: _ratePpm,
+        groupAmountCents: amount,
+        currencyOptions: _currencyOptions(),
         category: _category,
         multiPayer: _multiPayer,
         payerId: _payerId,
@@ -346,6 +428,15 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
     );
   }
 
+  List<Currency> _currencyOptions() {
+    final group = _group.currency;
+    final rest = [
+      for (final c in Currency.all)
+        if (c != group && c != _lastForeign) c,
+    ]..sort((a, b) => a.code.compareTo(b.code));
+    return [group, ?_lastForeign, ...rest];
+  }
+
   /// Starts over after a failed load.
   void retry() {
     state = const ExpenseFormLoading();
@@ -357,10 +448,56 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
     _emit();
   }
 
-  /// Integer minor units of the group currency; null while empty or invalid.
+  /// Integer minor units of the picked currency; null while empty or
+  /// invalid.
   void setAmount(int? cents) {
     _amount = cents;
     _emit();
+  }
+
+  /// Picks what the amount is paid in. A foreign currency starts with the
+  /// last rate used for it in this group (none: the rate is required).
+  /// Different minor units invalidate the entered amount, and amounts that
+  /// were split in the old numbers are re-seeded.
+  void setCurrency(Currency currency) {
+    if (currency == _currency) return;
+    if (currency.minorUnits != _currency.minorUnits) _amount = null;
+    _currency = currency;
+    _ratePpm = _foreign ? _lastRates[currency] : null;
+    _exact.clear();
+    if (_multiPayer) _payerCents = {};
+    _reseed();
+    _emit();
+  }
+
+  /// The frozen rate: group currency per 1 foreign unit, in ppm. Only used
+  /// while a foreign currency is picked; null clears it.
+  void setRate(int? ppm) {
+    if (!_foreign) return;
+    _ratePpm = ppm;
+    _emit();
+  }
+
+  /// Fresh starting values for the cent-based inputs after the amount base
+  /// changed.
+  void _reseed() {
+    final total = _groupAmount();
+    if (total == null) return;
+    if (_multiPayer) _payerCents = {_payerId: total};
+    if (_mode == SplitMode.exact) {
+      final members = [for (final m in _members) m.toDomain()];
+      final evenly = computeShares(
+        amountCents: total,
+        spec: EqualSplit(_participants),
+        members: members,
+      );
+      if (evenly case Ok(:final value)) {
+        _exact.addAll({
+          for (final e in value.entries)
+            if (e.value > 0) e.key: e.value,
+        });
+      }
+    }
   }
 
   /// Only the calendar day counts.
@@ -386,7 +523,8 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
   void setMultiplePayers({required bool on}) {
     if (on == _multiPayer) return;
     _multiPayer = on;
-    _payerCents = on && _amount != null ? {_payerId: _amount!} : {};
+    final total = _groupAmount();
+    _payerCents = on && total != null ? {_payerId: total} : {};
     _emit();
   }
 
@@ -423,7 +561,7 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
       case SplitMode.percent:
         if (_percent.isEmpty) _percent.addAll(evenly(10000));
       case SplitMode.exact:
-        final amount = _amount;
+        final amount = _groupAmount();
         if (_exact.isEmpty && amount != null && amount > 0) {
           _exact.addAll(evenly(amount));
         }
@@ -460,8 +598,15 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
     }
     final draft = ExpenseDraft(
       title: _title,
-      amountCents: _amount!,
+      amountCents: ready.groupAmountCents!,
       currency: _group.currency,
+      foreign: _foreign
+          ? ForeignAmount(
+              currency: _currency,
+              amountCents: _amount!,
+              ratePpm: _ratePpm!,
+            )
+          : null,
       date: _date,
       payers: _payers(),
       split: _spec(),
@@ -495,7 +640,12 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
     'expenseId': key.expenseId,
     'title': s.title,
     'amountCents': s.amountCents,
-    'currency': s.group.currency.code,
+    'currency': s.currency.code,
+    if (s.isForeign) ...{
+      'groupCurrency': s.group.currency.code,
+      'fxRatePpm': s.ratePpm,
+      'groupAmountCents': s.groupAmountCents,
+    },
     'date': isoDay(s.date),
     'category': s.category,
     'multiPayer': s.multiPayer,
@@ -507,6 +657,7 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
     'issues': [
       if (s.titleMissing) 'title',
       if (s.amountMissing) 'amount',
+      if (s.rateMissing) 'rate',
       if (s.splitError != null) 'split: ${s.splitError}',
       if (s.payerError != null) 'payers: ${s.payerError}',
     ],

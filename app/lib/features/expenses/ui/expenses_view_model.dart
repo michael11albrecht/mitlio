@@ -297,6 +297,12 @@ JsonMap expenseJson(ExpenseEntry e) => {
   'payers': e.expense.payers,
   'shares': e.expense.shares,
   'splitMode': splitModeOf(e.split),
+  if (e.foreign case final f?)
+    'foreign': {
+      'currency': f.currency.code,
+      'amountCents': f.amountCents,
+      'fxRatePpm': f.ratePpm,
+    },
 };
 
 // ignore: specify_nonobvious_property_types, the family provider type is not exported
