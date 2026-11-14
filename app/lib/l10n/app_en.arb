@@ -1,4 +1,12 @@
 {
   "@@locale": "en",
-  "appName": "mitlio"
+  "appName": "mitlio",
+  "errorTitle": "Something went wrong",
+  "errorMessage": "Give it another try in a moment.",
+  "retry": "Try again",
+  "amountInvalid": "That is not a valid amount",
+  "currencyName": "{code, select, EUR{euros} USD{US dollars} GBP{pounds} CHF{Swiss francs} other{{code}}}",
+  "moneySpoken": "{whole} {currency}",
+  "moneySpokenWithFraction": "{whole} {currency} {fraction}",
+  "moneySpokenNegative": "minus {amount}"
 }

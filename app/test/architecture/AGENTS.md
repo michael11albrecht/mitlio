@@ -10,7 +10,7 @@ Architecture gate (P1-T04). Scans every Dart file in the repo as text and enforc
 | File | Description |
 |------|-------------|
 | `architecture_test.dart` | Applies all rules to the real repo; also self-tests rules on fixtures. Holds `showDialogAllowlist` (keep empty) |
-| `rules.dart` | `Rule`/`Violation` types and `buildRules()`: domain-purity, services-no-ui, repositories-no-ui, viewmodel-no-services-or-views, viewmodel-no-buildcontext, views-no-data, debug-no-views, no-nondeterminism-outside-core, no-print, no-double-money, viewmodel-has-test, no-raw-style, dialog-allowlist, skip-needs-issue |
+| `rules.dart` | `Rule`/`Violation` types and `buildRules()`: domain-purity, services-no-ui, repositories-no-ui, viewmodel-no-services-or-views, viewmodel-no-buildcontext, views-no-data, debug-no-views, no-nondeterminism-outside-core, no-print, no-double-money, viewmodel-has-test, no-raw-style, no-magic-spacing, no-hardcoded-strings, dialog-allowlist, skip-needs-issue |
 | `source_scanner.dart` | `SourceTree`/`SourceFile`: loads repo, strips comments/strings, parses import/export directives to repo-relative targets |
 
 ## For AI Agents

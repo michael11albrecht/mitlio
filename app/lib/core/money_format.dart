@@ -41,26 +41,52 @@ class MoneyFormat {
 
   /// Formats [cents] of [currency]; negatives get a leading `-`.
   String format(int cents, Currency currency) {
-    final digits = currency.minorUnits;
-    final negative = cents < 0;
-    final abs = negative ? -cents : cents;
-    final unit = _pow10(digits);
-    final whole = _whole.format(abs ~/ unit);
-    final number = digits == 0
+    final parts = split(cents, currency);
+    final whole = _whole.format(parts.whole);
+    final number = parts.fraction == null
         ? whole
-        : '$whole$decimalSeparator'
-              '${(abs % unit).toString().padLeft(digits, '0')}';
+        : '$whole$decimalSeparator${parts.fraction}';
 
-    final symbol = NumberFormat.simpleCurrency(
-      locale: locale,
-      name: currency.code,
-    ).currencySymbol;
+    final symbol = currencySymbol(currency);
     final pattern = _symbols.CURRENCY_PATTERN.split(';').first;
     final start = pattern.indexOf(RegExp('[#0]'));
     final end = pattern.lastIndexOf(RegExp('[#0]')) + 1;
     final prefix = pattern.substring(0, start).replaceAll('¤', symbol);
     final suffix = pattern.substring(end).replaceAll('¤', symbol);
-    return '${negative ? '-' : ''}$prefix$number$suffix';
+    return '${parts.negative ? '-' : ''}$prefix$number$suffix';
+  }
+
+  /// Plain number for editing: no grouping, no symbol (`12,34` in de).
+  String formatPlain(int cents, Currency currency) {
+    final parts = split(cents, currency);
+    final fraction = parts.fraction;
+    return '${parts.negative ? '-' : ''}${parts.whole}'
+        '${fraction == null ? '' : '$decimalSeparator$fraction'}';
+  }
+
+  /// Locale currency symbol (`€`, `$`, `CHF`).
+  String currencySymbol(Currency currency) => NumberFormat.simpleCurrency(
+    locale: locale,
+    name: currency.code,
+  ).currencySymbol;
+
+  /// Splits [cents] into sign, whole units and zero-padded fraction digits
+  /// (`null` for zero-decimal currencies) using integer arithmetic only.
+  static ({bool negative, int whole, String? fraction}) split(
+    int cents,
+    Currency currency,
+  ) {
+    final places = currency.minorUnits;
+    final negative = cents < 0;
+    final abs = negative ? -cents : cents;
+    final unit = _pow10(places);
+    return (
+      negative: negative,
+      whole: abs ~/ unit,
+      fraction: places == 0
+          ? null
+          : (abs % unit).toString().padLeft(places, '0'),
+    );
   }
 
   /// Formats a domain [Money].

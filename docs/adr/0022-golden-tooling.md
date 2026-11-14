@@ -19,8 +19,8 @@ plain `matchesGoldenFile` helper alternative is not needed.
   (`app/dart_test.yaml`).
 - Matrix (plan §2.6): light/dark x text scale 1.0/2.0. One golden file per brightness (brightness set through the
   platform dispatcher, i.e. what `ThemeMode.system` reads), two scenarios per file (text scale 1.0, 2.0 through
-  `MediaQuery`). The placeholder app has no `darkTheme` yet, so the dark golden currently equals the light one; it
-  diverges once the design system lands (P3-T05).
+  `MediaQuery`). Since P3-T05 the app has a real `darkTheme`, so the dark golden differs from the light one; it
+  follows `ThemeMode.system`.
 
 ## Commands
 
