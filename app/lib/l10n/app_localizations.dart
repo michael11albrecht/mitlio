@@ -476,6 +476,174 @@ abstract class AppLocalizations {
   /// **'{from} zahlt {to}'**
   String balancesTransfer(String from, String to);
 
+  /// No description provided for @statsMenu.
+  ///
+  /// In de, this message translates to:
+  /// **'Statistik'**
+  String get statsMenu;
+
+  /// No description provided for @statsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Statistik'**
+  String get statsTitle;
+
+  /// No description provided for @statsPeriodLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Zeitraum'**
+  String get statsPeriodLabel;
+
+  /// No description provided for @statsPeriodMonth.
+  ///
+  /// In de, this message translates to:
+  /// **'Monat'**
+  String get statsPeriodMonth;
+
+  /// No description provided for @statsPeriod3Months.
+  ///
+  /// In de, this message translates to:
+  /// **'3 Monate'**
+  String get statsPeriod3Months;
+
+  /// No description provided for @statsPeriodYear.
+  ///
+  /// In de, this message translates to:
+  /// **'Jahr'**
+  String get statsPeriodYear;
+
+  /// No description provided for @statsPeriodAll.
+  ///
+  /// In de, this message translates to:
+  /// **'Alles'**
+  String get statsPeriodAll;
+
+  /// No description provided for @statsHeadlineMonth.
+  ///
+  /// In de, this message translates to:
+  /// **'Diesen Monat'**
+  String get statsHeadlineMonth;
+
+  /// No description provided for @statsHeadline3Months.
+  ///
+  /// In de, this message translates to:
+  /// **'Letzte 3 Monate'**
+  String get statsHeadline3Months;
+
+  /// No description provided for @statsHeadlineYear.
+  ///
+  /// In de, this message translates to:
+  /// **'Dieses Jahr'**
+  String get statsHeadlineYear;
+
+  /// No description provided for @statsHeadlineAll.
+  ///
+  /// In de, this message translates to:
+  /// **'Insgesamt'**
+  String get statsHeadlineAll;
+
+  /// No description provided for @statsTopCategory.
+  ///
+  /// In de, this message translates to:
+  /// **'meist {category} ({percent} %)'**
+  String statsTopCategory(String category, int percent);
+
+  /// No description provided for @statsExpenseCount.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{1 Ausgabe} other{{count} Ausgaben}}'**
+  String statsExpenseCount(int count);
+
+  /// No description provided for @statsEmptyTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Nichts in diesem Zeitraum'**
+  String get statsEmptyTitle;
+
+  /// No description provided for @statsEmptyMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Wähle einen anderen Zeitraum oder trag eine Ausgabe ein.'**
+  String get statsEmptyMessage;
+
+  /// No description provided for @statsByCategory.
+  ///
+  /// In de, this message translates to:
+  /// **'Nach Kategorie'**
+  String get statsByCategory;
+
+  /// No description provided for @statsCategoryNone.
+  ///
+  /// In de, this message translates to:
+  /// **'Ohne Kategorie'**
+  String get statsCategoryNone;
+
+  /// No description provided for @statsPercent.
+  ///
+  /// In de, this message translates to:
+  /// **'{percent} %'**
+  String statsPercent(int percent);
+
+  /// No description provided for @statsCategorySpoken.
+  ///
+  /// In de, this message translates to:
+  /// **'{category}: {amount}, {percent} Prozent'**
+  String statsCategorySpoken(String category, String amount, int percent);
+
+  /// No description provided for @statsByMember.
+  ///
+  /// In de, this message translates to:
+  /// **'Pro Person'**
+  String get statsByMember;
+
+  /// No description provided for @statsPaid.
+  ///
+  /// In de, this message translates to:
+  /// **'Bezahlt'**
+  String get statsPaid;
+
+  /// No description provided for @statsConsumed.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbraucht'**
+  String get statsConsumed;
+
+  /// No description provided for @statsMemberSpoken.
+  ///
+  /// In de, this message translates to:
+  /// **'{name}: bezahlt {paid}, verbraucht {consumed}'**
+  String statsMemberSpoken(String name, String paid, String consumed);
+
+  /// No description provided for @statsOverTime.
+  ///
+  /// In de, this message translates to:
+  /// **'Letzte 6 Monate'**
+  String get statsOverTime;
+
+  /// No description provided for @statsMonthSpoken.
+  ///
+  /// In de, this message translates to:
+  /// **'{month}: {amount}'**
+  String statsMonthSpoken(String month, String amount);
+
+  /// No description provided for @statsRides.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrten'**
+  String get statsRides;
+
+  /// No description provided for @statsKm.
+  ///
+  /// In de, this message translates to:
+  /// **'{km} km'**
+  String statsKm(String km);
+
+  /// No description provided for @statsRideSpoken.
+  ///
+  /// In de, this message translates to:
+  /// **'{month}: {km} Kilometer, {amount}'**
+  String statsRideSpoken(String month, String km, String amount);
+
   /// No description provided for @tabMembers.
   ///
   /// In de, this message translates to:
