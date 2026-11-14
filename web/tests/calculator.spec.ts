@@ -192,6 +192,181 @@ test.describe('calculator (en)', () => {
   });
 });
 
+const withoutNativeShare = async (page: Page) =>
+  page.addInitScript(() => Object.defineProperty(navigator, 'share', { value: undefined }));
+
+const whatsappText = async (page: Page) => {
+  const href = await page.locator('#calc-share-wa').getAttribute('href');
+  expect(href).toMatch(/^https:\/\/wa\.me\/\?text=/);
+  return decodeURIComponent((href as string).slice('https://wa.me/?text='.length));
+};
+
+test.describe('share (PW-T05)', () => {
+  test('without Web Share API: WhatsApp link and copy link are shown inline', async ({ page }) => {
+    await withoutNativeShare(page);
+    await page.goto('/');
+    await typeFixtureTrip(page);
+    await expect(page.locator('#calc-share-native')).toBeHidden();
+    await expect(page.locator('#calc-share-wa')).toBeVisible();
+    await expect(page.locator('#calc-share-copy')).toBeVisible();
+    const text = (await whatsappText(page)).replace(/ /g, ' ');
+    expect(text).toBe(
+      'Fahrtkosten: 3 Personen, je ca. 9,75 € (Gesamt 29,23 €) — berechnet mit mitlio ' +
+        'http://127.0.0.1:4321/?km=250&l100=6.5&p=1.799&n=3&d=1&rt=0',
+    );
+    expect(text).not.toMatch(/utm_|ref=|fbclid/);
+    await expect(page.locator('#calc-share-wa')).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  test('copy link gives inline feedback, no dialog, and copies the state URL', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    let dialogs = 0;
+    page.on('dialog', (d) => {
+      dialogs += 1;
+      void d.dismiss();
+    });
+    await withoutNativeShare(page);
+    await page.goto('/?km=250&n=3');
+    await expect(page.locator('#calculator')).toHaveAttribute('data-ready', 'true');
+    await page.locator('#calc-share-copy').click();
+    await expect(page.locator('#calc-share-status')).toHaveText('Kopiert');
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      'http://127.0.0.1:4321/?km=250&l100=7&p=1.8&n=3&d=1&rt=0',
+    );
+    expect(dialogs).toBe(0);
+  });
+
+  test('trip name goes into the share text and the t URL param', async ({ page }) => {
+    await withoutNativeShare(page);
+    await page.goto('/');
+    await page.locator('#calc-trip').fill('  Fahrt nach München ');
+    await expect.poll(() => new URL(page.url()).searchParams.get('t')).toBe('Fahrt nach München');
+    const text = await whatsappText(page);
+    expect(text.startsWith('Fahrt nach München: 2 Personen, je ')).toBe(true);
+    expect(text).toContain('t=Fahrt+nach+M%C3%BCnchen');
+    await page.reload();
+    await expect(page.locator('#calc-trip')).toHaveValue('Fahrt nach München');
+  });
+
+  test('trip name is capped at 60 characters', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('#calc-trip').fill('x'.repeat(80));
+    await expect(page.locator('#calc-trip')).toHaveValue('x'.repeat(60));
+    await page.goto(`/?t=${'y'.repeat(100)}`);
+    await expect(page.locator('#calc-trip')).toHaveValue('y'.repeat(60));
+  });
+
+  test('driver does not pay: text counts passengers', async ({ page }) => {
+    await withoutNativeShare(page);
+    await page.goto('/?n=4&d=0&km=250');
+    const text = (await whatsappText(page)).replace(/ /g, ' ');
+    expect(text).toContain('Fahrtkosten: 3 Mitfahrende, je ');
+  });
+
+  test('with Web Share API: one Teilen button shares the text', async ({ page }) => {
+    await page.addInitScript(() => {
+      (window as unknown as { __shared: unknown[] }).__shared = [];
+      Object.defineProperty(navigator, 'share', {
+        value: (data: unknown) => {
+          (window as unknown as { __shared: unknown[] }).__shared.push(data);
+          return Promise.resolve();
+        },
+      });
+    });
+    await page.goto('/');
+    await expect(page.locator('#calc-share-native')).toBeVisible();
+    await expect(page.locator('#calc-share-fallback')).toBeHidden();
+    await page.locator('#calc-share-native').click();
+    const shared = await page.evaluate(
+      () => (window as unknown as { __shared: { text: string }[] }).__shared,
+    );
+    expect(shared).toHaveLength(1);
+    expect(shared[0]?.text).toContain('Fahrtkosten: 2 Personen, je ');
+    expect(shared[0]?.text).toContain('berechnet mit mitlio http://127.0.0.1:4321/?km=100');
+  });
+
+  test('a failing Web Share falls back to the inline actions; dismissing does not', async ({ page }) => {
+    await page.addInitScript(() => {
+      let calls = 0;
+      Object.defineProperty(navigator, 'share', {
+        value: () => {
+          calls += 1;
+          return Promise.reject(new DOMException('x', calls === 1 ? 'AbortError' : 'NotAllowedError'));
+        },
+      });
+    });
+    await page.goto('/');
+    await page.locator('#calc-share-native').click();
+    await expect(page.locator('#calc-share-native')).toBeVisible();
+    await page.locator('#calc-share-native').click();
+    await expect(page.locator('#calc-share-wa')).toBeVisible();
+    await expect(page.locator('#calc-share-native')).toBeHidden();
+  });
+
+  test('no share actions without a result', async ({ page }) => {
+    await page.goto('/?d=0&n=2');
+    await page.locator('#calc-persons-dec').click();
+    await expect(page.locator('#calc-result-lead')).toHaveText('Noch kein Ergebnis');
+    await expect(page.locator('#calc-share')).toBeHidden();
+  });
+
+  test('English share text', async ({ page }) => {
+    await withoutNativeShare(page);
+    await page.goto('/en/?km=250&n=3');
+    const text = await whatsappText(page);
+    expect(text).toMatch(
+      /^Trip costs: 3 people, (about )?€\d+\.\d\d each \(total €\d+\.\d\d\) — calculated with mitlio http/,
+    );
+  });
+});
+
+test.describe('app CTA (PW-T06)', () => {
+  test('is a calm card below the result: not sticky, not covering anything', async ({ page }) => {
+    await page.goto('/');
+    const cta = page.locator('#calc-cta');
+    await expect(cta).toContainText('Fährst du regelmäßig?');
+    await expect(cta).toContainText('App kommt bald');
+    expect(await cta.evaluate((el) => getComputedStyle(el).position)).toBe('static');
+    const result = (await page.locator('#calc-result').boundingBox())!;
+    const form = (await page.locator('form.inputs').boundingBox())!;
+    const box = (await cta.boundingBox())!;
+    expect(box.y).toBeGreaterThanOrEqual(result.y + result.height);
+    expect(box.y).toBeGreaterThanOrEqual(form.y + form.height);
+    // Scrolling must not move it relative to the document (not sticky/fixed).
+    const before = await cta.evaluate((el) => el.getBoundingClientRect().top + scrollY);
+    await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
+    const after = await cta.evaluate((el) => el.getBoundingClientRect().top + scrollY);
+    expect(after).toBe(before);
+  });
+
+  test('no store links configured: no email capture, badges, deep link or smart banner', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#calc-cta input')).toHaveCount(0);
+    await expect(page.locator('#calc-cta a')).toHaveCount(0);
+    await expect(page.locator('meta[name="apple-itunes-app"]')).toHaveCount(0);
+  });
+
+  test('English copy', async ({ page }) => {
+    await page.goto('/en/');
+    await expect(page.locator('#calc-cta')).toContainText('Do you drive regularly?');
+    await expect(page.locator('#calc-cta')).toContainText('App coming soon');
+  });
+
+  test('nothing is fixed or sticky at any width', async ({ page }) => {
+    for (const width of [320, 390, 1100]) {
+      await page.setViewportSize({ width, height: 700 });
+      await page.goto('/');
+      const overlays = await page.evaluate(
+        () =>
+          [...document.querySelectorAll('*')].filter((e) =>
+            ['fixed', 'sticky'].includes(getComputedStyle(e).position),
+          ).length,
+      );
+      expect(overlays).toBe(0);
+    }
+  });
+});
+
 test.describe('accessibility (axe)', () => {
   for (const path of ['/', '/en/']) {
     for (const scheme of ['light', 'dark'] as const) {

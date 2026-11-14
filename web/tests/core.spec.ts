@@ -10,6 +10,7 @@ import {
   parseDecimal,
   parsePersons,
   paramsToState,
+  sanitizeTripName,
   stateToParams,
 } from '../src/calculator/core';
 
@@ -111,9 +112,19 @@ test.describe('URL state', () => {
       extras: '8',
       driverPays: false,
       roundTrip: true,
+      trip: 'Fahrt nach München',
     };
-    expect(stateToParams(s).toString()).toBe('km=120.5&l100=17&p=0.39&n=4&d=0&rt=1&x=8&ev=1');
+    expect(stateToParams(s).toString()).toBe(
+      'km=120.5&l100=17&p=0.39&n=4&d=0&rt=1&x=8&ev=1&t=Fahrt+nach+M%C3%BCnchen',
+    );
     expect(paramsToState(stateToParams(s).toString())).toEqual(s);
+  });
+  test('trip name is sanitised: control chars, whitespace, 60 char cap', () => {
+    expect(sanitizeTripName('  Fahrt \n nach\u0000\t München  ')).toBe('Fahrt nach München');
+    expect(sanitizeTripName('x'.repeat(80))).toHaveLength(60);
+    expect(sanitizeTripName('😀'.repeat(70))).toBe('😀'.repeat(60));
+    expect(paramsToState('?t=' + 'y'.repeat(100)).trip).toHaveLength(60);
+    expect(stateToParams({ ...defaultState(), trip: '   ' }).has('t')).toBe(false);
   });
   test('localizes numbers for display', () => {
     const s = localizeState({ ...defaultState(), price: '1.799' }, 'de');

@@ -11,6 +11,7 @@ import {
   localizeState,
   mapFacadeError,
   paramsToState,
+  parseDecimal,
   parsePersons,
   stateToParams,
   energyDefaults,
@@ -23,6 +24,8 @@ import {
   type Locale,
   type TripInput,
 } from './core';
+import { buildDeepLink } from '../lib/deeplink';
+import { buildShareText, whatsappHref } from '../lib/share';
 
 declare global {
   var mitlio: { calculateTrip(input: TripInput): FacadeResult } | undefined;
@@ -68,12 +71,29 @@ if (root) {
     priceLabel: $('calc-price-label'),
     priceUnit: $('calc-price-unit'),
   };
+  const tripInput = $<HTMLInputElement>('calc-trip');
+  const share = {
+    root: $('calc-share'),
+    native: $<HTMLButtonElement>('calc-share-native'),
+    fallback: $('calc-share-fallback'),
+    whatsapp: $<HTMLAnchorElement>('calc-share-wa'),
+    copy: $<HTMLButtonElement>('calc-share-copy'),
+    status: $('calc-share-status'),
+  };
+  const ctaOpen = document.getElementById('calc-cta-open') as HTMLAnchorElement | null;
+  const appBanner = document.getElementById('apple-itunes-app');
+  const canNativeShare = typeof navigator.share === 'function';
+  let shareText = '';
+  let shareUrl = '';
+  let nativeFailed = false;
+  let statusTimer: number | undefined;
 
   let state: CalcState = localizeState(paramsToState(location.search), locale);
   const touched = new Set<FieldKey>();
 
   const writeStateToDom = () => {
     for (const k of fields) input[k].value = state[k];
+    tripInput.value = state.trip;
     driverPays.checked = state.driverPays;
     roundTrip.checked = state.roundTrip;
     for (const r of energyRadios) r.checked = r.value === state.energy;
@@ -92,7 +112,46 @@ if (root) {
     }
   };
 
+  const setStatus = (text: string) => {
+    window.clearTimeout(statusTimer);
+    share.status.textContent = text;
+    if (text) statusTimer = window.setTimeout(() => (share.status.textContent = ''), 3000);
+  };
+
+  const showShare = (visible: boolean) => {
+    share.root.hidden = !visible;
+    const native = canNativeShare && !nativeFailed;
+    share.native.hidden = !native;
+    share.fallback.hidden = native;
+  };
+
+  const updateAppLinks = () => {
+    const extras = parseDecimal(state.extras);
+    const km = parseDecimal(state.km);
+    const l100 = parseDecimal(state.cons);
+    const price = parseDecimal(state.price);
+    const n = parsePersons(state.persons);
+    if (km.kind !== 'ok' || l100.kind !== 'ok' || price.kind !== 'ok' || n === null) return;
+    const link = buildDeepLink({
+      km: km.value,
+      l100: l100.value,
+      price: price.value,
+      n,
+      d: state.driverPays,
+      rt: state.roundTrip,
+      x: extras.kind === 'ok' ? extras.value : undefined,
+      t: state.trip,
+      ev: state.energy === 'ev',
+    });
+    if (ctaOpen) ctaOpen.href = link;
+    const bannerId = appBanner?.getAttribute('content')?.split(',')[0];
+    if (bannerId) appBanner?.setAttribute('content', `${bannerId}, app-argument=${link}`);
+  };
+
+  const payers = () => (parsePersons(state.persons) ?? 1) - (state.driverPays ? 0 : 1);
+
   const showNoResult = (message: string) => {
+    showShare(false);
     out.root.dataset.state = 'empty';
     out.lead.textContent = m.noResult;
     out.amount.textContent = '–';
@@ -149,6 +208,21 @@ if (root) {
     out.extrasRow.hidden = view.extrasCents === 0;
     out.extras.textContent = formatMoney(view.extrasCents, locale);
     out.total.textContent = formatMoney(view.totalCents, locale);
+
+    shareUrl = `${location.origin}${location.pathname}?${stateToParams(state).toString()}`;
+    shareText = buildShareText({
+      locale,
+      payers: payers(),
+      passengersOnly: !state.driverPays,
+      perPersonCents: view.perPersonCents,
+      rounded: view.rounding !== null,
+      totalCents: view.totalCents,
+      trip: state.trip,
+      url: shareUrl,
+    });
+    share.whatsapp.href = whatsappHref(shareText);
+    showShare(true);
+    updateAppLinks();
   };
 
   const commit = () => {
@@ -166,6 +240,29 @@ if (root) {
       render();
     });
   }
+
+  tripInput.addEventListener('input', () => {
+    state = { ...state, trip: tripInput.value };
+    commit();
+  });
+
+  share.native.addEventListener('click', () => {
+    navigator.share({ text: shareText }).catch((e: unknown) => {
+      // Dismissing the sheet is not an error; anything else falls back to the inline actions.
+      if (e instanceof DOMException && e.name === 'AbortError') return;
+      nativeFailed = true;
+      showShare(true);
+    });
+  });
+
+  share.copy.addEventListener('click', () => {
+    const done = (ok: boolean) => setStatus(ok ? m.shareCopied : m.shareCopyFailed);
+    if (!navigator.clipboard) return done(false);
+    navigator.clipboard.writeText(shareUrl).then(
+      () => done(true),
+      () => done(false),
+    );
+  });
 
   driverPays.addEventListener('change', () => {
     state = { ...state, driverPays: driverPays.checked };
