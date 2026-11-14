@@ -149,4 +149,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String memberInUse(String name) {
     return '$name has expenses or payments, so they stay in the group.';
   }
+
+  @override
+  String get balancesTitle => 'Balances';
+
+  @override
+  String get balancesOpen => 'Who gets what';
+
+  @override
+  String balanceGets(String name) {
+    return '$name gets';
+  }
+
+  @override
+  String balanceOwes(String name) {
+    return '$name owes';
+  }
+
+  @override
+  String balanceEven(String name) {
+    return '$name is all square';
+  }
+
+  @override
+  String get balancesSettledTitle => 'All square';
+
+  @override
+  String get balancesSettledMessage => 'Nobody owes anybody anything.';
+
+  @override
+  String get balancesEmptyTitle => 'Nothing to settle yet';
+
+  @override
+  String get balancesEmptyMessage =>
+      'Once there are expenses, you will see here who owes whom.';
+
+  @override
+  String get balancesTransfersTitle => 'Who pays whom';
+
+  @override
+  String get balancesModeSimplified => 'Simple';
+
+  @override
+  String get balancesModeDirect => 'Direct';
+
+  @override
+  String get balancesModeSimplifiedHint => 'As few payments as possible.';
+
+  @override
+  String get balancesModeDirectHint =>
+      'Every debt on its own, between the people involved.';
+
+  @override
+  String balancesTransfer(String from, String to) {
+    return '$from pays $to';
+  }
 }
