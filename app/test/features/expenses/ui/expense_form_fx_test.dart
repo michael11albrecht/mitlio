@@ -120,7 +120,7 @@ void main() {
           date: DateTime.utc(2026, 2),
           payers: {app.people[0].id: 880},
           split: EqualSplit({app.people[0].id}),
-          foreign: ForeignAmount(
+          foreign: const ForeignAmount(
             currency: Currency.usd,
             amountCents: 1000,
             ratePpm: 880000,
@@ -238,7 +238,7 @@ void main() {
           date: DateTime.utc(2026, 2),
           payers: {app.people[0].id: 880},
           split: EqualSplit({app.people[0].id}),
-          foreign: ForeignAmount(
+          foreign: const ForeignAmount(
             currency: Currency.usd,
             amountCents: 1000,
             ratePpm: 880000,
