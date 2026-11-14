@@ -1288,4 +1288,85 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get crashReportsUnavailable => 'Not available in this version.';
+
+  @override
+  String get fuelChipsLabel => 'Use a fuel price';
+
+  @override
+  String get fuelGradeE5 => 'E5';
+
+  @override
+  String get fuelGradeE10 => 'E10';
+
+  @override
+  String get fuelGradeDiesel => 'Diesel';
+
+  @override
+  String get fuelScopeNational => 'Ø Germany';
+
+  @override
+  String fuelScopePlz(String plz) {
+    return 'Ø postcode $plz';
+  }
+
+  @override
+  String get fuelScopeNearby => 'Ø near you';
+
+  @override
+  String get fuelAgeNow => 'just now';
+
+  @override
+  String fuelAgeMinutes(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String fuelAgeHours(int count) {
+    return '$count h ago';
+  }
+
+  @override
+  String fuelAgeDays(int count) {
+    return '$count days ago';
+  }
+
+  @override
+  String fuelAgeSince(String date) {
+    return 'as of $date';
+  }
+
+  @override
+  String get fuelOfflineNote => 'offline, last known';
+
+  @override
+  String get fuelNoPrice =>
+      'No current price available right now. Just enter it yourself.';
+
+  @override
+  String get fuelNearby => 'Near me';
+
+  @override
+  String get fuelNearbyDenied =>
+      'Location not shared, the national average applies.';
+
+  @override
+  String get fuelNearbyUnavailable => 'Location not available right now.';
+
+  @override
+  String get fuelPlzAction => 'Enter postcode';
+
+  @override
+  String get fuelPlzLabel => 'Postcode';
+
+  @override
+  String get fuelPlzInvalid => 'Please enter five digits';
+
+  @override
+  String get fuelPlzApply => 'Apply';
+
+  @override
+  String get fuelNationalAction => 'Nationwide';
+
+  @override
+  String get fuelAttributionFallback => 'Fuel price data';
 }

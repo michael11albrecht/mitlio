@@ -513,6 +513,20 @@ class TripFormViewModel extends Notifier<TripFormState> {
   void setConsumption(String text) =>
       _edit((i) => i.copyWith(consumption: text));
   void setPrice(String text) => _edit((i) => i.copyWith(price: text));
+
+  /// Takes a fuel price from the chips (thousandths per litre) into the
+  /// price field. With [onlyIfEmpty] (the pre-selected grade's price) a
+  /// typed or remembered price stays. Returns the new text (`.` as decimal
+  /// separator), or null when nothing changed.
+  String? applyFuelPrice(int milli, {required bool onlyIfEmpty}) {
+    final s = state;
+    if (s is! TripFormLoaded) return null;
+    if (onlyIfEmpty && s.inputs.price.trim().isNotEmpty) return null;
+    final text = _milliText(milli);
+    setPrice(text);
+    return text;
+  }
+
   void setWear(String text) => _edit((i) => i.copyWith(wear: text));
   void setKmRate(String text) => _edit((i) => i.copyWith(kmRate: text));
   void setTolls(String text) => _edit((i) => i.copyWith(tolls: text));

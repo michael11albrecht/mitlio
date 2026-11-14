@@ -2269,6 +2269,144 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'In dieser Version nicht verfügbar.'**
   String get crashReportsUnavailable;
+
+  /// No description provided for @fuelChipsLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Spritpreis übernehmen'**
+  String get fuelChipsLabel;
+
+  /// No description provided for @fuelGradeE5.
+  ///
+  /// In de, this message translates to:
+  /// **'E5'**
+  String get fuelGradeE5;
+
+  /// No description provided for @fuelGradeE10.
+  ///
+  /// In de, this message translates to:
+  /// **'E10'**
+  String get fuelGradeE10;
+
+  /// No description provided for @fuelGradeDiesel.
+  ///
+  /// In de, this message translates to:
+  /// **'Diesel'**
+  String get fuelGradeDiesel;
+
+  /// No description provided for @fuelScopeNational.
+  ///
+  /// In de, this message translates to:
+  /// **'Ø Deutschland'**
+  String get fuelScopeNational;
+
+  /// No description provided for @fuelScopePlz.
+  ///
+  /// In de, this message translates to:
+  /// **'Ø PLZ {plz}'**
+  String fuelScopePlz(String plz);
+
+  /// No description provided for @fuelScopeNearby.
+  ///
+  /// In de, this message translates to:
+  /// **'Ø in deiner Nähe'**
+  String get fuelScopeNearby;
+
+  /// No description provided for @fuelAgeNow.
+  ///
+  /// In de, this message translates to:
+  /// **'gerade eben'**
+  String get fuelAgeNow;
+
+  /// No description provided for @fuelAgeMinutes.
+  ///
+  /// In de, this message translates to:
+  /// **'vor {count} min'**
+  String fuelAgeMinutes(int count);
+
+  /// No description provided for @fuelAgeHours.
+  ///
+  /// In de, this message translates to:
+  /// **'vor {count} Std.'**
+  String fuelAgeHours(int count);
+
+  /// No description provided for @fuelAgeDays.
+  ///
+  /// In de, this message translates to:
+  /// **'vor {count} Tagen'**
+  String fuelAgeDays(int count);
+
+  /// No description provided for @fuelAgeSince.
+  ///
+  /// In de, this message translates to:
+  /// **'Stand {date}'**
+  String fuelAgeSince(String date);
+
+  /// No description provided for @fuelOfflineNote.
+  ///
+  /// In de, this message translates to:
+  /// **'offline, zuletzt bekannt'**
+  String get fuelOfflineNote;
+
+  /// No description provided for @fuelNoPrice.
+  ///
+  /// In de, this message translates to:
+  /// **'Gerade kein aktueller Preis verfügbar. Trag ihn einfach selbst ein.'**
+  String get fuelNoPrice;
+
+  /// No description provided for @fuelNearby.
+  ///
+  /// In de, this message translates to:
+  /// **'In meiner Nähe'**
+  String get fuelNearby;
+
+  /// No description provided for @fuelNearbyDenied.
+  ///
+  /// In de, this message translates to:
+  /// **'Standort nicht freigegeben, es gilt der Bundesdurchschnitt.'**
+  String get fuelNearbyDenied;
+
+  /// No description provided for @fuelNearbyUnavailable.
+  ///
+  /// In de, this message translates to:
+  /// **'Standort gerade nicht verfügbar.'**
+  String get fuelNearbyUnavailable;
+
+  /// No description provided for @fuelPlzAction.
+  ///
+  /// In de, this message translates to:
+  /// **'PLZ eingeben'**
+  String get fuelPlzAction;
+
+  /// No description provided for @fuelPlzLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Postleitzahl'**
+  String get fuelPlzLabel;
+
+  /// No description provided for @fuelPlzInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte fünf Ziffern'**
+  String get fuelPlzInvalid;
+
+  /// No description provided for @fuelPlzApply.
+  ///
+  /// In de, this message translates to:
+  /// **'Übernehmen'**
+  String get fuelPlzApply;
+
+  /// No description provided for @fuelNationalAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Bundesweit'**
+  String get fuelNationalAction;
+
+  /// No description provided for @fuelAttributionFallback.
+  ///
+  /// In de, this message translates to:
+  /// **'Spritpreisdaten'**
+  String get fuelAttributionFallback;
 }
 
 class _AppLocalizationsDelegate

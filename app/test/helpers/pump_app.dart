@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/app.dart';
 import 'package:mitlio/core/router.dart';
@@ -16,10 +17,11 @@ Future<ProviderContainer> pumpMitlio(
   FakeApp app, {
   String? location,
   Locale locale = const Locale('de'),
+  List<Override> extra = const [],
 }) async {
   tester.platformDispatcher.localesTestValue = [locale];
   addTearDown(tester.platformDispatcher.clearLocalesTestValue);
-  final container = app.container();
+  final container = app.container(extra: extra);
   addTearDown(container.dispose);
   await tester.pumpWidget(
     UncontrolledProviderScope(container: container, child: const MitlioApp()),
