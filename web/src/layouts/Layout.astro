@@ -1,0 +1,69 @@
+---
+import '../styles/global.css';
+import { htmlLang, locales, messages, paths, type Locale, type RouteKey } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  /** Route used for canonical + hreflang. Omit for pages without alternates (404). */
+  route?: RouteKey;
+  noindex?: boolean;
+}
+
+const { locale, title, description, route, noindex = false } = Astro.props;
+const t = messages[locale];
+const other: Locale = locale === 'de' ? 'en' : 'de';
+const site = Astro.site!;
+const abs = (path: string) => new URL(path, site).href;
+const canonical = route ? abs(paths[route][locale]) : undefined;
+---
+
+<!doctype html>
+<html lang={htmlLang[locale]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e1514" media="(prefers-color-scheme: dark)" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    {
+      route &&
+        locales.map((l) => <link rel="alternate" hreflang={htmlLang[l]} href={abs(paths[route][l])} />)
+    }
+    {route && <link rel="alternate" hreflang="x-default" href={abs(paths[route].de)} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={t.siteName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t.skipLink}</a>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href={paths.home[locale]}>{t.siteName}</a>
+        <a class="lang" href={paths[route ?? 'home'][other]} hreflang={htmlLang[other]} lang={t.otherLanguageLang}
+          >{t.otherLanguage}</a
+        >
+      </div>
+    </header>
+    <main id="main" class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <nav aria-label="Footer">
+          <ul>
+            <li><a href={paths.imprint[locale]}>{t.imprint}</a></li>
+            <li><a href={paths.privacy[locale]}>{t.privacy}</a></li>
+          </ul>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

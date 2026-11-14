@@ -1,0 +1,26 @@
+{
+  "name": "mitlio-web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "prebuild": "node scripts/prepare-domain-js.mjs",
+    "dev": "npm run prebuild && astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "lhci": "lhci autorun --config=lighthouserc.json"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.5",
+    "astro": "7.4.12"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@lhci/cli": "0.16.1",
+    "typescript": "6.0.3"
+  }
+}
