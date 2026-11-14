@@ -9,6 +9,8 @@ mixin _$ExpensesDaoMixin on DatabaseAccessor<AppDatabase> {
   $MembersTable get members => attachedDatabase.members;
   $ExpensePayersTable get expensePayers => attachedDatabase.expensePayers;
   $ExpenseSharesTable get expenseShares => attachedDatabase.expenseShares;
+  $ExpenseRevisionsTable get expenseRevisions =>
+      attachedDatabase.expenseRevisions;
   ExpensesDaoManager get managers => ExpensesDaoManager(this);
 }
 
@@ -25,4 +27,9 @@ class ExpensesDaoManager {
       $$ExpensePayersTableTableManager(_db.attachedDatabase, _db.expensePayers);
   $$ExpenseSharesTableTableManager get expenseShares =>
       $$ExpenseSharesTableTableManager(_db.attachedDatabase, _db.expenseShares);
+  $$ExpenseRevisionsTableTableManager get expenseRevisions =>
+      $$ExpenseRevisionsTableTableManager(
+        _db.attachedDatabase,
+        _db.expenseRevisions,
+      );
 }

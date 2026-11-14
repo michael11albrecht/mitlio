@@ -5,14 +5,21 @@ import 'package:mitlio/features/sync/data/db_contract.g.dart';
 import 'test_support.dart';
 
 /// Client tables that never sync (plan §8: IBAN is local-only; the outbox is
-/// client-side queue state).
-const _localOnlyTables = {'local_member_bank', 'local_outbox'};
+/// client-side queue state). Expense revisions are written per side (client
+/// repository, server trigger); pulling the server's is a later sync task.
+const _localOnlyTables = {
+  'local_member_bank',
+  'local_outbox',
+  'expense_revisions',
+};
 
 /// Server tables with no client mirror. Membership and invites are
 /// authorization data managed by RPCs (P6-T05), not synced rows. The fuel
 /// price cache, the FX rate cache and the rate limiter are edge-function
-/// backend tables (P6c, P7-T02).
+/// backend tables (P6c, P7-T02). The revisions are trigger-written history
+/// (P7-T03).
 const _serverOnlyTables = {
+  'expense_revisions',
   'group_memberships',
   'group_invites',
   'fuel_price_cache',

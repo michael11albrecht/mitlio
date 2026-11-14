@@ -77,6 +77,58 @@ export type Database = {
           },
         ]
       }
+      expense_revisions: {
+        Row: {
+          author_member_id: string | null
+          changed_at: string
+          expense_id: string
+          group_id: string
+          id: string
+          revision: number
+          snapshot: Json
+        }
+        Insert: {
+          author_member_id?: string | null
+          changed_at?: string
+          expense_id: string
+          group_id: string
+          id?: string
+          revision: number
+          snapshot: Json
+        }
+        Update: {
+          author_member_id?: string | null
+          changed_at?: string
+          expense_id?: string
+          group_id?: string
+          id?: string
+          revision?: number
+          snapshot?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_revisions_author_member_id_group_id_fkey"
+            columns: ["author_member_id", "group_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id", "group_id"]
+          },
+          {
+            foreignKeyName: "expense_revisions_expense_id_group_id_fkey"
+            columns: ["expense_id", "group_id"]
+            isOneToOne: false
+            referencedRelation: "expenses"
+            referencedColumns: ["id", "group_id"]
+          },
+          {
+            foreignKeyName: "expense_revisions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expense_shares: {
         Row: {
           expense_id: string

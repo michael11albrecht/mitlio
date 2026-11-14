@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/features/expenses/data/expense_revision.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -303,6 +306,195 @@ void runExpensesRepositoryContract(
       expect(await probe.next(), [u]);
       ok(await undo());
       expect(await probe.next(), [newer, u]);
+    });
+
+    group('edit history (P7-T03)', () {
+      Future<List<ExpenseRevision>> history(String id) async =>
+          ok(await r.expenses.revisions(id));
+
+      test('creating writes no revision', () async {
+        final e = await add();
+        expect(await history(e.expense.id), isEmpty);
+      });
+
+      test('each update stores the state before it, newest first', () async {
+        final e = await add(draft(title: 'One'));
+        final id = e.expense.id;
+        r.clock.advance(const Duration(minutes: 5));
+        ok(
+          await r.expenses.update(
+            id,
+            draft(title: 'Two', amount: 1500, split: EqualSplit({m[0].id})),
+          ),
+        );
+        ok(await r.expenses.update(id, draft(title: 'Three')));
+
+        final h = await history(id);
+        expect([for (final x in h) x.revision], [2, 1]);
+        expect([for (final x in h) x.snapshot.title], ['Two', 'One']);
+        expect(h.last.expenseId, id);
+        expect(h.last.groupId, gid);
+        expect(h.last.authorMemberId, isNull);
+        expect(h.last.changedAt, DateTime.utc(2026, 3, 1, 12, 5));
+        expect(h.last.snapshot.amountCents, 1000);
+        expect(h.last.snapshot.shares.keys.toSet(), {
+          m[0].id,
+          m[1].id,
+          m[2].id,
+        });
+        expect(h.first.snapshot.amountCents, 1500);
+        expect(h.first.snapshot.participants, {m[0].id});
+        expect(h.first.snapshot.shares[m[0].id], 1500);
+        expect(h.first.snapshot.payers, {m[0].id: 1500});
+        expect(
+          diffSnapshots(h.last.snapshot, h.first.snapshot).first,
+          isA<TitleChange>(),
+        );
+      });
+
+      test('a rejected update writes no revision', () async {
+        final e = await add();
+        expect(
+          err(await r.expenses.update(e.expense.id, draft(title: ' '))),
+          isA<InvalidData>(),
+        );
+        expect(await history(e.expense.id), isEmpty);
+      });
+
+      test('soft delete writes a revision, undo does not', () async {
+        final e = await add();
+        final undo = ok(await r.expenses.softDelete(e.expense.id));
+        expect(
+          err(await r.expenses.revisions(e.expense.id)),
+          isA<NotFound>(),
+        );
+        ok(await undo());
+        final h = await history(e.expense.id);
+        expect(h.single.snapshot.title, 'Dinner');
+      });
+
+      test('snapshots never contain bank data', () async {
+        final e = await add();
+        ok(await r.expenses.update(e.expense.id, draft(title: 'x')));
+        final json = jsonEncode(
+          (await history(e.expense.id)).single.snapshot.toJson(),
+        ).toLowerCase();
+        expect(json, isNot(contains('iban')));
+        expect(json, isNot(contains('bank')));
+      });
+
+      test('keeps the newest $expenseRevisionLimit revisions', () async {
+        final e = await add();
+        final id = e.expense.id;
+        for (var i = 1; i <= expenseRevisionLimit + 5; i++) {
+          ok(await r.expenses.update(id, draft(title: 'v$i')));
+        }
+        final h = await history(id);
+        expect(h, hasLength(expenseRevisionLimit));
+        expect(h.first.revision, expenseRevisionLimit + 5);
+        expect(h.last.revision, 6);
+        expect(h.first.snapshot.title, 'v${expenseRevisionLimit + 4}');
+      });
+
+      test('restoring replays the snapshot as a normal update', () async {
+        final e = await add(draft(title: 'Old', category: 'food'));
+        final id = e.expense.id;
+        ok(
+          await r.expenses.update(
+            id,
+            draft(
+              title: 'New',
+              amount: 2000,
+              payers: {m[1].id: 2000},
+              split: SharesSplit({m[0].id: 1, m[1].id: 3}),
+            ),
+          ),
+        );
+        final target = (await history(id)).single;
+
+        final undo = ok(await r.expenses.restoreRevision(id, target.id));
+        final restored = ok(await r.expenses.get(id));
+        expect(restored.expense.title, 'Old');
+        expect(restored.expense.amountCents, 1000);
+        expect(restored.category, 'food');
+        expect(restored.expense.payers, {m[0].id: 1000});
+        expect(restored.split, e.split);
+        expect(restored.expense.shares, e.expense.shares);
+        // The restore itself is a change with its own revision.
+        expect(
+          [for (final x in await history(id)) x.snapshot.title],
+          [
+            'New',
+            'Old',
+          ],
+        );
+
+        ok(await undo());
+        final back = ok(await r.expenses.get(id));
+        expect(back.expense.title, 'New');
+        expect(back.expense.amountCents, 2000);
+        expect(back.split, SharesSplit({m[0].id: 1, m[1].id: 3}));
+        expect(await history(id), hasLength(3));
+      });
+
+      test(
+        'a foreign-currency snapshot restores with its frozen rate',
+        () async {
+          const foreign = ForeignAmount(
+            currency: Currency.usd,
+            amountCents: 1200,
+            ratePpm: 920000,
+          );
+          final e = ok(
+            await r.expenses.create(
+              gid,
+              ExpenseDraft(
+                title: 'Taxi',
+                amountCents: 1104,
+                currency: eur,
+                date: DateTime.utc(2026),
+                payers: {m[0].id: 1104},
+                split: EqualSplit({m[0].id}),
+                foreign: foreign,
+              ),
+            ),
+          );
+          ok(await r.expenses.update(e.expense.id, draft(title: 'Taxi 2')));
+          final target = (await history(e.expense.id)).single;
+          expect(target.snapshot.currency, 'USD');
+          expect(target.snapshot.fxRatePpm, 920000);
+          ok(await r.expenses.restoreRevision(e.expense.id, target.id));
+          final restored = ok(await r.expenses.get(e.expense.id));
+          expect(restored.foreign, foreign);
+          expect(restored.expense.amountCents, 1104);
+        },
+      );
+
+      test('a snapshot with a removed participant is InvalidData', () async {
+        final e = await add();
+        final id = e.expense.id;
+        ok(await r.expenses.update(id, draft(title: 'x')));
+        ok(await r.members.softDelete(m[2].id));
+        final target = (await history(id)).single;
+        expect(
+          err(await r.expenses.restoreRevision(id, target.id)),
+          isA<InvalidData>(),
+        );
+        expect(ok(await r.expenses.get(id)).expense.title, 'x');
+      });
+
+      test('unknown expense or revision is NotFound', () async {
+        final e = await add();
+        expect(err(await r.expenses.revisions('nope')), isA<NotFound>());
+        expect(
+          err(await r.expenses.restoreRevision('nope', 'r')),
+          isA<NotFound>(),
+        );
+        expect(
+          err(await r.expenses.restoreRevision(e.expense.id, 'nope')),
+          isA<NotFound>(),
+        );
+      });
     });
   });
 }

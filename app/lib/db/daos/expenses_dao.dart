@@ -17,7 +17,9 @@ class ExpenseWithChildren {
   final List<ExpenseShareRow> shares;
 }
 
-@DriftAccessor(tables: [Expenses, ExpensePayers, ExpenseShares])
+@DriftAccessor(
+  tables: [Expenses, ExpensePayers, ExpenseShares, ExpenseRevisions],
+)
 class ExpensesDao extends DatabaseAccessor<AppDatabase>
     with _$ExpensesDaoMixin {
   ExpensesDao(super.attachedDatabase);
@@ -52,6 +54,53 @@ class ExpensesDao extends DatabaseAccessor<AppDatabase>
     await _insertChildren(payers, shares);
     return true;
   });
+
+  /// Appends the next revision of [expenseId] (numbered after the highest
+  /// one) and prunes all but the newest [keep], atomically. Call it inside
+  /// the transaction of the change it records.
+  Future<void> addRevision({
+    required String id,
+    required String expenseId,
+    required String groupId,
+    required DateTime changedAt,
+    required String snapshot,
+    required int keep,
+    String? authorMemberId,
+  }) => transaction(() async {
+    final top = expenseRevisions.revision.max();
+    final last =
+        await (selectOnly(expenseRevisions)
+              ..addColumns([top])
+              ..where(expenseRevisions.expenseId.equals(expenseId)))
+            .map((r) => r.read(top))
+            .getSingle();
+    final next = (last ?? 0) + 1;
+    await into(expenseRevisions).insert(
+      ExpenseRevisionsCompanion.insert(
+        id: id,
+        expenseId: expenseId,
+        groupId: groupId,
+        revision: next,
+        changedAt: changedAt,
+        authorMemberId: Value(authorMemberId),
+        snapshot: snapshot,
+      ),
+    );
+    await (delete(expenseRevisions)..where(
+          (r) =>
+              r.expenseId.equals(expenseId) &
+              r.revision.isSmallerOrEqualValue(next - keep),
+        ))
+        .go();
+  });
+
+  /// Revisions of [expenseId], newest first. Includes those of soft deleted
+  /// expenses.
+  Future<List<ExpenseRevisionRow>> revisionsOf(String expenseId) =>
+      (select(expenseRevisions)
+            ..where((r) => r.expenseId.equals(expenseId))
+            ..orderBy([(r) => OrderingTerm.desc(r.revision)]))
+          .get();
 
   Future<void> _insertChildren(
     List<ExpensePayersCompanion> payers,

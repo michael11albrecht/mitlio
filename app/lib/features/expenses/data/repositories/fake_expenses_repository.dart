@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/features/expenses/data/expense_revision.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
@@ -24,7 +25,28 @@ class FakeExpensesRepository implements ExpensesRepository {
   final IdGenerator _ids;
   final _entries = <String, ExpenseEntry>{};
   final _deleted = <String>{};
+  final _revisions = <String, List<ExpenseRevision>>{};
   final _changes = StreamController<void>.broadcast(sync: true);
+
+  /// Same bookkeeping as the Drift implementation: numbered after the
+  /// highest, newest [expenseRevisionLimit] kept, oldest first in storage.
+  void _record(ExpenseEntry before) {
+    final id = before.expense.id;
+    final list = _revisions.putIfAbsent(id, () => []);
+    list.add(
+      ExpenseRevision(
+        id: _ids.newId(),
+        expenseId: id,
+        groupId: before.groupId,
+        revision: (list.lastOrNull?.revision ?? 0) + 1,
+        changedAt: _clock.now().toUtc(),
+        snapshot: snapshotOfEntry(before),
+      ),
+    );
+    if (list.length > expenseRevisionLimit) {
+      list.removeRange(0, list.length - expenseRevisionLimit);
+    }
+  }
 
   ExpenseEntry? _live(String id) => _deleted.contains(id) ? null : _entries[id];
 
@@ -105,6 +127,7 @@ class FakeExpensesRepository implements ExpensesRepository {
       foreign: draft.foreign,
       createdAt: current.createdAt,
     );
+    _record(current);
     _entries[id] = entry;
     _changes.add(null);
     return Ok(entry);
@@ -125,7 +148,9 @@ class FakeExpensesRepository implements ExpensesRepository {
 
   @override
   Future<RepoResult<Undo>> softDelete(String id) async {
-    if (_live(id) == null) return Err(NotFound('expense', id));
+    final before = _live(id);
+    if (before == null) return Err(NotFound('expense', id));
+    _record(before);
     _deleted.add(id);
     _changes.add(null);
     return Ok(Undo(() => restore(id)));
@@ -140,4 +165,16 @@ class FakeExpensesRepository implements ExpensesRepository {
     _changes.add(null);
     return const Ok(null);
   }
+
+  @override
+  Future<RepoResult<List<ExpenseRevision>>> revisions(String expenseId) async =>
+      _live(expenseId) == null
+      ? Err(NotFound('expense', expenseId))
+      : Ok(List.unmodifiable((_revisions[expenseId] ?? []).reversed));
+
+  @override
+  Future<RepoResult<Undo>> restoreRevision(
+    String expenseId,
+    String revisionId,
+  ) => restoreRevisionVia(this, expenseId, revisionId);
 }

@@ -782,6 +782,126 @@ abstract class AppLocalizations {
   /// **'Sonstiges'**
   String get expenseCategoryOther;
 
+  /// No description provided for @expenseHistory.
+  ///
+  /// In de, this message translates to:
+  /// **'Verlauf'**
+  String get expenseHistory;
+
+  /// No description provided for @expenseHistoryEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Änderungen'**
+  String get expenseHistoryEmpty;
+
+  /// No description provided for @expenseHistoryRestore.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Version wiederherstellen'**
+  String get expenseHistoryRestore;
+
+  /// No description provided for @expenseHistoryRestored.
+  ///
+  /// In de, this message translates to:
+  /// **'Version wiederhergestellt'**
+  String get expenseHistoryRestored;
+
+  /// No description provided for @expenseHistoryNoVisibleChange.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine sichtbare Änderung'**
+  String get expenseHistoryNoVisibleChange;
+
+  /// No description provided for @expenseHistoryByAuthor.
+  ///
+  /// In de, this message translates to:
+  /// **'{when} · {name}'**
+  String expenseHistoryByAuthor(String when, String name);
+
+  /// No description provided for @expenseHistoryTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Titel „{from}“ → „{to}“'**
+  String expenseHistoryTitle(String from, String to);
+
+  /// No description provided for @expenseHistoryAmount.
+  ///
+  /// In de, this message translates to:
+  /// **'Betrag {from} → {to}'**
+  String expenseHistoryAmount(String from, String to);
+
+  /// No description provided for @expenseHistoryRate.
+  ///
+  /// In de, this message translates to:
+  /// **'Kurs {from} → {to}'**
+  String expenseHistoryRate(String from, String to);
+
+  /// No description provided for @expenseHistoryDate.
+  ///
+  /// In de, this message translates to:
+  /// **'Datum {from} → {to}'**
+  String expenseHistoryDate(String from, String to);
+
+  /// No description provided for @expenseHistoryCategory.
+  ///
+  /// In de, this message translates to:
+  /// **'Kategorie {from} → {to}'**
+  String expenseHistoryCategory(String from, String to);
+
+  /// No description provided for @expenseHistorySplit.
+  ///
+  /// In de, this message translates to:
+  /// **'Aufteilung {from} → {to}'**
+  String expenseHistorySplit(String from, String to);
+
+  /// No description provided for @expenseHistoryTrip.
+  ///
+  /// In de, this message translates to:
+  /// **'Reisedaten geändert'**
+  String get expenseHistoryTrip;
+
+  /// No description provided for @expenseHistoryPayerAdded.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} hat jetzt mitbezahlt'**
+  String expenseHistoryPayerAdded(String name);
+
+  /// No description provided for @expenseHistoryPayerRemoved.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} hat nicht mehr bezahlt'**
+  String expenseHistoryPayerRemoved(String name);
+
+  /// No description provided for @expenseHistoryPaid.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} hat {to} statt {from} bezahlt'**
+  String expenseHistoryPaid(String name, String from, String to);
+
+  /// No description provided for @expenseHistoryParticipantAdded.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} jetzt beteiligt'**
+  String expenseHistoryParticipantAdded(String name);
+
+  /// No description provided for @expenseHistoryParticipantRemoved.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} nicht mehr beteiligt'**
+  String expenseHistoryParticipantRemoved(String name);
+
+  /// No description provided for @expenseHistoryShare.
+  ///
+  /// In de, this message translates to:
+  /// **'Anteil von {name}: {from} → {to}'**
+  String expenseHistoryShare(String name, String from, String to);
+
+  /// No description provided for @expenseHistoryUnknownMember.
+  ///
+  /// In de, this message translates to:
+  /// **'Unbekannt'**
+  String get expenseHistoryUnknownMember;
+
   /// No description provided for @expenseFormNew.
   ///
   /// In de, this message translates to:
