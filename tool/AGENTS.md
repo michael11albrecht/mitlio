@@ -14,6 +14,8 @@ Shell gates, agent hooks and gate config. Invoked from `Makefile`, CI workflows,
 | `mutate.sh` | Mutation testing on `packages/domain/lib`; `--changed` = files changed vs `origin/main`. Report in `build/mutation/report` |
 | `risk_label.sh` | Labels PR `critical`/`safe` (+ optional `ux-review`) from changed paths and line count (limit 400) |
 | `risk_label_test.sh` | Self-test for `risk_label.sh` (`bash tool/risk_label_test.sh`) |
+| `drive.sh` | Calls `ext.mitlio.*` on the running debug app via `packages/drive_client` (reads `.drive/uri`) |
+| `check_release_strip.sh` | Fails if a Linux release bundle contains `ext.mitlio` (Linux only, skips elsewhere) |
 
 ## Subdirectories
 | Directory | Purpose |
