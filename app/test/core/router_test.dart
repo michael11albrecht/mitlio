@@ -4,9 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:mitlio/core/app.dart';
 import 'package:mitlio/core/router.dart';
 
+import '../helpers/fake_app.dart';
+
 void main() {
-  testWidgets('root route shows the home placeholder', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: MitlioApp()));
+  testWidgets('root route shows the group list', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(overrides: FakeApp().overrides, child: const MitlioApp()),
+    );
     await tester.pumpAndSettle();
     expect(find.text('mitlio'), findsOneWidget);
   });

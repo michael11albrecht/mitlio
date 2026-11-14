@@ -77,9 +77,25 @@ abstract interface class MembersRepository {
     String? ibanHint,
   });
 
+  /// Reorders the live members of [groupId]. [orderedIds] must contain
+  /// exactly the live member ids ([InvalidData] otherwise). The members take
+  /// over the positions the live members occupy now, in the given order, so
+  /// positions of soft-deleted members never collide.
+  Future<RepoResult<void>> reorder(String groupId, List<String> orderedIds);
+
   /// Soft delete; call the returned [Undo] to bring the member back.
   Future<RepoResult<Undo>> softDelete(String id);
 
   /// [NotFound] for unknown ids, [Conflict] if the member is not deleted.
   Future<RepoResult<void>> restore(String id);
+}
+
+/// True if [a] and [b] hold the same ids, each exactly once.
+bool sameMembers(Iterable<String> a, Iterable<String> b) {
+  final left = a.toSet();
+  final right = b.toSet();
+  return left.length == a.length &&
+      right.length == b.length &&
+      left.length == right.length &&
+      left.containsAll(right);
 }

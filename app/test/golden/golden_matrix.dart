@@ -14,11 +14,13 @@ Future<void> matrixGolden(
   Widget Function() child, {
   double width = 320,
   double height = 320,
+  PumpAction pumpBeforeTest = onlyPumpAndSettle,
 }) async {
   for (final brightness in Brightness.values) {
     await goldenTest(
       '$name, ${brightness.name}',
       fileName: '${name}_${brightness.name}',
+      pumpBeforeTest: pumpBeforeTest,
       builder: () => Row(
         mainAxisSize: MainAxisSize.min,
         children: [

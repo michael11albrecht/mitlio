@@ -125,6 +125,18 @@ List<Rule> buildRules({required List<String> showDialogAllowlist}) => [
         d.uri.startsWith('package:drift'),
   ),
   importRule(
+    id: 'ui-no-debug',
+    description:
+        'ui/, core/ and data/ must not import app/lib/debug (debug reads '
+        'ViewModels, never the other way round)',
+    appliesTo: (p) =>
+        _inDir(p, 'app/lib/core/') ||
+        RegExp('^app/lib/features/[^/]+/(ui|data)/').hasMatch(p),
+    forbidden: (d) =>
+        d.uri.startsWith('package:mitlio/debug/') ||
+        d.target.startsWith('app/lib/debug/'),
+  ),
+  importRule(
     id: 'debug-no-views',
     description: 'app/lib/debug must not import *_view.dart',
     appliesTo: (p) => _inDir(p, 'app/lib/debug/'),

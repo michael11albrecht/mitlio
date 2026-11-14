@@ -151,6 +151,162 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'minus {amount}'**
   String moneySpokenNegative(String amount);
+
+  /// No description provided for @undo.
+  ///
+  /// In de, this message translates to:
+  /// **'Rückgängig'**
+  String get undo;
+
+  /// No description provided for @dismiss.
+  ///
+  /// In de, this message translates to:
+  /// **'Schließen'**
+  String get dismiss;
+
+  /// No description provided for @groupsEmptyTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Gruppe'**
+  String get groupsEmptyTitle;
+
+  /// No description provided for @groupsEmptyMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Leg die erste an.'**
+  String get groupsEmptyMessage;
+
+  /// No description provided for @groupNew.
+  ///
+  /// In de, this message translates to:
+  /// **'Neue Gruppe'**
+  String get groupNew;
+
+  /// No description provided for @groupCreate.
+  ///
+  /// In de, this message translates to:
+  /// **'Gruppe anlegen'**
+  String get groupCreate;
+
+  /// No description provided for @groupEditTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Gruppe bearbeiten'**
+  String get groupEditTitle;
+
+  /// No description provided for @groupNameLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Name'**
+  String get groupNameLabel;
+
+  /// No description provided for @groupNameHint.
+  ///
+  /// In de, this message translates to:
+  /// **'z. B. Wochenendtrip'**
+  String get groupNameHint;
+
+  /// No description provided for @groupNameRequired.
+  ///
+  /// In de, this message translates to:
+  /// **'Gib der Gruppe einen Namen'**
+  String get groupNameRequired;
+
+  /// No description provided for @groupCurrencyLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Währung'**
+  String get groupCurrencyLabel;
+
+  /// No description provided for @groupCurrencyLocked.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Währung lässt sich nicht mehr ändern, sobald es Ausgaben gibt.'**
+  String get groupCurrencyLocked;
+
+  /// No description provided for @groupSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Speichern'**
+  String get groupSave;
+
+  /// No description provided for @groupMenu.
+  ///
+  /// In de, this message translates to:
+  /// **'Mehr'**
+  String get groupMenu;
+
+  /// No description provided for @groupArchive.
+  ///
+  /// In de, this message translates to:
+  /// **'Gruppe archivieren'**
+  String get groupArchive;
+
+  /// No description provided for @groupArchived.
+  ///
+  /// In de, this message translates to:
+  /// **'„{name}“ archiviert'**
+  String groupArchived(String name);
+
+  /// No description provided for @membersEmptyTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch niemand dabei'**
+  String get membersEmptyTitle;
+
+  /// No description provided for @membersEmptyMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Füge die Leute hinzu, mit denen du teilst.'**
+  String get membersEmptyMessage;
+
+  /// No description provided for @memberAddLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Name hinzufügen'**
+  String get memberAddLabel;
+
+  /// No description provided for @memberAdd.
+  ///
+  /// In de, this message translates to:
+  /// **'Hinzufügen'**
+  String get memberAdd;
+
+  /// No description provided for @memberNameLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Name'**
+  String get memberNameLabel;
+
+  /// No description provided for @memberRenameSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Namen speichern'**
+  String get memberRenameSave;
+
+  /// No description provided for @memberRemove.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} entfernen'**
+  String memberRemove(String name);
+
+  /// No description provided for @memberRemoved.
+  ///
+  /// In de, this message translates to:
+  /// **'„{name}“ entfernt'**
+  String memberRemoved(String name);
+
+  /// No description provided for @memberOrderHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Zum Sortieren ziehen. Wer weiter oben steht, zahlt bei Restcents zuerst einen Cent mehr.'**
+  String get memberOrderHint;
+
+  /// No description provided for @memberInUse.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} hat Ausgaben oder Zahlungen und bleibt deshalb in der Gruppe.'**
+  String memberInUse(String name);
 }
 
 class _AppLocalizationsDelegate

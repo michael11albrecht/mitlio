@@ -60,7 +60,11 @@ class FakeGroupsRepository implements GroupsRepository {
   }
 
   @override
-  Future<RepoResult<Group>> rename(String id, String name) async {
+  Future<RepoResult<Group>> update(
+    String id, {
+    required String name,
+    required Currency currency,
+  }) async {
     final trimmed = name.trim();
     if (trimmed.isEmpty) {
       return const Err(InvalidData('name must not be empty'));
@@ -70,7 +74,7 @@ class FakeGroupsRepository implements GroupsRepository {
     final renamed = Group(
       id: g.id,
       name: trimmed,
-      currency: g.currency,
+      currency: currency,
       createdBy: g.createdBy,
       createdAt: g.createdAt,
     );
