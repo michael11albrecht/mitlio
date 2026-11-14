@@ -96,12 +96,17 @@ class _MemberPaymentSheetState extends ConsumerState<MemberPaymentSheet> {
   ) {
     final error = errors[field];
     if (error == null) return null;
+    // Plain if-chain: a guarded enum switch expression here crashed the Linux
+    // x64 AOT compiler (linearscan.cc "unreachable code", Flutter 3.50).
+    if (field == PaymentField.iban) {
+      if (_iban.text.trim().isEmpty) return l10n.paymentErrorIbanMissing;
+      if (error == PaymentFieldError.checksum) {
+        return l10n.paymentErrorIbanChecksum;
+      }
+      return l10n.paymentErrorIban;
+    }
     return switch (field) {
       PaymentField.paypalMe => l10n.paymentErrorPaypal,
-      PaymentField.iban when _iban.text.trim().isEmpty =>
-        l10n.paymentErrorIbanMissing,
-      PaymentField.iban when error == PaymentFieldError.checksum =>
-        l10n.paymentErrorIbanChecksum,
       PaymentField.iban => l10n.paymentErrorIban,
       PaymentField.bic => l10n.paymentErrorBic,
       PaymentField.accountName => l10n.paymentErrorAccountName,
