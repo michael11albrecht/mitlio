@@ -46,9 +46,12 @@ run_phase() {
   for _ in $(seq 1 90); do
     # The gateway answers OPTIONS before the function is loaded, so probe with an invalid GET:
     # only the function itself answers 400 invalid_params (own client address, own bucket).
-    code="$(curl -s -o /dev/null -w '%{http_code}' "$FUNCTION_URL?type=probe" \
-      -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANON_KEY" -H 'cf-connecting-ip: 192.0.2.250' || true)"
-    if [ "$code" = 400 ] || [ "$code" = 429 ]; then ready=1; break; fi
+    # Without a provider key a PLZ query answers 503 only from the keyless instance.
+    probe="type=probe"; want=400
+    [ "$phase" = nokey ] && { probe="type=e5&plz=10115"; want=503; }
+    code="$(curl -s -o /dev/null -w '%{http_code}' "$FUNCTION_URL?$probe" \
+      -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANON_KEY" -H "cf-connecting-ip: 192.0.2.25$RANDOM" || true)"
+    if [ "$code" = "$want" ]; then ready=1; break; fi
     sleep 2
   done
   [ -n "$ready" ] || { echo "function did not become ready"; exit 1; }
@@ -57,6 +60,9 @@ run_phase() {
   kill "$serve_pid" 2>/dev/null || true
   wait "$serve_pid" 2>/dev/null || true
   serve_pid=""
+  # Make sure the previous runtime (with the previous env) is really gone before the next phase.
+  docker rm -f supabase_edge_runtime_mitlio >/dev/null 2>&1 || true
+  sleep 2
 }
 
 run_phase key
