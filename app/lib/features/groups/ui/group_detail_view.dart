@@ -11,6 +11,7 @@ import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
 import 'package:mitlio/features/expenses/ui/expenses_view.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
+import 'package:mitlio/features/members/ui/member_payment_view.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -316,6 +317,17 @@ class _MemberTileState extends State<_MemberTile> {
                           ),
                         ),
                       ),
+              ),
+              IconButton(
+                tooltip: l10n.paymentOpen(member.name),
+                icon: const Icon(Icons.account_balance_wallet_outlined),
+                onPressed: () => unawaited(
+                  showMemberPaymentSheet(
+                    context,
+                    memberId: member.id,
+                    memberName: member.name,
+                  ),
+                ),
               ),
               IconButton(
                 tooltip: l10n.memberRemove(member.name),

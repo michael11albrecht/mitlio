@@ -342,6 +342,27 @@ void main() {
         },
       ),
       (
+        'sync-no-local-bank',
+        {
+          'app/lib/features/sync/data/pusher.dart':
+              "import 'package:mitlio/db/daos/local_member_bank_dao.dart';",
+        },
+        {
+          'app/lib/features/sync/data/pusher.dart':
+              "import 'package:mitlio/db/daos/members_dao.dart';",
+        },
+      ),
+      (
+        'sync-no-local-bank',
+        {
+          'app/lib/core/outbox_sync.dart': "import 'package:mitlio/features/members/data/repositories/payment_details_repository.dart';",
+        },
+        {
+          // Not a sync file: the payment feature may use the repository.
+          'app/lib/features/members/ui/member_payment_view_model.dart': "import 'package:mitlio/features/members/data/repositories/payment_details_repository.dart';",
+        },
+      ),
+      (
         'dialog-allowlist',
         {'app/lib/features/a/ui/b_view.dart': 'x() => showDialog<void>(a);'},
         {},

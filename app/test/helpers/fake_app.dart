@@ -9,8 +9,11 @@ import 'package:mitlio/features/groups/data/repositories/fake_groups_repository.
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/fake_members_repository.dart';
+import 'package:mitlio/features/members/data/repositories/fake_payment_details_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
+import 'package:mitlio/features/members/data/repositories/payment_details_providers.dart';
+import 'package:mitlio/features/members/data/repositories/payment_details_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/fake_settlements_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -123,6 +126,7 @@ class FakeApp {
         clock: clock,
         ids: ids,
       ),
+      FakePaymentDetailsRepository(members: members),
     );
   }
 
@@ -132,6 +136,7 @@ class FakeApp {
     this.members,
     this.expenses,
     this.settlements,
+    this.payments,
   );
 
   final FixedClock clock;
@@ -139,8 +144,16 @@ class FakeApp {
   final FlakyMembers members;
   final FakeExpensesRepository expenses;
   final FakeSettlementsRepository settlements;
+  final FakePaymentDetailsRepository payments;
 
-  List<Override> get overrides => [
+  List<Override> get overrides => overridesWith();
+
+  /// [overrides], optionally with another payment details repository (e.g. a
+  /// failing one).
+  List<Override> overridesWith({PaymentDetailsRepository? payments}) => [
+    paymentDetailsRepositoryProvider.overrideWithValue(
+      payments ?? this.payments,
+    ),
     groupsRepositoryProvider.overrideWithValue(groups),
     membersRepositoryProvider.overrideWithValue(members),
     expensesRepositoryProvider.overrideWithValue(expenses),

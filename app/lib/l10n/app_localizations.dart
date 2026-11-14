@@ -308,6 +308,96 @@ abstract class AppLocalizations {
   /// **'{name} hat Ausgaben oder Zahlungen und bleibt deshalb in der Gruppe.'**
   String memberInUse(String name);
 
+  /// No description provided for @paymentSectionTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Zahlungsdaten'**
+  String get paymentSectionTitle;
+
+  /// No description provided for @paymentOpen.
+  ///
+  /// In de, this message translates to:
+  /// **'Zahlungsdaten von {name}'**
+  String paymentOpen(String name);
+
+  /// No description provided for @paymentPaypalLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'PayPal.Me-Name'**
+  String get paymentPaypalLabel;
+
+  /// No description provided for @paymentIbanLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'IBAN'**
+  String get paymentIbanLabel;
+
+  /// No description provided for @paymentBicLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'BIC (optional)'**
+  String get paymentBicLabel;
+
+  /// No description provided for @paymentAccountNameLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Kontoinhaber'**
+  String get paymentAccountNameLabel;
+
+  /// No description provided for @paymentPrivacyHint.
+  ///
+  /// In de, this message translates to:
+  /// **'IBAN, BIC und Kontoinhaber bleiben nur auf diesem Gerät.'**
+  String get paymentPrivacyHint;
+
+  /// No description provided for @paymentSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Speichern'**
+  String get paymentSave;
+
+  /// No description provided for @paymentErrorPaypal.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist kein gültiger PayPal.Me-Name.'**
+  String get paymentErrorPaypal;
+
+  /// No description provided for @paymentErrorIban.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist keine gültige IBAN.'**
+  String get paymentErrorIban;
+
+  /// No description provided for @paymentErrorIbanChecksum.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Prüfziffer der IBAN stimmt nicht. Vertippt?'**
+  String get paymentErrorIbanChecksum;
+
+  /// No description provided for @paymentErrorIbanMissing.
+  ///
+  /// In de, this message translates to:
+  /// **'Dafür brauchen wir zuerst eine IBAN.'**
+  String get paymentErrorIbanMissing;
+
+  /// No description provided for @paymentErrorBic.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist keine gültige BIC.'**
+  String get paymentErrorBic;
+
+  /// No description provided for @paymentErrorAccountName.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Name darf höchstens 70 Zeichen haben.'**
+  String get paymentErrorAccountName;
+
+  /// No description provided for @paymentLinkCopied.
+  ///
+  /// In de, this message translates to:
+  /// **'Link kopiert'**
+  String get paymentLinkCopied;
+
   /// No description provided for @balancesTitle.
   ///
   /// In de, this message translates to:

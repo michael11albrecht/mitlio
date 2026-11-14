@@ -151,6 +151,56 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get paymentSectionTitle => 'Payment details';
+
+  @override
+  String paymentOpen(String name) {
+    return 'Payment details of $name';
+  }
+
+  @override
+  String get paymentPaypalLabel => 'PayPal.Me name';
+
+  @override
+  String get paymentIbanLabel => 'IBAN';
+
+  @override
+  String get paymentBicLabel => 'BIC (optional)';
+
+  @override
+  String get paymentAccountNameLabel => 'Account holder';
+
+  @override
+  String get paymentPrivacyHint =>
+      'IBAN, BIC and account holder stay on this device only.';
+
+  @override
+  String get paymentSave => 'Save';
+
+  @override
+  String get paymentErrorPaypal => 'That is not a valid PayPal.Me name.';
+
+  @override
+  String get paymentErrorIban => 'That is not a valid IBAN.';
+
+  @override
+  String get paymentErrorIbanChecksum =>
+      'The IBAN check digits do not match. A typo?';
+
+  @override
+  String get paymentErrorIbanMissing => 'We need an IBAN first.';
+
+  @override
+  String get paymentErrorBic => 'That is not a valid BIC.';
+
+  @override
+  String get paymentErrorAccountName =>
+      'The name can be 70 characters at most.';
+
+  @override
+  String get paymentLinkCopied => 'Link copied';
+
+  @override
   String get balancesTitle => 'Balances';
 
   @override

@@ -32,6 +32,10 @@ class FakeMembersRepository implements MembersRepository {
         return byPos != 0 ? byPos : a.id.compareTo(b.id);
       });
 
+  /// The live member with [id], or null. Lets sibling fakes look members up
+  /// without a group id.
+  GroupMember? find(String id) => _live(id);
+
   GroupMember? _live(String id) => _deleted.contains(id) ? null : _members[id];
 
   @override

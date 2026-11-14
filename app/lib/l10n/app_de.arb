@@ -108,6 +108,29 @@
       }
     }
   },
+  "@@x-feature-payment": "payment",
+  "paymentSectionTitle": "Zahlungsdaten",
+  "paymentOpen": "Zahlungsdaten von {name}",
+  "@paymentOpen": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentPaypalLabel": "PayPal.Me-Name",
+  "paymentIbanLabel": "IBAN",
+  "paymentBicLabel": "BIC (optional)",
+  "paymentAccountNameLabel": "Kontoinhaber",
+  "paymentPrivacyHint": "IBAN, BIC und Kontoinhaber bleiben nur auf diesem Gerät.",
+  "paymentSave": "Speichern",
+  "paymentErrorPaypal": "Das ist kein gültiger PayPal.Me-Name.",
+  "paymentErrorIban": "Das ist keine gültige IBAN.",
+  "paymentErrorIbanChecksum": "Die Prüfziffer der IBAN stimmt nicht. Vertippt?",
+  "paymentErrorIbanMissing": "Dafür brauchen wir zuerst eine IBAN.",
+  "paymentErrorBic": "Das ist keine gültige BIC.",
+  "paymentErrorAccountName": "Der Name darf höchstens 70 Zeichen haben.",
+  "paymentLinkCopied": "Link kopiert",
   "@@x-feature-balances": "balances",
   "balancesTitle": "Salden",
   "balancesOpen": "Wer bekommt was",
