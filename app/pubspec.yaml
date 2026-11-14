@@ -21,6 +21,7 @@ dependencies:
   material_ui: ^1.1.0
   mitlio_domain: any
   path_provider: ^2.1.6
+  pdf: ^3.13.1
   qr_flutter: ^4.1.0
   share_plus: ^13.3.1
   url_launcher: ^6.3.3
@@ -41,3 +42,5 @@ flutter:
   assets:
     # Symlink to tool/fixtures/scenarios (single source of seed scenarios).
     - assets/scenarios/
+    # Roboto (Apache 2.0, see assets/fonts/Roboto_LICENSE.txt) for the PDF.
+    - assets/fonts/
