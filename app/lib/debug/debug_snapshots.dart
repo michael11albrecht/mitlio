@@ -11,6 +11,7 @@ import 'package:mitlio/features/rides/ui/rides_view_model.dart';
 import 'package:mitlio/features/rides/ui/template_form_view_model.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
 import 'package:mitlio/features/settle/ui/settle_view_model.dart';
+import 'package:mitlio/features/statistics/ui/statistics_view_model.dart';
 import 'package:mitlio/features/trips/ui/trip_form_view_model.dart';
 
 /// Screen name to `debugSnapshot()` lookup behind `ext.mitlio.state`.
@@ -120,6 +121,12 @@ DebugSnapshotRegistry buildSnapshotRegistry(ProviderContainer c) =>
         return id == null
             ? {'status': 'not_open'}
             : c.read(balancesViewModelProvider(id).notifier).debugSnapshot();
+      })
+      ..register('statistics', () {
+        final id = _openGroupId(c);
+        return id == null
+            ? {'status': 'not_open'}
+            : c.read(statisticsViewModelProvider(id).notifier).debugSnapshot();
       })
       ..register('settle', () {
         final id = _openGroupId(c);

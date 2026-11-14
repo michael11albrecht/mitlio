@@ -12,6 +12,8 @@ DOMAIN := packages/domain
 DRIVE  := packages/drive_client
 DOMAIN_WEB := packages/domain_web
 TOOLING := packages/tooling
+CONFIG_DEV  := config/dev.json
+CONFIG_PROD := config/prod.json
 WEB    := web
 APP    := app
 
@@ -117,6 +119,20 @@ mutate: ## Mutation tests on domain (CHANGED=1 for changed files only)
 deps-policy: ## Fail on ad/tracking/review-prompt SDKs in lockfiles (tool/deps_policy.yaml)
 	cd $(TOOLING) && $(DART) run bin/deps_policy.dart --root ../.. --policy ../../tool/deps_policy.yaml
 
+.PHONY: identity identity-check
+identity: ## Regenerate Android/iOS identity values from app/app_identity.yaml (ADR-16)
+	cd $(TOOLING) && $(DART) run bin/gen_app_identity.dart --root ../..
+identity-check: ## Fail if generated identity files drifted from app_identity.yaml
+	cd $(TOOLING) && $(DART) run bin/gen_app_identity.dart --root ../.. --check
+
+.PHONY: run-dev build-android-dev build-android-prod
+run-dev: ## Run the dev flavor on a device (DEVICE=<id>, needs a phone/emulator)
+	cd $(APP) && $(FLUTTER) run --flavor dev --dart-define-from-file=$(CONFIG_DEV) $(if $(DEVICE),-d $(DEVICE),)
+build-android-dev: ## Debug APK, dev flavor, no signing (needs Android SDK)
+	cd $(APP) && $(FLUTTER) build apk --debug --flavor dev --dart-define-from-file=$(CONFIG_DEV)
+build-android-prod: ## Debug-signed prod APK (release signing lands in P8-T02; needs Android SDK)
+	cd $(APP) && $(FLUTTER) build apk --release --flavor prod --dart-define-from-file=$(CONFIG_PROD)
+
 .PHONY: arch
 arch: ## Architecture rules
 	cd $(APP) && $(FLUTTER) test test/architecture
@@ -202,4 +218,4 @@ secrets: ## Scan for committed secrets
 check-fast: fmt-check lint test-domain ## Quick gate (agent Stop hook)
 
 .PHONY: check
-check: fmt-check lint arch deps-policy test-tooling cov domain-web-test web-check goldens secrets ## Definition of done (cov runs all tests)
+check: fmt-check lint identity-check arch deps-policy test-tooling cov domain-web-test web-check goldens secrets ## Definition of done (cov runs all tests)
