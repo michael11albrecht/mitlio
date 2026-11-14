@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Calculator from './Calculator.astro';
 import Layout from '../layouts/Layout.astro';
-import { messages, paths, htmlLang, type Locale } from '../i18n';
+import { messages, paths, htmlLang, landingPath, type Locale } from '../i18n';
 import { organization, webApplication } from '../lib/jsonld';
 
 interface Props {
@@ -12,8 +12,7 @@ interface Props {
 const { locale } = Astro.props;
 const t = messages[locale];
 const site = Astro.site!;
-// Landing pages exist in German only for now.
-const pages = locale === 'de' ? await getCollection('landing') : [];
+const pages = await getCollection(locale === 'de' ? 'landing' : 'landingEn');
 const jsonLd = [
   organization(site.href),
   webApplication({
@@ -32,11 +31,13 @@ const jsonLd = [
   {
     pages.length > 0 && (
       <nav class="related" aria-labelledby="related-heading">
-        <h2 id="related-heading">Ratgeber und Rechner für jede Fahrt</h2>
+        <h2 id="related-heading">
+          {locale === 'de' ? 'Ratgeber und Rechner für jede Fahrt' : 'Guides and calculators for every trip'}
+        </h2>
         <ul>
           {pages.map((p) => (
             <li>
-              <a href={`/${p.id}/`}>{p.data.linkLabel}</a>
+              <a href={landingPath(locale, p.id)}>{p.data.linkLabel}</a>
             </li>
           ))}
         </ul>

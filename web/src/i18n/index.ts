@@ -11,6 +11,10 @@ export const paths: Record<RouteKey, Record<Locale, string>> = {
   privacy: { de: '/datenschutz/', en: '/en/privacy/' },
 };
 
+/** Path of a landing page (or, without slug, the home page) in a locale. */
+export const landingPath = (locale: Locale, slug?: string): string =>
+  slug ? `${locale === 'de' ? '' : '/en'}/${slug}/` : paths.home[locale];
+
 export const htmlLang: Record<Locale, string> = { de: 'de-DE', en: 'en' };
 
 export const messages = {

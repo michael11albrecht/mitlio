@@ -1,0 +1,13 @@
+---
+import { getCollection } from 'astro:content';
+import Landing from '../../components/Landing.astro';
+
+export async function getStaticPaths() {
+  const pages = await getCollection('landingEn');
+  return pages.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+---
+
+<Landing locale="en" entry={entry} />
