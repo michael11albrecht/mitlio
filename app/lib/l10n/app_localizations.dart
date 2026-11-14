@@ -1783,6 +1783,204 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Das hat nicht geklappt. Versuch es nochmal.'**
   String get settleActionFailed;
+
+  /// No description provided for @exportMenu.
+  ///
+  /// In de, this message translates to:
+  /// **'Exportieren'**
+  String get exportMenu;
+
+  /// No description provided for @exportTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Exportieren'**
+  String get exportTitle;
+
+  /// No description provided for @exportCsv.
+  ///
+  /// In de, this message translates to:
+  /// **'Tabelle (CSV)'**
+  String get exportCsv;
+
+  /// No description provided for @exportCsvHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle Ausgaben und Salden'**
+  String get exportCsvHint;
+
+  /// No description provided for @exportPdf.
+  ///
+  /// In de, this message translates to:
+  /// **'Abrechnung (PDF)'**
+  String get exportPdf;
+
+  /// No description provided for @exportPdfHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer wem wie viel zahlt, mit Ausgabenliste'**
+  String get exportPdfHint;
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Das hat nicht geklappt. Versuch es nochmal.'**
+  String get exportFailed;
+
+  /// No description provided for @exportColDate.
+  ///
+  /// In de, this message translates to:
+  /// **'Datum'**
+  String get exportColDate;
+
+  /// No description provided for @exportColTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Titel'**
+  String get exportColTitle;
+
+  /// No description provided for @exportColCategory.
+  ///
+  /// In de, this message translates to:
+  /// **'Kategorie'**
+  String get exportColCategory;
+
+  /// No description provided for @exportColAmount.
+  ///
+  /// In de, this message translates to:
+  /// **'Betrag'**
+  String get exportColAmount;
+
+  /// No description provided for @exportColCurrency.
+  ///
+  /// In de, this message translates to:
+  /// **'Währung'**
+  String get exportColCurrency;
+
+  /// No description provided for @exportColPaidBy.
+  ///
+  /// In de, this message translates to:
+  /// **'Bezahlt von'**
+  String get exportColPaidBy;
+
+  /// No description provided for @exportColMember.
+  ///
+  /// In de, this message translates to:
+  /// **'Person'**
+  String get exportColMember;
+
+  /// No description provided for @exportColBalance.
+  ///
+  /// In de, this message translates to:
+  /// **'Saldo'**
+  String get exportColBalance;
+
+  /// No description provided for @exportColPaid.
+  ///
+  /// In de, this message translates to:
+  /// **'Bezahlt'**
+  String get exportColPaid;
+
+  /// No description provided for @exportColShare.
+  ///
+  /// In de, this message translates to:
+  /// **'Anteil'**
+  String get exportColShare;
+
+  /// No description provided for @exportBalances.
+  ///
+  /// In de, this message translates to:
+  /// **'Salden'**
+  String get exportBalances;
+
+  /// No description provided for @exportReportTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Abrechnung'**
+  String get exportReportTitle;
+
+  /// No description provided for @exportPeriod.
+  ///
+  /// In de, this message translates to:
+  /// **'Zeitraum: {from} – {to}'**
+  String exportPeriod(String from, String to);
+
+  /// No description provided for @exportPeriodNone.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Ausgaben'**
+  String get exportPeriodNone;
+
+  /// No description provided for @exportMembers.
+  ///
+  /// In de, this message translates to:
+  /// **'Personen'**
+  String get exportMembers;
+
+  /// No description provided for @exportTotals.
+  ///
+  /// In de, this message translates to:
+  /// **'Summen pro Person'**
+  String get exportTotals;
+
+  /// No description provided for @exportTransfers.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgleich'**
+  String get exportTransfers;
+
+  /// No description provided for @exportAllSettled.
+  ///
+  /// In de, this message translates to:
+  /// **'Alles ausgeglichen'**
+  String get exportAllSettled;
+
+  /// No description provided for @exportExpenses.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgaben'**
+  String get exportExpenses;
+
+  /// No description provided for @exportPaypal.
+  ///
+  /// In de, this message translates to:
+  /// **'PayPal: {handle}'**
+  String exportPaypal(String handle);
+
+  /// No description provided for @exportIbanHint.
+  ///
+  /// In de, this message translates to:
+  /// **'IBAN {hint}'**
+  String exportIbanHint(String hint);
+
+  /// No description provided for @exportCategoryFood.
+  ///
+  /// In de, this message translates to:
+  /// **'Essen'**
+  String get exportCategoryFood;
+
+  /// No description provided for @exportCategoryStay.
+  ///
+  /// In de, this message translates to:
+  /// **'Unterkunft'**
+  String get exportCategoryStay;
+
+  /// No description provided for @exportCategoryTransport.
+  ///
+  /// In de, this message translates to:
+  /// **'Transport'**
+  String get exportCategoryTransport;
+
+  /// No description provided for @exportCategoryFun.
+  ///
+  /// In de, this message translates to:
+  /// **'Freizeit'**
+  String get exportCategoryFun;
+
+  /// No description provided for @exportCategoryOther.
+  ///
+  /// In de, this message translates to:
+  /// **'Sonstiges'**
+  String get exportCategoryOther;
 }
 
 class _AppLocalizationsDelegate
