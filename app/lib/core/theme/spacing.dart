@@ -44,6 +44,9 @@ abstract final class Sizes {
   static const double avatarSmall = 28;
   static const double stateIcon = 56;
 
+  /// Edge of a payment QR code (large enough for banking apps to scan).
+  static const double qrCode = 208;
+
   /// Bottom padding of lists with an extended floating action button, so the
   /// last row can scroll clear of it.
   static const double fabClearance = 88;

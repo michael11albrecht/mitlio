@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/empty_state.dart';
@@ -20,9 +23,19 @@ class BalancesView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final vm = ref.read(balancesViewModelProvider(groupId).notifier);
+    final state = ref.watch(balancesViewModelProvider(groupId));
     return Scaffold(
       appBar: AppBar(title: Text(l10n.balancesTitle)),
-      body: switch (ref.watch(balancesViewModelProvider(groupId))) {
+      // One obvious next step: pay what is open (or look at what was paid).
+      floatingActionButton: state is BalancesLoaded && state.hasEntries
+          ? FloatingActionButton.extended(
+              onPressed: () =>
+                  unawaited(context.push('/groups/$groupId/settle')),
+              icon: const Icon(Icons.payments_outlined),
+              label: Text(l10n.settleOpen),
+            )
+          : null,
+      body: switch (state) {
         BalancesLoading() => const Center(child: CircularProgressIndicator()),
         BalancesFailure() => ErrorState(onRetry: vm.retry),
         final BalancesLoaded loaded when !loaded.hasEntries => EmptyState(
@@ -62,7 +75,7 @@ class _Loaded extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     return ListView(
-      padding: Spacing.screen,
+      padding: Spacing.screen.copyWith(bottom: Sizes.fabClearance),
       children: [
         if (state.isSettled) ...[
           _SettledBanner(

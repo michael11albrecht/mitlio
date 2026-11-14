@@ -11,9 +11,9 @@ import 'package:mitlio/features/settle/data/services/payment_link_providers.dart
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 /// The group that holds both members, with the two members.
-typedef _Pair = ({Group group, GroupMember from, GroupMember to});
+typedef MemberPair = ({Group group, GroupMember from, GroupMember to});
 
-Future<_Pair?> _findPair(
+Future<MemberPair?> findMemberPair(
   ProviderContainer c,
   String fromId,
   String toId,
@@ -64,7 +64,7 @@ Map<String, DriveHandler> paymentDriveHandlers(ProviderContainer c) => {
     if (fromId == null || toId == null || cents == null || cents <= 0) {
       return invalidParams('need fromId, toId, amountCents (> 0)');
     }
-    final pair = await _findPair(c, fromId, toId);
+    final pair = await findMemberPair(c, fromId, toId);
     if (pair == null) return driveError(NotFound('member', '$fromId/$toId'));
     final PaymentDetails d;
     switch (await c.read(paymentDetailsRepositoryProvider).get(toId)) {
