@@ -50,6 +50,12 @@ class GroupDetailView extends ConsumerWidget {
                 onPressed: () =>
                     unawaited(context.push('/groups/$groupId/trip')),
               ),
+              IconButton(
+                tooltip: l10n.balancesOpen,
+                icon: const Icon(Icons.balance_outlined),
+                onPressed: () =>
+                    unawaited(context.push('/groups/$groupId/balances')),
+              ),
               PopupMenuButton<_MenuAction>(
                 tooltip: l10n.groupMenu,
                 onSelected: (action) async {

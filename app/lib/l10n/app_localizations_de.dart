@@ -152,6 +152,61 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get balancesTitle => 'Salden';
+
+  @override
+  String get balancesOpen => 'Wer bekommt was';
+
+  @override
+  String balanceGets(String name) {
+    return '$name bekommt';
+  }
+
+  @override
+  String balanceOwes(String name) {
+    return '$name schuldet';
+  }
+
+  @override
+  String balanceEven(String name) {
+    return '$name ist ausgeglichen';
+  }
+
+  @override
+  String get balancesSettledTitle => 'Alles ausgeglichen';
+
+  @override
+  String get balancesSettledMessage => 'Niemand schuldet jemandem etwas.';
+
+  @override
+  String get balancesEmptyTitle => 'Noch nichts zu verrechnen';
+
+  @override
+  String get balancesEmptyMessage =>
+      'Sobald es Ausgaben gibt, siehst du hier, wer wem was schuldet.';
+
+  @override
+  String get balancesTransfersTitle => 'Wer zahlt wem';
+
+  @override
+  String get balancesModeSimplified => 'Einfach';
+
+  @override
+  String get balancesModeDirect => 'Direkt';
+
+  @override
+  String get balancesModeSimplifiedHint => 'So wenige Zahlungen wie möglich.';
+
+  @override
+  String get balancesModeDirectHint =>
+      'Jede Schuld einzeln, zwischen den Beteiligten.';
+
+  @override
+  String balancesTransfer(String from, String to) {
+    return '$from zahlt $to';
+  }
+
+  @override
   String get tripAdd => 'Fahrt hinzufügen';
 
   @override
