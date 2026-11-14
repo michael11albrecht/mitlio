@@ -1,0 +1,9 @@
+{
+  "group": "Leer",
+  "currency": "EUR",
+  "members": [],
+  "expected": {
+    "balances": {},
+    "transfers": []
+  }
+}

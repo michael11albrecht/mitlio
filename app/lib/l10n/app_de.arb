@@ -365,5 +365,216 @@
   "tripBreakdownTolls": "Maut",
   "tripBreakdownFerry": "Fähre",
   "tripBreakdownTotal": "Gesamt",
-  "tripBreakdownPerPerson": "Pro Person"
+  "tripBreakdownPerPerson": "Pro Person",
+
+  "@@x-feature-rides": "rides",
+  "tabRides": "Fahrten",
+  "ridesEmptyTitle": "Noch keine Strecke",
+  "ridesEmptyMessage": "Leg dein Auto und deine Strecke an — dann reichen 2 Taps pro Fahrt.",
+  "ridesEmptyActionVehicle": "Auto und Strecke anlegen",
+  "ridesEmptyActionTemplate": "Strecke anlegen",
+  "ridesNoMembersMessage": "Füge zuerst die Leute hinzu, die mitfahren.",
+  "ridesSettings": "Fahrzeuge und Strecken",
+  "quickLogTitleToday": "Heute gefahren",
+  "quickLogTitleDate": "Gefahren am {date}",
+  "@quickLogTitleDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "quickLogPickRoute": "Wähle deine Strecke.",
+  "quickLogDriver": "Wer fährt?",
+  "quickLogPassengers": "Wer fährt mit?",
+  "quickLogSave": "Speichern",
+  "quickLogAnother": "Weitere Fahrt",
+  "quickLogDone": "{name} ist gefahren",
+  "@quickLogDone": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "quickLogPrice": "Kraftstoff {price} je {unit}",
+  "@quickLogPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "quickLogPriceLabel": "Preis je {unit}",
+  "@quickLogPriceLabel": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "quickLogPriceSet": "Übernehmen",
+  "quickLogBackToToday": "Zurück zu heute",
+  "ridesUnitLitre": "l",
+  "ridesUnitKwh": "kWh",
+  "ridesDistanceOneWay": "{km} km",
+  "@ridesDistanceOneWay": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesDistanceRoundTrip": "2 × {km} km",
+  "@ridesDistanceRoundTrip": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesRouteLine": "{name} · {distance}",
+  "@ridesRouteLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesOwes": "{name} zahlt {amount}",
+  "@ridesOwes": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesNobodyOwes": "Keine Mitfahrer, nichts zu teilen",
+  "ridesSaved": "Gespeichert · {summary}",
+  "@ridesSaved": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesRideDeleted": "Fahrt gelöscht",
+  "ridesLocked": "Abgerechnet, gesperrt",
+  "ridesMonthPrev": "Vorheriger Monat",
+  "ridesMonthNext": "Nächster Monat",
+  "ridesMonthEmpty": "In diesem Monat noch keine Fahrt",
+  "ridesDayDrivers": "{date}: {names}",
+  "@ridesDayDrivers": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesDayNoRides": "Keine Fahrt an diesem Tag",
+  "ridesDayLog": "Fahrt für diesen Tag erfassen",
+  "ridesRideTitle": "{name} fuhr · {distance}",
+  "@ridesRideTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesRidePassengers": "mit {names}",
+  "@ridesRidePassengers": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesRideDelete": "Fahrt löschen",
+  "ridesSettingsTitle": "Fahrzeuge und Strecken",
+  "ridesVehicles": "Fahrzeuge",
+  "ridesTemplates": "Strecken",
+  "ridesVehiclesEmpty": "Noch kein Fahrzeug",
+  "ridesTemplatesEmpty": "Noch keine Strecke",
+  "ridesVehicleAdd": "Fahrzeug hinzufügen",
+  "ridesTemplateAdd": "Strecke hinzufügen",
+  "ridesVehicleDeleted": "„{name}“ gelöscht",
+  "@ridesVehicleDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesTemplateDeleted": "„{name}“ gelöscht",
+  "@ridesTemplateDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesVehicleInUse": "Das Fahrzeug wird noch von einer Strecke genutzt.",
+  "ridesVehicleLine": "{fuel} · {consumption} {unit}/100 km",
+  "@ridesVehicleLine": {
+    "placeholders": {
+      "fuel": {
+        "type": "String"
+      },
+      "consumption": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesDelete": "Löschen",
+  "fuelPetrol": "Benzin",
+  "fuelDiesel": "Diesel",
+  "fuelElectric": "Elektro",
+  "fuelOther": "Andere",
+  "vehicleFormNew": "Neues Fahrzeug",
+  "vehicleFormEdit": "Fahrzeug bearbeiten",
+  "vehicleNameLabel": "Name",
+  "vehicleNameHint": "z. B. Golf",
+  "vehicleFuelSection": "Antrieb",
+  "vehicleConsumptionLitre": "Verbrauch (l/100 km)",
+  "vehicleConsumptionKwh": "Verbrauch (kWh/100 km)",
+  "vehicleWearLabel": "Verschleiß je km (optional)",
+  "vehicleKmRateLabel": "Pauschale je km (optional)",
+  "vehicleKmRateHelper": "Mit Pauschale zählt der Betrag je km statt Sprit und Verschleiß.",
+  "vehicleErrorName": "Gib einen Namen ein",
+  "vehicleErrorConsumption": "Gib den Verbrauch ein",
+  "vehicleSave": "Speichern",
+  "templateFormNew": "Neue Strecke",
+  "templateFormEdit": "Strecke bearbeiten",
+  "templateNameLabel": "Name",
+  "templateNameHint": "z. B. Arbeit",
+  "templateDistanceLabel": "Entfernung einfach (km)",
+  "templateRoundTrip": "Hin- und Rückfahrt",
+  "templateVehicleSection": "Fahrzeug",
+  "templateDriverSection": "Fahrer",
+  "templateDriverNone": "Wechselt",
+  "templatePassengersSection": "Fährt mit",
+  "templateTollsLabel": "Maut (optional)",
+  "templateErrorName": "Gib einen Namen ein",
+  "templateErrorDistance": "Gib die Entfernung ein",
+  "templateNoVehicle": "Lege zuerst ein Fahrzeug an.",
+  "templateNoVehicleAction": "Fahrzeug anlegen",
+  "templateSave": "Speichern"
 }

@@ -1,3 +1,4 @@
+import 'package:mitlio/core/first_value.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
@@ -18,7 +19,7 @@ Future<RepositoryError?> fakeMissingRef({
   )) {
     return error;
   }
-  final live = await vehicles.watchVehicles(groupId).first;
+  final live = await firstValue(vehicles.watchVehicles(groupId));
   if (!live.any((v) => v.id == vehicleId)) {
     return NotFound('vehicle', vehicleId);
   }

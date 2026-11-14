@@ -36,3 +36,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    # Symlink to tool/fixtures/scenarios (single source of seed scenarios).
+    - assets/scenarios/
