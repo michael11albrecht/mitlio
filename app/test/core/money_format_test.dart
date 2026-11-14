@@ -63,6 +63,15 @@ void main() {
     expect((parts.negative, parts.whole, parts.fraction), (true, 12, '05'));
   });
 
+  test('formatRate drops trailing zeros and uses the locale separator', () {
+    expect(de.formatRate(920000), '0,92');
+    expect(en.formatRate(920000), '0.92');
+    expect(de.formatRate(1083400), '1,0834');
+    expect(de.formatRate(160000000), '160');
+    expect(de.formatRate(1), '0,000001');
+    expect(de.formatRate(1000000), '1');
+  });
+
   test('formatMoney delegates', () {
     expect(de.formatMoney(Money(1240, Currency.eur)), '12,40 €');
   });

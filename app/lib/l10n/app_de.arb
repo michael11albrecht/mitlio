@@ -288,6 +288,18 @@
     }
   },
   "expenseExcluded": "Nicht dabei",
+  "expenseCurrencyLabel": "Währung",
+  "expenseRateLabel": "Kurs",
+  "expenseErrorRate": "Gib den Kurs ein",
+  "rateInvalid": "Das ist kein gültiger Kurs",
+  "expenseConverted": "= {amount} (Gruppenwährung)",
+  "@expenseConverted": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "@@x-feature": "trips",
   "tripAdd": "Fahrt hinzufügen",
   "tripFormTitle": "Fahrt",

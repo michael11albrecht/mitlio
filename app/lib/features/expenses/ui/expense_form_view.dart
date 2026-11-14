@@ -10,6 +10,7 @@ import 'package:mitlio/core/widgets/amount_field.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/core/widgets/money_text.dart';
+import 'package:mitlio/core/widgets/rate_field.dart';
 import 'package:mitlio/features/expenses/ui/expense_form_view_model.dart';
 import 'package:mitlio/features/expenses/ui/expenses_view.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
@@ -144,15 +145,72 @@ class _FormBody extends StatelessWidget {
     return ListView(
       padding: Spacing.screen,
       children: [
-        AmountField(
-          currency: form.group.currency,
-          cents: form.amountCents,
-          label: l10n.expenseAmountLabel,
-          autofocus: !form.editing,
-          onChanged: vm.setAmount,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: AmountField(
+                currency: form.currency,
+                cents: form.amountCents,
+                label: l10n.expenseAmountLabel,
+                autofocus: !form.editing,
+                onChanged: vm.setAmount,
+              ),
+            ),
+            const SizedBox(width: Spacing.sm),
+            SizedBox(
+              width: Sizes.currencyPicker,
+              child: DropdownButtonFormField<Currency>(
+                key: ValueKey('currency-${form.currency.code}'),
+                initialValue: form.currency,
+                isExpanded: true,
+                decoration: InputDecoration(
+                  labelText: l10n.expenseCurrencyLabel,
+                ),
+                items: [
+                  for (final c in form.currencyOptions)
+                    DropdownMenuItem(value: c, child: Text(c.code)),
+                ],
+                onChanged: (c) {
+                  if (c != null) vm.setCurrency(c);
+                },
+              ),
+            ),
+          ],
         ),
         if (form.showErrors && form.amountMissing)
           _ErrorLine(l10n.expenseErrorAmount),
+        if (form.isForeign) ...[
+          const SizedBox(height: Spacing.md),
+          RateField(
+            fromCode: form.currency.code,
+            toSymbol: MoneyFormat.of(
+              context,
+            ).currencySymbol(form.group.currency),
+            label: l10n.expenseRateLabel,
+            ppm: form.ratePpm,
+            errorText: form.showErrors && form.rateMissing
+                ? l10n.expenseErrorRate
+                : null,
+            onChanged: vm.setRate,
+          ),
+          if (form.groupAmountCents case final converted?)
+            Padding(
+              padding: const EdgeInsets.only(top: Spacing.sm),
+              child: Semantics(
+                liveRegion: true,
+                child: Text(
+                  l10n.expenseConverted(
+                    MoneyFormat.of(context).format(
+                      converted,
+                      form.group.currency,
+                    ),
+                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+            ),
+        ],
         const SizedBox(height: Spacing.md),
         TextField(
           controller: title,

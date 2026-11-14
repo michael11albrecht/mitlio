@@ -118,6 +118,18 @@
   "expenseSharesFewer": "Fewer shares for {name}",
   "expenseSharesMore": "More shares for {name}",
   "expenseExcluded": "Not included",
+  "expenseCurrencyLabel": "Currency",
+  "expenseRateLabel": "Rate",
+  "expenseErrorRate": "Enter the exchange rate",
+  "rateInvalid": "That is not a valid rate",
+  "expenseConverted": "= {amount} (group currency)",
+  "@expenseConverted": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "@@x-feature": "trips",
   "tripAdd": "Add a trip",
   "tripFormTitle": "Trip",

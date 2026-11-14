@@ -82,6 +82,7 @@ class FakeExpensesRepository implements ExpensesRepository {
       split: _normalised(draft.split),
       category: draft.category,
       tripMeta: draft.tripMeta,
+      foreign: draft.foreign,
       createdAt: _clock.now().toUtc(),
     );
     _entries[id] = entry;
@@ -101,6 +102,7 @@ class FakeExpensesRepository implements ExpensesRepository {
       split: _normalised(draft.split),
       category: draft.category,
       tripMeta: draft.tripMeta,
+      foreign: draft.foreign,
       createdAt: current.createdAt,
     );
     _entries[id] = entry;
