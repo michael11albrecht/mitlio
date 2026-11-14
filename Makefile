@@ -81,7 +81,7 @@ web-build: $(WEB)/node_modules/.package-lock.json ## Build the Astro static site
 web-check: ## astro check + static build (skipped when npm is missing)
 	@if command -v npm >/dev/null; then \
 	  $(MAKE) $(WEB)/node_modules/.package-lock.json && \
-	  (cd $(WEB) && ASTRO_TELEMETRY_DISABLED=1 npm run check && npm run build); \
+	  (cd $(WEB) && ASTRO_TELEMETRY_DISABLED=1 npm run check && npm run build && npm run seo); \
 	else echo "npm not installed — web-check skipped"; fi
 
 .PHONY: test-drive

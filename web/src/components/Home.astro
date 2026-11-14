@@ -1,7 +1,9 @@
 ---
+import { getCollection } from 'astro:content';
 import Calculator from './Calculator.astro';
 import Layout from '../layouts/Layout.astro';
-import { messages, type Locale } from '../i18n';
+import { messages, paths, htmlLang, type Locale } from '../i18n';
+import { organization, webApplication } from '../lib/jsonld';
 
 interface Props {
   locale: Locale;
@@ -9,10 +11,36 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = messages[locale];
+const site = Astro.site!;
+// Landing pages exist in German only for now.
+const pages = locale === 'de' ? await getCollection('landing') : [];
+const jsonLd = [
+  organization(site.href),
+  webApplication({
+    name: t.calculatorLabel,
+    url: new URL(paths.home[locale], site).href,
+    description: t.homeDescription,
+    lang: htmlLang[locale],
+  }),
+];
 ---
 
-<Layout locale={locale} route="home" title={t.homeTitle} description={t.homeDescription} appBanner>
+<Layout locale={locale} route="home" title={t.homeTitle} description={t.homeDescription} jsonLd={jsonLd} appBanner>
   <h1>{t.heroTitle}</h1>
   <p class="lead">{t.heroLead}</p>
   <Calculator locale={locale} />
+  {
+    pages.length > 0 && (
+      <nav class="related" aria-labelledby="related-heading">
+        <h2 id="related-heading">Ratgeber und Rechner für jede Fahrt</h2>
+        <ul>
+          {pages.map((p) => (
+            <li>
+              <a href={`/${p.id}/`}>{p.data.linkLabel}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
 </Layout>
