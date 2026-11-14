@@ -155,6 +155,117 @@
       }
     }
   },
+
+  "@@x-feature-expenses": "expenses",
+  "tabMembers": "Mitglieder",
+  "tabExpenses": "Ausgaben",
+  "expensesEmptyTitle": "Noch keine Ausgabe",
+  "expensesEmptyMessage": "Trag die erste ein.",
+  "expenseAdd": "Ausgabe hinzufügen",
+  "expensesNoMembersMessage": "Füge zuerst die Leute hinzu, die sich Kosten teilen.",
+  "expensesNoMembersAction": "Mitglieder hinzufügen",
+  "expenseToday": "Heute",
+  "expenseYesterday": "Gestern",
+  "expensePaidBy": "{name} hat bezahlt",
+  "@expensePaidBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expensePaidByMore": "{name} +{count} haben bezahlt",
+  "@expensePaidByMore": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "expenseDeleted": "„{title}“ gelöscht",
+  "@expenseDeleted": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseDelete": "Löschen",
+  "expenseFilterPerson": "Person",
+  "expenseFilterCategory": "Kategorie",
+  "expenseFilterAll": "Alle",
+  "expenseFilterEmptyTitle": "Nichts gefunden",
+  "expenseFilterReset": "Filter zurücksetzen",
+  "expenseCategoryFood": "Essen & Trinken",
+  "expenseCategoryStay": "Unterkunft",
+  "expenseCategoryTransport": "Verkehr",
+  "expenseCategoryFun": "Freizeit",
+  "expenseCategoryOther": "Sonstiges",
+  "expenseFormNew": "Neue Ausgabe",
+  "expenseFormEdit": "Ausgabe bearbeiten",
+  "expenseAmountLabel": "Betrag",
+  "expenseTitleLabel": "Wofür?",
+  "expenseTitleHint": "z. B. Pizza",
+  "expenseDateChange": "Datum ändern",
+  "expensePayerSection": "Wer hat bezahlt?",
+  "expensePayerMulti": "Mehrere haben bezahlt",
+  "expensePayerSingle": "Nur eine Person hat bezahlt",
+  "expenseSplitSection": "Aufteilung",
+  "expenseSplitEqual": "Gleich",
+  "expenseSplitShares": "Anteile",
+  "expenseSplitPercent": "Prozent",
+  "expenseSplitExact": "Genau",
+  "expenseCategorySection": "Kategorie (optional)",
+  "expenseSave": "Speichern",
+  "expenseErrorTitle": "Gib der Ausgabe einen Titel",
+  "expenseErrorAmount": "Gib einen Betrag ein",
+  "expenseErrorNoParticipants": "Wähle mindestens eine Person",
+  "expenseErrorNoPayer": "Wähle, wer bezahlt hat",
+  "expenseErrorGeneric": "Das passt noch nicht zusammen",
+  "expenseLeftOver": "Noch {amount} offen",
+  "@expenseLeftOver": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseOver": "{amount} zu viel",
+  "@expenseOver": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "expensePercentSum": "Zusammen {sum} – es müssen 100 % sein",
+  "@expensePercentSum": {
+    "placeholders": {
+      "sum": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseSharesFewer": "Weniger Anteile für {name}",
+  "@expenseSharesFewer": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseSharesMore": "Mehr Anteile für {name}",
+  "@expenseSharesMore": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseExcluded": "Nicht dabei",
   "@@x-feature": "trips",
   "tripAdd": "Fahrt hinzufügen",
   "tripFormTitle": "Fahrt",
