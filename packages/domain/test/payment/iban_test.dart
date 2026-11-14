@@ -1,6 +1,8 @@
 import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../support/domain_rules_examples.dart';
+
 const _alnum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 /// Independent oracle: check digits via BigInt (the implementation uses
@@ -36,20 +38,16 @@ extension IbanAny on Any {
 
 void main() {
   group('normalizeIban examples', () {
-    const rows = <(String, String?, IbanError?)>[
-      ('DE89370400440532013000', 'DE89370400440532013000', null),
-      ('de89 3704 0044 0532 0130 00', 'DE89370400440532013000', null),
-      ('GB82WEST12345698765432', 'GB82WEST12345698765432', null),
-      ('DE89370400440532013001', null, InvalidChecksum()),
-      ('DE8937', null, InvalidFormat()),
-    ];
-    for (final (input, result, error) in rows) {
-      test(input, () {
-        final r = normalizeIban(input);
-        if (result != null) {
-          expect(r, equals(Ok<String, IbanError>(result)));
+    for (final e in domainRulesRows('iban')) {
+      test(e['input'] as String, () {
+        final r = normalizeIban(e['input'] as String);
+        if (e.containsKey('result')) {
+          expect(r, equals(Ok<String, IbanError>(e['result'] as String)));
         } else {
-          expect(r, equals(Err<String, IbanError>(error!)));
+          expect(
+            (r as Err<String, IbanError>).error.runtimeType.toString(),
+            e['error'],
+          );
         }
       });
     }
