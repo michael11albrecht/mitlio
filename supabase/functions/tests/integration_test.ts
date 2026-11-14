@@ -49,10 +49,15 @@ keyTest("CORS: preflight and allowlist", async () => {
   await pre.body?.cancel();
 
   const ok = await call("type=e5&plz=10115", "198.51.100.1", { Origin: ORIGIN });
-  assertEquals(ok.headers.get("access-control-allow-origin"), ORIGIN);
+  // The local gateway (Kong) overwrites Access-Control-Allow-Origin with "*", so the function's own
+  // allowlist decision is observed through `Vary: Origin`, which only it sets (exact ACAO values are
+  // unit-tested in _shared/fuel_test.ts).
+  assertEquals(ok.status, 200);
+  assert(ok.headers.get("vary")?.toLowerCase().includes("origin"), "allowed origin gets CORS");
   await ok.body?.cancel();
   const evil = await call("type=e5&plz=10115", "198.51.100.1", { Origin: "https://evil.example" });
-  assertEquals(evil.headers.get("access-control-allow-origin"), null);
+  assertEquals(evil.status, 200);
+  assertFalse(evil.headers.get("vary")?.toLowerCase().includes("origin"), "other origins get none");
   await evil.body?.cancel();
 });
 
