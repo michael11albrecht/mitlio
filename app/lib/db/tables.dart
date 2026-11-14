@@ -129,6 +129,79 @@ class Settlements extends Table with SyncColumns {
       text().check(method.isIn(const ['paypal', 'sepa', 'cash', 'other']))();
 }
 
+@DataClassName('VehicleRow')
+@TableIndex(name: 'vehicles_group_id', columns: {#groupId})
+class Vehicles extends Table with SyncColumns {
+  TextColumn get name => text()();
+  TextColumn get fuelType => text().check(
+    fuelType.isIn(const ['petrol', 'diesel', 'electric', 'other']),
+  )();
+
+  /// Litres or kWh per 100 km times 1000.
+  IntColumn get consumptionMilliPer100km =>
+      integer().check(consumptionMilliPer100km.isBiggerThanValue(0))();
+
+  /// Thousandths of the major currency unit per km.
+  IntColumn get wearMilliPerKm => integer()
+      .withDefault(const Constant(0))
+      .check(wearMilliPerKm.isBiggerOrEqualValue(0))();
+
+  /// If set, rides with this vehicle default to km-rate mode.
+  IntColumn get kmRateMilliPerKm =>
+      integer().nullable().check(kmRateMilliPerKm.isBiggerOrEqualValue(0))();
+}
+
+@DataClassName('RideTemplateRow')
+@TableIndex(name: 'ride_templates_group_id', columns: {#groupId})
+class RideTemplates extends Table with SyncColumns {
+  TextColumn get name => text()();
+
+  /// One-way distance in metres.
+  IntColumn get distanceMeters =>
+      integer().check(distanceMeters.isBiggerOrEqualValue(0))();
+  BoolColumn get roundTrip => boolean().withDefault(const Constant(false))();
+  TextColumn get vehicleId => text().references(Vehicles, #id)();
+  TextColumn get defaultDriverId =>
+      text().nullable().references(Members, #id)();
+
+  /// JSON array of member ids, sorted (aggregate-level sync, no child table).
+  TextColumn get defaultPassengerIds =>
+      text().withDefault(const Constant('[]'))();
+  IntColumn get tollsCents => integer()
+      .withDefault(const Constant(0))
+      .check(tollsCents.isBiggerOrEqualValue(0))();
+}
+
+@DataClassName('RideRow')
+@TableIndex(name: 'rides_group_date', columns: {#groupId, #date})
+class Rides extends Table with SyncColumns {
+  /// Calendar date stored as UTC midnight.
+  DateTimeColumn get date => dateTime()();
+
+  /// One-way distance in metres.
+  IntColumn get distanceMeters =>
+      integer().check(distanceMeters.isBiggerOrEqualValue(0))();
+  BoolColumn get roundTrip => boolean().withDefault(const Constant(false))();
+  IntColumn get tollsCents => integer()
+      .withDefault(const Constant(0))
+      .check(tollsCents.isBiggerOrEqualValue(0))();
+  TextColumn get vehicleId => text().references(Vehicles, #id)();
+  TextColumn get driverId => text().references(Members, #id)();
+
+  /// JSON array of member ids, sorted (aggregate-level sync, no child table).
+  TextColumn get passengerIds => text().withDefault(const Constant('[]'))();
+  BoolColumn get driverCounts => boolean().withDefault(const Constant(true))();
+
+  /// Fuel price per litre or kWh in thousandths, frozen when logged.
+  IntColumn get pricePerUnitMilli =>
+      integer().check(pricePerUnitMilli.isBiggerOrEqualValue(0))();
+  BoolColumn get useKmRate => boolean().withDefault(const Constant(false))();
+
+  /// Set when a period is settled (P3r-T06); the ride is then locked.
+  TextColumn get settledExpenseId =>
+      text().nullable().references(Expenses, #id)();
+}
+
 /// Full IBAN per member. Local only, never synced (PII, plan §8). No DAO
 /// method joins this with synced tables.
 @DataClassName('LocalMemberBankRow')
