@@ -1,0 +1,170 @@
+{
+  "group": "Sommerurlaub",
+  "currency": "EUR",
+  "members": [
+    "Anna",
+    "Ben",
+    "Chiara",
+    "Dino"
+  ],
+  "trips": [
+    {
+      "title": "Hinfahrt",
+      "date": "2026-07-04",
+      "distanceMeters": 620000,
+      "consumptionMilliPer100km": 6500,
+      "pricePerUnitMilli": 1850,
+      "wearMilliPerKm": 80,
+      "tollsCents": 1850,
+      "driver": "Anna",
+      "passengers": [
+        "Ben",
+        "Chiara",
+        "Dino"
+      ]
+    },
+    {
+      "title": "Ausflug Berge",
+      "date": "2026-07-08",
+      "distanceMeters": 85000,
+      "roundTrip": true,
+      "consumptionMilliPer100km": 7200,
+      "pricePerUnitMilli": 1890,
+      "driver": "Ben",
+      "passengers": [
+        "Anna",
+        "Dino"
+      ]
+    },
+    {
+      "title": "Rueckfahrt",
+      "date": "2026-07-14",
+      "distanceMeters": 640000,
+      "kmRateMilliPerKm": 300,
+      "ferryCents": 2400,
+      "driver": "Chiara",
+      "passengers": [
+        "Anna",
+        "Ben",
+        "Dino"
+      ]
+    }
+  ],
+  "expenses": [
+    {
+      "title": "Ferienhaus",
+      "amountCents": 84000,
+      "date": "2026-07-04",
+      "payers": {
+        "Dino": 84000
+      },
+      "split": {
+        "mode": "equal",
+        "participants": [
+          "Anna",
+          "Ben",
+          "Chiara",
+          "Dino"
+        ]
+      },
+      "category": "lodging"
+    },
+    {
+      "title": "Einkauf",
+      "amountCents": 15637,
+      "date": "2026-07-05",
+      "payers": {
+        "Anna": 15637
+      },
+      "split": {
+        "mode": "equal",
+        "participants": [
+          "Anna",
+          "Ben",
+          "Chiara",
+          "Dino"
+        ]
+      },
+      "category": "groceries"
+    },
+    {
+      "title": "Restaurant",
+      "amountCents": 12080,
+      "date": "2026-07-09",
+      "payers": {
+        "Ben": 8000,
+        "Chiara": 4080
+      },
+      "split": {
+        "mode": "equal",
+        "participants": [
+          "Anna",
+          "Ben",
+          "Chiara",
+          "Dino"
+        ]
+      },
+      "category": "food"
+    },
+    {
+      "title": "Bootstour",
+      "amountCents": 9000,
+      "date": "2026-07-10",
+      "payers": {
+        "Chiara": 9000
+      },
+      "split": {
+        "mode": "equal",
+        "participants": [
+          "Anna",
+          "Chiara",
+          "Dino"
+        ]
+      },
+      "category": "activity"
+    },
+    {
+      "title": "Eis",
+      "amountCents": 1195,
+      "date": "2026-07-11",
+      "payers": {
+        "Dino": 1195
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Anna": 1,
+          "Ben": 2,
+          "Chiara": 1,
+          "Dino": 2
+        }
+      },
+      "category": "food"
+    }
+  ],
+  "expected": {
+    "balances": {
+      "Anna": -10964,
+      "Ben": -27753,
+      "Chiara": -5414,
+      "Dino": 44131
+    },
+    "transfers": [
+      {
+        "from": "Ben",
+        "to": "Dino",
+        "amountCents": 27753
+      },
+      {
+        "from": "Anna",
+        "to": "Dino",
+        "amountCents": 10964
+      },
+      {
+        "from": "Chiara",
+        "to": "Dino",
+        "amountCents": 5414
+      }
+    ]
+  }
+}

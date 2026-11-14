@@ -1,0 +1,126 @@
+{
+  "group": "Rundungstest",
+  "currency": "EUR",
+  "members": [
+    "Anna",
+    "Ben",
+    "Chiara"
+  ],
+  "expenses": [
+    {
+      "title": "1 ct",
+      "amountCents": 1,
+      "date": "2026-05-01",
+      "payers": {
+        "Anna": 1
+      },
+      "split": {
+        "mode": "equal",
+        "participants": [
+          "Anna",
+          "Ben",
+          "Chiara"
+        ]
+      }
+    },
+    {
+      "title": "10 ct",
+      "amountCents": 10,
+      "date": "2026-05-02",
+      "payers": {
+        "Ben": 10
+      },
+      "split": {
+        "mode": "equal",
+        "participants": [
+          "Anna",
+          "Ben",
+          "Chiara"
+        ]
+      }
+    },
+    {
+      "title": "Prozent 33.33",
+      "amountCents": 10000,
+      "date": "2026-05-03",
+      "payers": {
+        "Chiara": 10000
+      },
+      "split": {
+        "mode": "percent",
+        "weights": {
+          "Anna": 3333,
+          "Ben": 3333,
+          "Chiara": 3334
+        }
+      }
+    },
+    {
+      "title": "Prozent krumm",
+      "amountCents": 1001,
+      "date": "2026-05-04",
+      "payers": {
+        "Anna": 1001
+      },
+      "split": {
+        "mode": "percent",
+        "weights": {
+          "Anna": 3333,
+          "Ben": 3333,
+          "Chiara": 3334
+        }
+      }
+    },
+    {
+      "title": "Exakt",
+      "amountCents": 1000,
+      "date": "2026-05-05",
+      "payers": {
+        "Ben": 1000
+      },
+      "split": {
+        "mode": "exact",
+        "weights": {
+          "Anna": 333,
+          "Ben": 333,
+          "Chiara": 334
+        }
+      }
+    },
+    {
+      "title": "Drittel",
+      "amountCents": 100,
+      "date": "2026-05-06",
+      "payers": {
+        "Chiara": 100
+      },
+      "split": {
+        "mode": "equal",
+        "participants": [
+          "Anna",
+          "Ben",
+          "Chiara"
+        ]
+      }
+    }
+  ],
+  "expected": {
+    "balances": {
+      "Anna": -3037,
+      "Ben": -3025,
+      "Chiara": 6062
+    },
+    "transfers": [
+      {
+        "from": "Anna",
+        "to": "Chiara",
+        "amountCents": 3037
+      },
+      {
+        "from": "Ben",
+        "to": "Chiara",
+        "amountCents": 3025
+      }
+    ]
+  }
+}
