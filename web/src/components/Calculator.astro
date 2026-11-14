@@ -1,0 +1,428 @@
+---
+import { calculatorMessages } from '../i18n/calculator';
+import { messages, type Locale } from '../i18n';
+import { defaultState } from '../calculator/core';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const m = calculatorMessages[locale];
+const label = messages[locale].calculatorLabel;
+// Static defaults so the page is stable before the island runs.
+const d = defaultState();
+const decimal = (v: string) => (locale === 'de' ? v.replace('.', ',') : v);
+---
+
+<div id="calculator" role="region" aria-label={label} data-locale={locale}>
+  <div class="result" id="calc-result" data-state="loading">
+    <div aria-live="polite" aria-atomic="true">
+      <p class="result-lead" id="calc-result-lead">{m.loading}</p>
+      <p class="result-amount" id="calc-result-amount">–</p>
+      <p class="result-sub" id="calc-result-sub" hidden></p>
+      <p class="result-extra" id="calc-result-extra" hidden></p>
+    </div>
+    <details class="breakdown">
+      <summary>{m.breakdown}</summary>
+      <dl>
+        <div>
+          <dt id="calc-b-fuel-label">{m.rowFuel}</dt>
+          <dd id="calc-b-fuel">–</dd>
+        </div>
+        <div id="calc-b-extras-row" hidden>
+          <dt>{m.rowExtras}</dt>
+          <dd id="calc-b-extras">–</dd>
+        </div>
+        <div class="total">
+          <dt>{m.rowTotal}</dt>
+          <dd id="calc-b-total">–</dd>
+        </div>
+      </dl>
+    </details>
+  </div>
+
+  <form class="inputs" novalidate onsubmit="return false">
+    <fieldset class="segmented">
+      <legend>{m.energy}</legend>
+      <label>
+        <input type="radio" name="energy" value="fuel" checked />
+        <span>{m.energyFuel}</span>
+      </label>
+      <label>
+        <input type="radio" name="energy" value="ev" />
+        <span>{m.energyEv}</span>
+      </label>
+    </fieldset>
+
+    <div class="grid">
+      <div class="field">
+        <label for="calc-km">{m.distance} ({m.distanceUnit})</label>
+        <div class="control">
+          <input id="calc-km" type="text" inputmode="decimal" autocomplete="off" value={decimal(d.km)} />
+          <span class="unit" aria-hidden="true">{m.distanceUnit}</span>
+        </div>
+        <p class="error" id="calc-km-error" hidden></p>
+      </div>
+
+      <div class="field">
+        <label for="calc-cons" id="calc-cons-label">{m.consumptionFuel} ({m.consumptionFuelUnit})</label>
+        <div class="control">
+          <input id="calc-cons" type="text" inputmode="decimal" autocomplete="off" value={decimal(d.cons)} />
+          <span class="unit" id="calc-cons-unit" aria-hidden="true">{m.consumptionFuelUnit}</span>
+        </div>
+        <p class="error" id="calc-cons-error" hidden></p>
+      </div>
+
+      <div class="field">
+        <label for="calc-price" id="calc-price-label">{m.priceFuel} ({m.priceFuelUnit})</label>
+        <div class="control">
+          <input id="calc-price" type="text" inputmode="decimal" autocomplete="off" value={decimal(d.price)} />
+          <span class="unit" id="calc-price-unit" aria-hidden="true">{m.priceFuelUnit}</span>
+        </div>
+        <p class="error" id="calc-price-error" hidden></p>
+      </div>
+
+      <div class="field">
+        <label for="calc-persons">{m.persons}</label>
+        <div class="stepper">
+          <button type="button" id="calc-persons-dec" aria-label={m.personsLess}>−</button>
+          <input id="calc-persons" type="text" inputmode="numeric" autocomplete="off" value={d.persons} />
+          <button type="button" id="calc-persons-inc" aria-label={m.personsMore}>+</button>
+        </div>
+        <p class="error" id="calc-persons-error" hidden></p>
+      </div>
+    </div>
+
+    <div class="switches">
+      <label class="switch">
+        <span>{m.driverPays}</span>
+        <input id="calc-driver-pays" type="checkbox" role="switch" checked />
+      </label>
+      <label class="switch">
+        <span>{m.roundTrip}</span>
+        <input id="calc-round-trip" type="checkbox" role="switch" />
+      </label>
+    </div>
+
+    <div class="field">
+      <label for="calc-extras">{m.extras} <span class="optional">({m.extrasOptional})</span></label>
+      <div class="control">
+        <input id="calc-extras" type="text" inputmode="decimal" autocomplete="off" placeholder="0" value="" />
+        <span class="unit" aria-hidden="true">{m.extrasUnit}</span>
+      </div>
+      <p class="error" id="calc-extras-error" hidden></p>
+    </div>
+  </form>
+
+  <noscript><p class="error">{m.noscript}</p></noscript>
+</div>
+
+<script is:inline defer src="/mitlio_domain.js"></script>
+<script>
+  import '../calculator/island';
+</script>
+
+<style>
+  #calculator {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .result {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border-radius: var(--radius);
+    padding: var(--space-6);
+    min-height: 11rem;
+  }
+
+  .result[data-state='empty'] {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+
+  .result p {
+    margin: 0;
+  }
+
+  .result-lead {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .result-amount {
+    font-size: clamp(2.75rem, 13vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+
+  .result .result-sub {
+    margin-top: var(--space-2);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .result .result-extra {
+    margin-top: var(--space-2);
+    font-size: 0.9rem;
+  }
+
+  .result[data-state='empty'] .result-sub {
+    color: var(--color-text-muted);
+    font-weight: 400;
+  }
+
+  .breakdown {
+    margin-top: var(--space-4);
+    border-top: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+    padding-top: var(--space-2);
+  }
+
+  .breakdown summary {
+    cursor: pointer;
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+  }
+
+  .breakdown dl {
+    margin: 0 0 var(--space-2);
+  }
+
+  .breakdown dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: var(--space-1);
+  }
+
+  .breakdown dt,
+  .breakdown dd {
+    margin: 0;
+  }
+
+  .breakdown dd {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .breakdown .total {
+    font-weight: 700;
+    border-top: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+    margin-top: var(--space-1);
+    padding-top: var(--space-2);
+  }
+
+  .inputs {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 34rem) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .field label {
+    display: block;
+    margin-bottom: var(--space-1);
+    font-weight: 600;
+  }
+
+  .optional {
+    font-weight: 400;
+    color: var(--color-text-muted);
+  }
+
+  .control {
+    position: relative;
+  }
+
+  input[type='text'] {
+    width: 100%;
+    min-height: 3rem;
+    padding: var(--space-2) var(--space-3);
+    font: inherit;
+    font-size: 1.125rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text);
+    background: var(--color-bg);
+    border: 2px solid var(--color-border-strong);
+    border-radius: 0.5rem;
+  }
+
+  .control input[type='text'] {
+    padding-right: 4.75rem;
+  }
+
+  input[aria-invalid='true'] {
+    border-color: var(--color-error);
+  }
+
+  .unit {
+    position: absolute;
+    right: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    pointer-events: none;
+  }
+
+  .error {
+    margin: var(--space-1) 0 0;
+    color: var(--color-error);
+    font-size: 0.9rem;
+  }
+
+  .stepper {
+    display: grid;
+    grid-template-columns: 3rem 1fr 3rem;
+    gap: var(--space-2);
+  }
+
+  .stepper input[type='text'] {
+    text-align: center;
+  }
+
+  .stepper button {
+    min-height: 3rem;
+    font: inherit;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--color-text);
+    background: var(--color-bg);
+    border: 2px solid var(--color-border-strong);
+    border-radius: 0.5rem;
+    cursor: pointer;
+  }
+
+  .stepper button:active {
+    background: var(--color-border);
+  }
+
+  .segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .segmented legend {
+    font-weight: 600;
+    padding: 0;
+    margin-bottom: var(--space-1);
+  }
+
+  .segmented label {
+    position: relative;
+    display: block;
+  }
+
+  .segmented input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .segmented span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding-inline: var(--space-2);
+    text-align: center;
+    border: 2px solid var(--color-border-strong);
+    border-radius: 0.5rem;
+    background: var(--color-bg);
+    font-weight: 600;
+  }
+
+  .segmented input:checked + span {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+
+  .segmented input:focus-visible + span {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .switches {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: 3rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .switch input {
+    appearance: none;
+    flex: none;
+    position: relative;
+    width: 3rem;
+    height: 1.75rem;
+    margin: 0;
+    border-radius: 999px;
+    border: 2px solid var(--color-border-strong);
+    background: var(--color-bg);
+    cursor: pointer;
+  }
+
+  .switch input::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0.2rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    background: var(--color-border-strong);
+    transform: translateY(-50%);
+    transition: left 0.15s ease;
+  }
+
+  .switch input:checked {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .switch input:checked::before {
+    left: 1.45rem;
+    background: var(--color-on-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .switch input::before {
+      transition: none;
+    }
+  }
+</style>

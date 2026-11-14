@@ -13,6 +13,8 @@
   --color-on-primary: #ffffff;
   --color-border: #cbd5d3;
   --color-focus: #0f766e;
+  --color-border-strong: #66787a;
+  --color-error: #b42318;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -37,5 +39,7 @@
     --color-on-primary: #0e1514;
     --color-border: #2c3b38;
     --color-focus: #5eead4;
+    --color-border-strong: #84989a;
+    --color-error: #fda29b;
   }
 }
