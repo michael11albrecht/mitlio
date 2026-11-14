@@ -8,3 +8,10 @@ export const SITE_URL = process.env.SITE_URL ?? 'https://mitlio.web.app';
 // APP_STORE_URL must contain the numeric id, e.g. https://apps.apple.com/app/mitlio/id1234567890.
 export const APP_STORE_URL = process.env.APP_STORE_URL ?? '';
 export const PLAY_STORE_URL = process.env.PLAY_STORE_URL ?? '';
+
+// Live fuel prices (PW-T04). FUEL_API_URL is the full endpoint of the `fuel-prices` Edge Function, e.g.
+// https://<project>.supabase.co/functions/v1/fuel-prices. Empty until hosting exists: the chips are then
+// not rendered at all and the page makes no network request. FUEL_API_ANON_KEY is the public anon key
+// (shipped to browsers on purpose, see docs/fuel-prices-api.md); optional.
+export const FUEL_API_URL = process.env.FUEL_API_URL ?? '';
+export const FUEL_API_ANON_KEY = process.env.FUEL_API_ANON_KEY ?? '';

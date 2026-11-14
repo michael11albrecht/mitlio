@@ -6,6 +6,8 @@ import { SITE_URL } from './site.config.mjs';
 export default defineConfig({
   site: SITE_URL,
   output: 'static',
+  // Playwright serves a second build with a fake FUEL_API_URL from its own folder (scripts/serve-fuel-fixture.mjs).
+  outDir: process.env.ASTRO_OUT_DIR ?? './dist',
   trailingSlash: 'always',
   build: { format: 'directory' },
   i18n: {

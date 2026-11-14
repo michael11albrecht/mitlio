@@ -2,7 +2,8 @@
 import { calculatorMessages } from '../i18n/calculator';
 import { messages, type Locale } from '../i18n';
 import { defaultState, MAX_TRIP_NAME, type CalcState } from '../calculator/core';
-import { APP_STORE_URL, PLAY_STORE_URL } from '../../site.config.mjs';
+import { APP_STORE_URL, FUEL_API_ANON_KEY, FUEL_API_URL, PLAY_STORE_URL } from '../../site.config.mjs';
+import { FUEL_TYPES } from '../lib/fuel';
 import { buildDeepLink } from '../lib/deeplink';
 
 interface Props {
@@ -21,6 +22,8 @@ const d: CalcState = { ...defaultState(preset.energy ?? 'fuel'), ...preset };
 const decimal = (v: string) => (locale === 'de' ? v.replace('.', ',') : v);
 const storesLive = APP_STORE_URL !== '' || PLAY_STORE_URL !== '';
 const ev = d.energy === 'ev';
+// Live fuel price chips need a configured API and a per-litre price field (not the km-rate page).
+const fuelEnabled = FUEL_API_URL !== '' && !rate;
 const consLabel = `${ev ? m.consumptionEv : m.consumptionFuel} (${ev ? m.consumptionEvUnit : m.consumptionFuelUnit})`;
 const consUnit = ev ? m.consumptionEvUnit : m.consumptionFuelUnit;
 const priceLabel = rate ? `${m.priceRate} (${m.priceRateUnit})` : `${ev ? m.priceEv : m.priceFuel} (${ev ? m.priceEvUnit : m.priceFuelUnit})`;
@@ -91,6 +94,48 @@ const ctaDeepLink = buildDeepLink({
         <span>{m.energyEv}</span>
       </label>
     </fieldset>
+
+    {
+      fuelEnabled && (
+        <div
+          class="fuel"
+          id="calc-fuel"
+          role="group"
+          aria-labelledby="calc-fuel-title"
+          data-api={FUEL_API_URL}
+          data-key={FUEL_API_ANON_KEY || undefined}
+          hidden
+        >
+          <p class="fuel-title" id="calc-fuel-title">
+            {m.fuelTitle}
+          </p>
+          <div class="chips" id="calc-fuel-chips">
+            {FUEL_TYPES.map((t) => (
+              <button type="button" class="chip" data-fuel={t} hidden aria-pressed="false">
+                <span class="chip-name">{t === 'diesel' ? 'Diesel' : t.toUpperCase()}</span>{' '}
+                <span class="chip-price" />
+              </button>
+            ))}
+          </div>
+          <p class="fuel-source" id="calc-fuel-source" hidden />
+          <div class="fuel-where" id="calc-fuel-where">
+            <button type="button" class="chip chip-action" id="calc-fuel-nearby">
+              {m.fuelNearby}
+            </button>
+            {/* Not a <form>: this block sits inside the calculator form and forms cannot nest. */}
+            <div class="fuel-plz" id="calc-fuel-plz-group">
+              <label for="calc-fuel-plz">{m.fuelPlz}</label>
+              <input id="calc-fuel-plz" type="text" inputmode="numeric" maxlength="5" autocomplete="postal-code" />
+              <button type="button" class="chip chip-action" id="calc-fuel-plz-go">
+                {m.fuelPlzGo}
+              </button>
+            </div>
+            <p class="fuel-note">{m.fuelLocationNote}</p>
+          </div>
+          <p class="fuel-status" id="calc-fuel-status" role="status" />
+        </div>
+      )
+    }
 
     <div class="grid">
       <div class="field">
@@ -374,6 +419,107 @@ const ctaDeepLink = buildDeepLink({
     .grid {
       grid-template-columns: 1fr 1fr;
     }
+  }
+
+  .fuel {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .fuel[hidden],
+  .chip[hidden],
+  .fuel-source[hidden],
+  .fuel-where[hidden] {
+    display: none;
+  }
+
+  .fuel-title {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .chips,
+  .fuel-where {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    padding-inline: var(--space-4);
+    font: inherit;
+    color: var(--color-text);
+    background: var(--color-bg);
+    border: 2px solid var(--color-border-strong);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .chip:hover {
+    border-color: var(--color-primary);
+  }
+
+  .chip:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .chip-name {
+    font-weight: 700;
+  }
+
+  .chip-price {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chip[aria-pressed='true'] {
+    color: var(--color-on-primary);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .chip-action {
+    align-items: center;
+    font-weight: 600;
+  }
+
+  .fuel-source,
+  .fuel-note,
+  .fuel-status {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  .fuel-note {
+    flex-basis: 100%;
+  }
+
+  .fuel-status:empty {
+    display: none;
+  }
+
+  .fuel-plz {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .fuel-plz label {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  .fuel-plz input[type='text'] {
+    width: 6.5rem;
+    min-height: 2.75rem;
+    font-size: 1rem;
   }
 
   .field label {
