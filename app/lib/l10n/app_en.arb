@@ -11,8 +11,6 @@
   "moneySpokenNegative": "minus {amount}",
   "undo": "Undo",
   "dismiss": "Dismiss",
-  "groupsEmptyTitle": "No group yet",
-  "groupsEmptyMessage": "Create your first one.",
   "groupNew": "New group",
   "groupCreate": "Create group",
   "groupEditTitle": "Edit group",
@@ -482,5 +480,36 @@
   "exportCategoryStay": "Stay",
   "exportCategoryTransport": "Transport",
   "exportCategoryFun": "Fun",
-  "exportCategoryOther": "Other"
+  "exportCategoryOther": "Other",
+  "onboardingTitle": "Welcome to mitlio",
+  "onboardingValue": "Split ride costs and expenses fairly — no sign-up, no ads.",
+  "onboardingCommute": "Start a carpool",
+  "onboardingCommuteHint": "Set up the car and route once, then 2 taps per ride.",
+  "onboardingCommuteGroupName": "Carpool",
+  "onboardingGroup": "Create a group for expenses",
+  "onboardingGroupHint": "For trips, your flat or a night out together.",
+  "onboardingTripOnly": "Just calculate one trip",
+  "tripSeatName": "Person {number}",
+  "@tripSeatName": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "tripShare": "Share result",
+  "tripShareText": "Trip cost: each person pays {amount}",
+  "@tripShareText": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "balancesEmptyAction": "Add an expense",
+  "settingsTitle": "Settings",
+  "privacySection": "Privacy",
+  "crashReportsLabel": "Send crash reports",
+  "crashReportsHint": "Only on a crash: technical error data without names, amounts, notes or IBAN. Off by default.",
+  "crashReportsUnavailable": "Not available in this version."
 }

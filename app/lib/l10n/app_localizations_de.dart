@@ -69,12 +69,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dismiss => 'Schließen';
 
   @override
-  String get groupsEmptyTitle => 'Noch keine Gruppe';
-
-  @override
-  String get groupsEmptyMessage => 'Leg die erste an.';
-
-  @override
   String get groupNew => 'Neue Gruppe';
 
   @override
@@ -1240,4 +1234,63 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get exportCategoryOther => 'Sonstiges';
+
+  @override
+  String get onboardingTitle => 'Willkommen bei mitlio';
+
+  @override
+  String get onboardingValue =>
+      'Fahrtkosten und Ausgaben fair teilen — ohne Anmeldung, ohne Werbung.';
+
+  @override
+  String get onboardingCommute => 'Fahrgemeinschaft starten';
+
+  @override
+  String get onboardingCommuteHint =>
+      'Auto und Strecke einmal anlegen, dann reichen 2 Taps pro Fahrt.';
+
+  @override
+  String get onboardingCommuteGroupName => 'Fahrgemeinschaft';
+
+  @override
+  String get onboardingGroup => 'Gruppe für Ausgaben anlegen';
+
+  @override
+  String get onboardingGroupHint =>
+      'Für Reisen, die WG oder einen Abend zu mehreren.';
+
+  @override
+  String get onboardingTripOnly => 'Nur eine Fahrt berechnen';
+
+  @override
+  String tripSeatName(int number) {
+    return 'Person $number';
+  }
+
+  @override
+  String get tripShare => 'Ergebnis teilen';
+
+  @override
+  String tripShareText(String amount) {
+    return 'Fahrtkosten: jede Person zahlt $amount';
+  }
+
+  @override
+  String get balancesEmptyAction => 'Ausgabe eintragen';
+
+  @override
+  String get settingsTitle => 'Einstellungen';
+
+  @override
+  String get privacySection => 'Datenschutz';
+
+  @override
+  String get crashReportsLabel => 'Absturzberichte senden';
+
+  @override
+  String get crashReportsHint =>
+      'Nur bei einem Absturz: technische Fehlerdaten ohne Namen, Beträge, Notizen oder IBAN. Standardmäßig aus.';
+
+  @override
+  String get crashReportsUnavailable => 'In dieser Version nicht verfügbar.';
 }

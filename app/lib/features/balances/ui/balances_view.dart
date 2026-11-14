@@ -42,6 +42,11 @@ class BalancesView extends ConsumerWidget {
           icon: Icons.balance_outlined,
           title: l10n.balancesEmptyTitle,
           message: l10n.balancesEmptyMessage,
+          action: FilledButton(
+            onPressed: () =>
+                unawaited(context.push('/groups/$groupId/expenses/new')),
+            child: Text(l10n.balancesEmptyAction),
+          ),
         ),
         final BalancesLoaded loaded => _Loaded(
           state: loaded,

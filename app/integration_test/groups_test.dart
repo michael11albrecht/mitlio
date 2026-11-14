@@ -64,10 +64,10 @@ void main() {
     tester,
   ) async {
     await start(tester);
-    expect(find.text('Noch keine Gruppe'), findsOneWidget);
+    expect(find.text('Willkommen bei mitlio'), findsOneWidget);
 
     final taps = TapCounter(tester);
-    await taps.tap(find.text('Gruppe anlegen'));
+    await taps.tap(find.text('Gruppe für Ausgaben anlegen'));
     await tester.pumpAndSettle();
     await taps.enterText(find.byType(TextField), 'Skiwochenende');
     await taps.tap(find.text('Gruppe anlegen'));
@@ -124,7 +124,7 @@ void main() {
     await drive['reset']!({});
     await drive['navigate']!({'route': '/'});
     await tester.pumpAndSettle();
-    expect(find.text('Noch keine Gruppe'), findsOneWidget);
+    expect(find.text('Willkommen bei mitlio'), findsOneWidget);
   });
 
   testWidgets('seed groups fills the list', (tester) async {

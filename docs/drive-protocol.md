@@ -26,6 +26,8 @@ Contract for driving a running **debug** build of the app through the same ViewM
 | `ext.mitlio.groups.list` | none | `{"groups": [{"id", "name", "currency"}]}`; calls `GroupsViewModel.list` |
 | `ext.mitlio.members.add` | `groupId`, `name` (both required) | `{"id", "name", "position"}`; calls `GroupDetailViewModel.addMember` |
 
+`navigate` also reaches the first-run routes `/welcome` (onboarding, shown on `/` while no group exists) and `/trip` (the trip form without a group). Onboarding has no commands of its own: the commute path creates its group through `GroupsViewModel.create`, i.e. what `groups.create` calls.
+
 `reset` and `seed` go through the `DebugDataControl` interface; the default implementation (`DriftDebugDataControl`) works on the
 real database and repositories.
 

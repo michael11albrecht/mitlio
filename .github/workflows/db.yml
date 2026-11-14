@@ -39,6 +39,18 @@ jobs:
         run: supabase db reset
       - name: pgTAP (schema + RLS)
         run: supabase test db
+      - name: TS types are up to date
+        run: |
+          supabase gen types typescript --local > supabase/types/database.ts
+          git --no-pager diff --exit-code -- supabase/types/database.ts
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: pubspec.yaml
+          cache: true
+      - name: Dart DB contract is up to date
+        run: |
+          dart tool/gen_db_contract.dart
+          git --no-pager diff --exit-code -- app/lib/features/sync/data/db_contract.g.dart
       - name: Lint migrations (squawk)
         if: ${{ !cancelled() }}
         run: make db-lint

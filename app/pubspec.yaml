@@ -23,6 +23,7 @@ dependencies:
   path_provider: ^2.1.6
   pdf: ^3.13.1
   qr_flutter: ^4.1.0
+  sentry: ^10.4.0
   share_plus: ^13.3.1
   url_launcher: ^6.3.3
   uuid: ^4.6.0
@@ -31,6 +32,10 @@ dev_dependencies:
   alchemist: ^0.14.1
   build_runner: ^2.17.1
   drift_dev: ^2.35.3
+  # Design-time generators for the launcher icon and native splash (P7-T06);
+  # they ship nothing in the app, see docs/brand.md.
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.8
   flutter_test:
     sdk: flutter
   integration_test:

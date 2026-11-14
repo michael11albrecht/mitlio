@@ -34,4 +34,13 @@ Future<void> main() async {
   await golden('trip_form_km_rate', tripKmRate);
   await golden('trip_form_invalid', tripInvalid);
   await golden('trip_form_nobody', tripNobody);
+  await matrixGolden(
+    'trip_form_standalone',
+    () => tripScoped(
+      tripStateOverride(tripStandalone),
+      const TripFormView(groupId: standaloneTripGroupId),
+    ),
+    width: _width,
+    height: _height,
+  );
 }
