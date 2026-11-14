@@ -124,11 +124,28 @@ endif
 db-up db-test db-reset: ## Local Supabase
 	$(call not_yet,Supabase arrives in P6)
 
-.PHONY: drive-up drive
-drive-up: ## Run debug app on desktop for DebugDrive
-	$(call not_yet,DebugDrive is P3-T04)
-drive: ## Call ext.mitlio.* on the running app (CMD='ping')
-	$(call not_yet,DebugDrive is P3-T04)
+DRIVE_DEVICE ?= linux
+DRIVE_WAIT   ?= 300
+ifeq ($(shell uname -s),Linux)
+DRIVE_XVFB := xvfb-run -a
+endif
+
+.PHONY: drive-up drive-down drive
+drive-up: ## Run debug app in the background for DebugDrive (DRIVE_DEVICE=linux, xvfb on Linux)
+	@mkdir -p .drive && rm -f .drive/uri
+	@cd $(APP) && nohup $(DRIVE_XVFB) $(FLUTTER) run -d $(DRIVE_DEVICE) --vmservice-out-file=$(CURDIR)/.drive/uri \
+		--dart-define=BUILD_SHA=$$(git rev-parse --short HEAD 2>/dev/null || echo dev) \
+		>$(CURDIR)/.drive/run.log 2>&1 </dev/null & echo $$! >$(CURDIR)/.drive/pid
+	@for i in $$(seq 1 $(DRIVE_WAIT)); do \
+		[ -s .drive/uri ] && { echo "drive-up: app ready ($$(cat .drive/uri))"; exit 0; }; \
+		kill -0 $$(cat .drive/pid) 2>/dev/null || break; sleep 1; \
+	done; echo "drive-up: app did not start, see .drive/run.log"; tail -n 30 .drive/run.log; exit 1
+drive-down: ## Stop the app started by drive-up
+	@[ -f .drive/pid ] && { pkill -P $$(cat .drive/pid) 2>/dev/null; kill $$(cat .drive/pid) 2>/dev/null; } || true
+	@rm -f .drive/pid .drive/uri
+drive: ## Call ext.mitlio.* on the running app (CMD='ping' or CMD='seed {"scenario":"x"}')
+	@test -n "$(CMD)" || { echo "usage: make drive CMD='ping' (see docs/drive-protocol.md)"; exit 64; }
+	@tool/drive.sh $(CMD)
 
 .PHONY: secrets
 secrets: ## Scan for committed secrets
