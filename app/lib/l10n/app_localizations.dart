@@ -307,6 +307,306 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'{name} hat Ausgaben oder Zahlungen und bleibt deshalb in der Gruppe.'**
   String memberInUse(String name);
+
+  /// No description provided for @tabMembers.
+  ///
+  /// In de, this message translates to:
+  /// **'Mitglieder'**
+  String get tabMembers;
+
+  /// No description provided for @tabExpenses.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgaben'**
+  String get tabExpenses;
+
+  /// No description provided for @expensesEmptyTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Ausgabe'**
+  String get expensesEmptyTitle;
+
+  /// No description provided for @expensesEmptyMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Trag die erste ein.'**
+  String get expensesEmptyMessage;
+
+  /// No description provided for @expenseAdd.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgabe hinzufügen'**
+  String get expenseAdd;
+
+  /// No description provided for @expensesNoMembersMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Füge zuerst die Leute hinzu, die sich Kosten teilen.'**
+  String get expensesNoMembersMessage;
+
+  /// No description provided for @expensesNoMembersAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Mitglieder hinzufügen'**
+  String get expensesNoMembersAction;
+
+  /// No description provided for @expenseToday.
+  ///
+  /// In de, this message translates to:
+  /// **'Heute'**
+  String get expenseToday;
+
+  /// No description provided for @expenseYesterday.
+  ///
+  /// In de, this message translates to:
+  /// **'Gestern'**
+  String get expenseYesterday;
+
+  /// No description provided for @expensePaidBy.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} hat bezahlt'**
+  String expensePaidBy(String name);
+
+  /// No description provided for @expensePaidByMore.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} +{count} haben bezahlt'**
+  String expensePaidByMore(String name, int count);
+
+  /// No description provided for @expenseDeleted.
+  ///
+  /// In de, this message translates to:
+  /// **'„{title}“ gelöscht'**
+  String expenseDeleted(String title);
+
+  /// No description provided for @expenseDelete.
+  ///
+  /// In de, this message translates to:
+  /// **'Löschen'**
+  String get expenseDelete;
+
+  /// No description provided for @expenseFilterPerson.
+  ///
+  /// In de, this message translates to:
+  /// **'Person'**
+  String get expenseFilterPerson;
+
+  /// No description provided for @expenseFilterCategory.
+  ///
+  /// In de, this message translates to:
+  /// **'Kategorie'**
+  String get expenseFilterCategory;
+
+  /// No description provided for @expenseFilterAll.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle'**
+  String get expenseFilterAll;
+
+  /// No description provided for @expenseFilterEmptyTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Nichts gefunden'**
+  String get expenseFilterEmptyTitle;
+
+  /// No description provided for @expenseFilterReset.
+  ///
+  /// In de, this message translates to:
+  /// **'Filter zurücksetzen'**
+  String get expenseFilterReset;
+
+  /// No description provided for @expenseCategoryFood.
+  ///
+  /// In de, this message translates to:
+  /// **'Essen & Trinken'**
+  String get expenseCategoryFood;
+
+  /// No description provided for @expenseCategoryStay.
+  ///
+  /// In de, this message translates to:
+  /// **'Unterkunft'**
+  String get expenseCategoryStay;
+
+  /// No description provided for @expenseCategoryTransport.
+  ///
+  /// In de, this message translates to:
+  /// **'Verkehr'**
+  String get expenseCategoryTransport;
+
+  /// No description provided for @expenseCategoryFun.
+  ///
+  /// In de, this message translates to:
+  /// **'Freizeit'**
+  String get expenseCategoryFun;
+
+  /// No description provided for @expenseCategoryOther.
+  ///
+  /// In de, this message translates to:
+  /// **'Sonstiges'**
+  String get expenseCategoryOther;
+
+  /// No description provided for @expenseFormNew.
+  ///
+  /// In de, this message translates to:
+  /// **'Neue Ausgabe'**
+  String get expenseFormNew;
+
+  /// No description provided for @expenseFormEdit.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausgabe bearbeiten'**
+  String get expenseFormEdit;
+
+  /// No description provided for @expenseAmountLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Betrag'**
+  String get expenseAmountLabel;
+
+  /// No description provided for @expenseTitleLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Wofür?'**
+  String get expenseTitleLabel;
+
+  /// No description provided for @expenseTitleHint.
+  ///
+  /// In de, this message translates to:
+  /// **'z. B. Pizza'**
+  String get expenseTitleHint;
+
+  /// No description provided for @expenseDateChange.
+  ///
+  /// In de, this message translates to:
+  /// **'Datum ändern'**
+  String get expenseDateChange;
+
+  /// No description provided for @expensePayerSection.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer hat bezahlt?'**
+  String get expensePayerSection;
+
+  /// No description provided for @expensePayerMulti.
+  ///
+  /// In de, this message translates to:
+  /// **'Mehrere haben bezahlt'**
+  String get expensePayerMulti;
+
+  /// No description provided for @expensePayerSingle.
+  ///
+  /// In de, this message translates to:
+  /// **'Nur eine Person hat bezahlt'**
+  String get expensePayerSingle;
+
+  /// No description provided for @expenseSplitSection.
+  ///
+  /// In de, this message translates to:
+  /// **'Aufteilung'**
+  String get expenseSplitSection;
+
+  /// No description provided for @expenseSplitEqual.
+  ///
+  /// In de, this message translates to:
+  /// **'Gleich'**
+  String get expenseSplitEqual;
+
+  /// No description provided for @expenseSplitShares.
+  ///
+  /// In de, this message translates to:
+  /// **'Anteile'**
+  String get expenseSplitShares;
+
+  /// No description provided for @expenseSplitPercent.
+  ///
+  /// In de, this message translates to:
+  /// **'Prozent'**
+  String get expenseSplitPercent;
+
+  /// No description provided for @expenseSplitExact.
+  ///
+  /// In de, this message translates to:
+  /// **'Genau'**
+  String get expenseSplitExact;
+
+  /// No description provided for @expenseCategorySection.
+  ///
+  /// In de, this message translates to:
+  /// **'Kategorie (optional)'**
+  String get expenseCategorySection;
+
+  /// No description provided for @expenseSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Speichern'**
+  String get expenseSave;
+
+  /// No description provided for @expenseErrorTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Gib der Ausgabe einen Titel'**
+  String get expenseErrorTitle;
+
+  /// No description provided for @expenseErrorAmount.
+  ///
+  /// In de, this message translates to:
+  /// **'Gib einen Betrag ein'**
+  String get expenseErrorAmount;
+
+  /// No description provided for @expenseErrorNoParticipants.
+  ///
+  /// In de, this message translates to:
+  /// **'Wähle mindestens eine Person'**
+  String get expenseErrorNoParticipants;
+
+  /// No description provided for @expenseErrorNoPayer.
+  ///
+  /// In de, this message translates to:
+  /// **'Wähle, wer bezahlt hat'**
+  String get expenseErrorNoPayer;
+
+  /// No description provided for @expenseErrorGeneric.
+  ///
+  /// In de, this message translates to:
+  /// **'Das passt noch nicht zusammen'**
+  String get expenseErrorGeneric;
+
+  /// No description provided for @expenseLeftOver.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch {amount} offen'**
+  String expenseLeftOver(String amount);
+
+  /// No description provided for @expenseOver.
+  ///
+  /// In de, this message translates to:
+  /// **'{amount} zu viel'**
+  String expenseOver(String amount);
+
+  /// No description provided for @expensePercentSum.
+  ///
+  /// In de, this message translates to:
+  /// **'Zusammen {sum} – es müssen 100 % sein'**
+  String expensePercentSum(String sum);
+
+  /// No description provided for @expenseSharesFewer.
+  ///
+  /// In de, this message translates to:
+  /// **'Weniger Anteile für {name}'**
+  String expenseSharesFewer(String name);
+
+  /// No description provided for @expenseSharesMore.
+  ///
+  /// In de, this message translates to:
+  /// **'Mehr Anteile für {name}'**
+  String expenseSharesMore(String name);
+
+  /// No description provided for @expenseExcluded.
+  ///
+  /// In de, this message translates to:
+  /// **'Nicht dabei'**
+  String get expenseExcluded;
 }
 
 class _AppLocalizationsDelegate

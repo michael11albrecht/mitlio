@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mitlio/features/expenses/ui/expense_form_view.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view.dart';
 import 'package:mitlio/features/groups/ui/group_form_view.dart';
 import 'package:mitlio/features/groups/ui/groups_view.dart';
@@ -26,6 +27,18 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'edit',
                 builder: (context, state) =>
                     GroupFormView(groupId: state.pathParameters['id']),
+              ),
+              GoRoute(
+                path: 'expenses/new',
+                builder: (context, state) =>
+                    ExpenseFormView(groupId: state.pathParameters['id']!),
+              ),
+              GoRoute(
+                path: 'expenses/:expenseId',
+                builder: (context, state) => ExpenseFormView(
+                  groupId: state.pathParameters['id']!,
+                  expenseId: state.pathParameters['expenseId'],
+                ),
               ),
             ],
           ),

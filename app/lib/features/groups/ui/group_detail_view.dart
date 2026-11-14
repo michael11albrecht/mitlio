@@ -9,14 +9,19 @@ import 'package:mitlio/core/widgets/empty_state.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
+import 'package:mitlio/features/expenses/ui/expenses_view.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+/// Number of tabs of the group detail (members, expenses).
+const groupTabCount = 2;
+
 enum _MenuAction { edit, archive }
 
-/// Group detail, members tab: add by name (the field stays focused for the
-/// next one), tap a name to rename, drag to reorder, remove with undo.
+/// Group detail: tabs for the members and the expenses. Members tab: add by
+/// name (the field stays focused for the next one), tap a name to rename, drag
+/// to reorder, remove with undo.
 class GroupDetailView extends ConsumerWidget {
   const GroupDetailView({required this.groupId, super.key});
 
@@ -40,114 +45,136 @@ class GroupDetailView extends ConsumerWidget {
         :final members,
         :final notice,
       ) =>
-        Scaffold(
-          appBar: AppBar(
-            title: Text(group.name),
-            actions: [
-              PopupMenuButton<_MenuAction>(
-                tooltip: l10n.groupMenu,
-                onSelected: (action) async {
-                  switch (action) {
-                    case _MenuAction.edit:
-                      unawaited(context.push('/groups/$groupId/edit'));
-                    case _MenuAction.archive:
-                      final result = await vm.archive();
-                      if (!context.mounted) return;
-                      if (result case Ok(:final value)) {
-                        showUndoSnackBar(
-                          context,
-                          message: l10n.groupArchived(group.name),
-                          undo: value,
-                        );
-                        context.go('/');
-                      }
-                  }
-                },
-                itemBuilder: (_) => [
-                  PopupMenuItem(
-                    value: _MenuAction.edit,
-                    child: Text(l10n.groupEditTitle),
-                  ),
-                  PopupMenuItem(
-                    value: _MenuAction.archive,
-                    child: Text(l10n.groupArchive),
-                  ),
+        DefaultTabController(
+          length: groupTabCount,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(group.name),
+              actions: [
+                PopupMenuButton<_MenuAction>(
+                  tooltip: l10n.groupMenu,
+                  onSelected: (action) async {
+                    switch (action) {
+                      case _MenuAction.edit:
+                        unawaited(context.push('/groups/$groupId/edit'));
+                      case _MenuAction.archive:
+                        final result = await vm.archive();
+                        if (!context.mounted) return;
+                        if (result case Ok(:final value)) {
+                          showUndoSnackBar(
+                            context,
+                            message: l10n.groupArchived(group.name),
+                            undo: value,
+                          );
+                          context.go('/');
+                        }
+                    }
+                  },
+                  itemBuilder: (_) => [
+                    PopupMenuItem(
+                      value: _MenuAction.edit,
+                      child: Text(l10n.groupEditTitle),
+                    ),
+                    PopupMenuItem(
+                      value: _MenuAction.archive,
+                      child: Text(l10n.groupArchive),
+                    ),
+                  ],
+                ),
+              ],
+              // One entry per tab; keep in step with `groupTabCount` and the
+              // children of the TabBarView below.
+              bottom: TabBar(
+                tabs: [
+                  Tab(text: l10n.tabMembers),
+                  Tab(text: l10n.tabExpenses),
                 ],
               ),
-            ],
-          ),
-          body: Column(
-            children: [
-              Expanded(
-                child: members.isEmpty
-                    ? EmptyState(
-                        icon: Icons.person_add_alt_outlined,
-                        title: l10n.membersEmptyTitle,
-                        message: l10n.membersEmptyMessage,
-                      )
-                    : ReorderableListView.builder(
-                        padding: Spacing.screen,
-                        buildDefaultDragHandles: false,
-                        itemCount: members.length,
-                        onReorderItem: (from, to) => unawaited(
-                          vm.reorder(from, to),
-                        ),
-                        header: notice == null
-                            ? null
-                            : Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: Spacing.sm,
-                                ),
-                                child: _InlineNotice(
-                                  message: l10n.memberInUse(notice.name),
-                                  onDismiss: vm.dismissNotice,
-                                ),
+            ),
+            // Swipes belong to the rows (swipe to delete); tabs switch by tap.
+            body: TabBarView(
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                Column(
+                  children: [
+                    Expanded(
+                      child: members.isEmpty
+                          ? EmptyState(
+                              icon: Icons.person_add_alt_outlined,
+                              title: l10n.membersEmptyTitle,
+                              message: l10n.membersEmptyMessage,
+                            )
+                          : ReorderableListView.builder(
+                              padding: Spacing.screen,
+                              buildDefaultDragHandles: false,
+                              itemCount: members.length,
+                              onReorderItem: (from, to) => unawaited(
+                                vm.reorder(from, to),
                               ),
-                        footer: members.length < 2
-                            ? null
-                            : Padding(
-                                padding: Spacing.allSm,
-                                child: Text(
-                                  l10n.memberOrderHint,
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
+                              header: notice == null
+                                  ? null
+                                  : Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: Spacing.sm,
                                       ),
-                                ),
-                              ),
-                        itemBuilder: (context, index) {
-                          final item = members[index];
-                          return _MemberTile(
-                            key: ValueKey(item.member.id),
-                            item: item,
-                            index: index,
-                            onRename: (name) => unawaited(
-                              vm.renameMember(item.member.id, name),
-                            ),
-                            onRemove: () async {
-                              final result = await vm.removeMember(
-                                item.member.id,
-                              );
-                              if (!context.mounted) return;
-                              if (result case Ok(:final value)) {
-                                showUndoSnackBar(
-                                  context,
-                                  message: l10n.memberRemoved(item.member.name),
-                                  undo: value,
+                                      child: _InlineNotice(
+                                        message: l10n.memberInUse(notice.name),
+                                        onDismiss: vm.dismissNotice,
+                                      ),
+                                    ),
+                              footer: members.length < 2
+                                  ? null
+                                  : Padding(
+                                      padding: Spacing.allSm,
+                                      child: Text(
+                                        l10n.memberOrderHint,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onSurfaceVariant,
+                                            ),
+                                      ),
+                                    ),
+                              itemBuilder: (context, index) {
+                                final item = members[index];
+                                return _MemberTile(
+                                  key: ValueKey(item.member.id),
+                                  item: item,
+                                  index: index,
+                                  onRename: (name) => unawaited(
+                                    vm.renameMember(item.member.id, name),
+                                  ),
+                                  onRemove: () async {
+                                    final result = await vm.removeMember(
+                                      item.member.id,
+                                    );
+                                    if (!context.mounted) return;
+                                    if (result case Ok(:final value)) {
+                                      showUndoSnackBar(
+                                        context,
+                                        message: l10n.memberRemoved(
+                                          item.member.name,
+                                        ),
+                                        undo: value,
+                                      );
+                                    }
+                                  },
                                 );
-                              }
-                            },
-                          );
-                        },
-                      ),
-              ),
-              _AddMemberField(
-                autofocus: members.isEmpty,
-                onAdd: vm.addMember,
-              ),
-            ],
+                              },
+                            ),
+                    ),
+                    _AddMemberField(
+                      autofocus: members.isEmpty,
+                      onAdd: vm.addMember,
+                    ),
+                  ],
+                ),
+                ExpensesView(groupId: groupId),
+              ],
+            ),
           ),
         ),
     };
