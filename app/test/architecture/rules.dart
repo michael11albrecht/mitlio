@@ -183,6 +183,18 @@ List<Rule> buildRules({required List<String> showDialogAllowlist}) => [
     appliesTo: (p) => _inDir(p, 'app/lib/') && !_isThemeLib(p),
     pattern: RegExp(r'\bColor\(\s*0x|\bTextStyle\('),
   ),
+  codeRule(
+    id: 'no-magic-spacing',
+    description:
+        'no numeric literals in EdgeInsets/SizedBox sizes outside '
+        'app/lib/core/theme (use Spacing/Sizes tokens)',
+    appliesTo: (p) => _inDir(p, 'app/lib/') && !_isThemeLib(p),
+    pattern: RegExp(
+      r'EdgeInsets(?:Directional)?\.(?:all|symmetric|only|fromLTRB|fromSTEB)'
+      r'\([^)]*\b[1-9]\d*(?:\.\d+)?\b'
+      r'|\bSizedBox\(\s*(?:width|height):\s*[1-9]',
+    ),
+  ),
   Rule(
     id: 'no-hardcoded-strings',
     description:

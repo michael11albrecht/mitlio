@@ -3,5 +3,35 @@
   "appName": "mitlio",
   "@appName": {
     "description": "Product name. Stays the same in every language."
+  },
+  "errorTitle": "Das hat nicht geklappt",
+  "errorMessage": "Versuch es gleich noch einmal.",
+  "retry": "Nochmal versuchen",
+  "amountInvalid": "Das ist kein gültiger Betrag",
+  "currencyName": "{code, select, EUR{Euro} USD{US-Dollar} GBP{Pfund} CHF{Franken} other{{code}}}",
+  "@currencyName": {
+    "description": "Spoken name of a currency for screen readers.",
+    "placeholders": {"code": {"type": "String"}}
+  },
+  "moneySpoken": "{whole} {currency}",
+  "@moneySpoken": {
+    "description": "Screen reader text of a whole amount, e.g. '12 Euro'.",
+    "placeholders": {
+      "whole": {"type": "int", "format": "decimalPattern"},
+      "currency": {"type": "String"}
+    }
+  },
+  "moneySpokenWithFraction": "{whole} {currency} {fraction}",
+  "@moneySpokenWithFraction": {
+    "description": "Screen reader text with minor units, e.g. '12 Euro 34'.",
+    "placeholders": {
+      "whole": {"type": "int", "format": "decimalPattern"},
+      "currency": {"type": "String"},
+      "fraction": {"type": "String"}
+    }
+  },
+  "moneySpokenNegative": "minus {amount}",
+  "@moneySpokenNegative": {
+    "placeholders": {"amount": {"type": "String"}}
   }
 }

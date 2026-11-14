@@ -51,6 +51,18 @@ void main() {
     );
   });
 
+  test('formatPlain has no grouping or symbol', () {
+    expect(de.formatPlain(123456, Currency.eur), '1234,56');
+    expect(en.formatPlain(-5, Currency.eur), '-0.05');
+    expect(en.formatPlain(1500, Currency.jpy), '1500');
+  });
+
+  test('currencySymbol and split', () {
+    expect(de.currencySymbol(Currency.eur), '€');
+    final parts = MoneyFormat.split(-1205, Currency.eur);
+    expect((parts.negative, parts.whole, parts.fraction), (true, 12, '05'));
+  });
+
   test('formatMoney delegates', () {
     expect(de.formatMoney(Money(1240, Currency.eur)), '12,40 €');
   });

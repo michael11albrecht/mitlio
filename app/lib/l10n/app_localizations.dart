@@ -103,6 +103,54 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'mitlio'**
   String get appName;
+
+  /// No description provided for @errorTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Das hat nicht geklappt'**
+  String get errorTitle;
+
+  /// No description provided for @errorMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Versuch es gleich noch einmal.'**
+  String get errorMessage;
+
+  /// No description provided for @retry.
+  ///
+  /// In de, this message translates to:
+  /// **'Nochmal versuchen'**
+  String get retry;
+
+  /// No description provided for @amountInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist kein gültiger Betrag'**
+  String get amountInvalid;
+
+  /// Spoken name of a currency for screen readers.
+  ///
+  /// In de, this message translates to:
+  /// **'{code, select, EUR{Euro} USD{US-Dollar} GBP{Pfund} CHF{Franken} other{{code}}}'**
+  String currencyName(String code);
+
+  /// Screen reader text of a whole amount, e.g. '12 Euro'.
+  ///
+  /// In de, this message translates to:
+  /// **'{whole} {currency}'**
+  String moneySpoken(int whole, String currency);
+
+  /// Screen reader text with minor units, e.g. '12 Euro 34'.
+  ///
+  /// In de, this message translates to:
+  /// **'{whole} {currency} {fraction}'**
+  String moneySpokenWithFraction(int whole, String currency, String fraction);
+
+  /// No description provided for @moneySpokenNegative.
+  ///
+  /// In de, this message translates to:
+  /// **'minus {amount}'**
+  String moneySpokenNegative(String amount);
 }
 
 class _AppLocalizationsDelegate
