@@ -15,7 +15,8 @@ Repository gates written in Dart. Currently the coverage gate (P1-T02): merges l
 | `lib/src/config.dart` | `GateConfig`/`Threshold` YAML parsing with `FormatException` on bad input |
 | `lib/src/gate.dart` | `GlobResult`, `GateStatus` (pass/fail/skip — skip when no lines match) |
 | `lib/src/lcov.dart` | `parseLcov`, `FileCoverage`; path normalization to repo-relative |
-| `test/` | `cli_test`, `gate_test`, `lcov_test` |
+| `bin/deps_policy.dart`, `lib/src/deps_policy.dart` | Dependency denylist/allowlist check (`tool/deps_policy.yaml`) over pubspec.lock + package-lock.json (P3-T14) |
+| `test/` | `cli_test`, `gate_test`, `lcov_test`, `deps_policy_test` |
 
 ## For AI Agents
 

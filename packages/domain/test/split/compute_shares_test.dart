@@ -2,6 +2,7 @@ import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../support/domain_rules_examples.dart';
+import '../support/no_shrink.dart';
 
 const _maxCents = 999999999999999;
 
@@ -78,8 +79,8 @@ class _Scenario {
 
 extension _Gens on Any {
   Generator<_Scenario> get scenario => combine2(
-    intInRange(1, 1000000),
-    nonEmptyList(intInRange(0, 30)),
+    intNoShrink(1, 1000000),
+    nonEmptyList(intNoShrink(0, 30)),
     (amount, ws) => _Scenario(amount, _sum(ws) == 0 ? [1, ...ws.skip(1)] : ws),
   );
 }

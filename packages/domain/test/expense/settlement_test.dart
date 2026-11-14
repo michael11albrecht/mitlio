@@ -1,6 +1,8 @@
 import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../support/no_shrink.dart';
+
 const _members = [
   Member(id: 'A', position: 0),
   Member(id: 'B', position: 1),
@@ -118,11 +120,11 @@ void main() {
   });
 
   group('Settlement properties', () {
-    Glados(any.intInRange(1, 1000000)).test('positive amounts are valid', (a) {
+    Glados(any.intNoShrink(1, 1000000)).test('positive amounts are valid', (a) {
       expect(_ok(_create(amount: a)).amountCents, a);
     });
 
-    Glados(any.intInRange(-1000000, 1)).test('non-positive are rejected', (a) {
+    Glados(any.intNoShrink(-1000000, 1)).test('non-positive are rejected', (a) {
       expect(_err(_create(amount: a)), const SettlementNonPositiveAmount());
     });
   });
