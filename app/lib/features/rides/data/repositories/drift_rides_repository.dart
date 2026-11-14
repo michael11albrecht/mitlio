@@ -4,6 +4,7 @@ import 'package:mitlio/core/hlc.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/daos/rides_dao.dart';
+import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/drift_rides_refs.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_codec.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_repository.dart';
@@ -11,13 +12,21 @@ import 'package:mitlio_domain/mitlio_domain.dart';
 
 /// [RidesRepository] backed by Drift.
 class DriftRidesRepository implements RidesRepository {
-  DriftRidesRepository({required AppDatabase db, required this._clock})
-    : _db = db,
-      _dao = db.ridesDao;
+  DriftRidesRepository({
+    required AppDatabase db,
+    required Clock clock,
+    required ExpensesRepository expenses,
+  }) : _db = db,
+       _dao = db.ridesDao,
+       // ignore: prefer_initializing_formals, no private named parameters (new language feature)
+       _clock = clock,
+       // ignore: prefer_initializing_formals, no private named parameters (new language feature)
+       _expenses = expenses;
 
   final AppDatabase _db;
   final RidesDao _dao;
   final Clock _clock;
+  final ExpensesRepository _expenses;
 
   RepoResult<RideEntry> _map(RideRow row) {
     final passengers = decodeIds(row.passengerIds);
@@ -188,4 +197,74 @@ class DriftRidesRepository implements RidesRepository {
       return const Ok<void, RepositoryError>(null);
     }),
   );
+
+  @override
+  Future<RepoResult<List<ExpenseEntry>>> settlePeriod(
+    String groupId,
+    List<PeriodSettlement> items,
+  ) => guardStorage(() async {
+    for (final item in items) {
+      if (item.rideIds.isEmpty) {
+        return const Err(InvalidData('a settlement needs at least one ride'));
+      }
+    }
+    try {
+      return await _db.transaction(() async {
+        final created = <ExpenseEntry>[];
+        for (final item in items) {
+          final entry = switch (await _expenses.create(groupId, item.draft)) {
+            Ok<ExpenseEntry, RepositoryError>(:final value) => value,
+            Err<ExpenseEntry, RepositoryError>(:final error) => throw _Rollback(
+              error,
+            ),
+          };
+          final marked = await markSettled(item.rideIds, entry.expense.id);
+          if (marked case Err<void, RepositoryError>(:final error)) {
+            throw _Rollback(error);
+          }
+          created.add(entry);
+        }
+        return Ok<List<ExpenseEntry>, RepositoryError>(
+          List.unmodifiable(created),
+        );
+      });
+    } on _Rollback catch (e) {
+      return Err(e.error);
+    }
+  });
+
+  @override
+  Future<RepoResult<void>> unsettle(List<String> expenseIds) =>
+      guardStorage(() async {
+        try {
+          return await _db.transaction(() async {
+            for (final id in expenseIds) {
+              final deleted = await _expenses.softDelete(id);
+              if (deleted case Err<Undo, RepositoryError>(:final error)) {
+                throw _Rollback(error);
+              }
+            }
+            final hlc = Hlc.now(_clock);
+            for (final row in await _dao.findSettledBy(expenseIds)) {
+              await _dao.updateRide(
+                row.id,
+                RidesCompanion(
+                  settledExpenseId: const Value(null),
+                  updatedAt: Value(hlc),
+                ),
+              );
+            }
+            return const Ok<void, RepositoryError>(null);
+          });
+        } on _Rollback catch (e) {
+          return Err(e.error);
+        }
+      });
+}
+
+/// Thrown inside a transaction to roll it back with a typed error.
+final class _Rollback implements Exception {
+  const _Rollback(this.error);
+
+  final RepositoryError error;
 }

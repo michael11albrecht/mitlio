@@ -11,6 +11,7 @@ import 'package:mitlio/features/members/data/repositories/members_providers.dart
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_repository.dart';
+import 'package:mitlio/features/rides/ui/ride_settlement.dart';
 import 'package:mitlio/features/rides/ui/rides_calculator.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -30,6 +31,23 @@ String rideDayKey(DateTime date) {
 /// Every ride, whatever its date: one query backs the calendar, the list and
 /// the fair-driver suggestion (a commuter group logs a few hundred a year).
 final _everything = Custom(DateTime.utc(2000), DateTime.utc(2100));
+
+/// Who drives next: the one rule behind both the quick log's driver default
+/// and the fairness view's "Als Nächstes dran". Only unsettled rides count
+/// towards the balance; everything counts towards "drove longest ago".
+String? nextDriver({
+  required List<String> members,
+  required RideTemplate template,
+  required Iterable<RideEntry> entries,
+}) => suggestDriver(
+  members: members,
+  template: template,
+  history: [for (final e in entries) e.ride],
+  unsettled: [
+    for (final e in entries)
+      if (!e.isSettled) e.ride,
+  ],
+);
 
 /// The "Heute gefahren" card: everything derived for the next ride. The
 /// user's overrides live in the ViewModel; this is what they add up to.
@@ -138,6 +156,51 @@ final class RidesLoaded extends RidesState {
   List<String> driversOn(DateTime day) => [
     ...{for (final e in entriesOn(day)) e.ride.driverId},
   ];
+
+  List<Member> get _domainMembers => [for (final m in members) m.toDomain()];
+
+  Map<String, Vehicle> get _vehicleMap => {for (final v in vehicles) v.id: v};
+
+  /// The unsettled rides of the shown month, grouped per driver, or null
+  /// when there is nothing to settle (or the domain cannot cost a ride).
+  SettlementPlan? get settlementPlan {
+    final plan = planSettlement(
+      unsettled: [
+        for (final e in monthEntries)
+          if (!e.isSettled) e.ride,
+      ],
+      month: month,
+      vehicles: _vehicleMap,
+      currency: group.currency,
+      members: _domainMembers,
+    );
+    return plan == null || plan.isEmpty ? null : plan;
+  }
+
+  /// The month is over (or the last day has come): time to offer the
+  /// settlement card. The month header menu offers it any time.
+  bool get isMonthOver =>
+      !today.isBefore(DateTime.utc(month.year, month.month + 1, 0));
+
+  /// Per member: km driven, km ridden and the net in the shown month.
+  List<FairnessRow> get fairness => computeFairness(
+    rides: [for (final e in monthEntries) e.ride],
+    vehicles: _vehicleMap,
+    currency: group.currency,
+    members: _domainMembers,
+  );
+
+  /// "Als Nächstes dran": the quick log's driver rule, ignoring what the
+  /// user picked by hand. Null without a route or a member.
+  String? get nextDriverId {
+    final template = quick?.template ?? templates.firstOrNull;
+    if (template == null || members.isEmpty) return null;
+    return nextDriver(
+      members: [for (final m in members) m.id],
+      template: template,
+      entries: entries,
+    );
+  }
 
   GroupMember? member(String id) =>
       members.where((m) => m.id == id).firstOrNull;
@@ -334,15 +397,7 @@ class RidesViewModel extends Notifier<RidesState> {
         ? null
         : (_driverId != null && ids.contains(_driverId))
         ? _driverId
-        : suggestDriver(
-            members: ids,
-            template: template,
-            history: rides,
-            unsettled: [
-              for (final e in entries)
-                if (!e.isSettled) e.ride,
-            ],
-          );
+        : nextDriver(members: ids, template: template, entries: entries);
     final passengers = template == null || driver == null
         ? const <String>{}
         : {

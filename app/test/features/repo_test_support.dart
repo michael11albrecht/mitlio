@@ -63,10 +63,11 @@ Future<Repos> driftRepos() async {
   addTearDown(db.close);
   final clock = _clock();
   final ids = SequentialIdGenerator();
+  final expenses = DriftExpensesRepository(db: db, clock: clock, ids: ids);
   return Repos(
     groups: DriftGroupsRepository(db: db, clock: clock, ids: ids),
     members: DriftMembersRepository(db: db, clock: clock, ids: ids),
-    expenses: DriftExpensesRepository(db: db, clock: clock, ids: ids),
+    expenses: expenses,
     settlements: DriftSettlementsRepository(db: db, clock: clock, ids: ids),
     vehicles: DriftVehiclesRepository(db: db, clock: clock, ids: ids),
     rideTemplates: DriftRideTemplatesRepository(
@@ -74,7 +75,7 @@ Future<Repos> driftRepos() async {
       clock: clock,
       ids: ids,
     ),
-    rides: DriftRidesRepository(db: db, clock: clock),
+    rides: DriftRidesRepository(db: db, clock: clock, expenses: expenses),
     clock: clock,
     db: db,
   );

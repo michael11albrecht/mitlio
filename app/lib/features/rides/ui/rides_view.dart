@@ -12,6 +12,7 @@ import 'package:mitlio/core/widgets/money_text.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
 import 'package:mitlio/features/rides/ui/quick_log_card.dart';
 import 'package:mitlio/features/rides/ui/ride_calendar.dart';
+import 'package:mitlio/features/rides/ui/ride_settle_widgets.dart';
 import 'package:mitlio/features/rides/ui/rides_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -107,19 +108,34 @@ class _RidesBody extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final entries = state.monthEntries.reversed.toList();
+    final plan = state.settlementPlan;
     return ListView(
       padding: Spacing.screen,
       children: [
         if (state.quick != null)
           QuickLogCard(groupId: groupId, state: state, vm: vm),
+        if (plan != null && state.isMonthOver) ...[
+          const SizedBox(height: Spacing.md),
+          SettleCard(
+            plan: plan,
+            onOpen: () => unawaited(showRideSettleSheet(context, groupId)),
+          ),
+        ],
         const SizedBox(height: Spacing.md),
         RideCalendar(
           state: state,
+          onSettle: plan == null
+              ? null
+              : () => unawaited(showRideSettleSheet(context, groupId)),
           onPreviousMonth: () => vm.shiftMonth(-1),
           onNextMonth: () => vm.shiftMonth(1),
           onDay: (day) => unawaited(_openDay(context, day)),
         ),
         const SizedBox(height: Spacing.sm),
+        if (entries.isNotEmpty) ...[
+          FairnessSection(state: state),
+          const SizedBox(height: Spacing.md),
+        ],
         if (entries.isEmpty)
           Padding(
             padding: Spacing.allMd,

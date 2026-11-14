@@ -2,6 +2,7 @@
 // ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
 
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 /// A stored [Ride] with its storage metadata.
@@ -58,6 +59,15 @@ final class RideEntry {
   String toString() => 'RideEntry(${ride.id}, ${ride.date})';
 }
 
+/// One driver's share of a period settlement: the expense to create and the
+/// rides it covers.
+final class PeriodSettlement {
+  const PeriodSettlement({required this.draft, required this.rideIds});
+
+  final ExpenseDraft draft;
+  final List<String> rideIds;
+}
+
 /// Source of truth for logged rides. Lists are ordered by date, then id.
 ///
 /// A ride's date is stored as a calendar day (UTC midnight); only year,
@@ -89,4 +99,18 @@ abstract interface class RidesRepository {
   /// unless all rides exist and are unsettled ([NotFound], [Locked]); the
   /// expense must exist ([NotFound]).
   Future<RepoResult<void>> markSettled(List<String> rideIds, String expenseId);
+
+  /// Period settlement in one transaction: creates one expense per item and
+  /// locks the item's rides under it. Either everything happens or nothing
+  /// does (the first failure is returned: [NotFound], [Locked],
+  /// [InvalidData]). The entries come back in item order.
+  Future<RepoResult<List<ExpenseEntry>>> settlePeriod(
+    String groupId,
+    List<PeriodSettlement> items,
+  );
+
+  /// Takes a settlement back in one transaction: soft deletes the expenses
+  /// and unlocks the rides that were settled under them. [NotFound] if an
+  /// expense is unknown; then nothing changes.
+  Future<RepoResult<void>> unsettle(List<String> expenseIds);
 }

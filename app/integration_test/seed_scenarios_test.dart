@@ -14,6 +14,7 @@ import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/debug/debug_drive.dart';
 import 'package:mitlio/debug/handlers/balances.dart';
 import 'package:mitlio/debug/handlers/groups.dart';
+import 'package:mitlio/debug/handlers/rides.dart';
 
 /// Seed scenarios (P3-T11) on the Linux desktop device: every scenario loads
 /// through `ext.mitlio.seed` (bundled asset, real repositories, in-memory
@@ -44,6 +45,7 @@ void main() {
       ),
       ...groupsDriveHandlers(container),
       ...balancesDriveHandlers(container),
+      ...ridesDriveHandlers(container),
     };
     await tester.pumpWidget(
       UncontrolledProviderScope(
@@ -54,16 +56,17 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  // `commute_3p` is settled per ride period, which the balances screen does
-  // not show; the handler test covers its expected values.
+  // `commute_3p` is settled per ride period first (P3r-T06): October becomes
+  // one expense per driver through `ext.mitlio.rides.settle`.
   const withBalances = [
     'trip_4p',
     'household_2p',
     'rounding_edge',
     'large_200_expenses',
+    'commute_3p',
   ];
 
-  for (final name in ['empty', ...withBalances, 'commute_3p']) {
+  for (final name in ['empty', ...withBalances]) {
     testWidgets('seed $name loads and matches the committed values', (
       tester,
     ) async {
@@ -76,6 +79,15 @@ void main() {
         hasLength(1),
       );
       if (!withBalances.contains(name)) return;
+      if (name == 'commute_3p') {
+        final settled = await drive['rides.settle']!({
+          'groupId': groupId,
+          'month': '2026-10',
+        });
+        expect(settled['error'], isNull);
+        expect(settled['rideCount'], 20);
+        expect(settled['expenseIds'], hasLength(3));
+      }
 
       final nameOf = {
         for (final e in (seeded['members']! as Map<String, Object?>).entries)
