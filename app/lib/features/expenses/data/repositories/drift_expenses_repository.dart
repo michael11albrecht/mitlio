@@ -6,7 +6,7 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/daos/expenses_dao.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
-import 'package:mitlio_domain/mitlio_domain.dart';
+import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [ExpensesRepository] backed by Drift. Aggregates are rebuilt through
 /// `Expense.create` on every read.

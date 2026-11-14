@@ -5,7 +5,7 @@ import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
-import 'package:mitlio_domain/mitlio_domain.dart';
+import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [MembersRepository] backed by Drift.
 class DriftMembersRepository implements MembersRepository {

@@ -4,7 +4,7 @@ import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
-import 'package:mitlio_domain/mitlio_domain.dart';
+import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [SettlementsRepository] backed by Drift. Values are rebuilt through
 /// `Settlement.create` on every read.

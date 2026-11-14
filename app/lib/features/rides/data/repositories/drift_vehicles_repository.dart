@@ -6,7 +6,7 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/daos/rides_dao.dart';
 import 'package:mitlio/features/rides/data/repositories/vehicles_repository.dart';
-import 'package:mitlio_domain/mitlio_domain.dart';
+import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [VehiclesRepository] backed by Drift.
 class DriftVehiclesRepository implements VehiclesRepository {

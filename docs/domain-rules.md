@@ -473,3 +473,51 @@ Check: 40 km × 6.5 l/100 km = 2.6 l. At 1.799 € that is 4.6774 € → 468 ct
 - r3 (A, B, C): 156/156/156.
 - So A gets 234 + 156 = 390 for the driver-A aggregate.
 - r2 (B, A, C in tie order A, B, C): 153/152/152.
+
+## HLC
+
+Hybrid logical clock for sync `updated_at` (`Hlc`, `packages/domain/lib/src/sync/hlc.dart`).
+
+- `Hlc {wallMillis, counter, nodeId}`; order: wall, then counter, then nodeId.
+- String: `<ISO8601 UTC ms>-<counter, 4 digits>-<nodeId>`, e.g. `2026-01-01T00:00:00.000Z-0000-a`. Years 0000..9999,
+  so **string order == `compareTo` order**. `Hlc.parse` is the inverse; bad input → `HlcInvalidFormat`.
+- `Hlc.send(last, now)`: `wall = max(last.wall, now)`; counter `0` if `now > last.wall`, else `last.counter + 1`.
+  Node id from `last`.
+- `Hlc.receive(local, remote, now, maxDriftMillis = 60000)`: `wall = max(local.wall, remote.wall, now)`; counter `0`
+  if `now` is strictly the largest, else `max(counters of the inputs sharing wall) + 1`. Node id from `local`.
+  The result is strictly greater than both inputs.
+- `remote.wall - now > maxDriftMillis` → `ClockDrift` (nothing adopted). Counter would exceed 9999 → `CounterOverflow`.
+
+<!-- examples:hlc -->
+```json
+[
+  {"op": "send", "last": "2026-01-01T00:00:00.000Z-0000-a", "now": 1767225600000,
+   "ok": "2026-01-01T00:00:00.000Z-0001-a"},
+  {"op": "send", "last": "2026-01-01T00:00:00.000Z-0005-a", "now": 1767225600001,
+   "ok": "2026-01-01T00:00:00.001Z-0000-a"},
+  {"op": "send", "last": "2026-01-01T00:00:00.010Z-0003-a", "now": 1767225600000,
+   "ok": "2026-01-01T00:00:00.010Z-0004-a"},
+  {"op": "send", "last": "2026-01-01T00:00:00.000Z-9999-a", "now": 1767225600000,
+   "error": "CounterOverflow"},
+  {"op": "receive", "local": "2026-01-01T00:00:00.000Z-0002-a", "remote": "2026-01-01T00:00:00.000Z-0007-b",
+   "now": 1767225600000, "ok": "2026-01-01T00:00:00.000Z-0008-a"},
+  {"op": "receive", "local": "2026-01-01T00:00:00.000Z-0002-a", "remote": "2026-01-01T00:00:00.005Z-0007-b",
+   "now": 1767225600000, "ok": "2026-01-01T00:00:00.005Z-0008-a"},
+  {"op": "receive", "local": "2026-01-01T00:00:00.009Z-0002-a", "remote": "2026-01-01T00:00:00.005Z-0007-b",
+   "now": 1767225600000, "ok": "2026-01-01T00:00:00.009Z-0003-a"},
+  {"op": "receive", "local": "2026-01-01T00:00:00.009Z-0002-a", "remote": "2026-01-01T00:00:00.005Z-0007-b",
+   "now": 1767225600100, "ok": "2026-01-01T00:00:00.100Z-0000-a"},
+  {"op": "receive", "local": "2026-01-01T00:00:00.000Z-0000-a", "remote": "2026-01-01T00:01:00.000Z-0000-b",
+   "now": 1767225600000, "ok": "2026-01-01T00:01:00.000Z-0001-a"},
+  {"op": "receive", "local": "2026-01-01T00:00:00.000Z-0000-a", "remote": "2026-01-01T00:01:00.001Z-0000-b",
+   "now": 1767225600000, "error": "ClockDrift"},
+  {"op": "receive", "local": "2026-01-01T00:00:00.000Z-9999-a", "remote": "2026-01-01T00:00:00.000Z-0000-b",
+   "now": 1767225600000, "error": "CounterOverflow"},
+  {"op": "parse", "input": "2026-01-01T00:00:00.000Z-0000-a", "ok": "2026-01-01T00:00:00.000Z-0000-a"},
+  {"op": "parse", "input": "2026-01-01T00:00:00.000Z-0000-4b1e-uuid", "ok": "2026-01-01T00:00:00.000Z-0000-4b1e-uuid"},
+  {"op": "parse", "input": "2026-02-31T00:00:00.000Z-0000-a", "error": "HlcInvalidFormat"},
+  {"op": "parse", "input": "2026-01-01T00:00:00.000Z-0000-", "error": "HlcInvalidFormat"},
+  {"op": "parse", "input": "2026-01-01T00:00:00Z-0000-a", "error": "HlcInvalidFormat"},
+  {"op": "parse", "input": "garbage", "error": "HlcInvalidFormat"}
+]
+```
