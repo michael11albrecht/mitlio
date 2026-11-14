@@ -787,6 +787,276 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Nicht dabei'**
   String get expenseExcluded;
+
+  /// No description provided for @tripAdd.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrt hinzufügen'**
+  String get tripAdd;
+
+  /// No description provided for @tripFormTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrt'**
+  String get tripFormTitle;
+
+  /// No description provided for @tripDefaultTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrt'**
+  String get tripDefaultTitle;
+
+  /// No description provided for @tripResultCaption.
+  ///
+  /// In de, this message translates to:
+  /// **'Jede Person zahlt'**
+  String get tripResultCaption;
+
+  /// No description provided for @tripResultCaptionRounded.
+  ///
+  /// In de, this message translates to:
+  /// **'Jede Person zahlt rund'**
+  String get tripResultCaptionRounded;
+
+  /// No description provided for @tripResultDriverGets.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} bekommt {amount}'**
+  String tripResultDriverGets(String name, String amount);
+
+  /// No description provided for @tripHintFuel.
+  ///
+  /// In de, this message translates to:
+  /// **'Trag Strecke, Verbrauch und Preis ein. Das Ergebnis siehst du sofort.'**
+  String get tripHintFuel;
+
+  /// No description provided for @tripHintKmRate.
+  ///
+  /// In de, this message translates to:
+  /// **'Trag Strecke und Kilometerpauschale ein. Das Ergebnis siehst du sofort.'**
+  String get tripHintKmRate;
+
+  /// No description provided for @tripNoParticipants.
+  ///
+  /// In de, this message translates to:
+  /// **'Wähle mindestens eine Person, die mitfährt.'**
+  String get tripNoParticipants;
+
+  /// No description provided for @tripTooLarge.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist zu viel zum Rechnen. Prüf die Zahlen.'**
+  String get tripTooLarge;
+
+  /// No description provided for @tripNumberInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist keine gültige Zahl'**
+  String get tripNumberInvalid;
+
+  /// No description provided for @tripDistanceLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Strecke (einfach)'**
+  String get tripDistanceLabel;
+
+  /// No description provided for @tripUnitKm.
+  ///
+  /// In de, this message translates to:
+  /// **'km'**
+  String get tripUnitKm;
+
+  /// No description provided for @tripRoundTrip.
+  ///
+  /// In de, this message translates to:
+  /// **'Hin- und Rückfahrt'**
+  String get tripRoundTrip;
+
+  /// No description provided for @tripEnergyFuel.
+  ///
+  /// In de, this message translates to:
+  /// **'Benzin / Diesel'**
+  String get tripEnergyFuel;
+
+  /// No description provided for @tripEnergyElectric.
+  ///
+  /// In de, this message translates to:
+  /// **'Strom'**
+  String get tripEnergyElectric;
+
+  /// No description provided for @tripConsumptionLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbrauch'**
+  String get tripConsumptionLabel;
+
+  /// No description provided for @tripUnitLitersPer100.
+  ///
+  /// In de, this message translates to:
+  /// **'l/100 km'**
+  String get tripUnitLitersPer100;
+
+  /// No description provided for @tripUnitKwhPer100.
+  ///
+  /// In de, this message translates to:
+  /// **'kWh/100 km'**
+  String get tripUnitKwhPer100;
+
+  /// No description provided for @tripPriceFuelLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Preis pro Liter'**
+  String get tripPriceFuelLabel;
+
+  /// No description provided for @tripPriceElectricLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Preis pro kWh'**
+  String get tripPriceElectricLabel;
+
+  /// No description provided for @tripUnitPerLiter.
+  ///
+  /// In de, this message translates to:
+  /// **'{symbol}/l'**
+  String tripUnitPerLiter(String symbol);
+
+  /// No description provided for @tripUnitPerKwh.
+  ///
+  /// In de, this message translates to:
+  /// **'{symbol}/kWh'**
+  String tripUnitPerKwh(String symbol);
+
+  /// No description provided for @tripUnitPerKm.
+  ///
+  /// In de, this message translates to:
+  /// **'{symbol}/km'**
+  String tripUnitPerKm(String symbol);
+
+  /// No description provided for @tripWearLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Verschleiß (optional)'**
+  String get tripWearLabel;
+
+  /// No description provided for @tripKmRateToggle.
+  ///
+  /// In de, this message translates to:
+  /// **'Kilometerpauschale'**
+  String get tripKmRateToggle;
+
+  /// No description provided for @tripKmRateHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Ersetzt Sprit und Verschleiß'**
+  String get tripKmRateHint;
+
+  /// No description provided for @tripKmRateLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Pauschale pro km'**
+  String get tripKmRateLabel;
+
+  /// No description provided for @tripTollsLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Maut (optional)'**
+  String get tripTollsLabel;
+
+  /// No description provided for @tripFerryLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Fähre (optional)'**
+  String get tripFerryLabel;
+
+  /// No description provided for @tripDriverLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer fährt?'**
+  String get tripDriverLabel;
+
+  /// No description provided for @tripPassengersLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer fährt mit?'**
+  String get tripPassengersLabel;
+
+  /// No description provided for @tripDriverPays.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrer zahlt mit'**
+  String get tripDriverPays;
+
+  /// No description provided for @tripTitleLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Wohin ging’s? (optional)'**
+  String get tripTitleLabel;
+
+  /// No description provided for @tripSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrt speichern'**
+  String get tripSave;
+
+  /// No description provided for @tripSaved.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrt gespeichert'**
+  String get tripSaved;
+
+  /// No description provided for @tripBreakdown.
+  ///
+  /// In de, this message translates to:
+  /// **'Details'**
+  String get tripBreakdown;
+
+  /// No description provided for @tripBreakdownFuel.
+  ///
+  /// In de, this message translates to:
+  /// **'Sprit'**
+  String get tripBreakdownFuel;
+
+  /// No description provided for @tripBreakdownElectric.
+  ///
+  /// In de, this message translates to:
+  /// **'Strom'**
+  String get tripBreakdownElectric;
+
+  /// No description provided for @tripBreakdownWear.
+  ///
+  /// In de, this message translates to:
+  /// **'Verschleiß'**
+  String get tripBreakdownWear;
+
+  /// No description provided for @tripBreakdownKmRate.
+  ///
+  /// In de, this message translates to:
+  /// **'Kilometerpauschale'**
+  String get tripBreakdownKmRate;
+
+  /// No description provided for @tripBreakdownTolls.
+  ///
+  /// In de, this message translates to:
+  /// **'Maut'**
+  String get tripBreakdownTolls;
+
+  /// No description provided for @tripBreakdownFerry.
+  ///
+  /// In de, this message translates to:
+  /// **'Fähre'**
+  String get tripBreakdownFerry;
+
+  /// No description provided for @tripBreakdownTotal.
+  ///
+  /// In de, this message translates to:
+  /// **'Gesamt'**
+  String get tripBreakdownTotal;
+
+  /// No description provided for @tripBreakdownPerPerson.
+  ///
+  /// In de, this message translates to:
+  /// **'Pro Person'**
+  String get tripBreakdownPerPerson;
 }
 
 class _AppLocalizationsDelegate

@@ -38,7 +38,7 @@ gen: ## Run code generation
 db-schema: ## Dump Drift schema to app/drift_schemas + regenerate migration test helpers
 	cd app && $(DART) run drift_dev schema dump lib/db/app_database.dart drift_schemas/
 	cd app && $(DART) run drift_dev schema generate drift_schemas/ test/db/generated/
-	perl -pi -e 's/unused_import$$/unused_import,strict_raw_type/' app/test/db/generated/schema_v1.dart
+	perl -pi -e 's/unused_import$$/unused_import,strict_raw_type/' app/test/db/generated/schema_v*.dart
 	$(DART) format app/test/db/generated
 
 .PHONY: fmt

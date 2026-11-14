@@ -29,6 +29,7 @@ void runExpensesRepositoryContract(
       SplitSpec? split,
       DateTime? date,
       String? category,
+      String? tripMeta,
     }) => ExpenseDraft(
       title: title,
       amountCents: amount,
@@ -37,6 +38,7 @@ void runExpensesRepositoryContract(
       payers: payers ?? {m[0].id: amount},
       split: split ?? EqualSplit({m[0].id, m[1].id, m[2].id}),
       category: category,
+      tripMeta: tripMeta,
     );
 
     Future<ExpenseEntry> add([ExpenseDraft? d]) async =>
@@ -55,6 +57,17 @@ void runExpensesRepositoryContract(
       expect(e.category, 'food');
       expect(e.createdAt, DateTime.utc(2026, 3, 1, 12));
       expect(ok(await r.expenses.get(e.expense.id)), e);
+    });
+
+    test('tripMeta is stored and returned, and can be replaced', () async {
+      final trip = await add(draft(tripMeta: '{"v":1}'));
+      expect(trip.tripMeta, '{"v":1}');
+      expect(ok(await r.expenses.get(trip.expense.id)).tripMeta, '{"v":1}');
+      final updated = ok(
+        await r.expenses.update(trip.expense.id, draft(tripMeta: '{"v":2}')),
+      );
+      expect(updated.tripMeta, '{"v":2}');
+      expect((await add()).tripMeta, isNull);
     });
 
     test('every split mode round-trips for re-editing', () async {
