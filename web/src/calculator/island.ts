@@ -24,6 +24,7 @@ import {
   type Locale,
   type TripInput,
 } from './core';
+import { initFuel } from './fuel';
 import { buildDeepLink } from '../lib/deeplink';
 import { buildShareText, whatsappHref } from '../lib/share';
 
@@ -165,7 +166,21 @@ if (root) {
     out.extra.hidden = true;
   };
 
+  // Live fuel price chips; null when no FUEL_API_URL is configured (then nothing here runs).
+  const fuel = initFuel({
+    locale,
+    active: () => !rate && state.energy === 'fuel',
+    currentPrice: () => state.price,
+    applyPrice: (text) => {
+      state = { ...state, price: text };
+      touched.add('price');
+      input.price.value = text;
+      commit();
+    },
+  });
+
   const render = () => {
+    fuel?.sync();
     const ev = state.energy === 'ev';
     if (rate) {
       out.priceLabel.textContent = `${m.priceRate} (${m.priceRateUnit})`;

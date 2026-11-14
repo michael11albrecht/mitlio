@@ -30,3 +30,4 @@ web/.playwright/
 .lighthouseci/
 app/test/golden/failures/
 **/test/**/failures/
+web/dist-fuel/

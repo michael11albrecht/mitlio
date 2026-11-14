@@ -1,6 +1,6 @@
 import type { Locale } from './index';
 
-/** Calculator island strings. Placeholders: {amount}, {high}, {low}, {nHigh}, {nLow}, {n}, {who}, {each}, {total}. */
+/** Calculator island strings. Placeholders: {amount}, {high}, {low}, {nHigh}, {nLow}, {n}, {who}, {each}, {total}, {fuel}, {price}, {plz}, {when}. */
 export const calculatorMessages = {
   de: {
     energy: 'Antrieb',
@@ -69,6 +69,25 @@ export const calculatorMessages = {
     ctaOpen: 'In der App öffnen',
     ctaAppStore: 'Laden im App Store',
     ctaPlay: 'Jetzt bei Google Play',
+    fuelTitle: 'Aktuelle Spritpreise, antippen zum Übernehmen',
+    fuelChipAria: '{fuel} {price} übernehmen',
+    fuelApproxNote: '≈ geschätzt, abgeleitet vom E5-Preis',
+    fuelScopeNational: 'Ø Deutschland',
+    fuelScopeNearby: 'In deiner Nähe',
+    fuelScopePlz: 'Region PLZ {plz}',
+    fuelAsOf: 'Stand {when}',
+    fuelNearby: 'In meiner Nähe',
+    fuelNearbyBusy: 'Standort wird abgefragt …',
+    fuelLocationNote: 'Der Standort wird erst nach dem Tippen abgefragt und nur auf ca. 1 km gerundet gesendet.',
+    fuelPlz: 'oder PLZ',
+    fuelPlzGo: 'Preise zeigen',
+    fuelPlzInvalid: 'Bitte eine 5-stellige PLZ eingeben.',
+    fuelLocationDenied: 'Standort nicht freigegeben. Gib stattdessen eine PLZ ein.',
+    fuelLocationUnavailable: 'Standort nicht verfügbar. Gib stattdessen eine PLZ ein.',
+    fuelNoData: 'Für dieses Gebiet gibt es gerade keine Preise.',
+    fuelUnavailable: 'Preise gerade nicht verfügbar. Du kannst den Preis selbst eingeben.',
+    fuelRateLimited: 'Zu viele Anfragen. Bitte gleich noch einmal versuchen.',
+    fuelRegionalOff: 'Regionale Preise sind noch nicht verfügbar.',
   },
   en: {
     energy: 'Drive',
@@ -137,6 +156,25 @@ export const calculatorMessages = {
     ctaOpen: 'Open in the app',
     ctaAppStore: 'Download on the App Store',
     ctaPlay: 'Get it on Google Play',
+    fuelTitle: 'Current fuel prices, tap to use',
+    fuelChipAria: 'Use {fuel} {price}',
+    fuelApproxNote: '≈ estimate, derived from the E5 price',
+    fuelScopeNational: 'Germany average',
+    fuelScopeNearby: 'Near you',
+    fuelScopePlz: 'Area of postcode {plz}',
+    fuelAsOf: 'as of {when}',
+    fuelNearby: 'Near me',
+    fuelNearbyBusy: 'Getting location …',
+    fuelLocationNote: 'Your location is only requested after you tap, and sent rounded to about 1 km.',
+    fuelPlz: 'or postcode',
+    fuelPlzGo: 'Show prices',
+    fuelPlzInvalid: 'Please enter a 5-digit postcode.',
+    fuelLocationDenied: 'Location not shared. Enter a postcode instead.',
+    fuelLocationUnavailable: 'Location unavailable. Enter a postcode instead.',
+    fuelNoData: 'No prices for this area right now.',
+    fuelUnavailable: 'Prices are unavailable right now. You can enter the price yourself.',
+    fuelRateLimited: 'Too many requests. Please try again in a moment.',
+    fuelRegionalOff: 'Regional prices are not available yet.',
   },
 } as const satisfies Record<Locale, Record<string, string>>;
 
