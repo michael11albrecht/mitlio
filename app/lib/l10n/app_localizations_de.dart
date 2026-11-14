@@ -1394,6 +1394,51 @@ class AppLocalizationsDe extends AppLocalizations {
   String get crashReportsUnavailable => 'In dieser Version nicht verfügbar.';
 
   @override
+  String get deleteMyDataEntry => 'Alle meine Daten löschen';
+
+  @override
+  String get deleteMyDataEntryHint =>
+      'Gruppen, Ausgaben und Fahrten von diesem Gerät entfernen';
+
+  @override
+  String get deleteMyDataTitle => 'Alle meine Daten löschen';
+
+  @override
+  String get deleteMyDataWhatTitle => 'Das wird gelöscht';
+
+  @override
+  String get deleteMyDataWhat =>
+      'Auf diesem Gerät: alle Gruppen, Mitglieder, Ausgaben, Fahrten, Ausgleiche, Zahlungsdaten (auch IBAN und der zugehörige Schlüssel) und deine Einstellungen. Danach startet die App wie neu.';
+
+  @override
+  String get deleteMyDataServer =>
+      'Auf dem Server: deine Verknüpfungen mit Gruppen und dein Konto, falls du eins hast.';
+
+  @override
+  String get deleteMyDataStaysTitle => 'Das bleibt';
+
+  @override
+  String get deleteMyDataStays =>
+      'Gemeinsame Gruppendaten, die andere Mitglieder auf ihren Geräten haben, bleiben bei ihnen erhalten. Sie gehören der Gruppe, nicht dir allein.';
+
+  @override
+  String get deleteMyDataIrreversible =>
+      'Das lässt sich nicht rückgängig machen.';
+
+  @override
+  String get deleteMyDataConfirmWord => 'LÖSCHEN';
+
+  @override
+  String get deleteMyDataConfirmLabel => 'Zur Bestätigung LÖSCHEN eintippen';
+
+  @override
+  String get deleteMyDataAction => 'Alles endgültig löschen';
+
+  @override
+  String get deleteMyDataFailed =>
+      'Löschen hat nicht geklappt. Es wurde nichts gelöscht. Bitte versuche es noch einmal.';
+
+  @override
   String get fuelChipsLabel => 'Spritpreis übernehmen';
 
   @override

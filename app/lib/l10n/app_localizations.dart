@@ -2407,6 +2407,84 @@ abstract class AppLocalizations {
   /// **'In dieser Version nicht verfügbar.'**
   String get crashReportsUnavailable;
 
+  /// No description provided for @deleteMyDataEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle meine Daten löschen'**
+  String get deleteMyDataEntry;
+
+  /// No description provided for @deleteMyDataEntryHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Gruppen, Ausgaben und Fahrten von diesem Gerät entfernen'**
+  String get deleteMyDataEntryHint;
+
+  /// No description provided for @deleteMyDataTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle meine Daten löschen'**
+  String get deleteMyDataTitle;
+
+  /// No description provided for @deleteMyDataWhatTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Das wird gelöscht'**
+  String get deleteMyDataWhatTitle;
+
+  /// No description provided for @deleteMyDataWhat.
+  ///
+  /// In de, this message translates to:
+  /// **'Auf diesem Gerät: alle Gruppen, Mitglieder, Ausgaben, Fahrten, Ausgleiche, Zahlungsdaten (auch IBAN und der zugehörige Schlüssel) und deine Einstellungen. Danach startet die App wie neu.'**
+  String get deleteMyDataWhat;
+
+  /// No description provided for @deleteMyDataServer.
+  ///
+  /// In de, this message translates to:
+  /// **'Auf dem Server: deine Verknüpfungen mit Gruppen und dein Konto, falls du eins hast.'**
+  String get deleteMyDataServer;
+
+  /// No description provided for @deleteMyDataStaysTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Das bleibt'**
+  String get deleteMyDataStaysTitle;
+
+  /// No description provided for @deleteMyDataStays.
+  ///
+  /// In de, this message translates to:
+  /// **'Gemeinsame Gruppendaten, die andere Mitglieder auf ihren Geräten haben, bleiben bei ihnen erhalten. Sie gehören der Gruppe, nicht dir allein.'**
+  String get deleteMyDataStays;
+
+  /// No description provided for @deleteMyDataIrreversible.
+  ///
+  /// In de, this message translates to:
+  /// **'Das lässt sich nicht rückgängig machen.'**
+  String get deleteMyDataIrreversible;
+
+  /// No description provided for @deleteMyDataConfirmWord.
+  ///
+  /// In de, this message translates to:
+  /// **'LÖSCHEN'**
+  String get deleteMyDataConfirmWord;
+
+  /// No description provided for @deleteMyDataConfirmLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Zur Bestätigung LÖSCHEN eintippen'**
+  String get deleteMyDataConfirmLabel;
+
+  /// No description provided for @deleteMyDataAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Alles endgültig löschen'**
+  String get deleteMyDataAction;
+
+  /// No description provided for @deleteMyDataFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Löschen hat nicht geklappt. Es wurde nichts gelöscht. Bitte versuche es noch einmal.'**
+  String get deleteMyDataFailed;
+
   /// No description provided for @fuelChipsLabel.
   ///
   /// In de, this message translates to:

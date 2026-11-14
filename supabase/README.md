@@ -15,6 +15,7 @@ Never run `supabase link` / `supabase db push` from an agent; deploys are an own
 | `../tool/gen_db_contract.dart` | Reads `types/database.ts`, emits `app/lib/features/sync/data/db_contract.g.dart` (table/column names + coarse types). `app/test/db/db_contract_test.dart` checks the Drift schema is a subset of it. Differences: server-only `server_seq` columns and the server-only `group_memberships` / `group_invites` tables. |
 | `migrations/0005_fuel_prices.sql` | `fuel_price_cache` (public read, service-role write), `rate_limits`, pg_cron jobs. Contract: `../docs/fuel-prices-api.md`. |
 | `migrations/0006_fx_rates.sql` | `fx_rates` (public read, service-role write), pg_cron jobs. Contract: `../docs/fx-rates-api.md`. |
+| `migrations/0008_delete_my_data.sql` | `delete_my_data()` RPC: removes the caller's memberships, unlinks their members, deletes their auth user; shared group data stays (`docs/data-deletion.md`). |
 | `migrations/0007_expense_revisions.sql` | `expense_revisions` (member read, trigger-written snapshots before each expense change, newest 50 kept). Client twin: Drift schema v3. |
 | `functions/` | Edge Functions (Deno 2.1.4). `fuel-prices/`, `fx-rates/` + pure logic in `_shared/`; `tests/coverage_gate.sh` (unit, >= 90 %) and `tests/run_integration.sh` (`functions serve` + provider stub). CI only; never `functions deploy` from an agent. |
 | `tests/database/*.sql` | pgTAP: `rls_policies.sql` (per-table matrix), `rls_bootstrap.sql`, `rls_coverage.sql` (every table has RLS and tests), `schema_invariants.sql`. |
