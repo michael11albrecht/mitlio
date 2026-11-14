@@ -18,6 +18,7 @@ abstract final class DbTables {
   static const expenseShares = 'expense_shares';
   static const expenses = 'expenses';
   static const fuelPriceCache = 'fuel_price_cache';
+  static const fxRates = 'fx_rates';
   static const groupInvites = 'group_invites';
   static const groupMemberships = 'group_memberships';
   static const groups = 'groups';
@@ -77,6 +78,16 @@ abstract final class DbFuelPriceCacheCols {
   static const source = 'source';
   static const stations = 'stations';
   static const type = 'type';
+}
+
+/// Column names of `fx_rates`.
+abstract final class DbFxRatesCols {
+  static const base = 'base';
+  static const date = 'date';
+  static const fetchedAt = 'fetched_at';
+  static const quote = 'quote';
+  static const ratePpm = 'rate_ppm';
+  static const sourceDate = 'source_date';
 }
 
 /// Column names of `group_invites`.
@@ -245,6 +256,14 @@ const dbContract = <String, Map<String, DbColumn>>{
     'source': DbColumn(DbColumnType.string, nullable: false),
     'stations': DbColumn(DbColumnType.number, nullable: false),
     'type': DbColumn(DbColumnType.string, nullable: false),
+  },
+  'fx_rates': {
+    'base': DbColumn(DbColumnType.string, nullable: false),
+    'date': DbColumn(DbColumnType.string, nullable: false),
+    'fetched_at': DbColumn(DbColumnType.string, nullable: false),
+    'quote': DbColumn(DbColumnType.string, nullable: false),
+    'rate_ppm': DbColumn(DbColumnType.number, nullable: false),
+    'source_date': DbColumn(DbColumnType.string, nullable: false),
   },
   'group_invites': {
     'created_at': DbColumn(DbColumnType.string, nullable: false),

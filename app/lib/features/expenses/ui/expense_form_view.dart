@@ -13,6 +13,7 @@ import 'package:mitlio/core/widgets/money_text.dart';
 import 'package:mitlio/core/widgets/rate_field.dart';
 import 'package:mitlio/features/expenses/ui/expense_form_view_model.dart';
 import 'package:mitlio/features/expenses/ui/expenses_view.dart';
+import 'package:mitlio/features/expenses/ui/fx_suggestion_line.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -194,6 +195,14 @@ class _FormBody extends StatelessWidget {
                 : null,
             onChanged: vm.setRate,
           ),
+          if (form.rateSuggestion case final offer?)
+            FxSuggestionLine(
+              suggestion: offer,
+              from: form.currency,
+              to: form.group.currency,
+              applied: form.ratePpm == offer.ppm,
+              onUse: vm.useSuggestedRate,
+            ),
           if (form.groupAmountCents case final converted?)
             Padding(
               padding: const EdgeInsets.only(top: Spacing.sm),

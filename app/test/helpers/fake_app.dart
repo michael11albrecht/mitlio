@@ -9,6 +9,8 @@ import 'package:mitlio/features/expenses/data/repositories/fake_expenses_reposit
 import 'package:mitlio/features/fuel/data/repositories/fuel_providers.dart';
 import 'package:mitlio/features/fuel/data/services/fake_fuel_price_service.dart';
 import 'package:mitlio/features/fuel/data/services/location_service.dart';
+import 'package:mitlio/features/fx/data/repositories/fx_providers.dart';
+import 'package:mitlio/features/fx/data/services/fake_fx_rate_service.dart';
 import 'package:mitlio/features/groups/data/repositories/fake_groups_repository.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
@@ -256,6 +258,15 @@ class FakeApp {
   List<Override> get fuelOverrides => [
     clockProvider.overrideWithValue(clock),
     ...fuelBackendOverrides,
+  ];
+
+  /// The ECB rate backend, off by default (no suggestion): pass
+  /// [fxOverrides] as `extra` to switch it on.
+  final fx = FakeFxRateService();
+
+  List<Override> get fxOverrides => [
+    clockProvider.overrideWithValue(clock),
+    fxRateServiceProvider.overrideWithValue(fx),
   ];
 
   /// A container with these repositories; disposed by the caller.

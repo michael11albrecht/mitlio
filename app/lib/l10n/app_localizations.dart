@@ -968,6 +968,23 @@ abstract class AppLocalizations {
   /// **'Das ist kein gültiger Kurs'**
   String get rateInvalid;
 
+  /// No description provided for @expenseRateSuggestion.
+  ///
+  /// In de, this message translates to:
+  /// **'1 {from} = {rate} {symbol} · EZB, {date}'**
+  String expenseRateSuggestion(
+    String from,
+    String rate,
+    String symbol,
+    String date,
+  );
+
+  /// No description provided for @expenseRateUse.
+  ///
+  /// In de, this message translates to:
+  /// **'Übernehmen'**
+  String get expenseRateUse;
+
   /// No description provided for @expenseConverted.
   ///
   /// In de, this message translates to:

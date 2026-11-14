@@ -1,7 +1,7 @@
 {
   "tasks": {
     "test": "deno test --allow-read=_shared/testdata _shared/",
-    "check": "deno fmt --check && deno lint && deno check fuel-prices/index.ts tests/*.ts _shared/*.ts"
+    "check": "deno fmt --check && deno lint && deno check fuel-prices/index.ts fx-rates/index.ts tests/*.ts _shared/*.ts"
   },
   "fmt": { "lineWidth": 100, "exclude": ["_shared/testdata"] },
   "lint": { "exclude": ["_shared/testdata"] }

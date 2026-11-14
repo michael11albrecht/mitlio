@@ -7,11 +7,15 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_providers.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:mitlio/features/expenses/ui/expenses_view_model.dart';
+import 'package:mitlio/features/fx/data/repositories/fx_providers.dart';
+import 'package:mitlio/features/fx/data/repositories/fx_rates_repository.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
+
+export 'package:mitlio/features/fx/data/fx_suggestion.dart' show FxSuggestion;
 
 /// Which expense the form works on: a new one in `groupId`, or, with an
 /// `expenseId`, the stored one.
@@ -67,6 +71,7 @@ final class ExpenseFormReady extends ExpenseFormState {
     required this.payerError,
     required this.showErrors,
     required this.saving,
+    this.rateSuggestion,
   });
 
   final Group group;
@@ -130,6 +135,11 @@ final class ExpenseFormReady extends ExpenseFormState {
   final bool showErrors;
   final bool saving;
 
+  /// The ECB reference rate for [currency] on [date], while one is known
+  /// (backend configured, online, currency published); never forced on the
+  /// user: it fills an empty rate and can be overridden.
+  final FxSuggestion? rateSuggestion;
+
   /// The amount is paid in a currency other than the group's.
   bool get isForeign => currency != group.currency;
 
@@ -164,6 +174,12 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
   int? _amount;
   late Currency _currency;
   int? _ratePpm;
+
+  /// The rate offered for the current currency and day, and whether
+  /// [_ratePpm] is that offer (not typed): then a new offer replaces it.
+  FxSuggestion? _suggestion;
+  var _rateIsSuggested = false;
+  var _suggestSeq = 0;
 
   /// Newest frozen rate per foreign currency used in this group, and the
   /// currency of the newest foreign expense.
@@ -238,6 +254,7 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
       }
       if (stored != null) _adopt(stored);
       _loaded = true;
+      _suggest();
       _emit();
     } on Object catch (e) {
       _set(ExpenseFormFailure(e is RepositoryError ? e : Storage(e)));
@@ -424,6 +441,7 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
         payerError: payerError,
         showErrors: _showErrors,
         saving: _saving,
+        rateSuggestion: _suggestion,
       ),
     );
   }
@@ -464,10 +482,53 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
     if (currency.minorUnits != _currency.minorUnits) _amount = null;
     _currency = currency;
     _ratePpm = _foreign ? _lastRates[currency] : null;
+    _rateIsSuggested = false;
     _exact.clear();
     if (_multiPayer) _payerCents = {};
+    _suggest();
     _reseed();
     _emit();
+  }
+
+  /// Asks for the ECB rate of the current currency and day. A rate that
+  /// came from an earlier answer is replaced; a typed or remembered one is
+  /// kept (and offered through [useSuggestedRate]). Answers for a currency
+  /// or day that is no longer current are dropped.
+  void _suggest() {
+    final seq = ++_suggestSeq;
+    _suggestion = null;
+    if (!_loaded) return;
+    final repository = ref.read(fxRatesRepositoryProvider);
+    if (!_foreign || !repository.isAvailable) return;
+    final day = _date == _today ? null : _date;
+    unawaited(() async {
+      final found = await repository.suggest(
+        base: _currency,
+        quote: _group.currency,
+        date: day,
+      );
+      if (!ref.mounted || seq != _suggestSeq || found == null) return;
+      _suggestion = found;
+      if (_ratePpm == null || _rateIsSuggested) _takeRate(found.ppm);
+      _emit();
+    }());
+  }
+
+  /// Takes the offered ECB rate (after the user typed another one).
+  void useSuggestedRate() {
+    final offered = _suggestion;
+    if (offered == null || !_foreign) return;
+    _takeRate(offered.ppm);
+    _emit();
+  }
+
+  /// Adopts an offered [ppm]. If that is what makes the converted amount
+  /// known for the first time, the cent-based inputs are seeded from it.
+  void _takeRate(int ppm) {
+    final hadAmount = _groupAmount() != null;
+    _ratePpm = ppm;
+    _rateIsSuggested = true;
+    if (!hadAmount) _reseed();
   }
 
   /// The frozen rate: group currency per 1 foreign unit, in ppm. Only used
@@ -475,6 +536,7 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
   void setRate(int? ppm) {
     if (!_foreign) return;
     _ratePpm = ppm;
+    _rateIsSuggested = false;
     _emit();
   }
 
@@ -503,6 +565,7 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
   /// Only the calendar day counts.
   void setDate(DateTime day) {
     _date = DateTime.utc(day.year, day.month, day.day);
+    _suggest();
     _emit();
   }
 
@@ -644,6 +707,7 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
     if (s.isForeign) ...{
       'groupCurrency': s.group.currency.code,
       'fxRatePpm': s.ratePpm,
+      'fxSuggestionPpm': s.rateSuggestion?.ppm,
       'groupAmountCents': s.groupAmountCents,
     },
     'date': isoDay(s.date),
