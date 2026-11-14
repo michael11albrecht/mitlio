@@ -107,5 +107,52 @@
         "type": "String"
       }
     }
+  },
+  "@@x-feature-balances": "balances",
+  "balancesTitle": "Salden",
+  "balancesOpen": "Wer bekommt was",
+  "balanceGets": "{name} bekommt",
+  "@balanceGets": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "balanceOwes": "{name} schuldet",
+  "@balanceOwes": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "balanceEven": "{name} ist ausgeglichen",
+  "@balanceEven": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "balancesSettledTitle": "Alles ausgeglichen",
+  "balancesSettledMessage": "Niemand schuldet jemandem etwas.",
+  "balancesEmptyTitle": "Noch nichts zu verrechnen",
+  "balancesEmptyMessage": "Sobald es Ausgaben gibt, siehst du hier, wer wem was schuldet.",
+  "balancesTransfersTitle": "Wer zahlt wem",
+  "balancesModeSimplified": "Einfach",
+  "balancesModeDirect": "Direkt",
+  "balancesModeSimplifiedHint": "So wenige Zahlungen wie möglich.",
+  "balancesModeDirectHint": "Jede Schuld einzeln, zwischen den Beteiligten.",
+  "balancesTransfer": "{from} zahlt {to}",
+  "@balancesTransfer": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
   }
 }
