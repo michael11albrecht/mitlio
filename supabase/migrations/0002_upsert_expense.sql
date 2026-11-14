@@ -24,6 +24,9 @@
 -- Soft delete: payload.deleted_at; children are kept/replaced like any other update.
 -- Returns {applied, expense: <row incl. server_seq>, payers: [...], shares: [...]}.
 
+set lock_timeout = '1s';
+set statement_timeout = '5s';
+
 create function public.upsert_expense(payload jsonb) returns jsonb
 language plpgsql
 security definer

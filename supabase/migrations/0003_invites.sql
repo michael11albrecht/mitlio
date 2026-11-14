@@ -19,6 +19,9 @@
 -- for anonymous sign-ins); if needed later, add a per-user attempt counter table checked in
 -- join_group.
 
+set lock_timeout = '1s';
+set statement_timeout = '5s';
+
 create extension if not exists pgcrypto with schema extensions;
 
 -- Members only. Returns the plaintext token once.
