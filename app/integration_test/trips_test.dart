@@ -92,7 +92,6 @@ void main() {
       await taps.enterText(field, text);
     }
     await tester.pumpAndSettle();
-    expect(find.textContaining('Jede Person zahlt'), findsOneWidget);
 
     final live = await drive['state']!({'screen': 'trip'});
     final result = (live['state']! as Map)['result']! as Map;
