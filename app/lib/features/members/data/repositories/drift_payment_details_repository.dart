@@ -5,7 +5,7 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_repository.dart';
 import 'package:mitlio/features/members/data/services/iban_cipher.dart';
-import 'package:mitlio_domain/mitlio_domain.dart';
+import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [PaymentDetailsRepository] backed by Drift: handle and masked hint on the
 /// member row, the encrypted IBAN in `local_member_bank`.

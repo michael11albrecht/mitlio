@@ -8,7 +8,7 @@ import 'package:mitlio/features/expenses/data/repositories/expenses_repository.d
 import 'package:mitlio/features/rides/data/repositories/drift_rides_refs.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_codec.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_repository.dart';
-import 'package:mitlio_domain/mitlio_domain.dart';
+import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [RidesRepository] backed by Drift.
 class DriftRidesRepository implements RidesRepository {

@@ -1,41 +1,39 @@
 import 'package:mitlio/core/clock.dart';
+import 'package:mitlio_domain/mitlio_domain.dart' as domain;
 
-/// Hybrid logical clock stub for `updated_at` (plan §2.4).
+/// Process-wide hybrid logical clock for `updated_at` (plan §2.4), backed by
+/// the domain `Hlc`.
 ///
 /// Format: `<ISO8601 UTC ms>-<counter 4 digits>-<nodeId>`, e.g.
 /// `2026-01-01T00:00:00.000Z-0000-local`. Strings sort lexicographically in
 /// causal order within one process: the physical part never goes backwards
 /// (a stalled or rewound [Clock] bumps the counter instead).
 ///
-/// P6 replaces this with the full HLC (`Hlc.receive`, per-device node id).
+/// The last timestamp lives in memory only.
+// TODO(P6-T09): per-install node id (persisted) and `domain.Hlc.receive` on
+// pull; needs a settings table, so not part of P6-T08 (no schema change).
 abstract final class Hlc {
   static const _nodeId = 'local';
-  static const _maxCounter = 9999;
-  static int _lastMs = 0;
-  static int _counter = 0;
+  static domain.Hlc _last = domain.Hlc(
+    wallMillis: 0,
+    counter: 0,
+    nodeId: _nodeId,
+  );
 
   /// Next monotonic timestamp for [clock].
   static String now(Clock clock) {
     final ms = clock.now().toUtc().millisecondsSinceEpoch;
-    if (ms > _lastMs) {
-      _lastMs = ms;
-      _counter = 0;
-    } else if (_counter < _maxCounter) {
-      _counter++;
-    } else {
-      _lastMs++;
-      _counter = 0;
+    var next = domain.Hlc.send(_last, ms);
+    if (next is domain.Err<domain.Hlc, domain.HlcError>) {
+      // Counter exhausted within this millisecond: borrow the next one.
+      next = domain.Hlc.send(_last, _last.wallMillis + 1);
     }
-    final iso = DateTime.fromMillisecondsSinceEpoch(
-      _lastMs,
-      isUtc: true,
-    ).toIso8601String();
-    return '$iso-${_counter.toString().padLeft(4, '0')}-$_nodeId';
+    _last = (next as domain.Ok<domain.Hlc, domain.HlcError>).value;
+    return _last.toString();
   }
 
   /// Forgets process state. Tests only.
   static void debugReset() {
-    _lastMs = 0;
-    _counter = 0;
+    _last = domain.Hlc(wallMillis: 0, counter: 0, nodeId: _nodeId);
   }
 }
