@@ -186,7 +186,7 @@ const dbContract = <String, Map<String, DbColumn>>{
     'expense_id': DbColumn(DbColumnType.string, nullable: false),
     'group_id': DbColumn(DbColumnType.string, nullable: false),
     'member_id': DbColumn(DbColumnType.string, nullable: false),
-    'paid_cents': DbColumn(DbColumnType.string, nullable: false),
+    'paid_cents': DbColumn(DbColumnType.number, nullable: false),
   },
   'expense_shares': {
     'expense_id': DbColumn(DbColumnType.string, nullable: false),
