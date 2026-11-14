@@ -1,0 +1,35 @@
+# Opens/updates the release PR from conventional commits (P8-T05). Opening the PR only:
+# skip-github-release is set in .release-please-config.json, so nothing is tagged or published here.
+# The GitHub App token (same App as agent-implement) is used so CI runs on the release PR;
+# GITHUB_TOKEN-created PRs do not trigger workflows. The App needs contents + pull-requests write.
+# Note: the yaml updater rewrites app/pubspec.yaml `version`; the `+build` suffix is not preserved.
+name: release-please
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read # writes go through the App token
+
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+jobs:
+  release-pr:
+    name: release-pr
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: GitHub App token
+        id: app
+        uses: actions/create-github-app-token@v1.12.0
+        with:
+          app-id: ${{ vars.AGENT_APP_ID }}
+          private-key: ${{ secrets.AGENT_APP_KEY }}
+      - uses: googleapis/release-please-action@v4.4.0
+        with:
+          token: ${{ steps.app.outputs.token }}
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json

@@ -1,0 +1,81 @@
+# Nightly full mutation run on packages/domain (P8-T08). Uploads the report and files at most
+# 3 `agent-ready` issues (one per file with surviving mutants). Never labels `agent-implement`,
+# so nothing runs without the owner. agent-fix-ci is deliberately not part of this.
+name: mutation-nightly
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  GH_REPO: ${{ github.repository }}
+
+jobs:
+  mutate:
+    name: mutate
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: subosito/flutter-action@v2.23.0
+        with:
+          flutter-version-file: pubspec.yaml
+          cache: true
+      - run: make bootstrap
+      # A below-threshold exit is expected to be possible; only a missing report is a failure.
+      - name: make mutate
+        run: |
+          rm -rf build/mutation
+          MUTATION_FORMAT=all make mutate || echo "::warning::make mutate exited non-zero (below threshold or error)"
+          ls build/mutation/report
+          test -f build/mutation/report/mutation-test-report.xml
+      - uses: actions/upload-artifact@v4.6.2
+        if: always()
+        with:
+          name: mutation-report
+          path: build/mutation/report
+          if-no-files-found: warn
+      - name: File survivor issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import subprocess, json, os
+          import xml.etree.ElementTree as ET
+
+          MAX_ISSUES = 3
+          root = ET.parse("build/mutation/report/mutation-test-report.xml").getroot()
+          groups = []
+          for f in root.iter("file"):
+              muts = [(m.get("line"), (m.findtext("original") or "").strip(),
+                       (m.findtext("modified") or "").strip()) for m in f.iter("mutation")]
+              if muts:
+                  groups.append((f.get("name"), muts))
+          groups.sort(key=lambda g: (-len(g[1]), g[0]))
+          print(f"{len(groups)} file(s) with survivors; filing at most {MAX_ISSUES}")
+
+          def gh(*args):
+              return subprocess.run(["gh", *args], check=True, capture_output=True, text=True).stdout
+
+          run_url = f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+          for name, muts in groups[:MAX_ISSUES]:
+              title = f"Mutation survivors in {name}"
+              lines = [f"- line {l}: `{o}` -> `{m}`" for l, o, m in sorted(muts, key=lambda x: int(x[0]))]
+              body = (f"Surviving mutants in `packages/domain/{name}` ({len(muts)}), from the nightly run {run_url}.\n\n"
+                      + "\n".join(lines)
+                      + "\n\n**Task:** kill them with behavioural tests (no production changes unless a mutant reveals a bug).\n")
+              found = json.loads(gh("issue", "list", "--state", "open", "--search", f'"{title}" in:title',
+                                    "--json", "number,title", "--limit", "20"))
+              existing = [i for i in found if i["title"] == title]
+              if existing:
+                  n = existing[0]["number"]
+                  gh("issue", "edit", str(n), "--body", body)
+                  print(f"updated #{n}: {title}")
+              else:
+                  print("created:", gh("issue", "create", "--title", title, "--body", body,
+                                       "--label", "agent-ready").strip())
+          PY
