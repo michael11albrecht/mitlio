@@ -1,6 +1,7 @@
--- squawk-ignore-file prefer-robust-stmts
--- Justification: the Supabase CLI applies each migration file once, in a transaction; the table
--- and function are created here, so they cannot already exist and nothing is re-run.
+-- squawk-ignore-file prefer-robust-stmts, require-concurrent-index-creation
+-- Justification: the Supabase CLI applies each migration file once, in a transaction; the table,
+-- its indexes and the function are created here on a table that does not exist yet, so nothing is
+-- re-run and no write can be blocked.
 -- 0007_expense_revisions: server side of the expense edit history (P7-T03, plan §7 P7 row T03).
 --
 -- Model (mirrors the client `expense_revisions` table, Drift schema v3):
