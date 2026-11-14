@@ -791,5 +791,10 @@
   "exportCategoryStay": "Unterkunft",
   "exportCategoryTransport": "Transport",
   "exportCategoryFun": "Freizeit",
-  "exportCategoryOther": "Sonstiges"
+  "exportCategoryOther": "Sonstiges",
+  "settingsTitle": "Einstellungen",
+  "privacySection": "Datenschutz",
+  "crashReportsLabel": "Absturzberichte senden",
+  "crashReportsHint": "Nur bei einem Absturz: technische Fehlerdaten ohne Namen, Beträge, Notizen oder IBAN. Standardmäßig aus.",
+  "crashReportsUnavailable": "In dieser Version nicht verfügbar."
 }

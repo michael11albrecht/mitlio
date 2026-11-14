@@ -1133,4 +1133,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get exportCategoryOther => 'Sonstiges';
+
+  @override
+  String get settingsTitle => 'Einstellungen';
+
+  @override
+  String get privacySection => 'Datenschutz';
+
+  @override
+  String get crashReportsLabel => 'Absturzberichte senden';
+
+  @override
+  String get crashReportsHint =>
+      'Nur bei einem Absturz: technische Fehlerdaten ohne Namen, Beträge, Notizen oder IBAN. Standardmäßig aus.';
+
+  @override
+  String get crashReportsUnavailable => 'In dieser Version nicht verfügbar.';
 }
