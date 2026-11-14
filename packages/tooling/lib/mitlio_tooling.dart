@@ -1,3 +1,4 @@
+export 'src/app_identity.dart';
 export 'src/cli.dart';
 export 'src/config.dart';
 export 'src/deps_policy.dart';

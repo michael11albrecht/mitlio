@@ -1,7 +1,14 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+// Generated from app/app_identity.yaml (`make identity`, ADR-16).
+val identity = Properties().apply {
+    rootProject.file("app_identity.properties").inputStream().use { load(it) }
 }
 
 android {
@@ -15,8 +22,6 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "app.mitlio.mitlio"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -27,6 +32,17 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+    }
+
+    flavorDimensions += "env"
+    productFlavors {
+        listOf("dev", "prod").forEach { flavor ->
+            create(flavor) {
+                dimension = "env"
+                applicationId = identity.getProperty("$flavor.applicationId")
+                resValue("string", "app_name", identity.getProperty("$flavor.appName"))
+            }
+        }
     }
 
     buildTypes {
