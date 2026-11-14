@@ -1,0 +1,30 @@
+[
+  {
+    "pr": {"number": 1, "title": "feat: a | b", "body": "## Task\n\nNo issue (local agent run) · Task ID: P9-T01\n",
+      "headRefName": "agent/p9-t01", "author": {"login": "michael11albrecht", "is_bot": false},
+      "commits": [{"oid": "a"}, {"oid": "b"}], "createdAt": "2026-01-01T10:00:00Z", "mergedAt": "2026-01-01T12:00:00Z"},
+    "runs": [
+      {"conclusion": "success", "createdAt": "2026-01-01T11:00:00Z", "event": "pull_request", "headSha": "b", "workflowName": "ci"},
+      {"conclusion": "failure", "createdAt": "2026-01-01T10:10:00Z", "event": "pull_request", "headSha": "a", "workflowName": "ci"},
+      {"conclusion": "success", "createdAt": "2026-01-01T10:10:00Z", "event": "pull_request_target", "headSha": "a", "workflowName": "risk-label"}
+    ],
+    "inline": 3
+  },
+  {
+    "pr": {"number": 2, "title": "docs: readme", "body": null,
+      "headRefName": "agent/2-readme", "author": {"login": "app/mitlio-agent", "is_bot": true},
+      "commits": [{"oid": "c"}], "createdAt": "2026-01-02T00:00:00Z", "mergedAt": "2026-01-02T01:00:00Z"},
+    "runs": [
+      {"conclusion": "cancelled", "createdAt": "2026-01-02T00:05:00Z", "event": "pull_request", "headSha": "c", "workflowName": "ci"},
+      {"conclusion": "success", "createdAt": "2026-01-02T00:10:00Z", "event": "pull_request", "headSha": "c", "workflowName": "ci"}
+    ],
+    "inline": 0
+  },
+  {
+    "pr": {"number": 3, "title": "fix: old", "body": "Task ID: PX-T02",
+      "headRefName": "fix/old", "author": {"login": "someone", "is_bot": false},
+      "commits": [{"oid": "d"}], "createdAt": "2026-02-01T00:00:00Z", "mergedAt": "2026-02-01T06:00:00Z"},
+    "runs": [],
+    "inline": 1
+  }
+]
