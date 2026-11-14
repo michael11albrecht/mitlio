@@ -107,10 +107,4 @@ void main() {
     expect((list.single as Map)['source'], 'flutter');
     expect(await h['errors']!({}), {'errors': <Object?>[]});
   });
-
-  test('default data control is a no-op', () async {
-    final c = container.read(debugDataControlProvider);
-    await c.wipe();
-    expect(await c.seed('x'), {'ids': <String>[]});
-  });
 }

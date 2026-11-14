@@ -54,7 +54,14 @@ abstract interface class GroupsRepository {
     required String createdBy,
   });
 
-  Future<RepoResult<Group>> rename(String id, String name);
+  /// Replaces name and currency. [name] is trimmed and must not be empty.
+  /// Whether a currency change is allowed once entries exist is a ViewModel
+  /// rule; the repository stores what it is given.
+  Future<RepoResult<Group>> update(
+    String id, {
+    required String name,
+    required Currency currency,
+  });
 
   /// Soft delete; call the returned [Undo] to bring the group back.
   Future<RepoResult<Undo>> softDelete(String id);

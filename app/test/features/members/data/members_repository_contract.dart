@@ -94,6 +94,47 @@ void runMembersRepositoryContract(
       expect(err(await r.members.softDelete(a.id)), isA<NotFound>());
     });
 
+    test('reorder swaps positions among live members', () async {
+      final a = ok(await r.members.add(groupId, name: 'Ann'));
+      final b = ok(await r.members.add(groupId, name: 'Ben'));
+      final c = ok(await r.members.add(groupId, name: 'Cy'));
+      ok(await r.members.softDelete(b.id));
+      ok(await r.members.reorder(groupId, [c.id, a.id]));
+      final live = ok(await r.members.list(groupId));
+      expect([for (final m in live) m.name], ['Cy', 'Ann']);
+      expect([for (final m in live) m.position], [0, 2]);
+      final all = ok(await r.members.list(groupId, includeDeleted: true));
+      expect({for (final m in all) m.position}, hasLength(3));
+    });
+
+    test('reorder rejects a different set of ids', () async {
+      final a = ok(await r.members.add(groupId, name: 'Ann'));
+      final b = ok(await r.members.add(groupId, name: 'Ben'));
+      expect(
+        err(await r.members.reorder(groupId, [a.id])),
+        isA<InvalidData>(),
+      );
+      expect(
+        err(await r.members.reorder(groupId, [a.id, a.id])),
+        isA<InvalidData>(),
+      );
+      expect(
+        err(await r.members.reorder(groupId, [a.id, 'x'])),
+        isA<InvalidData>(),
+      );
+      expect(ok(await r.members.list(groupId)), [a, b]);
+    });
+
+    test('reorder is visible to watchMembers', () async {
+      final a = ok(await r.members.add(groupId, name: 'Ann'));
+      final b = ok(await r.members.add(groupId, name: 'Ben'));
+      final probe = StreamProbe(r.members.watchMembers(groupId));
+      expect(await probe.next(), [a, b]);
+      ok(await r.members.reorder(groupId, [b.id, a.id]));
+      final next = await probe.next();
+      expect([for (final m in next) m.name], ['Ben', 'Ann']);
+    });
+
     test('list of an unknown group is empty', () async {
       expect(ok(await r.members.list('nope')), isEmpty);
     });

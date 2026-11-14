@@ -205,6 +205,30 @@ void main() {
         {},
       ),
       (
+        'ui-no-debug',
+        {
+          'app/lib/features/a/ui/a_view_model.dart':
+              "import 'package:mitlio/debug/debug_snapshots.dart';",
+        },
+        {
+          'app/lib/features/a/ui/a_view_model.dart':
+              "import 'package:mitlio/core/json_map.dart';",
+        },
+      ),
+      (
+        'ui-no-debug',
+        {'app/lib/core/c.dart': "import '../debug/debug_drive.dart';"},
+        {},
+      ),
+      (
+        'ui-no-debug',
+        {
+          'app/lib/features/a/data/repositories/r.dart':
+              "import 'package:mitlio/debug/drive_types.dart';",
+        },
+        {},
+      ),
+      (
         'debug-no-views',
         {
           'app/lib/debug/d.dart': "import '../features/a/ui/a_view.dart';",

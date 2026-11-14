@@ -106,6 +106,28 @@ class DriftMembersRepository implements MembersRepository {
   });
 
   @override
+  Future<RepoResult<void>> reorder(String groupId, List<String> orderedIds) =>
+      guardStorage(() async {
+        final live = await _db.membersDao.listByGroup(groupId);
+        if (!sameMembers(live.map((m) => m.id), orderedIds)) {
+          return const Err(
+            InvalidData('orderedIds must be the live member ids'),
+          );
+        }
+        final positions = [for (final m in live) m.position];
+        await _db.transaction(() async {
+          for (var i = 0; i < orderedIds.length; i++) {
+            await _db.membersDao.setPosition(
+              id: orderedIds[i],
+              position: positions[i],
+              updatedAt: Hlc.now(_clock),
+            );
+          }
+        });
+        return const Ok(null);
+      });
+
+  @override
   Future<RepoResult<Undo>> softDelete(String id) => guardStorage(() async {
     final ok = await _db.membersDao.softDelete(
       id: id,

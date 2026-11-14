@@ -80,19 +80,23 @@ class DriftGroupsRepository implements GroupsRepository {
   });
 
   @override
-  Future<RepoResult<Group>> rename(String id, String name) =>
-      guardStorage(() async {
-        final trimmed = name.trim();
-        if (trimmed.isEmpty) {
-          return const Err(InvalidData('name must not be empty'));
-        }
-        final ok = await _dao.updateGroup(
-          id: id,
-          name: trimmed,
-          updatedAt: Hlc.now(_clock),
-        );
-        return ok ? get(id) : Err(NotFound('group', id));
-      });
+  Future<RepoResult<Group>> update(
+    String id, {
+    required String name,
+    required Currency currency,
+  }) => guardStorage(() async {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) {
+      return const Err(InvalidData('name must not be empty'));
+    }
+    final ok = await _dao.updateGroup(
+      id: id,
+      name: trimmed,
+      currency: currency.code,
+      updatedAt: Hlc.now(_clock),
+    );
+    return ok ? get(id) : Err(NotFound('group', id));
+  });
 
   @override
   Future<RepoResult<Undo>> softDelete(String id) => guardStorage(() async {

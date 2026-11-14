@@ -34,6 +34,7 @@ void main() {
         'log_commute_ride': 3,
         'add_equal_split_expense': 5,
         'mark_transfer_paid': 2,
+        'create_group_with_members': 3,
         'web_calculator': 0,
       });
     });

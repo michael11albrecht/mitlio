@@ -6,11 +6,15 @@ import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio/l10n/app_localizations_de.dart';
 import 'package:mitlio/l10n/app_localizations_en.dart';
 
+import '../helpers/fake_app.dart';
+
 void main() {
   Future<Locale> resolved(WidgetTester tester, Locale device) async {
     tester.platformDispatcher.localesTestValue = [device];
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
-    await tester.pumpWidget(const ProviderScope(child: MitlioApp()));
+    await tester.pumpWidget(
+      ProviderScope(overrides: FakeApp().overrides, child: const MitlioApp()),
+    );
     await tester.pumpAndSettle();
     return Localizations.localeOf(tester.element(find.text('mitlio')));
   }
