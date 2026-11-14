@@ -17,6 +17,15 @@ void main() {
   File(_output)
     ..createSync(recursive: true)
     ..writeAsStringSync(_render(tables));
+  // `make fmt-check` covers generated files too, so emit canonical formatting.
+  final fmt = Process.runSync(Platform.resolvedExecutable, [
+    'format',
+    _output,
+  ]);
+  if (fmt.exitCode != 0) {
+    stderr.write(fmt.stderr);
+    exit(fmt.exitCode);
+  }
 }
 
 /// table -> column -> (type, nullable), in file order.

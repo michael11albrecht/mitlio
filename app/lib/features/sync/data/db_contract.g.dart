@@ -14,19 +14,306 @@ class DbColumn {
 
 /// Table names of the server schema (`public`).
 abstract final class DbTables {
+  static const expensePayers = 'expense_payers';
+  static const expenseShares = 'expense_shares';
+  static const expenses = 'expenses';
+  static const groupInvites = 'group_invites';
+  static const groupMemberships = 'group_memberships';
   static const groups = 'groups';
+  static const members = 'members';
+  static const rideTemplates = 'ride_templates';
+  static const rides = 'rides';
+  static const settlements = 'settlements';
+  static const vehicles = 'vehicles';
+}
+
+/// Column names of `expense_payers`.
+abstract final class DbExpensePayersCols {
+  static const expenseId = 'expense_id';
+  static const groupId = 'group_id';
+  static const memberId = 'member_id';
+  static const paidCents = 'paid_cents';
+}
+
+/// Column names of `expense_shares`.
+abstract final class DbExpenseSharesCols {
+  static const expenseId = 'expense_id';
+  static const groupId = 'group_id';
+  static const memberId = 'member_id';
+  static const shareCents = 'share_cents';
+  static const weight = 'weight';
+}
+
+/// Column names of `expenses`.
+abstract final class DbExpensesCols {
+  static const amountCents = 'amount_cents';
+  static const category = 'category';
+  static const createdAt = 'created_at';
+  static const currency = 'currency';
+  static const date = 'date';
+  static const deletedAt = 'deleted_at';
+  static const fxRatePpm = 'fx_rate_ppm';
+  static const groupAmountCents = 'group_amount_cents';
+  static const groupId = 'group_id';
+  static const id = 'id';
+  static const serverSeq = 'server_seq';
+  static const splitMode = 'split_mode';
+  static const title = 'title';
+  static const tripMeta = 'trip_meta';
+  static const type = 'type';
+  static const updatedAt = 'updated_at';
+}
+
+/// Column names of `group_invites`.
+abstract final class DbGroupInvitesCols {
+  static const createdAt = 'created_at';
+  static const createdBy = 'created_by';
+  static const expiresAt = 'expires_at';
+  static const groupId = 'group_id';
+  static const id = 'id';
+  static const revokedAt = 'revoked_at';
+  static const tokenHash = 'token_hash';
+}
+
+/// Column names of `group_memberships`.
+abstract final class DbGroupMembershipsCols {
+  static const createdAt = 'created_at';
+  static const groupId = 'group_id';
+  static const id = 'id';
+  static const memberId = 'member_id';
+  static const userId = 'user_id';
 }
 
 /// Column names of `groups`.
 abstract final class DbGroupsCols {
-  static const id = 'id';
+  static const createdAt = 'created_at';
+  static const createdBy = 'created_by';
+  static const currency = 'currency';
   static const deletedAt = 'deleted_at';
+  static const id = 'id';
+  static const name = 'name';
+  static const serverSeq = 'server_seq';
+  static const updatedAt = 'updated_at';
+}
+
+/// Column names of `members`.
+abstract final class DbMembersCols {
+  static const createdAt = 'created_at';
+  static const deletedAt = 'deleted_at';
+  static const groupId = 'group_id';
+  static const ibanHint = 'iban_hint';
+  static const id = 'id';
+  static const name = 'name';
+  static const paypalMe = 'paypal_me';
+  static const position = 'position';
+  static const serverSeq = 'server_seq';
+  static const updatedAt = 'updated_at';
+  static const userId = 'user_id';
+}
+
+/// Column names of `ride_templates`.
+abstract final class DbRideTemplatesCols {
+  static const createdAt = 'created_at';
+  static const defaultDriverId = 'default_driver_id';
+  static const defaultPassengerIds = 'default_passenger_ids';
+  static const deletedAt = 'deleted_at';
+  static const distanceMeters = 'distance_meters';
+  static const groupId = 'group_id';
+  static const id = 'id';
+  static const name = 'name';
+  static const roundTrip = 'round_trip';
+  static const serverSeq = 'server_seq';
+  static const tollsCents = 'tolls_cents';
+  static const updatedAt = 'updated_at';
+  static const vehicleId = 'vehicle_id';
+}
+
+/// Column names of `rides`.
+abstract final class DbRidesCols {
+  static const createdAt = 'created_at';
+  static const date = 'date';
+  static const deletedAt = 'deleted_at';
+  static const distanceMeters = 'distance_meters';
+  static const driverCounts = 'driver_counts';
+  static const driverId = 'driver_id';
+  static const groupId = 'group_id';
+  static const id = 'id';
+  static const passengerIds = 'passenger_ids';
+  static const pricePerUnitMilli = 'price_per_unit_milli';
+  static const roundTrip = 'round_trip';
+  static const serverSeq = 'server_seq';
+  static const settledExpenseId = 'settled_expense_id';
+  static const tollsCents = 'tolls_cents';
+  static const updatedAt = 'updated_at';
+  static const useKmRate = 'use_km_rate';
+  static const vehicleId = 'vehicle_id';
+}
+
+/// Column names of `settlements`.
+abstract final class DbSettlementsCols {
+  static const amountCents = 'amount_cents';
+  static const createdAt = 'created_at';
+  static const currency = 'currency';
+  static const date = 'date';
+  static const deletedAt = 'deleted_at';
+  static const fromMember = 'from_member';
+  static const groupId = 'group_id';
+  static const id = 'id';
+  static const method = 'method';
+  static const serverSeq = 'server_seq';
+  static const toMember = 'to_member';
+  static const updatedAt = 'updated_at';
+}
+
+/// Column names of `vehicles`.
+abstract final class DbVehiclesCols {
+  static const consumptionMilliPer100km = 'consumption_milli_per100km';
+  static const createdAt = 'created_at';
+  static const deletedAt = 'deleted_at';
+  static const fuelType = 'fuel_type';
+  static const groupId = 'group_id';
+  static const id = 'id';
+  static const kmRateMilliPerKm = 'km_rate_milli_per_km';
+  static const name = 'name';
+  static const serverSeq = 'server_seq';
+  static const updatedAt = 'updated_at';
+  static const wearMilliPerKm = 'wear_milli_per_km';
 }
 
 /// Server schema: table -> column -> type.
 const dbContract = <String, Map<String, DbColumn>>{
-  'groups': {
-    'id': DbColumn(DbColumnType.string, nullable: false),
+  'expense_payers': {
+    'expense_id': DbColumn(DbColumnType.string, nullable: false),
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'member_id': DbColumn(DbColumnType.string, nullable: false),
+    'paid_cents': DbColumn(DbColumnType.number, nullable: false),
+  },
+  'expense_shares': {
+    'expense_id': DbColumn(DbColumnType.string, nullable: false),
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'member_id': DbColumn(DbColumnType.string, nullable: false),
+    'share_cents': DbColumn(DbColumnType.number, nullable: false),
+    'weight': DbColumn(DbColumnType.number, nullable: false),
+  },
+  'expenses': {
+    'amount_cents': DbColumn(DbColumnType.number, nullable: false),
+    'category': DbColumn(DbColumnType.string, nullable: true),
+    'created_at': DbColumn(DbColumnType.string, nullable: false),
+    'currency': DbColumn(DbColumnType.string, nullable: false),
+    'date': DbColumn(DbColumnType.string, nullable: false),
     'deleted_at': DbColumn(DbColumnType.string, nullable: true),
+    'fx_rate_ppm': DbColumn(DbColumnType.number, nullable: false),
+    'group_amount_cents': DbColumn(DbColumnType.number, nullable: false),
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'server_seq': DbColumn(DbColumnType.number, nullable: false),
+    'split_mode': DbColumn(DbColumnType.string, nullable: false),
+    'title': DbColumn(DbColumnType.string, nullable: false),
+    'trip_meta': DbColumn(DbColumnType.json, nullable: true),
+    'type': DbColumn(DbColumnType.string, nullable: false),
+    'updated_at': DbColumn(DbColumnType.string, nullable: false),
+  },
+  'group_invites': {
+    'created_at': DbColumn(DbColumnType.string, nullable: false),
+    'created_by': DbColumn(DbColumnType.string, nullable: false),
+    'expires_at': DbColumn(DbColumnType.string, nullable: false),
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'revoked_at': DbColumn(DbColumnType.string, nullable: true),
+    'token_hash': DbColumn(DbColumnType.string, nullable: false),
+  },
+  'group_memberships': {
+    'created_at': DbColumn(DbColumnType.string, nullable: false),
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'member_id': DbColumn(DbColumnType.string, nullable: true),
+    'user_id': DbColumn(DbColumnType.string, nullable: false),
+  },
+  'groups': {
+    'created_at': DbColumn(DbColumnType.string, nullable: false),
+    'created_by': DbColumn(DbColumnType.string, nullable: false),
+    'currency': DbColumn(DbColumnType.string, nullable: false),
+    'deleted_at': DbColumn(DbColumnType.string, nullable: true),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'name': DbColumn(DbColumnType.string, nullable: false),
+    'server_seq': DbColumn(DbColumnType.number, nullable: false),
+    'updated_at': DbColumn(DbColumnType.string, nullable: false),
+  },
+  'members': {
+    'created_at': DbColumn(DbColumnType.string, nullable: false),
+    'deleted_at': DbColumn(DbColumnType.string, nullable: true),
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'iban_hint': DbColumn(DbColumnType.string, nullable: true),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'name': DbColumn(DbColumnType.string, nullable: false),
+    'paypal_me': DbColumn(DbColumnType.string, nullable: true),
+    'position': DbColumn(DbColumnType.number, nullable: false),
+    'server_seq': DbColumn(DbColumnType.number, nullable: false),
+    'updated_at': DbColumn(DbColumnType.string, nullable: false),
+    'user_id': DbColumn(DbColumnType.string, nullable: true),
+  },
+  'ride_templates': {
+    'created_at': DbColumn(DbColumnType.string, nullable: false),
+    'default_driver_id': DbColumn(DbColumnType.string, nullable: true),
+    'default_passenger_ids': DbColumn(DbColumnType.json, nullable: false),
+    'deleted_at': DbColumn(DbColumnType.string, nullable: true),
+    'distance_meters': DbColumn(DbColumnType.number, nullable: false),
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'name': DbColumn(DbColumnType.string, nullable: false),
+    'round_trip': DbColumn(DbColumnType.boolean, nullable: false),
+    'server_seq': DbColumn(DbColumnType.number, nullable: false),
+    'tolls_cents': DbColumn(DbColumnType.number, nullable: false),
+    'updated_at': DbColumn(DbColumnType.string, nullable: false),
+    'vehicle_id': DbColumn(DbColumnType.string, nullable: false),
+  },
+  'rides': {
+    'created_at': DbColumn(DbColumnType.string, nullable: false),
+    'date': DbColumn(DbColumnType.string, nullable: false),
+    'deleted_at': DbColumn(DbColumnType.string, nullable: true),
+    'distance_meters': DbColumn(DbColumnType.number, nullable: false),
+    'driver_counts': DbColumn(DbColumnType.boolean, nullable: false),
+    'driver_id': DbColumn(DbColumnType.string, nullable: false),
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'passenger_ids': DbColumn(DbColumnType.json, nullable: false),
+    'price_per_unit_milli': DbColumn(DbColumnType.number, nullable: false),
+    'round_trip': DbColumn(DbColumnType.boolean, nullable: false),
+    'server_seq': DbColumn(DbColumnType.number, nullable: false),
+    'settled_expense_id': DbColumn(DbColumnType.string, nullable: true),
+    'tolls_cents': DbColumn(DbColumnType.number, nullable: false),
+    'updated_at': DbColumn(DbColumnType.string, nullable: false),
+    'use_km_rate': DbColumn(DbColumnType.boolean, nullable: false),
+    'vehicle_id': DbColumn(DbColumnType.string, nullable: false),
+  },
+  'settlements': {
+    'amount_cents': DbColumn(DbColumnType.number, nullable: false),
+    'created_at': DbColumn(DbColumnType.string, nullable: false),
+    'currency': DbColumn(DbColumnType.string, nullable: false),
+    'date': DbColumn(DbColumnType.string, nullable: false),
+    'deleted_at': DbColumn(DbColumnType.string, nullable: true),
+    'from_member': DbColumn(DbColumnType.string, nullable: false),
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'method': DbColumn(DbColumnType.string, nullable: false),
+    'server_seq': DbColumn(DbColumnType.number, nullable: false),
+    'to_member': DbColumn(DbColumnType.string, nullable: false),
+    'updated_at': DbColumn(DbColumnType.string, nullable: false),
+  },
+  'vehicles': {
+    'consumption_milli_per100km': DbColumn(
+      DbColumnType.number,
+      nullable: false,
+    ),
+    'created_at': DbColumn(DbColumnType.string, nullable: false),
+    'deleted_at': DbColumn(DbColumnType.string, nullable: true),
+    'fuel_type': DbColumn(DbColumnType.string, nullable: false),
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'km_rate_milli_per_km': DbColumn(DbColumnType.number, nullable: true),
+    'name': DbColumn(DbColumnType.string, nullable: false),
+    'server_seq': DbColumn(DbColumnType.number, nullable: false),
+    'updated_at': DbColumn(DbColumnType.string, nullable: false),
+    'wear_milli_per_km': DbColumn(DbColumnType.number, nullable: false),
   },
 };

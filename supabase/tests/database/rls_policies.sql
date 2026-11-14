@@ -65,7 +65,7 @@ insert into public.expense_shares (group_id, expense_id, member_id, share_cents,
   ('00000000-0000-0000-0001-000000000001', '00000000-0000-0000-0003-000000000001', '00000000-0000-0000-0002-000000000001', 500, 1), ('00000000-0000-0000-0001-000000000001', '00000000-0000-0000-0003-000000000001', '00000000-0000-0000-0002-000000000002', 500, 1);
 insert into public.settlements (id, group_id, updated_at, from_member, to_member, amount_cents, currency, date, method)
   values ('00000000-0000-0000-0004-000000000001', '00000000-0000-0000-0001-000000000001', 'h1', '00000000-0000-0000-0002-000000000001', '00000000-0000-0000-0002-000000000002', 500, 'EUR', now(), 'cash');
-insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per_100km)
+insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per100km)
   values ('00000000-0000-0000-0005-000000000001', '00000000-0000-0000-0001-000000000001', 'h1', 'car', 'petrol', 6000);
 insert into public.ride_templates (id, group_id, updated_at, name, distance_meters, vehicle_id)
   values ('00000000-0000-0000-0006-000000000001', '00000000-0000-0000-0001-000000000001', 'h1', 'work', 10000, '00000000-0000-0000-0005-000000000001');
@@ -80,7 +80,7 @@ insert into public.expense_shares (group_id, expense_id, member_id, share_cents,
   ('00000000-0000-0000-0001-000000000002', '00000000-0000-0000-0003-000000000002', '00000000-0000-0000-0002-00000000000b', 500, 1), ('00000000-0000-0000-0001-000000000002', '00000000-0000-0000-0003-000000000002', '00000000-0000-0000-0002-00000000000c', 500, 1);
 insert into public.settlements (id, group_id, updated_at, from_member, to_member, amount_cents, currency, date, method)
   values ('00000000-0000-0000-0004-000000000002', '00000000-0000-0000-0001-000000000002', 'h1', '00000000-0000-0000-0002-00000000000b', '00000000-0000-0000-0002-00000000000c', 500, 'EUR', now(), 'cash');
-insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per_100km)
+insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per100km)
   values ('00000000-0000-0000-0005-000000000002', '00000000-0000-0000-0001-000000000002', 'h1', 'car', 'petrol', 6000);
 insert into public.ride_templates (id, group_id, updated_at, name, distance_meters, vehicle_id)
   values ('00000000-0000-0000-0006-000000000002', '00000000-0000-0000-0001-000000000002', 'h1', 'work', 10000, '00000000-0000-0000-0005-000000000002');
@@ -260,13 +260,13 @@ select is((select count(*) from public.vehicles), 0::bigint, 'vehicles: non-memb
 select tests.as_anon();
 select throws_ok($q$select 1 from public.vehicles$q$, '42501'::char(5), null, 'vehicles: anon select denied');
 select tests.as_user('00000000-0000-0000-0000-000000000002');
-select throws_ok($q$insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per_100km) values ('00000000-0000-0000-0002-000000000063', '00000000-0000-0000-0001-000000000001', 'h1', 'v', 'diesel', 5000)$q$, '42501'::char(5), null, 'vehicles: non-member insert into foreign group denied');
+select throws_ok($q$insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per100km) values ('00000000-0000-0000-0002-000000000063', '00000000-0000-0000-0001-000000000001', 'h1', 'v', 'diesel', 5000)$q$, '42501'::char(5), null, 'vehicles: non-member insert into foreign group denied');
 select tests.as_user('00000000-0000-0000-0000-000000000001');
-select throws_ok($q$insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per_100km) values ('00000000-0000-0000-0002-000000000063', '00000000-0000-0000-0001-000000000002', 'h1', 'v', 'diesel', 5000)$q$, '42501'::char(5), null, 'vehicles: member insert into other group denied');
+select throws_ok($q$insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per100km) values ('00000000-0000-0000-0002-000000000063', '00000000-0000-0000-0001-000000000002', 'h1', 'v', 'diesel', 5000)$q$, '42501'::char(5), null, 'vehicles: member insert into other group denied');
 select tests.as_anon();
-select throws_ok($q$insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per_100km) values ('00000000-0000-0000-0002-000000000063', '00000000-0000-0000-0001-000000000001', 'h1', 'v', 'diesel', 5000)$q$, '42501'::char(5), null, 'vehicles: anon insert denied');
+select throws_ok($q$insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per100km) values ('00000000-0000-0000-0002-000000000063', '00000000-0000-0000-0001-000000000001', 'h1', 'v', 'diesel', 5000)$q$, '42501'::char(5), null, 'vehicles: anon insert denied');
 select tests.as_user('00000000-0000-0000-0000-000000000001');
-select lives_ok($q$insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per_100km) values ('00000000-0000-0000-0002-000000000063', '00000000-0000-0000-0001-000000000001', 'h1', 'v', 'diesel', 5000)$q$, 'vehicles: member insert into own group allowed');
+select lives_ok($q$insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per100km) values ('00000000-0000-0000-0002-000000000063', '00000000-0000-0000-0001-000000000001', 'h1', 'v', 'diesel', 5000)$q$, 'vehicles: member insert into own group allowed');
 select tests.as_user('00000000-0000-0000-0000-000000000001');
 select is(tests.rows_affected($q$update public.vehicles set updated_at = 'h2' where id = '00000000-0000-0000-0005-000000000001' returning 1$q$), 1::bigint, 'vehicles: member update in own group allowed');
 select tests.as_user('00000000-0000-0000-0000-000000000002');

@@ -1,4 +1,4 @@
-import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' show DriftSqlType;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/features/sync/data/db_contract.g.dart';
 
@@ -18,7 +18,7 @@ const _serverOnlyColumns = {'server_seq'};
 
 /// Drift type -> server types it may map to. Text columns may hold jsonb
 /// server-side (SQLite has no jsonb); DateTime is serialised as an ISO string.
-const _compatible = {
+const Map<DriftSqlType<Object>, Set<DbColumnType>> _compatible = {
   DriftSqlType.int: {DbColumnType.number},
   DriftSqlType.bool: {DbColumnType.boolean},
   DriftSqlType.string: {DbColumnType.string, DbColumnType.json},
@@ -27,7 +27,7 @@ const _compatible = {
 
 void main() {
   final db = openTestDb();
-  addTearDown(db.close);
+  tearDownAll(db.close);
   final synced = db.allTables
       .where((t) => !_localOnlyTables.contains(t.actualTableName))
       .toList();
