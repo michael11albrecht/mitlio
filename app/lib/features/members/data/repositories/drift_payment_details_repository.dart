@@ -52,15 +52,21 @@ class DriftPaymentDetailsRepository implements PaymentDetailsRepository {
       bic: bic,
       accountName: accountName,
     );
-    final PaymentDetails details;
-    switch (normalized) {
-      case Ok(:final value):
-        details = value;
-      case Err(:final error):
-        return Err(
-          InvalidData('invalid: ${error.keys.map((f) => f.name).join(', ')}'),
-        );
-    }
+    // A switch *statement* assigning a `final` local inside this async closure
+    // crashed the Linux x64 AOT compiler (linearscan.cc "unreachable code",
+    // Flutter 3.50). Keep the switch an expression and store in a method.
+    return switch (normalized) {
+      Err(:final error) => Err(
+        InvalidData('invalid: ${error.keys.map((f) => f.name).join(', ')}'),
+      ),
+      Ok(:final value) => await _store(memberId, value),
+    };
+  });
+
+  Future<RepoResult<PaymentDetails>> _store(
+    String memberId,
+    PaymentDetails details,
+  ) async {
     final member = await _db.membersDao.findById(memberId);
     if (member == null) return Err(NotFound('member', memberId));
     final plainIban = details.iban;
@@ -91,5 +97,5 @@ class DriftPaymentDetailsRepository implements PaymentDetailsRepository {
       }
     });
     return Ok(details);
-  });
+  }
 }
