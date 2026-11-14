@@ -1,0 +1,46 @@
+# Backend gate (docs/IMPLEMENTATION_PLAN.md §6.1, P6-T01..T03). Local Docker is not available on
+# dev machines, so every database check runs here. The Supabase CLI is pinned to an exact
+# version; bump it deliberately (and update supabase/README.md).
+name: db
+on:
+  pull_request:
+    paths:
+      - 'supabase/**'
+      - '.github/workflows/db.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/**'
+      - '.github/workflows/db.yml'
+
+concurrency:
+  group: db-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  db:
+    name: db (migrations, rls, pgtap, squawk)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.70.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Lint migrations (squawk)
+        run: make db-lint
+      - name: Start local Supabase
+        run: supabase start
+      - name: Apply migrations from scratch
+        run: supabase db reset
+      - name: pgTAP (schema + RLS)
+        run: supabase test db
+      - name: Stop local Supabase
+        if: always()
+        run: supabase stop --no-backup
