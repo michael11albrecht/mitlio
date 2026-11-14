@@ -17,6 +17,7 @@ const _expected = {
   'iban',
   'epc',
   'rides',
+  'hlc',
 };
 
 void main() {

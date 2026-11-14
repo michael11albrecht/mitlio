@@ -136,9 +136,34 @@ else
 	@echo "make it: linux only, runs in CI (desktop-it workflow)"
 endif
 
-.PHONY: db-up db-test db-reset
-db-up db-test db-reset: ## Local Supabase
-	$(call not_yet,Supabase arrives in P6)
+# Supabase (P6). The CLI version is pinned in the db workflow; keep SQUAWK_VERSION and
+# supabase/README.md in sync. Everything except db-lint needs Docker; CI runs them all.
+SUPABASE ?= supabase
+SQUAWK_VERSION := 2.70.0
+SQUAWK ?= npx --yes squawk-cli@$(SQUAWK_VERSION)
+
+define need_docker
+	@docker info >/dev/null 2>&1 || { echo "make $@: needs Docker (not running here; CI runs it in the db workflow)"; exit 1; }
+endef
+
+.PHONY: db-up
+db-up: ## Start the local Supabase stack (needs Docker)
+	$(call need_docker)
+	$(SUPABASE) start
+
+.PHONY: db-reset
+db-reset: ## Recreate the local DB from supabase/migrations (needs Docker)
+	$(call need_docker)
+	$(SUPABASE) db reset
+
+.PHONY: db-test
+db-test: ## Run pgTAP tests in supabase/tests (needs Docker, run db-up first)
+	$(call need_docker)
+	$(SUPABASE) test db
+
+.PHONY: db-lint
+db-lint: ## Lint migrations with squawk (no Docker)
+	$(SQUAWK) supabase/migrations/*.sql
 
 DRIVE_DEVICE ?= linux
 DRIVE_WAIT   ?= 300

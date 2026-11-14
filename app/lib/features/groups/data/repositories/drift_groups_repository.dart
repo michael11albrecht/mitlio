@@ -5,7 +5,7 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/daos/groups_dao.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
-import 'package:mitlio_domain/mitlio_domain.dart';
+import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [GroupsRepository] backed by Drift.
 class DriftGroupsRepository implements GroupsRepository {

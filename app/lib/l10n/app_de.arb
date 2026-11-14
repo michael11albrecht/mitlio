@@ -178,7 +178,6 @@
       }
     }
   },
-
   "@@x-feature-expenses": "expenses",
   "tabMembers": "Mitglieder",
   "tabExpenses": "Ausgaben",
@@ -378,7 +377,6 @@
   "tripBreakdownFerry": "Fähre",
   "tripBreakdownTotal": "Gesamt",
   "tripBreakdownPerPerson": "Pro Person",
-
   "@@x-feature-rides": "rides",
   "tabRides": "Fahrten",
   "ridesEmptyTitle": "Noch keine Strecke",
@@ -592,7 +590,6 @@
   "templateNoVehicle": "Lege zuerst ein Fahrzeug an.",
   "templateNoVehicleAction": "Fahrzeug anlegen",
   "templateSave": "Speichern",
-
   "@@x-feature-rides-settle": "rides-settle",
   "ridesSettleCardTitle": "{month} abrechnen · {count, plural, =1{1 Fahrt} other{{count} Fahrten}}",
   "@ridesSettleCardTitle": {
@@ -737,5 +734,62 @@
     }
   },
   "settleMarkPaid": "Als bezahlt markieren",
-  "settleActionFailed": "Das hat nicht geklappt. Versuch es nochmal."
+  "settleActionFailed": "Das hat nicht geklappt. Versuch es nochmal.",
+  "exportMenu": "Exportieren",
+  "exportTitle": "Exportieren",
+  "exportCsv": "Tabelle (CSV)",
+  "exportCsvHint": "Alle Ausgaben und Salden",
+  "exportPdf": "Abrechnung (PDF)",
+  "exportPdfHint": "Wer wem wie viel zahlt, mit Ausgabenliste",
+  "exportFailed": "Das hat nicht geklappt. Versuch es nochmal.",
+  "exportColDate": "Datum",
+  "exportColTitle": "Titel",
+  "exportColCategory": "Kategorie",
+  "exportColAmount": "Betrag",
+  "exportColCurrency": "Währung",
+  "exportColPaidBy": "Bezahlt von",
+  "exportColMember": "Person",
+  "exportColBalance": "Saldo",
+  "exportColPaid": "Bezahlt",
+  "exportColShare": "Anteil",
+  "exportBalances": "Salden",
+  "exportReportTitle": "Abrechnung",
+  "exportPeriod": "Zeitraum: {from} – {to}",
+  "@exportPeriod": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "exportPeriodNone": "Noch keine Ausgaben",
+  "exportMembers": "Personen",
+  "exportTotals": "Summen pro Person",
+  "exportTransfers": "Ausgleich",
+  "exportAllSettled": "Alles ausgeglichen",
+  "exportExpenses": "Ausgaben",
+  "exportPaypal": "PayPal: {handle}",
+  "@exportPaypal": {
+    "placeholders": {
+      "handle": {
+        "type": "String"
+      }
+    }
+  },
+  "exportIbanHint": "IBAN {hint}",
+  "@exportIbanHint": {
+    "placeholders": {
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "exportCategoryFood": "Essen",
+  "exportCategoryStay": "Unterkunft",
+  "exportCategoryTransport": "Transport",
+  "exportCategoryFun": "Freizeit",
+  "exportCategoryOther": "Sonstiges"
 }
