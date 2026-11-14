@@ -114,6 +114,8 @@ class HttpFuelPriceService implements FuelPriceService {
           : FuelServiceOk(price);
     }
     return FuelServiceFailure(switch (status) {
+      503 when body.contains('provider_unconfigured') =>
+        FuelFailure.providerUnconfigured,
       429 => FuelFailure.rateLimited,
       >= 400 && < 500 => FuelFailure.invalidParams,
       _ => FuelFailure.provider,

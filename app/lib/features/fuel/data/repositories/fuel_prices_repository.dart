@@ -30,9 +30,12 @@ class FuelPricesRepository {
   /// Whether "in meiner Nähe" can be offered.
   bool get canLocate => isAvailable && _location.isSupported && !_nearbyOff;
 
-  /// Set once the backend said it has no nearby provider (503): the option
-  /// then disappears instead of failing again and again.
+  /// Set once the backend said `provider_unconfigured` (no provider key): the
+  /// option then disappears for the session instead of failing again.
   bool _nearbyOff = false;
+
+  /// Set once the permission is blocked for good: no further plugin calls.
+  bool _blocked = false;
 
   /// The national average: no location involved.
   Future<FuelOutcome> national(FuelGrade grade) => _lookup(grade, null);
@@ -47,12 +50,15 @@ class FuelPricesRepository {
   /// then looks around it. Only call after an explicit user tap.
   Future<FuelOutcome> nearby(FuelGrade grade) async {
     if (!canLocate) return const FuelMissing(FuelFailure.locationUnavailable);
+    if (_blocked) return const FuelMissing(FuelFailure.locationBlocked);
     final position = await _location.current();
     return switch (position) {
       LocationFound(:final lat, :final lng) => _nearbyLookup(
         grade,
-        NearbyArea(lat: lat, lng: lng),
+        // Rounded on the device (about 1 km): the exact spot never leaves it.
+        NearbyArea(lat: _round2(lat), lng: _round2(lng)),
       ),
+      LocationDeniedForever() => _block(),
       LocationDenied() => const FuelMissing(FuelFailure.locationDenied),
       LocationUnavailable() => const FuelMissing(
         FuelFailure.locationUnavailable,
@@ -60,9 +66,16 @@ class FuelPricesRepository {
     };
   }
 
+  static double _round2(double v) => (v * 100).round() / 100;
+
+  FuelOutcome _block() {
+    _blocked = true;
+    return const FuelMissing(FuelFailure.locationBlocked);
+  }
+
   Future<FuelOutcome> _nearbyLookup(FuelGrade grade, NearbyArea area) async {
     final outcome = await _lookup(grade, area);
-    if (outcome case FuelMissing(reason: FuelFailure.provider)) {
+    if (outcome case FuelMissing(reason: FuelFailure.providerUnconfigured)) {
       _nearbyOff = true;
     }
     return outcome;

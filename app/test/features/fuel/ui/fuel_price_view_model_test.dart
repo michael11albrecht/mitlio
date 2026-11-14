@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mitlio/features/fuel/data/fuel_price.dart';
 import 'package:mitlio/features/fuel/data/services/location_service.dart';
 import 'package:mitlio/features/fuel/ui/fuel_price_view_model.dart';
 
@@ -133,9 +134,27 @@ void main() {
       expect(state().price!.scope, FuelScope.national);
     });
 
-    test('backend without nearby support: option disappears', () async {
+    test('permanently denied: calm hint, no second prompt', () async {
       await start();
-      app.fuel.failWith = FuelFailure.provider;
+      app.location.result = const LocationDeniedForever();
+      await vm().useNearby();
+      await vm().useNearby();
+      expect(state().scope, FuelScope.national);
+      expect(state().failure, FuelFailure.locationBlocked);
+      expect(app.location.asked, 1);
+    });
+
+    test('rounds the position to 2 decimals before the request', () async {
+      await start();
+      app.location.result = const LocationFound(lat: 48.137154, lng: 11.576124);
+      await vm().useNearby();
+      final area = app.fuel.calls.last.area! as NearbyArea;
+      expect((area.lat, area.lng), (48.14, 11.58));
+    });
+
+    test('provider_unconfigured: option disappears', () async {
+      await start();
+      app.fuel.failWith = FuelFailure.providerUnconfigured;
       await vm().useNearby();
       expect(state().canLocate, isFalse);
     });

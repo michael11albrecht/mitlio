@@ -115,12 +115,41 @@ void main() {
       );
     });
 
-    test('503 from the backend switches the option off', () async {
+    test('provider_unconfigured switches the option off', () async {
       expect(repo.canLocate, isTrue);
-      service.failWith = FuelFailure.provider;
+      service.failWith = FuelFailure.providerUnconfigured;
       await repo.nearby(FuelGrade.e5);
       expect(repo.canLocate, isFalse);
     });
+
+    test('a provider outage keeps the option', () async {
+      service.failWith = FuelFailure.provider;
+      await repo.nearby(FuelGrade.e5);
+      expect(repo.canLocate, isTrue);
+    });
+
+    test('coordinates are rounded to 2 decimals on the device', () async {
+      location.result = const LocationFound(lat: 52.520049, lng: 13.404954);
+      await repo.nearby(FuelGrade.e5);
+      final area = service.calls.single.area! as NearbyArea;
+      expect(area.lat, 52.52);
+      expect(area.lng, 13.4);
+    });
+
+    test(
+      'permanently denied: hint, and the plugin is not asked again',
+      () async {
+        location.result = const LocationDeniedForever();
+        for (var i = 0; i < 2; i++) {
+          expect(
+            (await repo.nearby(FuelGrade.e5) as FuelMissing).reason,
+            FuelFailure.locationBlocked,
+          );
+        }
+        expect(location.asked, 1);
+        expect(service.calls, isEmpty);
+      },
+    );
 
     test(
       'the cache holds no coordinates: a second spot is asked anew',

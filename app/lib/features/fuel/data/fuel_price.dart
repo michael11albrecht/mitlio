@@ -94,9 +94,16 @@ enum FuelFailure {
   rateLimited,
   invalidParams,
 
-  /// The backend has no provider key or the provider is down.
+  /// The provider is down or the answer was unusable.
   provider,
+
+  /// The backend has no provider key (`503 provider_unconfigured`): nearby
+  /// and postcode lookups cannot work there.
+  providerUnconfigured,
   locationDenied,
+
+  /// The permission is blocked for good (only the system settings can lift it).
+  locationBlocked,
   locationUnavailable,
 }
 

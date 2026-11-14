@@ -10,7 +10,8 @@ final fuelPriceServiceProvider = Provider<FuelPriceService>(
   (ref) => const UnavailableFuelPriceService(),
 );
 
-/// No location plugin by default, see `NoLocationService`.
+/// No location plugin by default (see `NoLocationService`); `main` wires
+/// the real one on Android and iOS only.
 final locationServiceProvider = Provider<LocationService>(
   (ref) => const NoLocationService(),
 );
