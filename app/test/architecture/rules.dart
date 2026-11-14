@@ -142,6 +142,20 @@ List<Rule> buildRules({required List<String> showDialogAllowlist}) => [
     appliesTo: (p) => _inDir(p, 'app/lib/debug/'),
     forbidden: (d) => d.target.endsWith('_view.dart'),
   ),
+  importRule(
+    id: 'sync-no-local-bank',
+    description:
+        'sync code (app/lib/features/sync/ or any *sync* file) must not '
+        'import the local bank DAO or the payment details repository '
+        '(IBAN data never leaves the device, plan §8)',
+    appliesTo: (p) =>
+        _isLib(p) &&
+        (_inDir(p, 'app/lib/features/sync/') ||
+            p.split('/').last.contains('sync')),
+    forbidden: (d) => RegExp(
+      'local_member_bank|payment_details|iban_cipher',
+    ).hasMatch(d.target),
+  ),
   codeRule(
     id: 'no-nondeterminism-outside-core',
     description:

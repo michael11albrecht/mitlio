@@ -152,6 +152,56 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get paymentSectionTitle => 'Zahlungsdaten';
+
+  @override
+  String paymentOpen(String name) {
+    return 'Zahlungsdaten von $name';
+  }
+
+  @override
+  String get paymentPaypalLabel => 'PayPal.Me-Name';
+
+  @override
+  String get paymentIbanLabel => 'IBAN';
+
+  @override
+  String get paymentBicLabel => 'BIC (optional)';
+
+  @override
+  String get paymentAccountNameLabel => 'Kontoinhaber';
+
+  @override
+  String get paymentPrivacyHint =>
+      'IBAN, BIC und Kontoinhaber bleiben nur auf diesem Gerät.';
+
+  @override
+  String get paymentSave => 'Speichern';
+
+  @override
+  String get paymentErrorPaypal => 'Das ist kein gültiger PayPal.Me-Name.';
+
+  @override
+  String get paymentErrorIban => 'Das ist keine gültige IBAN.';
+
+  @override
+  String get paymentErrorIbanChecksum =>
+      'Die Prüfziffer der IBAN stimmt nicht. Vertippt?';
+
+  @override
+  String get paymentErrorIbanMissing => 'Dafür brauchen wir zuerst eine IBAN.';
+
+  @override
+  String get paymentErrorBic => 'Das ist keine gültige BIC.';
+
+  @override
+  String get paymentErrorAccountName =>
+      'Der Name darf höchstens 70 Zeichen haben.';
+
+  @override
+  String get paymentLinkCopied => 'Link kopiert';
+
+  @override
   String get balancesTitle => 'Salden';
 
   @override
