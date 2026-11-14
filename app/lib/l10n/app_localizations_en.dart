@@ -371,4 +371,150 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get expenseExcluded => 'Not included';
+
+  @override
+  String get tripAdd => 'Add a trip';
+
+  @override
+  String get tripFormTitle => 'Trip';
+
+  @override
+  String get tripDefaultTitle => 'Trip';
+
+  @override
+  String get tripResultCaption => 'Everyone pays';
+
+  @override
+  String get tripResultCaptionRounded => 'Everyone pays about';
+
+  @override
+  String tripResultDriverGets(String name, String amount) {
+    return '$name gets $amount';
+  }
+
+  @override
+  String get tripHintFuel =>
+      'Enter distance, consumption and price. You see the result right away.';
+
+  @override
+  String get tripHintKmRate =>
+      'Enter distance and km rate. You see the result right away.';
+
+  @override
+  String get tripNoParticipants => 'Pick at least one person who rides along.';
+
+  @override
+  String get tripTooLarge =>
+      'That is too large to calculate. Check the numbers.';
+
+  @override
+  String get tripNumberInvalid => 'That is not a valid number';
+
+  @override
+  String get tripDistanceLabel => 'Distance (one way)';
+
+  @override
+  String get tripUnitKm => 'km';
+
+  @override
+  String get tripRoundTrip => 'Round trip';
+
+  @override
+  String get tripEnergyFuel => 'Petrol / diesel';
+
+  @override
+  String get tripEnergyElectric => 'Electric';
+
+  @override
+  String get tripConsumptionLabel => 'Consumption';
+
+  @override
+  String get tripUnitLitersPer100 => 'l/100 km';
+
+  @override
+  String get tripUnitKwhPer100 => 'kWh/100 km';
+
+  @override
+  String get tripPriceFuelLabel => 'Price per litre';
+
+  @override
+  String get tripPriceElectricLabel => 'Price per kWh';
+
+  @override
+  String tripUnitPerLiter(String symbol) {
+    return '$symbol/l';
+  }
+
+  @override
+  String tripUnitPerKwh(String symbol) {
+    return '$symbol/kWh';
+  }
+
+  @override
+  String tripUnitPerKm(String symbol) {
+    return '$symbol/km';
+  }
+
+  @override
+  String get tripWearLabel => 'Wear and tear (optional)';
+
+  @override
+  String get tripKmRateToggle => 'Flat rate per km';
+
+  @override
+  String get tripKmRateHint => 'Replaces fuel and wear';
+
+  @override
+  String get tripKmRateLabel => 'Rate per km';
+
+  @override
+  String get tripTollsLabel => 'Tolls (optional)';
+
+  @override
+  String get tripFerryLabel => 'Ferry (optional)';
+
+  @override
+  String get tripDriverLabel => 'Who drives?';
+
+  @override
+  String get tripPassengersLabel => 'Who rides along?';
+
+  @override
+  String get tripDriverPays => 'Driver pays too';
+
+  @override
+  String get tripTitleLabel => 'Where to? (optional)';
+
+  @override
+  String get tripSave => 'Save trip';
+
+  @override
+  String get tripSaved => 'Trip saved';
+
+  @override
+  String get tripBreakdown => 'Details';
+
+  @override
+  String get tripBreakdownFuel => 'Fuel';
+
+  @override
+  String get tripBreakdownElectric => 'Electricity';
+
+  @override
+  String get tripBreakdownWear => 'Wear and tear';
+
+  @override
+  String get tripBreakdownKmRate => 'Flat rate per km';
+
+  @override
+  String get tripBreakdownTolls => 'Tolls';
+
+  @override
+  String get tripBreakdownFerry => 'Ferry';
+
+  @override
+  String get tripBreakdownTotal => 'Total';
+
+  @override
+  String get tripBreakdownPerPerson => 'Per person';
 }

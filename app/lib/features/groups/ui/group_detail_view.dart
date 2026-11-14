@@ -52,6 +52,12 @@ class GroupDetailView extends ConsumerWidget {
               title: Text(group.name),
               actions: [
                 IconButton(
+                  tooltip: l10n.tripAdd,
+                  icon: const Icon(Icons.directions_car_outlined),
+                  onPressed: () =>
+                      unawaited(context.push('/groups/$groupId/trip')),
+                ),
+                IconButton(
                   tooltip: l10n.balancesOpen,
                   icon: const Icon(Icons.balance_outlined),
                   onPressed: () =>

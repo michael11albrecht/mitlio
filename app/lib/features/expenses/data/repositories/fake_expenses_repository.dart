@@ -81,6 +81,7 @@ class FakeExpensesRepository implements ExpensesRepository {
       expense: (built as Ok<Expense, RepositoryError>).value,
       split: _normalised(draft.split),
       category: draft.category,
+      tripMeta: draft.tripMeta,
       createdAt: _clock.now().toUtc(),
     );
     _entries[id] = entry;
@@ -99,6 +100,7 @@ class FakeExpensesRepository implements ExpensesRepository {
       expense: (built as Ok<Expense, RepositoryError>).value,
       split: _normalised(draft.split),
       category: draft.category,
+      tripMeta: draft.tripMeta,
       createdAt: current.createdAt,
     );
     _entries[id] = entry;
