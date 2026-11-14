@@ -2239,6 +2239,36 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Ausgabe eintragen'**
   String get balancesEmptyAction;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Einstellungen'**
+  String get settingsTitle;
+
+  /// No description provided for @privacySection.
+  ///
+  /// In de, this message translates to:
+  /// **'Datenschutz'**
+  String get privacySection;
+
+  /// No description provided for @crashReportsLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Absturzberichte senden'**
+  String get crashReportsLabel;
+
+  /// No description provided for @crashReportsHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Nur bei einem Absturz: technische Fehlerdaten ohne Namen, Beträge, Notizen oder IBAN. Standardmäßig aus.'**
+  String get crashReportsHint;
+
+  /// No description provided for @crashReportsUnavailable.
+  ///
+  /// In de, this message translates to:
+  /// **'In dieser Version nicht verfügbar.'**
+  String get crashReportsUnavailable;
 }
 
 class _AppLocalizationsDelegate

@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/foundation.dart';
 import 'package:mitlio/core/clock.dart';
+import 'package:mitlio/core/crash/crash_reporter.dart';
 
 enum LogLevel {
   debug(500),
@@ -77,11 +78,18 @@ class ErrorRecord {
 /// In-memory ring buffer of uncaught errors (oldest evicted first). Exposed
 /// through DebugDrive `ext.mitlio.errors` (P3-T04).
 class ErrorSink {
-  ErrorSink({required this.clock, required this.logger, this.capacity = 50})
-    : assert(capacity > 0, 'capacity must be positive');
+  ErrorSink({
+    required this.clock,
+    required this.logger,
+    this.capacity = 50,
+    this.crashReporter,
+  }) : assert(capacity > 0, 'capacity must be positive');
 
   final Clock clock;
   final Logger logger;
+
+  /// Opt-in crash reporting; forwards only while the user has it switched on.
+  final CrashReporter? crashReporter;
   final int capacity;
   final Queue<ErrorRecord> _records = Queue();
 
@@ -101,6 +109,7 @@ class ErrorSink {
       _records.removeFirst();
     }
     logger.error('Uncaught error (${source ?? 'unknown'})', error, stackTrace);
+    crashReporter?.report(error, stackTrace);
   }
 
   void clear() => _records.clear();

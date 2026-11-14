@@ -506,5 +506,10 @@
       }
     }
   },
-  "balancesEmptyAction": "Add an expense"
+  "balancesEmptyAction": "Add an expense",
+  "settingsTitle": "Settings",
+  "privacySection": "Privacy",
+  "crashReportsLabel": "Send crash reports",
+  "crashReportsHint": "Only on a crash: technical error data without names, amounts, notes or IBAN. Off by default.",
+  "crashReportsUnavailable": "Not available in this version."
 }
