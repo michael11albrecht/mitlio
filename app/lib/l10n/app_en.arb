@@ -67,6 +67,115 @@
   "balancesModeSimplifiedHint": "As few payments as possible.",
   "balancesModeDirectHint": "Every debt on its own, between the people involved.",
   "balancesTransfer": "{from} pays {to}",
+  "@@x-feature-statistics": "statistics",
+  "statsMenu": "Statistics",
+  "statsTitle": "Statistics",
+  "statsPeriodLabel": "Period",
+  "statsPeriodMonth": "Month",
+  "statsPeriod3Months": "3 months",
+  "statsPeriodYear": "Year",
+  "statsPeriodAll": "All",
+  "statsHeadlineMonth": "This month",
+  "statsHeadline3Months": "Last 3 months",
+  "statsHeadlineYear": "This year",
+  "statsHeadlineAll": "In total",
+  "statsTopCategory": "mostly {category} ({percent} %)",
+  "@statsTopCategory": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "statsExpenseCount": "{count, plural, =1{1 expense} other{{count} expenses}}",
+  "@statsExpenseCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsEmptyTitle": "Nothing in this period",
+  "statsEmptyMessage": "Pick another period or add an expense.",
+  "statsByCategory": "By category",
+  "statsCategoryNone": "No category",
+  "statsPercent": "{percent} %",
+  "@statsPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "statsCategorySpoken": "{category}: {amount}, {percent} percent",
+  "@statsCategorySpoken": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "statsByMember": "By person",
+  "statsPaid": "Paid",
+  "statsConsumed": "Consumed",
+  "statsMemberSpoken": "{name}: paid {paid}, consumed {consumed}",
+  "@statsMemberSpoken": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "String"
+      },
+      "consumed": {
+        "type": "String"
+      }
+    }
+  },
+  "statsOverTime": "Last 6 months",
+  "statsMonthSpoken": "{month}: {amount}",
+  "@statsMonthSpoken": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "statsRides": "Rides",
+  "statsKm": "{km} km",
+  "@statsKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "statsRideSpoken": "{month}: {km} kilometres, {amount}",
+  "@statsRideSpoken": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "km": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "@@x-feature-expenses": "expenses",
   "tabMembers": "Members",
   "tabExpenses": "Expenses",
