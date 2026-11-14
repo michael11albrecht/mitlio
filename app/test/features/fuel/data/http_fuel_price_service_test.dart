@@ -104,6 +104,13 @@ void main() {
     }
   });
 
+  test('503 provider_unconfigured is told apart from an outage', () async {
+    status = 503;
+    body = '{"error":"provider_unconfigured"}';
+    final r = await service().fetch(FuelGrade.e5) as FuelServiceFailure;
+    expect(r.reason, FuelFailure.providerUnconfigured);
+  });
+
   test('malformed 200 is a provider failure', () async {
     for (final bad in [
       'nope',

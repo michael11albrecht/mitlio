@@ -690,6 +690,7 @@
   "fuelNoPrice": "No current price available right now. Just enter it yourself.",
   "fuelNearby": "Near me",
   "fuelNearbyDenied": "Location not shared, the national average applies.",
+  "fuelNearbyBlocked": "Location is blocked in the system settings, the national average applies.",
   "fuelNearbyUnavailable": "Location not available right now.",
   "fuelPlzAction": "Enter postcode",
   "fuelPlzLabel": "Postcode",
