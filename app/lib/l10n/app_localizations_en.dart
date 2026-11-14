@@ -432,6 +432,92 @@ class AppLocalizationsEn extends AppLocalizations {
   String get expenseCategoryOther => 'Other';
 
   @override
+  String get expenseHistory => 'History';
+
+  @override
+  String get expenseHistoryEmpty => 'No changes yet';
+
+  @override
+  String get expenseHistoryRestore => 'Restore this version';
+
+  @override
+  String get expenseHistoryRestored => 'Version restored';
+
+  @override
+  String get expenseHistoryNoVisibleChange => 'No visible change';
+
+  @override
+  String expenseHistoryByAuthor(String when, String name) {
+    return '$when · $name';
+  }
+
+  @override
+  String expenseHistoryTitle(String from, String to) {
+    return 'Title “$from” → “$to”';
+  }
+
+  @override
+  String expenseHistoryAmount(String from, String to) {
+    return 'Amount $from → $to';
+  }
+
+  @override
+  String expenseHistoryRate(String from, String to) {
+    return 'Rate $from → $to';
+  }
+
+  @override
+  String expenseHistoryDate(String from, String to) {
+    return 'Date $from → $to';
+  }
+
+  @override
+  String expenseHistoryCategory(String from, String to) {
+    return 'Category $from → $to';
+  }
+
+  @override
+  String expenseHistorySplit(String from, String to) {
+    return 'Split $from → $to';
+  }
+
+  @override
+  String get expenseHistoryTrip => 'Trip details changed';
+
+  @override
+  String expenseHistoryPayerAdded(String name) {
+    return '$name now paid too';
+  }
+
+  @override
+  String expenseHistoryPayerRemoved(String name) {
+    return '$name no longer paid';
+  }
+
+  @override
+  String expenseHistoryPaid(String name, String from, String to) {
+    return '$name paid $to instead of $from';
+  }
+
+  @override
+  String expenseHistoryParticipantAdded(String name) {
+    return '$name now takes part';
+  }
+
+  @override
+  String expenseHistoryParticipantRemoved(String name) {
+    return '$name no longer takes part';
+  }
+
+  @override
+  String expenseHistoryShare(String name, String from, String to) {
+    return '$name’s share: $from → $to';
+  }
+
+  @override
+  String get expenseHistoryUnknownMember => 'Unknown';
+
+  @override
   String get expenseFormNew => 'New expense';
 
   @override

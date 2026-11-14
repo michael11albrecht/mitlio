@@ -12,6 +12,7 @@ import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/core/widgets/money_text.dart';
 import 'package:mitlio/core/widgets/rate_field.dart';
 import 'package:mitlio/features/expenses/ui/expense_form_view_model.dart';
+import 'package:mitlio/features/expenses/ui/expense_history_view.dart';
 import 'package:mitlio/features/expenses/ui/expenses_view.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -70,6 +71,15 @@ class _ExpenseFormViewState extends ConsumerState<ExpenseFormView> {
     }
   }
 
+  /// A restored version replaced the stored expense, so this form is stale:
+  /// leave it (the undo snackbar outlives the route).
+  Future<void> _openHistory(String expenseId) async {
+    final restored = await showExpenseHistorySheet(context, expenseId);
+    if (restored ?? false) {
+      if (mounted) context.pop();
+    }
+  }
+
   Future<void> _pickDate(DateTime current) async {
     final picked = await showDatePicker(
       context: context,
@@ -91,6 +101,14 @@ class _ExpenseFormViewState extends ConsumerState<ExpenseFormView> {
         title: Text(
           widget.expenseId == null ? l10n.expenseFormNew : l10n.expenseFormEdit,
         ),
+        actions: [
+          if (widget.expenseId case final id?)
+            IconButton(
+              icon: const Icon(Icons.history),
+              tooltip: l10n.expenseHistory,
+              onPressed: () => unawaited(_openHistory(id)),
+            ),
+        ],
       ),
       body: switch (state) {
         ExpenseFormLoading() => const Center(

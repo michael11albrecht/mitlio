@@ -333,6 +333,150 @@
   "expenseCategoryTransport": "Verkehr",
   "expenseCategoryFun": "Freizeit",
   "expenseCategoryOther": "Sonstiges",
+  "expenseHistory": "Verlauf",
+  "expenseHistoryEmpty": "Noch keine Änderungen",
+  "expenseHistoryRestore": "Diese Version wiederherstellen",
+  "expenseHistoryRestored": "Version wiederhergestellt",
+  "expenseHistoryNoVisibleChange": "Keine sichtbare Änderung",
+  "expenseHistoryByAuthor": "{when} · {name}",
+  "@expenseHistoryByAuthor": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryTitle": "Titel „{from}“ → „{to}“",
+  "@expenseHistoryTitle": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryAmount": "Betrag {from} → {to}",
+  "@expenseHistoryAmount": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryRate": "Kurs {from} → {to}",
+  "@expenseHistoryRate": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryDate": "Datum {from} → {to}",
+  "@expenseHistoryDate": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryCategory": "Kategorie {from} → {to}",
+  "@expenseHistoryCategory": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistorySplit": "Aufteilung {from} → {to}",
+  "@expenseHistorySplit": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryTrip": "Reisedaten geändert",
+  "expenseHistoryPayerAdded": "{name} hat jetzt mitbezahlt",
+  "@expenseHistoryPayerAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryPayerRemoved": "{name} hat nicht mehr bezahlt",
+  "@expenseHistoryPayerRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryPaid": "{name} hat {to} statt {from} bezahlt",
+  "@expenseHistoryPaid": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryParticipantAdded": "{name} jetzt beteiligt",
+  "@expenseHistoryParticipantAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryParticipantRemoved": "{name} nicht mehr beteiligt",
+  "@expenseHistoryParticipantRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryShare": "Anteil von {name}: {from} → {to}",
+  "@expenseHistoryShare": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryUnknownMember": "Unbekannt",
   "expenseFormNew": "Neue Ausgabe",
   "expenseFormEdit": "Ausgabe bearbeiten",
   "expenseAmountLabel": "Betrag",

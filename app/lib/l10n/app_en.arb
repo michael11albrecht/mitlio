@@ -198,6 +198,150 @@
   "expenseCategoryTransport": "Transport",
   "expenseCategoryFun": "Leisure",
   "expenseCategoryOther": "Other",
+  "expenseHistory": "History",
+  "expenseHistoryEmpty": "No changes yet",
+  "expenseHistoryRestore": "Restore this version",
+  "expenseHistoryRestored": "Version restored",
+  "expenseHistoryNoVisibleChange": "No visible change",
+  "expenseHistoryByAuthor": "{when} · {name}",
+  "@expenseHistoryByAuthor": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryTitle": "Title “{from}” → “{to}”",
+  "@expenseHistoryTitle": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryAmount": "Amount {from} → {to}",
+  "@expenseHistoryAmount": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryRate": "Rate {from} → {to}",
+  "@expenseHistoryRate": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryDate": "Date {from} → {to}",
+  "@expenseHistoryDate": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryCategory": "Category {from} → {to}",
+  "@expenseHistoryCategory": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistorySplit": "Split {from} → {to}",
+  "@expenseHistorySplit": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryTrip": "Trip details changed",
+  "expenseHistoryPayerAdded": "{name} now paid too",
+  "@expenseHistoryPayerAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryPayerRemoved": "{name} no longer paid",
+  "@expenseHistoryPayerRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryPaid": "{name} paid {to} instead of {from}",
+  "@expenseHistoryPaid": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryParticipantAdded": "{name} now takes part",
+  "@expenseHistoryParticipantAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryParticipantRemoved": "{name} no longer takes part",
+  "@expenseHistoryParticipantRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryShare": "{name}’s share: {from} → {to}",
+  "@expenseHistoryShare": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseHistoryUnknownMember": "Unknown",
   "expenseFormNew": "New expense",
   "expenseFormEdit": "Edit expense",
   "expenseAmountLabel": "Amount",

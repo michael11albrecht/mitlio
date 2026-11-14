@@ -434,6 +434,92 @@ class AppLocalizationsDe extends AppLocalizations {
   String get expenseCategoryOther => 'Sonstiges';
 
   @override
+  String get expenseHistory => 'Verlauf';
+
+  @override
+  String get expenseHistoryEmpty => 'Noch keine Änderungen';
+
+  @override
+  String get expenseHistoryRestore => 'Diese Version wiederherstellen';
+
+  @override
+  String get expenseHistoryRestored => 'Version wiederhergestellt';
+
+  @override
+  String get expenseHistoryNoVisibleChange => 'Keine sichtbare Änderung';
+
+  @override
+  String expenseHistoryByAuthor(String when, String name) {
+    return '$when · $name';
+  }
+
+  @override
+  String expenseHistoryTitle(String from, String to) {
+    return 'Titel „$from“ → „$to“';
+  }
+
+  @override
+  String expenseHistoryAmount(String from, String to) {
+    return 'Betrag $from → $to';
+  }
+
+  @override
+  String expenseHistoryRate(String from, String to) {
+    return 'Kurs $from → $to';
+  }
+
+  @override
+  String expenseHistoryDate(String from, String to) {
+    return 'Datum $from → $to';
+  }
+
+  @override
+  String expenseHistoryCategory(String from, String to) {
+    return 'Kategorie $from → $to';
+  }
+
+  @override
+  String expenseHistorySplit(String from, String to) {
+    return 'Aufteilung $from → $to';
+  }
+
+  @override
+  String get expenseHistoryTrip => 'Reisedaten geändert';
+
+  @override
+  String expenseHistoryPayerAdded(String name) {
+    return '$name hat jetzt mitbezahlt';
+  }
+
+  @override
+  String expenseHistoryPayerRemoved(String name) {
+    return '$name hat nicht mehr bezahlt';
+  }
+
+  @override
+  String expenseHistoryPaid(String name, String from, String to) {
+    return '$name hat $to statt $from bezahlt';
+  }
+
+  @override
+  String expenseHistoryParticipantAdded(String name) {
+    return '$name jetzt beteiligt';
+  }
+
+  @override
+  String expenseHistoryParticipantRemoved(String name) {
+    return '$name nicht mehr beteiligt';
+  }
+
+  @override
+  String expenseHistoryShare(String name, String from, String to) {
+    return 'Anteil von $name: $from → $to';
+  }
+
+  @override
+  String get expenseHistoryUnknownMember => 'Unbekannt';
+
+  @override
   String get expenseFormNew => 'Neue Ausgabe';
 
   @override
