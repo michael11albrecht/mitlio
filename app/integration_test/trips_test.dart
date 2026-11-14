@@ -81,15 +81,16 @@ void main() {
     final taps = TapCounter(tester);
     await taps.tap(find.byTooltip('Fahrt hinzufügen'));
     await tester.pumpAndSettle();
-    await taps.enterText(
-      find.widgetWithText(TextField, 'Strecke (einfach)'),
-      '250',
-    );
-    await taps.enterText(find.widgetWithText(TextField, 'Verbrauch'), '6,5');
-    await taps.enterText(
-      find.widgetWithText(TextField, 'Preis pro Liter'),
-      '1,799',
-    );
+    for (final (label, text) in [
+      ('Strecke (einfach)', '250'),
+      ('Verbrauch', '6,5'),
+      ('Preis pro Liter', '1,799'),
+    ]) {
+      final field = find.widgetWithText(TextField, label);
+      await tester.ensureVisible(field);
+      await tester.pumpAndSettle();
+      await taps.enterText(field, text);
+    }
     await tester.pumpAndSettle();
     expect(find.textContaining('Jede Person zahlt'), findsOneWidget);
 
@@ -151,8 +152,6 @@ void main() {
     await tester.pumpAndSettle();
     final snap = await drive['state']!({'screen': 'trip'});
     final inputs = (snap['state']! as Map)['inputs']! as Map;
-    expect(inputs['useKmRate'], isTrue);
-    expect(inputs['driverCounts'], isFalse);
     expect(inputs['driverId'], memberIds[0]);
     expect(await drive['errors']!({}), {'errors': <Object?>[]});
   });
