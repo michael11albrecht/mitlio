@@ -2581,6 +2581,12 @@ abstract class AppLocalizations {
   /// **'Standort nicht freigegeben, es gilt der Bundesdurchschnitt.'**
   String get fuelNearbyDenied;
 
+  /// No description provided for @fuelNearbyBlocked.
+  ///
+  /// In de, this message translates to:
+  /// **'Standort ist in den Einstellungen gesperrt, es gilt der Bundesdurchschnitt.'**
+  String get fuelNearbyBlocked;
+
   /// No description provided for @fuelNearbyUnavailable.
   ///
   /// In de, this message translates to:

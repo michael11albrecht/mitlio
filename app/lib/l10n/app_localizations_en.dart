@@ -1493,6 +1493,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Location not shared, the national average applies.';
 
   @override
+  String get fuelNearbyBlocked =>
+      'Location is blocked in the system settings, the national average applies.';
+
+  @override
   String get fuelNearbyUnavailable => 'Location not available right now.';
 
   @override

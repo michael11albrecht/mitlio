@@ -13,6 +13,7 @@ import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/debug/debug_drive.dart';
 import 'package:mitlio/features/fuel/data/repositories/fuel_providers.dart';
 import 'package:mitlio/features/fuel/data/services/fuel_price_service.dart';
+import 'package:mitlio/features/fuel/data/services/geolocator_location_service.dart';
 import 'package:mitlio/features/fx/data/repositories/fx_providers.dart';
 import 'package:mitlio/features/fx/data/services/fx_rate_service.dart';
 import 'package:path_provider/path_provider.dart';
@@ -44,6 +45,12 @@ Future<void> main() async {
             baseUrl: config.supabaseUrl,
             anonKey: config.supabaseAnonKey,
           ),
+        ),
+      // Coarse location only on the shipped mobile targets; the Linux harness
+      // keeps the no-op service.
+      if (Platform.isAndroid || Platform.isIOS)
+        locationServiceProvider.overrideWithValue(
+          const GeolocatorLocationService(),
         ),
       // Same for the ECB rate suggestion in the expense form.
       if (config.hasBackend)

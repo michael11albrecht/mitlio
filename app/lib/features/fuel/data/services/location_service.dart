@@ -16,6 +16,12 @@ final class LocationDenied extends LocationResult {
   const LocationDenied();
 }
 
+/// The permission is blocked for good: asking again shows nothing, only the
+/// system settings help.
+final class LocationDeniedForever extends LocationResult {
+  const LocationDeniedForever();
+}
+
 /// No position could be determined.
 final class LocationUnavailable extends LocationResult {
   const LocationUnavailable();
@@ -30,9 +36,8 @@ abstract interface class LocationService {
   Future<LocationResult> current();
 }
 
-/// Default until a platform location plugin is wired (it needs native
-/// permission strings, see docs/fuel-prices-api.md). Only the national
-/// average and a typed postcode work then.
+/// Default where no location plugin runs (the Linux test harness, tests):
+/// only the national average and a typed postcode work then.
 class NoLocationService implements LocationService {
   const NoLocationService();
 

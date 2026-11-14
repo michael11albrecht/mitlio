@@ -1499,6 +1499,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Standort nicht freigegeben, es gilt der Bundesdurchschnitt.';
 
   @override
+  String get fuelNearbyBlocked =>
+      'Standort ist in den Einstellungen gesperrt, es gilt der Bundesdurchschnitt.';
+
+  @override
   String get fuelNearbyUnavailable => 'Standort gerade nicht verfügbar.';
 
   @override

@@ -103,6 +103,7 @@ class _FuelPriceChipsState extends ConsumerState<FuelPriceChips> {
     if (s.loading) return null;
     return switch (s.failure) {
       FuelFailure.locationDenied => l10n.fuelNearbyDenied,
+      FuelFailure.locationBlocked => l10n.fuelNearbyBlocked,
       FuelFailure.locationUnavailable => l10n.fuelNearbyUnavailable,
       _ when s.price == null && s.failure != null => l10n.fuelNoPrice,
       _ => null,

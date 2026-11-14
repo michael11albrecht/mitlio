@@ -1156,6 +1156,7 @@
   "fuelNoPrice": "Gerade kein aktueller Preis verfügbar. Trag ihn einfach selbst ein.",
   "fuelNearby": "In meiner Nähe",
   "fuelNearbyDenied": "Standort nicht freigegeben, es gilt der Bundesdurchschnitt.",
+  "fuelNearbyBlocked": "Standort ist in den Einstellungen gesperrt, es gilt der Bundesdurchschnitt.",
   "fuelNearbyUnavailable": "Standort gerade nicht verfügbar.",
   "fuelPlzAction": "PLZ eingeben",
   "fuelPlzLabel": "Postleitzahl",
