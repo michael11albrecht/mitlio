@@ -53,5 +53,5 @@ jobs:
         run: tail -n 100 .drive/run.log || true
       - name: Release build contains no DebugDrive
         run: |
-          cd app && flutter build linux --release
+          cd app && (flutter build linux --release --extra-gen-snapshot-options=--trace_compiler > /tmp/aot.log 2>&1 || (grep -v "^\s*$" /tmp/aot.log | tail -60; exit 1))
           cd .. && tool/check_release_strip.sh
