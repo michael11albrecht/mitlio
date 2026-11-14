@@ -1,0 +1,478 @@
+{
+  "group": "WG Mia & Noah",
+  "currency": "EUR",
+  "members": [
+    "Mia",
+    "Noah"
+  ],
+  "expenses": [
+    {
+      "title": "Einkauf",
+      "amountCents": 4000,
+      "date": "2026-09-01",
+      "payers": {
+        "Mia": 4000
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 2,
+          "Noah": 3
+        }
+      }
+    },
+    {
+      "title": "Strom",
+      "amountCents": 6501,
+      "date": "2026-09-02",
+      "payers": {
+        "Noah": 6501
+      },
+      "split": {
+        "mode": "percent",
+        "weights": {
+          "Mia": 4000,
+          "Noah": 6000
+        }
+      }
+    },
+    {
+      "title": "Kino",
+      "amountCents": 2490,
+      "date": "2026-09-03",
+      "payers": {
+        "Mia": 2490
+      },
+      "split": {
+        "mode": "equal",
+        "participants": [
+          "Mia",
+          "Noah"
+        ]
+      }
+    },
+    {
+      "title": "Drogerie",
+      "amountCents": 1876,
+      "date": "2026-09-04",
+      "payers": {
+        "Noah": 1876
+      },
+      "split": {
+        "mode": "percent",
+        "weights": {
+          "Mia": 5000,
+          "Noah": 5000
+        }
+      }
+    },
+    {
+      "title": "Pizza",
+      "amountCents": 3150,
+      "date": "2026-09-05",
+      "payers": {
+        "Mia": 1650,
+        "Noah": 1500
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 1,
+          "Noah": 1
+        }
+      }
+    },
+    {
+      "title": "Putzmittel",
+      "amountCents": 1004,
+      "date": "2026-09-06",
+      "payers": {
+        "Mia": 1004
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 3,
+          "Noah": 2
+        }
+      }
+    },
+    {
+      "title": "Einkauf",
+      "amountCents": 4822,
+      "date": "2026-09-07",
+      "payers": {
+        "Mia": 4822
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 2,
+          "Noah": 3
+        }
+      }
+    },
+    {
+      "title": "Strom",
+      "amountCents": 6507,
+      "date": "2026-09-08",
+      "payers": {
+        "Noah": 6507
+      },
+      "split": {
+        "mode": "percent",
+        "weights": {
+          "Mia": 4000,
+          "Noah": 6000
+        }
+      }
+    },
+    {
+      "title": "Kino",
+      "amountCents": 2490,
+      "date": "2026-09-09",
+      "payers": {
+        "Mia": 2490
+      },
+      "split": {
+        "mode": "equal",
+        "participants": [
+          "Mia",
+          "Noah"
+        ]
+      }
+    },
+    {
+      "title": "Drogerie",
+      "amountCents": 1882,
+      "date": "2026-09-10",
+      "payers": {
+        "Noah": 1882
+      },
+      "split": {
+        "mode": "percent",
+        "weights": {
+          "Mia": 5000,
+          "Noah": 5000
+        }
+      }
+    },
+    {
+      "title": "Pizza",
+      "amountCents": 3150,
+      "date": "2026-09-11",
+      "payers": {
+        "Mia": 1650,
+        "Noah": 1500
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 1,
+          "Noah": 1
+        }
+      }
+    },
+    {
+      "title": "Putzmittel",
+      "amountCents": 1010,
+      "date": "2026-09-12",
+      "payers": {
+        "Mia": 1010
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 3,
+          "Noah": 2
+        }
+      }
+    },
+    {
+      "title": "Einkauf",
+      "amountCents": 5644,
+      "date": "2026-09-13",
+      "payers": {
+        "Mia": 5644
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 2,
+          "Noah": 3
+        }
+      }
+    },
+    {
+      "title": "Strom",
+      "amountCents": 6513,
+      "date": "2026-09-14",
+      "payers": {
+        "Noah": 6513
+      },
+      "split": {
+        "mode": "percent",
+        "weights": {
+          "Mia": 4000,
+          "Noah": 6000
+        }
+      }
+    },
+    {
+      "title": "Kino",
+      "amountCents": 2490,
+      "date": "2026-09-15",
+      "payers": {
+        "Mia": 2490
+      },
+      "split": {
+        "mode": "equal",
+        "participants": [
+          "Mia",
+          "Noah"
+        ]
+      }
+    },
+    {
+      "title": "Drogerie",
+      "amountCents": 1888,
+      "date": "2026-09-16",
+      "payers": {
+        "Noah": 1888
+      },
+      "split": {
+        "mode": "percent",
+        "weights": {
+          "Mia": 5000,
+          "Noah": 5000
+        }
+      }
+    },
+    {
+      "title": "Pizza",
+      "amountCents": 3150,
+      "date": "2026-09-17",
+      "payers": {
+        "Mia": 1650,
+        "Noah": 1500
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 1,
+          "Noah": 1
+        }
+      }
+    },
+    {
+      "title": "Putzmittel",
+      "amountCents": 1016,
+      "date": "2026-09-18",
+      "payers": {
+        "Mia": 1016
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 3,
+          "Noah": 2
+        }
+      }
+    },
+    {
+      "title": "Einkauf",
+      "amountCents": 6466,
+      "date": "2026-09-19",
+      "payers": {
+        "Mia": 6466
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 2,
+          "Noah": 3
+        }
+      }
+    },
+    {
+      "title": "Strom",
+      "amountCents": 6519,
+      "date": "2026-09-20",
+      "payers": {
+        "Noah": 6519
+      },
+      "split": {
+        "mode": "percent",
+        "weights": {
+          "Mia": 4000,
+          "Noah": 6000
+        }
+      }
+    },
+    {
+      "title": "Kino",
+      "amountCents": 2490,
+      "date": "2026-09-21",
+      "payers": {
+        "Mia": 2490
+      },
+      "split": {
+        "mode": "equal",
+        "participants": [
+          "Mia",
+          "Noah"
+        ]
+      }
+    },
+    {
+      "title": "Drogerie",
+      "amountCents": 1894,
+      "date": "2026-09-22",
+      "payers": {
+        "Noah": 1894
+      },
+      "split": {
+        "mode": "percent",
+        "weights": {
+          "Mia": 5000,
+          "Noah": 5000
+        }
+      }
+    },
+    {
+      "title": "Pizza",
+      "amountCents": 3150,
+      "date": "2026-09-23",
+      "payers": {
+        "Mia": 1650,
+        "Noah": 1500
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 1,
+          "Noah": 1
+        }
+      }
+    },
+    {
+      "title": "Putzmittel",
+      "amountCents": 1022,
+      "date": "2026-09-24",
+      "payers": {
+        "Mia": 1022
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 3,
+          "Noah": 2
+        }
+      }
+    },
+    {
+      "title": "Einkauf",
+      "amountCents": 7288,
+      "date": "2026-09-25",
+      "payers": {
+        "Mia": 7288
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 2,
+          "Noah": 3
+        }
+      }
+    },
+    {
+      "title": "Strom",
+      "amountCents": 6525,
+      "date": "2026-09-26",
+      "payers": {
+        "Noah": 6525
+      },
+      "split": {
+        "mode": "percent",
+        "weights": {
+          "Mia": 4000,
+          "Noah": 6000
+        }
+      }
+    },
+    {
+      "title": "Kino",
+      "amountCents": 2490,
+      "date": "2026-09-27",
+      "payers": {
+        "Mia": 2490
+      },
+      "split": {
+        "mode": "equal",
+        "participants": [
+          "Mia",
+          "Noah"
+        ]
+      }
+    },
+    {
+      "title": "Drogerie",
+      "amountCents": 1900,
+      "date": "2026-09-28",
+      "payers": {
+        "Noah": 1900
+      },
+      "split": {
+        "mode": "percent",
+        "weights": {
+          "Mia": 5000,
+          "Noah": 5000
+        }
+      }
+    },
+    {
+      "title": "Pizza",
+      "amountCents": 3150,
+      "date": "2026-09-29",
+      "payers": {
+        "Mia": 1650,
+        "Noah": 1500
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 1,
+          "Noah": 1
+        }
+      }
+    },
+    {
+      "title": "Putzmittel",
+      "amountCents": 1028,
+      "date": "2026-09-30",
+      "payers": {
+        "Mia": 1028
+      },
+      "split": {
+        "mode": "shares",
+        "weights": {
+          "Mia": 3,
+          "Noah": 2
+        }
+      }
+    }
+  ],
+  "expected": {
+    "balances": {
+      "Mia": 7818,
+      "Noah": -7818
+    },
+    "transfers": [
+      {
+        "from": "Noah",
+        "to": "Mia",
+        "amountCents": 7818
+      }
+    ]
+  }
+}

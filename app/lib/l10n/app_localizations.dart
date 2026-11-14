@@ -1057,6 +1057,504 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Pro Person'**
   String get tripBreakdownPerPerson;
+
+  /// No description provided for @tabRides.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrten'**
+  String get tabRides;
+
+  /// No description provided for @ridesEmptyTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Strecke'**
+  String get ridesEmptyTitle;
+
+  /// No description provided for @ridesEmptyMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Leg dein Auto und deine Strecke an — dann reichen 2 Taps pro Fahrt.'**
+  String get ridesEmptyMessage;
+
+  /// No description provided for @ridesEmptyActionVehicle.
+  ///
+  /// In de, this message translates to:
+  /// **'Auto und Strecke anlegen'**
+  String get ridesEmptyActionVehicle;
+
+  /// No description provided for @ridesEmptyActionTemplate.
+  ///
+  /// In de, this message translates to:
+  /// **'Strecke anlegen'**
+  String get ridesEmptyActionTemplate;
+
+  /// No description provided for @ridesNoMembersMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Füge zuerst die Leute hinzu, die mitfahren.'**
+  String get ridesNoMembersMessage;
+
+  /// No description provided for @ridesSettings.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrzeuge und Strecken'**
+  String get ridesSettings;
+
+  /// No description provided for @quickLogTitleToday.
+  ///
+  /// In de, this message translates to:
+  /// **'Heute gefahren'**
+  String get quickLogTitleToday;
+
+  /// No description provided for @quickLogTitleDate.
+  ///
+  /// In de, this message translates to:
+  /// **'Gefahren am {date}'**
+  String quickLogTitleDate(String date);
+
+  /// No description provided for @quickLogPickRoute.
+  ///
+  /// In de, this message translates to:
+  /// **'Wähle deine Strecke.'**
+  String get quickLogPickRoute;
+
+  /// No description provided for @quickLogDriver.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer fährt?'**
+  String get quickLogDriver;
+
+  /// No description provided for @quickLogPassengers.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer fährt mit?'**
+  String get quickLogPassengers;
+
+  /// No description provided for @quickLogSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Speichern'**
+  String get quickLogSave;
+
+  /// No description provided for @quickLogAnother.
+  ///
+  /// In de, this message translates to:
+  /// **'Weitere Fahrt'**
+  String get quickLogAnother;
+
+  /// No description provided for @quickLogDone.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} ist gefahren'**
+  String quickLogDone(String name);
+
+  /// No description provided for @quickLogPrice.
+  ///
+  /// In de, this message translates to:
+  /// **'Kraftstoff {price} je {unit}'**
+  String quickLogPrice(String price, String unit);
+
+  /// No description provided for @quickLogPriceLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Preis je {unit}'**
+  String quickLogPriceLabel(String unit);
+
+  /// No description provided for @quickLogPriceSet.
+  ///
+  /// In de, this message translates to:
+  /// **'Übernehmen'**
+  String get quickLogPriceSet;
+
+  /// No description provided for @quickLogBackToToday.
+  ///
+  /// In de, this message translates to:
+  /// **'Zurück zu heute'**
+  String get quickLogBackToToday;
+
+  /// No description provided for @ridesUnitLitre.
+  ///
+  /// In de, this message translates to:
+  /// **'l'**
+  String get ridesUnitLitre;
+
+  /// No description provided for @ridesUnitKwh.
+  ///
+  /// In de, this message translates to:
+  /// **'kWh'**
+  String get ridesUnitKwh;
+
+  /// No description provided for @ridesDistanceOneWay.
+  ///
+  /// In de, this message translates to:
+  /// **'{km} km'**
+  String ridesDistanceOneWay(String km);
+
+  /// No description provided for @ridesDistanceRoundTrip.
+  ///
+  /// In de, this message translates to:
+  /// **'2 × {km} km'**
+  String ridesDistanceRoundTrip(String km);
+
+  /// No description provided for @ridesRouteLine.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} · {distance}'**
+  String ridesRouteLine(String name, String distance);
+
+  /// No description provided for @ridesOwes.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} zahlt {amount}'**
+  String ridesOwes(String name, String amount);
+
+  /// No description provided for @ridesNobodyOwes.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Mitfahrer, nichts zu teilen'**
+  String get ridesNobodyOwes;
+
+  /// No description provided for @ridesSaved.
+  ///
+  /// In de, this message translates to:
+  /// **'Gespeichert · {summary}'**
+  String ridesSaved(String summary);
+
+  /// No description provided for @ridesRideDeleted.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrt gelöscht'**
+  String get ridesRideDeleted;
+
+  /// No description provided for @ridesLocked.
+  ///
+  /// In de, this message translates to:
+  /// **'Abgerechnet, gesperrt'**
+  String get ridesLocked;
+
+  /// No description provided for @ridesMonthPrev.
+  ///
+  /// In de, this message translates to:
+  /// **'Vorheriger Monat'**
+  String get ridesMonthPrev;
+
+  /// No description provided for @ridesMonthNext.
+  ///
+  /// In de, this message translates to:
+  /// **'Nächster Monat'**
+  String get ridesMonthNext;
+
+  /// No description provided for @ridesMonthEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'In diesem Monat noch keine Fahrt'**
+  String get ridesMonthEmpty;
+
+  /// No description provided for @ridesDayDrivers.
+  ///
+  /// In de, this message translates to:
+  /// **'{date}: {names}'**
+  String ridesDayDrivers(String date, String names);
+
+  /// No description provided for @ridesDayNoRides.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Fahrt an diesem Tag'**
+  String get ridesDayNoRides;
+
+  /// No description provided for @ridesDayLog.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrt für diesen Tag erfassen'**
+  String get ridesDayLog;
+
+  /// No description provided for @ridesRideTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} fuhr · {distance}'**
+  String ridesRideTitle(String name, String distance);
+
+  /// No description provided for @ridesRidePassengers.
+  ///
+  /// In de, this message translates to:
+  /// **'mit {names}'**
+  String ridesRidePassengers(String names);
+
+  /// No description provided for @ridesRideDelete.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrt löschen'**
+  String get ridesRideDelete;
+
+  /// No description provided for @ridesSettingsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrzeuge und Strecken'**
+  String get ridesSettingsTitle;
+
+  /// No description provided for @ridesVehicles.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrzeuge'**
+  String get ridesVehicles;
+
+  /// No description provided for @ridesTemplates.
+  ///
+  /// In de, this message translates to:
+  /// **'Strecken'**
+  String get ridesTemplates;
+
+  /// No description provided for @ridesVehiclesEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch kein Fahrzeug'**
+  String get ridesVehiclesEmpty;
+
+  /// No description provided for @ridesTemplatesEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Strecke'**
+  String get ridesTemplatesEmpty;
+
+  /// No description provided for @ridesVehicleAdd.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrzeug hinzufügen'**
+  String get ridesVehicleAdd;
+
+  /// No description provided for @ridesTemplateAdd.
+  ///
+  /// In de, this message translates to:
+  /// **'Strecke hinzufügen'**
+  String get ridesTemplateAdd;
+
+  /// No description provided for @ridesVehicleDeleted.
+  ///
+  /// In de, this message translates to:
+  /// **'„{name}“ gelöscht'**
+  String ridesVehicleDeleted(String name);
+
+  /// No description provided for @ridesTemplateDeleted.
+  ///
+  /// In de, this message translates to:
+  /// **'„{name}“ gelöscht'**
+  String ridesTemplateDeleted(String name);
+
+  /// No description provided for @ridesVehicleInUse.
+  ///
+  /// In de, this message translates to:
+  /// **'Das Fahrzeug wird noch von einer Strecke genutzt.'**
+  String get ridesVehicleInUse;
+
+  /// No description provided for @ridesVehicleLine.
+  ///
+  /// In de, this message translates to:
+  /// **'{fuel} · {consumption} {unit}/100 km'**
+  String ridesVehicleLine(String fuel, String consumption, String unit);
+
+  /// No description provided for @ridesDelete.
+  ///
+  /// In de, this message translates to:
+  /// **'Löschen'**
+  String get ridesDelete;
+
+  /// No description provided for @fuelPetrol.
+  ///
+  /// In de, this message translates to:
+  /// **'Benzin'**
+  String get fuelPetrol;
+
+  /// No description provided for @fuelDiesel.
+  ///
+  /// In de, this message translates to:
+  /// **'Diesel'**
+  String get fuelDiesel;
+
+  /// No description provided for @fuelElectric.
+  ///
+  /// In de, this message translates to:
+  /// **'Elektro'**
+  String get fuelElectric;
+
+  /// No description provided for @fuelOther.
+  ///
+  /// In de, this message translates to:
+  /// **'Andere'**
+  String get fuelOther;
+
+  /// No description provided for @vehicleFormNew.
+  ///
+  /// In de, this message translates to:
+  /// **'Neues Fahrzeug'**
+  String get vehicleFormNew;
+
+  /// No description provided for @vehicleFormEdit.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrzeug bearbeiten'**
+  String get vehicleFormEdit;
+
+  /// No description provided for @vehicleNameLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Name'**
+  String get vehicleNameLabel;
+
+  /// No description provided for @vehicleNameHint.
+  ///
+  /// In de, this message translates to:
+  /// **'z. B. Golf'**
+  String get vehicleNameHint;
+
+  /// No description provided for @vehicleFuelSection.
+  ///
+  /// In de, this message translates to:
+  /// **'Antrieb'**
+  String get vehicleFuelSection;
+
+  /// No description provided for @vehicleConsumptionLitre.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbrauch (l/100 km)'**
+  String get vehicleConsumptionLitre;
+
+  /// No description provided for @vehicleConsumptionKwh.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbrauch (kWh/100 km)'**
+  String get vehicleConsumptionKwh;
+
+  /// No description provided for @vehicleWearLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Verschleiß je km (optional)'**
+  String get vehicleWearLabel;
+
+  /// No description provided for @vehicleKmRateLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Pauschale je km (optional)'**
+  String get vehicleKmRateLabel;
+
+  /// No description provided for @vehicleKmRateHelper.
+  ///
+  /// In de, this message translates to:
+  /// **'Mit Pauschale zählt der Betrag je km statt Sprit und Verschleiß.'**
+  String get vehicleKmRateHelper;
+
+  /// No description provided for @vehicleErrorName.
+  ///
+  /// In de, this message translates to:
+  /// **'Gib einen Namen ein'**
+  String get vehicleErrorName;
+
+  /// No description provided for @vehicleErrorConsumption.
+  ///
+  /// In de, this message translates to:
+  /// **'Gib den Verbrauch ein'**
+  String get vehicleErrorConsumption;
+
+  /// No description provided for @vehicleSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Speichern'**
+  String get vehicleSave;
+
+  /// No description provided for @templateFormNew.
+  ///
+  /// In de, this message translates to:
+  /// **'Neue Strecke'**
+  String get templateFormNew;
+
+  /// No description provided for @templateFormEdit.
+  ///
+  /// In de, this message translates to:
+  /// **'Strecke bearbeiten'**
+  String get templateFormEdit;
+
+  /// No description provided for @templateNameLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Name'**
+  String get templateNameLabel;
+
+  /// No description provided for @templateNameHint.
+  ///
+  /// In de, this message translates to:
+  /// **'z. B. Arbeit'**
+  String get templateNameHint;
+
+  /// No description provided for @templateDistanceLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Entfernung einfach (km)'**
+  String get templateDistanceLabel;
+
+  /// No description provided for @templateRoundTrip.
+  ///
+  /// In de, this message translates to:
+  /// **'Hin- und Rückfahrt'**
+  String get templateRoundTrip;
+
+  /// No description provided for @templateVehicleSection.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrzeug'**
+  String get templateVehicleSection;
+
+  /// No description provided for @templateDriverSection.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrer'**
+  String get templateDriverSection;
+
+  /// No description provided for @templateDriverNone.
+  ///
+  /// In de, this message translates to:
+  /// **'Wechselt'**
+  String get templateDriverNone;
+
+  /// No description provided for @templatePassengersSection.
+  ///
+  /// In de, this message translates to:
+  /// **'Fährt mit'**
+  String get templatePassengersSection;
+
+  /// No description provided for @templateTollsLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Maut (optional)'**
+  String get templateTollsLabel;
+
+  /// No description provided for @templateErrorName.
+  ///
+  /// In de, this message translates to:
+  /// **'Gib einen Namen ein'**
+  String get templateErrorName;
+
+  /// No description provided for @templateErrorDistance.
+  ///
+  /// In de, this message translates to:
+  /// **'Gib die Entfernung ein'**
+  String get templateErrorDistance;
+
+  /// No description provided for @templateNoVehicle.
+  ///
+  /// In de, this message translates to:
+  /// **'Lege zuerst ein Fahrzeug an.'**
+  String get templateNoVehicle;
+
+  /// No description provided for @templateNoVehicleAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrzeug anlegen'**
+  String get templateNoVehicleAction;
+
+  /// No description provided for @templateSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Speichern'**
+  String get templateSave;
 }
 
 class _AppLocalizationsDelegate

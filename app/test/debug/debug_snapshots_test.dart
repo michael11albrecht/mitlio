@@ -38,6 +38,10 @@ void main() {
       'expense_form',
       'trip',
       'balances',
+      'rides',
+      'rides_setup',
+      'vehicle_form',
+      'template_form',
     ]);
   });
 

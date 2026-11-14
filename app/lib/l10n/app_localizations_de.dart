@@ -568,4 +568,287 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tripBreakdownPerPerson => 'Pro Person';
+
+  @override
+  String get tabRides => 'Fahrten';
+
+  @override
+  String get ridesEmptyTitle => 'Noch keine Strecke';
+
+  @override
+  String get ridesEmptyMessage =>
+      'Leg dein Auto und deine Strecke an — dann reichen 2 Taps pro Fahrt.';
+
+  @override
+  String get ridesEmptyActionVehicle => 'Auto und Strecke anlegen';
+
+  @override
+  String get ridesEmptyActionTemplate => 'Strecke anlegen';
+
+  @override
+  String get ridesNoMembersMessage =>
+      'Füge zuerst die Leute hinzu, die mitfahren.';
+
+  @override
+  String get ridesSettings => 'Fahrzeuge und Strecken';
+
+  @override
+  String get quickLogTitleToday => 'Heute gefahren';
+
+  @override
+  String quickLogTitleDate(String date) {
+    return 'Gefahren am $date';
+  }
+
+  @override
+  String get quickLogPickRoute => 'Wähle deine Strecke.';
+
+  @override
+  String get quickLogDriver => 'Wer fährt?';
+
+  @override
+  String get quickLogPassengers => 'Wer fährt mit?';
+
+  @override
+  String get quickLogSave => 'Speichern';
+
+  @override
+  String get quickLogAnother => 'Weitere Fahrt';
+
+  @override
+  String quickLogDone(String name) {
+    return '$name ist gefahren';
+  }
+
+  @override
+  String quickLogPrice(String price, String unit) {
+    return 'Kraftstoff $price je $unit';
+  }
+
+  @override
+  String quickLogPriceLabel(String unit) {
+    return 'Preis je $unit';
+  }
+
+  @override
+  String get quickLogPriceSet => 'Übernehmen';
+
+  @override
+  String get quickLogBackToToday => 'Zurück zu heute';
+
+  @override
+  String get ridesUnitLitre => 'l';
+
+  @override
+  String get ridesUnitKwh => 'kWh';
+
+  @override
+  String ridesDistanceOneWay(String km) {
+    return '$km km';
+  }
+
+  @override
+  String ridesDistanceRoundTrip(String km) {
+    return '2 × $km km';
+  }
+
+  @override
+  String ridesRouteLine(String name, String distance) {
+    return '$name · $distance';
+  }
+
+  @override
+  String ridesOwes(String name, String amount) {
+    return '$name zahlt $amount';
+  }
+
+  @override
+  String get ridesNobodyOwes => 'Keine Mitfahrer, nichts zu teilen';
+
+  @override
+  String ridesSaved(String summary) {
+    return 'Gespeichert · $summary';
+  }
+
+  @override
+  String get ridesRideDeleted => 'Fahrt gelöscht';
+
+  @override
+  String get ridesLocked => 'Abgerechnet, gesperrt';
+
+  @override
+  String get ridesMonthPrev => 'Vorheriger Monat';
+
+  @override
+  String get ridesMonthNext => 'Nächster Monat';
+
+  @override
+  String get ridesMonthEmpty => 'In diesem Monat noch keine Fahrt';
+
+  @override
+  String ridesDayDrivers(String date, String names) {
+    return '$date: $names';
+  }
+
+  @override
+  String get ridesDayNoRides => 'Keine Fahrt an diesem Tag';
+
+  @override
+  String get ridesDayLog => 'Fahrt für diesen Tag erfassen';
+
+  @override
+  String ridesRideTitle(String name, String distance) {
+    return '$name fuhr · $distance';
+  }
+
+  @override
+  String ridesRidePassengers(String names) {
+    return 'mit $names';
+  }
+
+  @override
+  String get ridesRideDelete => 'Fahrt löschen';
+
+  @override
+  String get ridesSettingsTitle => 'Fahrzeuge und Strecken';
+
+  @override
+  String get ridesVehicles => 'Fahrzeuge';
+
+  @override
+  String get ridesTemplates => 'Strecken';
+
+  @override
+  String get ridesVehiclesEmpty => 'Noch kein Fahrzeug';
+
+  @override
+  String get ridesTemplatesEmpty => 'Noch keine Strecke';
+
+  @override
+  String get ridesVehicleAdd => 'Fahrzeug hinzufügen';
+
+  @override
+  String get ridesTemplateAdd => 'Strecke hinzufügen';
+
+  @override
+  String ridesVehicleDeleted(String name) {
+    return '„$name“ gelöscht';
+  }
+
+  @override
+  String ridesTemplateDeleted(String name) {
+    return '„$name“ gelöscht';
+  }
+
+  @override
+  String get ridesVehicleInUse =>
+      'Das Fahrzeug wird noch von einer Strecke genutzt.';
+
+  @override
+  String ridesVehicleLine(String fuel, String consumption, String unit) {
+    return '$fuel · $consumption $unit/100 km';
+  }
+
+  @override
+  String get ridesDelete => 'Löschen';
+
+  @override
+  String get fuelPetrol => 'Benzin';
+
+  @override
+  String get fuelDiesel => 'Diesel';
+
+  @override
+  String get fuelElectric => 'Elektro';
+
+  @override
+  String get fuelOther => 'Andere';
+
+  @override
+  String get vehicleFormNew => 'Neues Fahrzeug';
+
+  @override
+  String get vehicleFormEdit => 'Fahrzeug bearbeiten';
+
+  @override
+  String get vehicleNameLabel => 'Name';
+
+  @override
+  String get vehicleNameHint => 'z. B. Golf';
+
+  @override
+  String get vehicleFuelSection => 'Antrieb';
+
+  @override
+  String get vehicleConsumptionLitre => 'Verbrauch (l/100 km)';
+
+  @override
+  String get vehicleConsumptionKwh => 'Verbrauch (kWh/100 km)';
+
+  @override
+  String get vehicleWearLabel => 'Verschleiß je km (optional)';
+
+  @override
+  String get vehicleKmRateLabel => 'Pauschale je km (optional)';
+
+  @override
+  String get vehicleKmRateHelper =>
+      'Mit Pauschale zählt der Betrag je km statt Sprit und Verschleiß.';
+
+  @override
+  String get vehicleErrorName => 'Gib einen Namen ein';
+
+  @override
+  String get vehicleErrorConsumption => 'Gib den Verbrauch ein';
+
+  @override
+  String get vehicleSave => 'Speichern';
+
+  @override
+  String get templateFormNew => 'Neue Strecke';
+
+  @override
+  String get templateFormEdit => 'Strecke bearbeiten';
+
+  @override
+  String get templateNameLabel => 'Name';
+
+  @override
+  String get templateNameHint => 'z. B. Arbeit';
+
+  @override
+  String get templateDistanceLabel => 'Entfernung einfach (km)';
+
+  @override
+  String get templateRoundTrip => 'Hin- und Rückfahrt';
+
+  @override
+  String get templateVehicleSection => 'Fahrzeug';
+
+  @override
+  String get templateDriverSection => 'Fahrer';
+
+  @override
+  String get templateDriverNone => 'Wechselt';
+
+  @override
+  String get templatePassengersSection => 'Fährt mit';
+
+  @override
+  String get templateTollsLabel => 'Maut (optional)';
+
+  @override
+  String get templateErrorName => 'Gib einen Namen ein';
+
+  @override
+  String get templateErrorDistance => 'Gib die Entfernung ein';
+
+  @override
+  String get templateNoVehicle => 'Lege zuerst ein Fahrzeug an.';
+
+  @override
+  String get templateNoVehicleAction => 'Fahrzeug anlegen';
+
+  @override
+  String get templateSave => 'Speichern';
 }
