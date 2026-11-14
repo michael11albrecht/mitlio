@@ -126,6 +126,9 @@ void main() {
         _err(_create(payers: {'A': 1001})),
         const PayersMismatch(1001, 1000),
       );
+      final e = _err(_create(payers: {'A': 600, 'B': 300})) as PayersMismatch;
+      expect(e.sum, 900);
+      expect(e.expected, 1000);
     });
   });
 

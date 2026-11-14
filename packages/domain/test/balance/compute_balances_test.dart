@@ -314,6 +314,29 @@ void main() {
       );
     });
 
+    test('unknown id error names the id', () {
+      final m = _abc();
+      final e = _expense(
+        members: m,
+        amount: 100,
+        payers: {'C': 100},
+        split: EqualSplit({'A', 'B'}),
+      );
+      expect(
+        () => computeBalances(
+          members: [m[0], m[1]],
+          expenses: [e],
+          settlements: const [],
+        ),
+        throwsA(
+          isA<ArgumentError>()
+              .having((x) => x.name, 'name', 'id')
+              .having((x) => x.invalidValue, 'invalidValue', 'C')
+              .having((x) => x.message, 'message', 'unknown member'),
+        ),
+      );
+    });
+
     test('balance beyond maxAbsCents throws MoneyOverflow', () {
       final m = _abc();
       const half = 600000000000000;

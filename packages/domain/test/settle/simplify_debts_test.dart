@@ -135,6 +135,24 @@ void main() {
       );
     });
 
+    test('argument errors carry name, value and message', () {
+      Matcher argError(String name, Object? value, String message) => throwsA(
+        isA<ArgumentError>()
+            .having((e) => e.name, 'name', name)
+            .having((e) => e.invalidValue, 'invalidValue', value)
+            .having((e) => e.message, 'message', message),
+      );
+      expect(
+        () => simplifyDebts({'A': 1, 'Z': -1}, abcd()),
+        argError('balances', 'Z', 'unknown member'),
+      );
+      final unbalanced = {'A': 1, 'B': -2};
+      expect(
+        () => simplifyDebts(unbalanced, abcd()),
+        argError('balances', unbalanced, 'must sum to zero'),
+      );
+    });
+
     test('unknown key throws even if sum is zero', () {
       expect(
         () => simplifyDebts({'A': 1, 'Z': -1}, abcd()),
@@ -161,6 +179,15 @@ void main() {
     test('rejects non-positive amounts', () {
       expect(() => t('A', 'B', 0), throwsArgumentError);
       expect(() => t('A', 'B', -1), throwsArgumentError);
+      expect(
+        () => t('A', 'B', -5),
+        throwsA(
+          isA<ArgumentError>()
+              .having((e) => e.name, 'name', 'amountCents')
+              .having((e) => e.invalidValue, 'invalidValue', -5)
+              .having((e) => e.message, 'message', 'must be > 0'),
+        ),
+      );
     });
   });
 
