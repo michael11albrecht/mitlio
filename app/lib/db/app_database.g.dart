@@ -4122,6 +4122,2361 @@ class LocalOutboxCompanion extends UpdateCompanion<LocalOutboxRow> {
   }
 }
 
+class $VehiclesTable extends Vehicles
+    with TableInfo<$VehiclesTable, VehicleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $VehiclesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES "groups" (id)',
+    ),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fuelTypeMeta = const VerificationMeta(
+    'fuelType',
+  );
+  @override
+  late final GeneratedColumn<String> fuelType = GeneratedColumn<String>(
+    'fuel_type',
+    aliasedName,
+    false,
+    check: () => fuelType.isIn(const ['petrol', 'diesel', 'electric', 'other']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _consumptionMilliPer100kmMeta =
+      const VerificationMeta('consumptionMilliPer100km');
+  @override
+  late final GeneratedColumn<int> consumptionMilliPer100km =
+      GeneratedColumn<int>(
+        'consumption_milli_per100km',
+        aliasedName,
+        false,
+        check: () =>
+            ComparableExpr(consumptionMilliPer100km).isBiggerThanValue(0),
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _wearMilliPerKmMeta = const VerificationMeta(
+    'wearMilliPerKm',
+  );
+  @override
+  late final GeneratedColumn<int> wearMilliPerKm = GeneratedColumn<int>(
+    'wear_milli_per_km',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(wearMilliPerKm).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _kmRateMilliPerKmMeta = const VerificationMeta(
+    'kmRateMilliPerKm',
+  );
+  @override
+  late final GeneratedColumn<int> kmRateMilliPerKm = GeneratedColumn<int>(
+    'km_rate_milli_per_km',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(kmRateMilliPerKm).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    groupId,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    name,
+    fuelType,
+    consumptionMilliPer100km,
+    wearMilliPerKm,
+    kmRateMilliPerKm,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'vehicles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<VehicleRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('fuel_type')) {
+      context.handle(
+        _fuelTypeMeta,
+        fuelType.isAcceptableOrUnknown(data['fuel_type']!, _fuelTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fuelTypeMeta);
+    }
+    if (data.containsKey('consumption_milli_per100km')) {
+      context.handle(
+        _consumptionMilliPer100kmMeta,
+        consumptionMilliPer100km.isAcceptableOrUnknown(
+          data['consumption_milli_per100km']!,
+          _consumptionMilliPer100kmMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_consumptionMilliPer100kmMeta);
+    }
+    if (data.containsKey('wear_milli_per_km')) {
+      context.handle(
+        _wearMilliPerKmMeta,
+        wearMilliPerKm.isAcceptableOrUnknown(
+          data['wear_milli_per_km']!,
+          _wearMilliPerKmMeta,
+        ),
+      );
+    }
+    if (data.containsKey('km_rate_milli_per_km')) {
+      context.handle(
+        _kmRateMilliPerKmMeta,
+        kmRateMilliPerKm.isAcceptableOrUnknown(
+          data['km_rate_milli_per_km']!,
+          _kmRateMilliPerKmMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  VehicleRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return VehicleRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      fuelType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fuel_type'],
+      )!,
+      consumptionMilliPer100km: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}consumption_milli_per100km'],
+      )!,
+      wearMilliPerKm: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}wear_milli_per_km'],
+      )!,
+      kmRateMilliPerKm: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}km_rate_milli_per_km'],
+      ),
+    );
+  }
+
+  @override
+  $VehiclesTable createAlias(String alias) {
+    return $VehiclesTable(attachedDatabase, alias);
+  }
+}
+
+class VehicleRow extends DataClass implements Insertable<VehicleRow> {
+  /// UUIDv7 generated on the client.
+  final String id;
+  final String groupId;
+
+  /// Creation time, UTC.
+  final DateTime createdAt;
+
+  /// Hybrid logical clock string.
+  final String updatedAt;
+
+  /// Soft delete marker; null while the row is live.
+  final DateTime? deletedAt;
+  final String name;
+  final String fuelType;
+
+  /// Litres or kWh per 100 km times 1000.
+  final int consumptionMilliPer100km;
+
+  /// Thousandths of the major currency unit per km.
+  final int wearMilliPerKm;
+
+  /// If set, rides with this vehicle default to km-rate mode.
+  final int? kmRateMilliPerKm;
+  const VehicleRow({
+    required this.id,
+    required this.groupId,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.name,
+    required this.fuelType,
+    required this.consumptionMilliPer100km,
+    required this.wearMilliPerKm,
+    this.kmRateMilliPerKm,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['group_id'] = Variable<String>(groupId);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['name'] = Variable<String>(name);
+    map['fuel_type'] = Variable<String>(fuelType);
+    map['consumption_milli_per100km'] = Variable<int>(consumptionMilliPer100km);
+    map['wear_milli_per_km'] = Variable<int>(wearMilliPerKm);
+    if (!nullToAbsent || kmRateMilliPerKm != null) {
+      map['km_rate_milli_per_km'] = Variable<int>(kmRateMilliPerKm);
+    }
+    return map;
+  }
+
+  VehiclesCompanion toCompanion(bool nullToAbsent) {
+    return VehiclesCompanion(
+      id: Value(id),
+      groupId: Value(groupId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      name: Value(name),
+      fuelType: Value(fuelType),
+      consumptionMilliPer100km: Value(consumptionMilliPer100km),
+      wearMilliPerKm: Value(wearMilliPerKm),
+      kmRateMilliPerKm: kmRateMilliPerKm == null && nullToAbsent
+          ? const Value.absent()
+          : Value(kmRateMilliPerKm),
+    );
+  }
+
+  factory VehicleRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return VehicleRow(
+      id: serializer.fromJson<String>(json['id']),
+      groupId: serializer.fromJson<String>(json['groupId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      name: serializer.fromJson<String>(json['name']),
+      fuelType: serializer.fromJson<String>(json['fuelType']),
+      consumptionMilliPer100km: serializer.fromJson<int>(
+        json['consumptionMilliPer100km'],
+      ),
+      wearMilliPerKm: serializer.fromJson<int>(json['wearMilliPerKm']),
+      kmRateMilliPerKm: serializer.fromJson<int?>(json['kmRateMilliPerKm']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'groupId': serializer.toJson<String>(groupId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'name': serializer.toJson<String>(name),
+      'fuelType': serializer.toJson<String>(fuelType),
+      'consumptionMilliPer100km': serializer.toJson<int>(
+        consumptionMilliPer100km,
+      ),
+      'wearMilliPerKm': serializer.toJson<int>(wearMilliPerKm),
+      'kmRateMilliPerKm': serializer.toJson<int?>(kmRateMilliPerKm),
+    };
+  }
+
+  VehicleRow copyWith({
+    String? id,
+    String? groupId,
+    DateTime? createdAt,
+    String? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? name,
+    String? fuelType,
+    int? consumptionMilliPer100km,
+    int? wearMilliPerKm,
+    Value<int?> kmRateMilliPerKm = const Value.absent(),
+  }) => VehicleRow(
+    id: id ?? this.id,
+    groupId: groupId ?? this.groupId,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    name: name ?? this.name,
+    fuelType: fuelType ?? this.fuelType,
+    consumptionMilliPer100km:
+        consumptionMilliPer100km ?? this.consumptionMilliPer100km,
+    wearMilliPerKm: wearMilliPerKm ?? this.wearMilliPerKm,
+    kmRateMilliPerKm: kmRateMilliPerKm.present
+        ? kmRateMilliPerKm.value
+        : this.kmRateMilliPerKm,
+  );
+  VehicleRow copyWithCompanion(VehiclesCompanion data) {
+    return VehicleRow(
+      id: data.id.present ? data.id.value : this.id,
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      name: data.name.present ? data.name.value : this.name,
+      fuelType: data.fuelType.present ? data.fuelType.value : this.fuelType,
+      consumptionMilliPer100km: data.consumptionMilliPer100km.present
+          ? data.consumptionMilliPer100km.value
+          : this.consumptionMilliPer100km,
+      wearMilliPerKm: data.wearMilliPerKm.present
+          ? data.wearMilliPerKm.value
+          : this.wearMilliPerKm,
+      kmRateMilliPerKm: data.kmRateMilliPerKm.present
+          ? data.kmRateMilliPerKm.value
+          : this.kmRateMilliPerKm,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('VehicleRow(')
+          ..write('id: $id, ')
+          ..write('groupId: $groupId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('name: $name, ')
+          ..write('fuelType: $fuelType, ')
+          ..write('consumptionMilliPer100km: $consumptionMilliPer100km, ')
+          ..write('wearMilliPerKm: $wearMilliPerKm, ')
+          ..write('kmRateMilliPerKm: $kmRateMilliPerKm')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    groupId,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    name,
+    fuelType,
+    consumptionMilliPer100km,
+    wearMilliPerKm,
+    kmRateMilliPerKm,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is VehicleRow &&
+          other.id == this.id &&
+          other.groupId == this.groupId &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.name == this.name &&
+          other.fuelType == this.fuelType &&
+          other.consumptionMilliPer100km == this.consumptionMilliPer100km &&
+          other.wearMilliPerKm == this.wearMilliPerKm &&
+          other.kmRateMilliPerKm == this.kmRateMilliPerKm);
+}
+
+class VehiclesCompanion extends UpdateCompanion<VehicleRow> {
+  final Value<String> id;
+  final Value<String> groupId;
+  final Value<DateTime> createdAt;
+  final Value<String> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<String> name;
+  final Value<String> fuelType;
+  final Value<int> consumptionMilliPer100km;
+  final Value<int> wearMilliPerKm;
+  final Value<int?> kmRateMilliPerKm;
+  final Value<int> rowid;
+  const VehiclesCompanion({
+    this.id = const Value.absent(),
+    this.groupId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.name = const Value.absent(),
+    this.fuelType = const Value.absent(),
+    this.consumptionMilliPer100km = const Value.absent(),
+    this.wearMilliPerKm = const Value.absent(),
+    this.kmRateMilliPerKm = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  VehiclesCompanion.insert({
+    required String id,
+    required String groupId,
+    required DateTime createdAt,
+    required String updatedAt,
+    this.deletedAt = const Value.absent(),
+    required String name,
+    required String fuelType,
+    required int consumptionMilliPer100km,
+    this.wearMilliPerKm = const Value.absent(),
+    this.kmRateMilliPerKm = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       groupId = Value(groupId),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       name = Value(name),
+       fuelType = Value(fuelType),
+       consumptionMilliPer100km = Value(consumptionMilliPer100km);
+  static Insertable<VehicleRow> custom({
+    Expression<String>? id,
+    Expression<String>? groupId,
+    Expression<DateTime>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? name,
+    Expression<String>? fuelType,
+    Expression<int>? consumptionMilliPer100km,
+    Expression<int>? wearMilliPerKm,
+    Expression<int>? kmRateMilliPerKm,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (groupId != null) 'group_id': groupId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (name != null) 'name': name,
+      if (fuelType != null) 'fuel_type': fuelType,
+      if (consumptionMilliPer100km != null)
+        'consumption_milli_per100km': consumptionMilliPer100km,
+      if (wearMilliPerKm != null) 'wear_milli_per_km': wearMilliPerKm,
+      if (kmRateMilliPerKm != null) 'km_rate_milli_per_km': kmRateMilliPerKm,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  VehiclesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? groupId,
+    Value<DateTime>? createdAt,
+    Value<String>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<String>? name,
+    Value<String>? fuelType,
+    Value<int>? consumptionMilliPer100km,
+    Value<int>? wearMilliPerKm,
+    Value<int?>? kmRateMilliPerKm,
+    Value<int>? rowid,
+  }) {
+    return VehiclesCompanion(
+      id: id ?? this.id,
+      groupId: groupId ?? this.groupId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      name: name ?? this.name,
+      fuelType: fuelType ?? this.fuelType,
+      consumptionMilliPer100km:
+          consumptionMilliPer100km ?? this.consumptionMilliPer100km,
+      wearMilliPerKm: wearMilliPerKm ?? this.wearMilliPerKm,
+      kmRateMilliPerKm: kmRateMilliPerKm ?? this.kmRateMilliPerKm,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (fuelType.present) {
+      map['fuel_type'] = Variable<String>(fuelType.value);
+    }
+    if (consumptionMilliPer100km.present) {
+      map['consumption_milli_per100km'] = Variable<int>(
+        consumptionMilliPer100km.value,
+      );
+    }
+    if (wearMilliPerKm.present) {
+      map['wear_milli_per_km'] = Variable<int>(wearMilliPerKm.value);
+    }
+    if (kmRateMilliPerKm.present) {
+      map['km_rate_milli_per_km'] = Variable<int>(kmRateMilliPerKm.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('VehiclesCompanion(')
+          ..write('id: $id, ')
+          ..write('groupId: $groupId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('name: $name, ')
+          ..write('fuelType: $fuelType, ')
+          ..write('consumptionMilliPer100km: $consumptionMilliPer100km, ')
+          ..write('wearMilliPerKm: $wearMilliPerKm, ')
+          ..write('kmRateMilliPerKm: $kmRateMilliPerKm, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RideTemplatesTable extends RideTemplates
+    with TableInfo<$RideTemplatesTable, RideTemplateRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RideTemplatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES "groups" (id)',
+    ),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _distanceMetersMeta = const VerificationMeta(
+    'distanceMeters',
+  );
+  @override
+  late final GeneratedColumn<int> distanceMeters = GeneratedColumn<int>(
+    'distance_meters',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(distanceMeters).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _roundTripMeta = const VerificationMeta(
+    'roundTrip',
+  );
+  @override
+  late final GeneratedColumn<bool> roundTrip = GeneratedColumn<bool>(
+    'round_trip',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("round_trip" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _vehicleIdMeta = const VerificationMeta(
+    'vehicleId',
+  );
+  @override
+  late final GeneratedColumn<String> vehicleId = GeneratedColumn<String>(
+    'vehicle_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES vehicles (id)',
+    ),
+  );
+  static const VerificationMeta _defaultDriverIdMeta = const VerificationMeta(
+    'defaultDriverId',
+  );
+  @override
+  late final GeneratedColumn<String> defaultDriverId = GeneratedColumn<String>(
+    'default_driver_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES members (id)',
+    ),
+  );
+  static const VerificationMeta _defaultPassengerIdsMeta =
+      const VerificationMeta('defaultPassengerIds');
+  @override
+  late final GeneratedColumn<String> defaultPassengerIds =
+      GeneratedColumn<String>(
+        'default_passenger_ids',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('[]'),
+      );
+  static const VerificationMeta _tollsCentsMeta = const VerificationMeta(
+    'tollsCents',
+  );
+  @override
+  late final GeneratedColumn<int> tollsCents = GeneratedColumn<int>(
+    'tolls_cents',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(tollsCents).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    groupId,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    name,
+    distanceMeters,
+    roundTrip,
+    vehicleId,
+    defaultDriverId,
+    defaultPassengerIds,
+    tollsCents,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'ride_templates';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RideTemplateRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('distance_meters')) {
+      context.handle(
+        _distanceMetersMeta,
+        distanceMeters.isAcceptableOrUnknown(
+          data['distance_meters']!,
+          _distanceMetersMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_distanceMetersMeta);
+    }
+    if (data.containsKey('round_trip')) {
+      context.handle(
+        _roundTripMeta,
+        roundTrip.isAcceptableOrUnknown(data['round_trip']!, _roundTripMeta),
+      );
+    }
+    if (data.containsKey('vehicle_id')) {
+      context.handle(
+        _vehicleIdMeta,
+        vehicleId.isAcceptableOrUnknown(data['vehicle_id']!, _vehicleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_vehicleIdMeta);
+    }
+    if (data.containsKey('default_driver_id')) {
+      context.handle(
+        _defaultDriverIdMeta,
+        defaultDriverId.isAcceptableOrUnknown(
+          data['default_driver_id']!,
+          _defaultDriverIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('default_passenger_ids')) {
+      context.handle(
+        _defaultPassengerIdsMeta,
+        defaultPassengerIds.isAcceptableOrUnknown(
+          data['default_passenger_ids']!,
+          _defaultPassengerIdsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tolls_cents')) {
+      context.handle(
+        _tollsCentsMeta,
+        tollsCents.isAcceptableOrUnknown(data['tolls_cents']!, _tollsCentsMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RideTemplateRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RideTemplateRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      distanceMeters: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}distance_meters'],
+      )!,
+      roundTrip: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}round_trip'],
+      )!,
+      vehicleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}vehicle_id'],
+      )!,
+      defaultDriverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}default_driver_id'],
+      ),
+      defaultPassengerIds: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}default_passenger_ids'],
+      )!,
+      tollsCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tolls_cents'],
+      )!,
+    );
+  }
+
+  @override
+  $RideTemplatesTable createAlias(String alias) {
+    return $RideTemplatesTable(attachedDatabase, alias);
+  }
+}
+
+class RideTemplateRow extends DataClass implements Insertable<RideTemplateRow> {
+  /// UUIDv7 generated on the client.
+  final String id;
+  final String groupId;
+
+  /// Creation time, UTC.
+  final DateTime createdAt;
+
+  /// Hybrid logical clock string.
+  final String updatedAt;
+
+  /// Soft delete marker; null while the row is live.
+  final DateTime? deletedAt;
+  final String name;
+
+  /// One-way distance in metres.
+  final int distanceMeters;
+  final bool roundTrip;
+  final String vehicleId;
+  final String? defaultDriverId;
+
+  /// JSON array of member ids, sorted (aggregate-level sync, no child table).
+  final String defaultPassengerIds;
+  final int tollsCents;
+  const RideTemplateRow({
+    required this.id,
+    required this.groupId,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.name,
+    required this.distanceMeters,
+    required this.roundTrip,
+    required this.vehicleId,
+    this.defaultDriverId,
+    required this.defaultPassengerIds,
+    required this.tollsCents,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['group_id'] = Variable<String>(groupId);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['name'] = Variable<String>(name);
+    map['distance_meters'] = Variable<int>(distanceMeters);
+    map['round_trip'] = Variable<bool>(roundTrip);
+    map['vehicle_id'] = Variable<String>(vehicleId);
+    if (!nullToAbsent || defaultDriverId != null) {
+      map['default_driver_id'] = Variable<String>(defaultDriverId);
+    }
+    map['default_passenger_ids'] = Variable<String>(defaultPassengerIds);
+    map['tolls_cents'] = Variable<int>(tollsCents);
+    return map;
+  }
+
+  RideTemplatesCompanion toCompanion(bool nullToAbsent) {
+    return RideTemplatesCompanion(
+      id: Value(id),
+      groupId: Value(groupId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      name: Value(name),
+      distanceMeters: Value(distanceMeters),
+      roundTrip: Value(roundTrip),
+      vehicleId: Value(vehicleId),
+      defaultDriverId: defaultDriverId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(defaultDriverId),
+      defaultPassengerIds: Value(defaultPassengerIds),
+      tollsCents: Value(tollsCents),
+    );
+  }
+
+  factory RideTemplateRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RideTemplateRow(
+      id: serializer.fromJson<String>(json['id']),
+      groupId: serializer.fromJson<String>(json['groupId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      name: serializer.fromJson<String>(json['name']),
+      distanceMeters: serializer.fromJson<int>(json['distanceMeters']),
+      roundTrip: serializer.fromJson<bool>(json['roundTrip']),
+      vehicleId: serializer.fromJson<String>(json['vehicleId']),
+      defaultDriverId: serializer.fromJson<String?>(json['defaultDriverId']),
+      defaultPassengerIds: serializer.fromJson<String>(
+        json['defaultPassengerIds'],
+      ),
+      tollsCents: serializer.fromJson<int>(json['tollsCents']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'groupId': serializer.toJson<String>(groupId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'name': serializer.toJson<String>(name),
+      'distanceMeters': serializer.toJson<int>(distanceMeters),
+      'roundTrip': serializer.toJson<bool>(roundTrip),
+      'vehicleId': serializer.toJson<String>(vehicleId),
+      'defaultDriverId': serializer.toJson<String?>(defaultDriverId),
+      'defaultPassengerIds': serializer.toJson<String>(defaultPassengerIds),
+      'tollsCents': serializer.toJson<int>(tollsCents),
+    };
+  }
+
+  RideTemplateRow copyWith({
+    String? id,
+    String? groupId,
+    DateTime? createdAt,
+    String? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? name,
+    int? distanceMeters,
+    bool? roundTrip,
+    String? vehicleId,
+    Value<String?> defaultDriverId = const Value.absent(),
+    String? defaultPassengerIds,
+    int? tollsCents,
+  }) => RideTemplateRow(
+    id: id ?? this.id,
+    groupId: groupId ?? this.groupId,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    name: name ?? this.name,
+    distanceMeters: distanceMeters ?? this.distanceMeters,
+    roundTrip: roundTrip ?? this.roundTrip,
+    vehicleId: vehicleId ?? this.vehicleId,
+    defaultDriverId: defaultDriverId.present
+        ? defaultDriverId.value
+        : this.defaultDriverId,
+    defaultPassengerIds: defaultPassengerIds ?? this.defaultPassengerIds,
+    tollsCents: tollsCents ?? this.tollsCents,
+  );
+  RideTemplateRow copyWithCompanion(RideTemplatesCompanion data) {
+    return RideTemplateRow(
+      id: data.id.present ? data.id.value : this.id,
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      name: data.name.present ? data.name.value : this.name,
+      distanceMeters: data.distanceMeters.present
+          ? data.distanceMeters.value
+          : this.distanceMeters,
+      roundTrip: data.roundTrip.present ? data.roundTrip.value : this.roundTrip,
+      vehicleId: data.vehicleId.present ? data.vehicleId.value : this.vehicleId,
+      defaultDriverId: data.defaultDriverId.present
+          ? data.defaultDriverId.value
+          : this.defaultDriverId,
+      defaultPassengerIds: data.defaultPassengerIds.present
+          ? data.defaultPassengerIds.value
+          : this.defaultPassengerIds,
+      tollsCents: data.tollsCents.present
+          ? data.tollsCents.value
+          : this.tollsCents,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RideTemplateRow(')
+          ..write('id: $id, ')
+          ..write('groupId: $groupId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('name: $name, ')
+          ..write('distanceMeters: $distanceMeters, ')
+          ..write('roundTrip: $roundTrip, ')
+          ..write('vehicleId: $vehicleId, ')
+          ..write('defaultDriverId: $defaultDriverId, ')
+          ..write('defaultPassengerIds: $defaultPassengerIds, ')
+          ..write('tollsCents: $tollsCents')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    groupId,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    name,
+    distanceMeters,
+    roundTrip,
+    vehicleId,
+    defaultDriverId,
+    defaultPassengerIds,
+    tollsCents,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RideTemplateRow &&
+          other.id == this.id &&
+          other.groupId == this.groupId &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.name == this.name &&
+          other.distanceMeters == this.distanceMeters &&
+          other.roundTrip == this.roundTrip &&
+          other.vehicleId == this.vehicleId &&
+          other.defaultDriverId == this.defaultDriverId &&
+          other.defaultPassengerIds == this.defaultPassengerIds &&
+          other.tollsCents == this.tollsCents);
+}
+
+class RideTemplatesCompanion extends UpdateCompanion<RideTemplateRow> {
+  final Value<String> id;
+  final Value<String> groupId;
+  final Value<DateTime> createdAt;
+  final Value<String> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<String> name;
+  final Value<int> distanceMeters;
+  final Value<bool> roundTrip;
+  final Value<String> vehicleId;
+  final Value<String?> defaultDriverId;
+  final Value<String> defaultPassengerIds;
+  final Value<int> tollsCents;
+  final Value<int> rowid;
+  const RideTemplatesCompanion({
+    this.id = const Value.absent(),
+    this.groupId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.name = const Value.absent(),
+    this.distanceMeters = const Value.absent(),
+    this.roundTrip = const Value.absent(),
+    this.vehicleId = const Value.absent(),
+    this.defaultDriverId = const Value.absent(),
+    this.defaultPassengerIds = const Value.absent(),
+    this.tollsCents = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RideTemplatesCompanion.insert({
+    required String id,
+    required String groupId,
+    required DateTime createdAt,
+    required String updatedAt,
+    this.deletedAt = const Value.absent(),
+    required String name,
+    required int distanceMeters,
+    this.roundTrip = const Value.absent(),
+    required String vehicleId,
+    this.defaultDriverId = const Value.absent(),
+    this.defaultPassengerIds = const Value.absent(),
+    this.tollsCents = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       groupId = Value(groupId),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       name = Value(name),
+       distanceMeters = Value(distanceMeters),
+       vehicleId = Value(vehicleId);
+  static Insertable<RideTemplateRow> custom({
+    Expression<String>? id,
+    Expression<String>? groupId,
+    Expression<DateTime>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? name,
+    Expression<int>? distanceMeters,
+    Expression<bool>? roundTrip,
+    Expression<String>? vehicleId,
+    Expression<String>? defaultDriverId,
+    Expression<String>? defaultPassengerIds,
+    Expression<int>? tollsCents,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (groupId != null) 'group_id': groupId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (name != null) 'name': name,
+      if (distanceMeters != null) 'distance_meters': distanceMeters,
+      if (roundTrip != null) 'round_trip': roundTrip,
+      if (vehicleId != null) 'vehicle_id': vehicleId,
+      if (defaultDriverId != null) 'default_driver_id': defaultDriverId,
+      if (defaultPassengerIds != null)
+        'default_passenger_ids': defaultPassengerIds,
+      if (tollsCents != null) 'tolls_cents': tollsCents,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RideTemplatesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? groupId,
+    Value<DateTime>? createdAt,
+    Value<String>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<String>? name,
+    Value<int>? distanceMeters,
+    Value<bool>? roundTrip,
+    Value<String>? vehicleId,
+    Value<String?>? defaultDriverId,
+    Value<String>? defaultPassengerIds,
+    Value<int>? tollsCents,
+    Value<int>? rowid,
+  }) {
+    return RideTemplatesCompanion(
+      id: id ?? this.id,
+      groupId: groupId ?? this.groupId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      name: name ?? this.name,
+      distanceMeters: distanceMeters ?? this.distanceMeters,
+      roundTrip: roundTrip ?? this.roundTrip,
+      vehicleId: vehicleId ?? this.vehicleId,
+      defaultDriverId: defaultDriverId ?? this.defaultDriverId,
+      defaultPassengerIds: defaultPassengerIds ?? this.defaultPassengerIds,
+      tollsCents: tollsCents ?? this.tollsCents,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (distanceMeters.present) {
+      map['distance_meters'] = Variable<int>(distanceMeters.value);
+    }
+    if (roundTrip.present) {
+      map['round_trip'] = Variable<bool>(roundTrip.value);
+    }
+    if (vehicleId.present) {
+      map['vehicle_id'] = Variable<String>(vehicleId.value);
+    }
+    if (defaultDriverId.present) {
+      map['default_driver_id'] = Variable<String>(defaultDriverId.value);
+    }
+    if (defaultPassengerIds.present) {
+      map['default_passenger_ids'] = Variable<String>(
+        defaultPassengerIds.value,
+      );
+    }
+    if (tollsCents.present) {
+      map['tolls_cents'] = Variable<int>(tollsCents.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RideTemplatesCompanion(')
+          ..write('id: $id, ')
+          ..write('groupId: $groupId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('name: $name, ')
+          ..write('distanceMeters: $distanceMeters, ')
+          ..write('roundTrip: $roundTrip, ')
+          ..write('vehicleId: $vehicleId, ')
+          ..write('defaultDriverId: $defaultDriverId, ')
+          ..write('defaultPassengerIds: $defaultPassengerIds, ')
+          ..write('tollsCents: $tollsCents, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RidesTable extends Rides with TableInfo<$RidesTable, RideRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RidesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES "groups" (id)',
+    ),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _distanceMetersMeta = const VerificationMeta(
+    'distanceMeters',
+  );
+  @override
+  late final GeneratedColumn<int> distanceMeters = GeneratedColumn<int>(
+    'distance_meters',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(distanceMeters).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _roundTripMeta = const VerificationMeta(
+    'roundTrip',
+  );
+  @override
+  late final GeneratedColumn<bool> roundTrip = GeneratedColumn<bool>(
+    'round_trip',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("round_trip" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _tollsCentsMeta = const VerificationMeta(
+    'tollsCents',
+  );
+  @override
+  late final GeneratedColumn<int> tollsCents = GeneratedColumn<int>(
+    'tolls_cents',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(tollsCents).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _vehicleIdMeta = const VerificationMeta(
+    'vehicleId',
+  );
+  @override
+  late final GeneratedColumn<String> vehicleId = GeneratedColumn<String>(
+    'vehicle_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES vehicles (id)',
+    ),
+  );
+  static const VerificationMeta _driverIdMeta = const VerificationMeta(
+    'driverId',
+  );
+  @override
+  late final GeneratedColumn<String> driverId = GeneratedColumn<String>(
+    'driver_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES members (id)',
+    ),
+  );
+  static const VerificationMeta _passengerIdsMeta = const VerificationMeta(
+    'passengerIds',
+  );
+  @override
+  late final GeneratedColumn<String> passengerIds = GeneratedColumn<String>(
+    'passenger_ids',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _driverCountsMeta = const VerificationMeta(
+    'driverCounts',
+  );
+  @override
+  late final GeneratedColumn<bool> driverCounts = GeneratedColumn<bool>(
+    'driver_counts',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("driver_counts" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _pricePerUnitMilliMeta = const VerificationMeta(
+    'pricePerUnitMilli',
+  );
+  @override
+  late final GeneratedColumn<int> pricePerUnitMilli = GeneratedColumn<int>(
+    'price_per_unit_milli',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(pricePerUnitMilli).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _useKmRateMeta = const VerificationMeta(
+    'useKmRate',
+  );
+  @override
+  late final GeneratedColumn<bool> useKmRate = GeneratedColumn<bool>(
+    'use_km_rate',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("use_km_rate" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _settledExpenseIdMeta = const VerificationMeta(
+    'settledExpenseId',
+  );
+  @override
+  late final GeneratedColumn<String> settledExpenseId = GeneratedColumn<String>(
+    'settled_expense_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES expenses (id)',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    groupId,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    date,
+    distanceMeters,
+    roundTrip,
+    tollsCents,
+    vehicleId,
+    driverId,
+    passengerIds,
+    driverCounts,
+    pricePerUnitMilli,
+    useKmRate,
+    settledExpenseId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'rides';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RideRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('distance_meters')) {
+      context.handle(
+        _distanceMetersMeta,
+        distanceMeters.isAcceptableOrUnknown(
+          data['distance_meters']!,
+          _distanceMetersMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_distanceMetersMeta);
+    }
+    if (data.containsKey('round_trip')) {
+      context.handle(
+        _roundTripMeta,
+        roundTrip.isAcceptableOrUnknown(data['round_trip']!, _roundTripMeta),
+      );
+    }
+    if (data.containsKey('tolls_cents')) {
+      context.handle(
+        _tollsCentsMeta,
+        tollsCents.isAcceptableOrUnknown(data['tolls_cents']!, _tollsCentsMeta),
+      );
+    }
+    if (data.containsKey('vehicle_id')) {
+      context.handle(
+        _vehicleIdMeta,
+        vehicleId.isAcceptableOrUnknown(data['vehicle_id']!, _vehicleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_vehicleIdMeta);
+    }
+    if (data.containsKey('driver_id')) {
+      context.handle(
+        _driverIdMeta,
+        driverId.isAcceptableOrUnknown(data['driver_id']!, _driverIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_driverIdMeta);
+    }
+    if (data.containsKey('passenger_ids')) {
+      context.handle(
+        _passengerIdsMeta,
+        passengerIds.isAcceptableOrUnknown(
+          data['passenger_ids']!,
+          _passengerIdsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('driver_counts')) {
+      context.handle(
+        _driverCountsMeta,
+        driverCounts.isAcceptableOrUnknown(
+          data['driver_counts']!,
+          _driverCountsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('price_per_unit_milli')) {
+      context.handle(
+        _pricePerUnitMilliMeta,
+        pricePerUnitMilli.isAcceptableOrUnknown(
+          data['price_per_unit_milli']!,
+          _pricePerUnitMilliMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_pricePerUnitMilliMeta);
+    }
+    if (data.containsKey('use_km_rate')) {
+      context.handle(
+        _useKmRateMeta,
+        useKmRate.isAcceptableOrUnknown(data['use_km_rate']!, _useKmRateMeta),
+      );
+    }
+    if (data.containsKey('settled_expense_id')) {
+      context.handle(
+        _settledExpenseIdMeta,
+        settledExpenseId.isAcceptableOrUnknown(
+          data['settled_expense_id']!,
+          _settledExpenseIdMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RideRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RideRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      distanceMeters: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}distance_meters'],
+      )!,
+      roundTrip: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}round_trip'],
+      )!,
+      tollsCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tolls_cents'],
+      )!,
+      vehicleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}vehicle_id'],
+      )!,
+      driverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}driver_id'],
+      )!,
+      passengerIds: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}passenger_ids'],
+      )!,
+      driverCounts: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}driver_counts'],
+      )!,
+      pricePerUnitMilli: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}price_per_unit_milli'],
+      )!,
+      useKmRate: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}use_km_rate'],
+      )!,
+      settledExpenseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}settled_expense_id'],
+      ),
+    );
+  }
+
+  @override
+  $RidesTable createAlias(String alias) {
+    return $RidesTable(attachedDatabase, alias);
+  }
+}
+
+class RideRow extends DataClass implements Insertable<RideRow> {
+  /// UUIDv7 generated on the client.
+  final String id;
+  final String groupId;
+
+  /// Creation time, UTC.
+  final DateTime createdAt;
+
+  /// Hybrid logical clock string.
+  final String updatedAt;
+
+  /// Soft delete marker; null while the row is live.
+  final DateTime? deletedAt;
+
+  /// Calendar date stored as UTC midnight.
+  final DateTime date;
+
+  /// One-way distance in metres.
+  final int distanceMeters;
+  final bool roundTrip;
+  final int tollsCents;
+  final String vehicleId;
+  final String driverId;
+
+  /// JSON array of member ids, sorted (aggregate-level sync, no child table).
+  final String passengerIds;
+  final bool driverCounts;
+
+  /// Fuel price per litre or kWh in thousandths, frozen when logged.
+  final int pricePerUnitMilli;
+  final bool useKmRate;
+
+  /// Set when a period is settled (P3r-T06); the ride is then locked.
+  final String? settledExpenseId;
+  const RideRow({
+    required this.id,
+    required this.groupId,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.date,
+    required this.distanceMeters,
+    required this.roundTrip,
+    required this.tollsCents,
+    required this.vehicleId,
+    required this.driverId,
+    required this.passengerIds,
+    required this.driverCounts,
+    required this.pricePerUnitMilli,
+    required this.useKmRate,
+    this.settledExpenseId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['group_id'] = Variable<String>(groupId);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['date'] = Variable<DateTime>(date);
+    map['distance_meters'] = Variable<int>(distanceMeters);
+    map['round_trip'] = Variable<bool>(roundTrip);
+    map['tolls_cents'] = Variable<int>(tollsCents);
+    map['vehicle_id'] = Variable<String>(vehicleId);
+    map['driver_id'] = Variable<String>(driverId);
+    map['passenger_ids'] = Variable<String>(passengerIds);
+    map['driver_counts'] = Variable<bool>(driverCounts);
+    map['price_per_unit_milli'] = Variable<int>(pricePerUnitMilli);
+    map['use_km_rate'] = Variable<bool>(useKmRate);
+    if (!nullToAbsent || settledExpenseId != null) {
+      map['settled_expense_id'] = Variable<String>(settledExpenseId);
+    }
+    return map;
+  }
+
+  RidesCompanion toCompanion(bool nullToAbsent) {
+    return RidesCompanion(
+      id: Value(id),
+      groupId: Value(groupId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      date: Value(date),
+      distanceMeters: Value(distanceMeters),
+      roundTrip: Value(roundTrip),
+      tollsCents: Value(tollsCents),
+      vehicleId: Value(vehicleId),
+      driverId: Value(driverId),
+      passengerIds: Value(passengerIds),
+      driverCounts: Value(driverCounts),
+      pricePerUnitMilli: Value(pricePerUnitMilli),
+      useKmRate: Value(useKmRate),
+      settledExpenseId: settledExpenseId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(settledExpenseId),
+    );
+  }
+
+  factory RideRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RideRow(
+      id: serializer.fromJson<String>(json['id']),
+      groupId: serializer.fromJson<String>(json['groupId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      distanceMeters: serializer.fromJson<int>(json['distanceMeters']),
+      roundTrip: serializer.fromJson<bool>(json['roundTrip']),
+      tollsCents: serializer.fromJson<int>(json['tollsCents']),
+      vehicleId: serializer.fromJson<String>(json['vehicleId']),
+      driverId: serializer.fromJson<String>(json['driverId']),
+      passengerIds: serializer.fromJson<String>(json['passengerIds']),
+      driverCounts: serializer.fromJson<bool>(json['driverCounts']),
+      pricePerUnitMilli: serializer.fromJson<int>(json['pricePerUnitMilli']),
+      useKmRate: serializer.fromJson<bool>(json['useKmRate']),
+      settledExpenseId: serializer.fromJson<String?>(json['settledExpenseId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'groupId': serializer.toJson<String>(groupId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'date': serializer.toJson<DateTime>(date),
+      'distanceMeters': serializer.toJson<int>(distanceMeters),
+      'roundTrip': serializer.toJson<bool>(roundTrip),
+      'tollsCents': serializer.toJson<int>(tollsCents),
+      'vehicleId': serializer.toJson<String>(vehicleId),
+      'driverId': serializer.toJson<String>(driverId),
+      'passengerIds': serializer.toJson<String>(passengerIds),
+      'driverCounts': serializer.toJson<bool>(driverCounts),
+      'pricePerUnitMilli': serializer.toJson<int>(pricePerUnitMilli),
+      'useKmRate': serializer.toJson<bool>(useKmRate),
+      'settledExpenseId': serializer.toJson<String?>(settledExpenseId),
+    };
+  }
+
+  RideRow copyWith({
+    String? id,
+    String? groupId,
+    DateTime? createdAt,
+    String? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    DateTime? date,
+    int? distanceMeters,
+    bool? roundTrip,
+    int? tollsCents,
+    String? vehicleId,
+    String? driverId,
+    String? passengerIds,
+    bool? driverCounts,
+    int? pricePerUnitMilli,
+    bool? useKmRate,
+    Value<String?> settledExpenseId = const Value.absent(),
+  }) => RideRow(
+    id: id ?? this.id,
+    groupId: groupId ?? this.groupId,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    date: date ?? this.date,
+    distanceMeters: distanceMeters ?? this.distanceMeters,
+    roundTrip: roundTrip ?? this.roundTrip,
+    tollsCents: tollsCents ?? this.tollsCents,
+    vehicleId: vehicleId ?? this.vehicleId,
+    driverId: driverId ?? this.driverId,
+    passengerIds: passengerIds ?? this.passengerIds,
+    driverCounts: driverCounts ?? this.driverCounts,
+    pricePerUnitMilli: pricePerUnitMilli ?? this.pricePerUnitMilli,
+    useKmRate: useKmRate ?? this.useKmRate,
+    settledExpenseId: settledExpenseId.present
+        ? settledExpenseId.value
+        : this.settledExpenseId,
+  );
+  RideRow copyWithCompanion(RidesCompanion data) {
+    return RideRow(
+      id: data.id.present ? data.id.value : this.id,
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      date: data.date.present ? data.date.value : this.date,
+      distanceMeters: data.distanceMeters.present
+          ? data.distanceMeters.value
+          : this.distanceMeters,
+      roundTrip: data.roundTrip.present ? data.roundTrip.value : this.roundTrip,
+      tollsCents: data.tollsCents.present
+          ? data.tollsCents.value
+          : this.tollsCents,
+      vehicleId: data.vehicleId.present ? data.vehicleId.value : this.vehicleId,
+      driverId: data.driverId.present ? data.driverId.value : this.driverId,
+      passengerIds: data.passengerIds.present
+          ? data.passengerIds.value
+          : this.passengerIds,
+      driverCounts: data.driverCounts.present
+          ? data.driverCounts.value
+          : this.driverCounts,
+      pricePerUnitMilli: data.pricePerUnitMilli.present
+          ? data.pricePerUnitMilli.value
+          : this.pricePerUnitMilli,
+      useKmRate: data.useKmRate.present ? data.useKmRate.value : this.useKmRate,
+      settledExpenseId: data.settledExpenseId.present
+          ? data.settledExpenseId.value
+          : this.settledExpenseId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RideRow(')
+          ..write('id: $id, ')
+          ..write('groupId: $groupId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('date: $date, ')
+          ..write('distanceMeters: $distanceMeters, ')
+          ..write('roundTrip: $roundTrip, ')
+          ..write('tollsCents: $tollsCents, ')
+          ..write('vehicleId: $vehicleId, ')
+          ..write('driverId: $driverId, ')
+          ..write('passengerIds: $passengerIds, ')
+          ..write('driverCounts: $driverCounts, ')
+          ..write('pricePerUnitMilli: $pricePerUnitMilli, ')
+          ..write('useKmRate: $useKmRate, ')
+          ..write('settledExpenseId: $settledExpenseId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    groupId,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    date,
+    distanceMeters,
+    roundTrip,
+    tollsCents,
+    vehicleId,
+    driverId,
+    passengerIds,
+    driverCounts,
+    pricePerUnitMilli,
+    useKmRate,
+    settledExpenseId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RideRow &&
+          other.id == this.id &&
+          other.groupId == this.groupId &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.date == this.date &&
+          other.distanceMeters == this.distanceMeters &&
+          other.roundTrip == this.roundTrip &&
+          other.tollsCents == this.tollsCents &&
+          other.vehicleId == this.vehicleId &&
+          other.driverId == this.driverId &&
+          other.passengerIds == this.passengerIds &&
+          other.driverCounts == this.driverCounts &&
+          other.pricePerUnitMilli == this.pricePerUnitMilli &&
+          other.useKmRate == this.useKmRate &&
+          other.settledExpenseId == this.settledExpenseId);
+}
+
+class RidesCompanion extends UpdateCompanion<RideRow> {
+  final Value<String> id;
+  final Value<String> groupId;
+  final Value<DateTime> createdAt;
+  final Value<String> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<DateTime> date;
+  final Value<int> distanceMeters;
+  final Value<bool> roundTrip;
+  final Value<int> tollsCents;
+  final Value<String> vehicleId;
+  final Value<String> driverId;
+  final Value<String> passengerIds;
+  final Value<bool> driverCounts;
+  final Value<int> pricePerUnitMilli;
+  final Value<bool> useKmRate;
+  final Value<String?> settledExpenseId;
+  final Value<int> rowid;
+  const RidesCompanion({
+    this.id = const Value.absent(),
+    this.groupId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.date = const Value.absent(),
+    this.distanceMeters = const Value.absent(),
+    this.roundTrip = const Value.absent(),
+    this.tollsCents = const Value.absent(),
+    this.vehicleId = const Value.absent(),
+    this.driverId = const Value.absent(),
+    this.passengerIds = const Value.absent(),
+    this.driverCounts = const Value.absent(),
+    this.pricePerUnitMilli = const Value.absent(),
+    this.useKmRate = const Value.absent(),
+    this.settledExpenseId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RidesCompanion.insert({
+    required String id,
+    required String groupId,
+    required DateTime createdAt,
+    required String updatedAt,
+    this.deletedAt = const Value.absent(),
+    required DateTime date,
+    required int distanceMeters,
+    this.roundTrip = const Value.absent(),
+    this.tollsCents = const Value.absent(),
+    required String vehicleId,
+    required String driverId,
+    this.passengerIds = const Value.absent(),
+    this.driverCounts = const Value.absent(),
+    required int pricePerUnitMilli,
+    this.useKmRate = const Value.absent(),
+    this.settledExpenseId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       groupId = Value(groupId),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       date = Value(date),
+       distanceMeters = Value(distanceMeters),
+       vehicleId = Value(vehicleId),
+       driverId = Value(driverId),
+       pricePerUnitMilli = Value(pricePerUnitMilli);
+  static Insertable<RideRow> custom({
+    Expression<String>? id,
+    Expression<String>? groupId,
+    Expression<DateTime>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<DateTime>? date,
+    Expression<int>? distanceMeters,
+    Expression<bool>? roundTrip,
+    Expression<int>? tollsCents,
+    Expression<String>? vehicleId,
+    Expression<String>? driverId,
+    Expression<String>? passengerIds,
+    Expression<bool>? driverCounts,
+    Expression<int>? pricePerUnitMilli,
+    Expression<bool>? useKmRate,
+    Expression<String>? settledExpenseId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (groupId != null) 'group_id': groupId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (date != null) 'date': date,
+      if (distanceMeters != null) 'distance_meters': distanceMeters,
+      if (roundTrip != null) 'round_trip': roundTrip,
+      if (tollsCents != null) 'tolls_cents': tollsCents,
+      if (vehicleId != null) 'vehicle_id': vehicleId,
+      if (driverId != null) 'driver_id': driverId,
+      if (passengerIds != null) 'passenger_ids': passengerIds,
+      if (driverCounts != null) 'driver_counts': driverCounts,
+      if (pricePerUnitMilli != null) 'price_per_unit_milli': pricePerUnitMilli,
+      if (useKmRate != null) 'use_km_rate': useKmRate,
+      if (settledExpenseId != null) 'settled_expense_id': settledExpenseId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RidesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? groupId,
+    Value<DateTime>? createdAt,
+    Value<String>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<DateTime>? date,
+    Value<int>? distanceMeters,
+    Value<bool>? roundTrip,
+    Value<int>? tollsCents,
+    Value<String>? vehicleId,
+    Value<String>? driverId,
+    Value<String>? passengerIds,
+    Value<bool>? driverCounts,
+    Value<int>? pricePerUnitMilli,
+    Value<bool>? useKmRate,
+    Value<String?>? settledExpenseId,
+    Value<int>? rowid,
+  }) {
+    return RidesCompanion(
+      id: id ?? this.id,
+      groupId: groupId ?? this.groupId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      date: date ?? this.date,
+      distanceMeters: distanceMeters ?? this.distanceMeters,
+      roundTrip: roundTrip ?? this.roundTrip,
+      tollsCents: tollsCents ?? this.tollsCents,
+      vehicleId: vehicleId ?? this.vehicleId,
+      driverId: driverId ?? this.driverId,
+      passengerIds: passengerIds ?? this.passengerIds,
+      driverCounts: driverCounts ?? this.driverCounts,
+      pricePerUnitMilli: pricePerUnitMilli ?? this.pricePerUnitMilli,
+      useKmRate: useKmRate ?? this.useKmRate,
+      settledExpenseId: settledExpenseId ?? this.settledExpenseId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (distanceMeters.present) {
+      map['distance_meters'] = Variable<int>(distanceMeters.value);
+    }
+    if (roundTrip.present) {
+      map['round_trip'] = Variable<bool>(roundTrip.value);
+    }
+    if (tollsCents.present) {
+      map['tolls_cents'] = Variable<int>(tollsCents.value);
+    }
+    if (vehicleId.present) {
+      map['vehicle_id'] = Variable<String>(vehicleId.value);
+    }
+    if (driverId.present) {
+      map['driver_id'] = Variable<String>(driverId.value);
+    }
+    if (passengerIds.present) {
+      map['passenger_ids'] = Variable<String>(passengerIds.value);
+    }
+    if (driverCounts.present) {
+      map['driver_counts'] = Variable<bool>(driverCounts.value);
+    }
+    if (pricePerUnitMilli.present) {
+      map['price_per_unit_milli'] = Variable<int>(pricePerUnitMilli.value);
+    }
+    if (useKmRate.present) {
+      map['use_km_rate'] = Variable<bool>(useKmRate.value);
+    }
+    if (settledExpenseId.present) {
+      map['settled_expense_id'] = Variable<String>(settledExpenseId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RidesCompanion(')
+          ..write('id: $id, ')
+          ..write('groupId: $groupId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('date: $date, ')
+          ..write('distanceMeters: $distanceMeters, ')
+          ..write('roundTrip: $roundTrip, ')
+          ..write('tollsCents: $tollsCents, ')
+          ..write('vehicleId: $vehicleId, ')
+          ..write('driverId: $driverId, ')
+          ..write('passengerIds: $passengerIds, ')
+          ..write('driverCounts: $driverCounts, ')
+          ..write('pricePerUnitMilli: $pricePerUnitMilli, ')
+          ..write('useKmRate: $useKmRate, ')
+          ..write('settledExpenseId: $settledExpenseId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4135,6 +6490,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $LocalOutboxTable localOutbox = $LocalOutboxTable(this);
+  late final $VehiclesTable vehicles = $VehiclesTable(this);
+  late final $RideTemplatesTable rideTemplates = $RideTemplatesTable(this);
+  late final $RidesTable rides = $RidesTable(this);
   late final Index membersGroupId = Index(
     'members_group_id',
     'CREATE INDEX members_group_id ON members (group_id)',
@@ -4171,6 +6529,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'settlements_group_id',
     'CREATE INDEX settlements_group_id ON settlements (group_id)',
   );
+  late final Index vehiclesGroupId = Index(
+    'vehicles_group_id',
+    'CREATE INDEX vehicles_group_id ON vehicles (group_id)',
+  );
+  late final Index rideTemplatesGroupId = Index(
+    'ride_templates_group_id',
+    'CREATE INDEX ride_templates_group_id ON ride_templates (group_id)',
+  );
+  late final Index ridesGroupDate = Index(
+    'rides_group_date',
+    'CREATE INDEX rides_group_date ON rides (group_id, date)',
+  );
   late final GroupsDao groupsDao = GroupsDao(this as AppDatabase);
   late final MembersDao membersDao = MembersDao(this as AppDatabase);
   late final ExpensesDao expensesDao = ExpensesDao(this as AppDatabase);
@@ -4180,6 +6550,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final LocalMemberBankDao localMemberBankDao = LocalMemberBankDao(
     this as AppDatabase,
   );
+  late final RidesDao ridesDao = RidesDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4193,6 +6564,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     settlements,
     localMemberBank,
     localOutbox,
+    vehicles,
+    rideTemplates,
+    rides,
     membersGroupId,
     expensesGroupId,
     expensePayersExpenseId,
@@ -4202,6 +6576,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     expenseSharesGroupId,
     expenseSharesMemberId,
     settlementsGroupId,
+    vehiclesGroupId,
+    rideTemplatesGroupId,
+    ridesGroupDate,
   ];
   @override
   DriftDatabaseOptions get options =>
@@ -4319,6 +6696,61 @@ final class $$GroupsTableReferences
     ).filter((f) => f.groupId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_settlementsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$VehiclesTable, List<VehicleRow>>
+  _vehiclesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.vehicles,
+    aliasName: 'groups__id__vehicles__group_id',
+  );
+
+  $$VehiclesTableProcessedTableManager get vehiclesRefs {
+    final manager = $$VehiclesTableTableManager(
+      $_db,
+      $_db.vehicles,
+    ).filter((f) => f.groupId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_vehiclesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$RideTemplatesTable, List<RideTemplateRow>>
+  _rideTemplatesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.rideTemplates,
+    aliasName: 'groups__id__ride_templates__group_id',
+  );
+
+  $$RideTemplatesTableProcessedTableManager get rideTemplatesRefs {
+    final manager = $$RideTemplatesTableTableManager(
+      $_db,
+      $_db.rideTemplates,
+    ).filter((f) => f.groupId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_rideTemplatesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$RidesTable, List<RideRow>> _ridesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.rides,
+    aliasName: 'groups__id__rides__group_id',
+  );
+
+  $$RidesTableProcessedTableManager get ridesRefs {
+    final manager = $$RidesTableTableManager(
+      $_db,
+      $_db.rides,
+    ).filter((f) => f.groupId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_ridesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -4485,6 +6917,81 @@ class $$GroupsTableFilterComposer
           }) => $$SettlementsTableFilterComposer(
             $db: $db,
             $table: $db.settlements,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> vehiclesRefs(
+    Expression<bool> Function($$VehiclesTableFilterComposer f) f,
+  ) {
+    final $$VehiclesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.vehicles,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VehiclesTableFilterComposer(
+            $db: $db,
+            $table: $db.vehicles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> rideTemplatesRefs(
+    Expression<bool> Function($$RideTemplatesTableFilterComposer f) f,
+  ) {
+    final $$RideTemplatesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rideTemplates,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RideTemplatesTableFilterComposer(
+            $db: $db,
+            $table: $db.rideTemplates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> ridesRefs(
+    Expression<bool> Function($$RidesTableFilterComposer f) f,
+  ) {
+    final $$RidesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rides,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RidesTableFilterComposer(
+            $db: $db,
+            $table: $db.rides,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4694,6 +7201,81 @@ class $$GroupsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> vehiclesRefs<T extends Object>(
+    Expression<T> Function($$VehiclesTableAnnotationComposer a) f,
+  ) {
+    final $$VehiclesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.vehicles,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VehiclesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.vehicles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> rideTemplatesRefs<T extends Object>(
+    Expression<T> Function($$RideTemplatesTableAnnotationComposer a) f,
+  ) {
+    final $$RideTemplatesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rideTemplates,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RideTemplatesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.rideTemplates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> ridesRefs<T extends Object>(
+    Expression<T> Function($$RidesTableAnnotationComposer a) f,
+  ) {
+    final $$RidesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rides,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RidesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.rides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$GroupsTableTableManager
@@ -4715,6 +7297,9 @@ class $$GroupsTableTableManager
             bool expensePayersRefs,
             bool expenseSharesRefs,
             bool settlementsRefs,
+            bool vehiclesRefs,
+            bool rideTemplatesRefs,
+            bool ridesRefs,
           })
         > {
   $$GroupsTableTableManager(_$AppDatabase db, $GroupsTable table)
@@ -4783,6 +7368,9 @@ class $$GroupsTableTableManager
                 expensePayersRefs = false,
                 expenseSharesRefs = false,
                 settlementsRefs = false,
+                vehiclesRefs = false,
+                rideTemplatesRefs = false,
+                ridesRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -4792,6 +7380,9 @@ class $$GroupsTableTableManager
                     if (expensePayersRefs) db.expensePayers,
                     if (expenseSharesRefs) db.expenseShares,
                     if (settlementsRefs) db.settlements,
+                    if (vehiclesRefs) db.vehicles,
+                    if (rideTemplatesRefs) db.rideTemplates,
+                    if (ridesRefs) db.rides,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -4896,6 +7487,62 @@ class $$GroupsTableTableManager
                           referencedColumn: 'group_id',
                           typedResults: items,
                         ),
+                      if (vehiclesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          GroupRow,
+                          $GroupsTable,
+                          VehicleRow,
+                          $VehiclesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GroupsTableReferences
+                              ._vehiclesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GroupsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).vehiclesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'group_id',
+                          typedResults: items,
+                        ),
+                      if (rideTemplatesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          GroupRow,
+                          $GroupsTable,
+                          RideTemplateRow,
+                          $RideTemplatesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GroupsTableReferences
+                              ._rideTemplatesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GroupsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).rideTemplatesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'group_id',
+                          typedResults: items,
+                        ),
+                      if (ridesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          GroupRow,
+                          $GroupsTable,
+                          RideRow,
+                          $RidesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GroupsTableReferences
+                              ._ridesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GroupsTableReferences(db, table, p0).ridesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'group_id',
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -4922,6 +7569,9 @@ typedef $$GroupsTableProcessedTableManager =
         bool expensePayersRefs,
         bool expenseSharesRefs,
         bool settlementsRefs,
+        bool vehiclesRefs,
+        bool rideTemplatesRefs,
+        bool ridesRefs,
       })
     >;
 typedef $$MembersTableCreateCompanionBuilder = MembersCompanion Function({
@@ -5061,6 +7711,43 @@ final class $$MembersTableReferences
     final cache = $_typedResult.readTableOrNull(
       _localMemberBankRefsTable($_db),
     );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$RideTemplatesTable, List<RideTemplateRow>>
+  _rideTemplatesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.rideTemplates,
+    aliasName: 'members__id__ride_templates__default_driver_id',
+  );
+
+  $$RideTemplatesTableProcessedTableManager get rideTemplatesRefs {
+    final manager = $$RideTemplatesTableTableManager($_db, $_db.rideTemplates)
+        .filter(
+          (f) => f.defaultDriverId.id.sqlEquals($_itemColumn<String>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(_rideTemplatesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$RidesTable, List<RideRow>> _ridesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.rides,
+    aliasName: 'members__id__rides__driver_id',
+  );
+
+  $$RidesTableProcessedTableManager get ridesRefs {
+    final manager = $$RidesTableTableManager(
+      $_db,
+      $_db.rides,
+    ).filter((f) => f.driverId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_ridesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -5260,6 +7947,56 @@ class $$MembersTableFilterComposer
           }) => $$LocalMemberBankTableFilterComposer(
             $db: $db,
             $table: $db.localMemberBank,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> rideTemplatesRefs(
+    Expression<bool> Function($$RideTemplatesTableFilterComposer f) f,
+  ) {
+    final $$RideTemplatesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rideTemplates,
+      getReferencedColumn: (t) => t.defaultDriverId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RideTemplatesTableFilterComposer(
+            $db: $db,
+            $table: $db.rideTemplates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> ridesRefs(
+    Expression<bool> Function($$RidesTableFilterComposer f) f,
+  ) {
+    final $$RidesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rides,
+      getReferencedColumn: (t) => t.driverId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RidesTableFilterComposer(
+            $db: $db,
+            $table: $db.rides,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5531,6 +8268,56 @@ class $$MembersTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> rideTemplatesRefs<T extends Object>(
+    Expression<T> Function($$RideTemplatesTableAnnotationComposer a) f,
+  ) {
+    final $$RideTemplatesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rideTemplates,
+      getReferencedColumn: (t) => t.defaultDriverId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RideTemplatesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.rideTemplates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> ridesRefs<T extends Object>(
+    Expression<T> Function($$RidesTableAnnotationComposer a) f,
+  ) {
+    final $$RidesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rides,
+      getReferencedColumn: (t) => t.driverId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RidesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.rides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$MembersTableTableManager
@@ -5553,6 +8340,8 @@ class $$MembersTableTableManager
             bool sentSettlements,
             bool receivedSettlements,
             bool localMemberBankRefs,
+            bool rideTemplatesRefs,
+            bool ridesRefs,
           })
         > {
   $$MembersTableTableManager(_$AppDatabase db, $MembersTable table)
@@ -5634,6 +8423,8 @@ class $$MembersTableTableManager
                 sentSettlements = false,
                 receivedSettlements = false,
                 localMemberBankRefs = false,
+                rideTemplatesRefs = false,
+                ridesRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -5643,6 +8434,8 @@ class $$MembersTableTableManager
                     if (sentSettlements) db.settlements,
                     if (receivedSettlements) db.settlements,
                     if (localMemberBankRefs) db.localMemberBank,
+                    if (rideTemplatesRefs) db.rideTemplates,
+                    if (ridesRefs) db.rides,
                   ],
                   addJoins:
                       <
@@ -5776,6 +8569,42 @@ class $$MembersTableTableManager
                           referencedColumn: 'member_id',
                           typedResults: items,
                         ),
+                      if (rideTemplatesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          MemberRow,
+                          $MembersTable,
+                          RideTemplateRow,
+                          $RideTemplatesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._rideTemplatesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).rideTemplatesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'default_driver_id',
+                          typedResults: items,
+                        ),
+                      if (ridesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          MemberRow,
+                          $MembersTable,
+                          RideRow,
+                          $RidesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._ridesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(db, table, p0).ridesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'driver_id',
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -5803,6 +8632,8 @@ typedef $$MembersTableProcessedTableManager =
         bool sentSettlements,
         bool receivedSettlements,
         bool localMemberBankRefs,
+        bool rideTemplatesRefs,
+        bool ridesRefs,
       })
     >;
 typedef $$ExpensesTableCreateCompanionBuilder = ExpensesCompanion Function({
@@ -5894,6 +8725,24 @@ final class $$ExpensesTableReferences
     ).filter((f) => f.expenseId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_expenseSharesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$RidesTable, List<RideRow>> _ridesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.rides,
+    aliasName: 'expenses__id__rides__settled_expense_id',
+  );
+
+  $$RidesTableProcessedTableManager get ridesRefs {
+    final manager = $$RidesTableTableManager($_db, $_db.rides).filter(
+      (f) => f.settledExpenseId.id.sqlEquals($_itemColumn<String>('id')!),
+    );
+
+    final cache = $_typedResult.readTableOrNull(_ridesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -6043,6 +8892,31 @@ class $$ExpensesTableFilterComposer
           }) => $$ExpenseSharesTableFilterComposer(
             $db: $db,
             $table: $db.expenseShares,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> ridesRefs(
+    Expression<bool> Function($$RidesTableFilterComposer f) f,
+  ) {
+    final $$RidesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rides,
+      getReferencedColumn: (t) => t.settledExpenseId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RidesTableFilterComposer(
+            $db: $db,
+            $table: $db.rides,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -6283,6 +9157,31 @@ class $$ExpensesTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> ridesRefs<T extends Object>(
+    Expression<T> Function($$RidesTableAnnotationComposer a) f,
+  ) {
+    final $$RidesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rides,
+      getReferencedColumn: (t) => t.settledExpenseId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RidesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.rides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ExpensesTableTableManager
@@ -6302,6 +9201,7 @@ class $$ExpensesTableTableManager
             bool groupId,
             bool expensePayersRefs,
             bool expenseSharesRefs,
+            bool ridesRefs,
           })
         > {
   $$ExpensesTableTableManager(_$AppDatabase db, $ExpensesTable table)
@@ -6400,12 +9300,14 @@ class $$ExpensesTableTableManager
                 groupId = false,
                 expensePayersRefs = false,
                 expenseSharesRefs = false,
+                ridesRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (expensePayersRefs) db.expensePayers,
                     if (expenseSharesRefs) db.expenseShares,
+                    if (ridesRefs) db.rides,
                   ],
                   addJoins:
                       <
@@ -6479,6 +9381,26 @@ class $$ExpensesTableTableManager
                           referencedColumn: 'expense_id',
                           typedResults: items,
                         ),
+                      if (ridesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          ExpenseRow,
+                          $ExpensesTable,
+                          RideRow,
+                          $RidesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ExpensesTableReferences
+                              ._ridesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ExpensesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).ridesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'settled_expense_id',
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -6503,6 +9425,7 @@ typedef $$ExpensesTableProcessedTableManager =
         bool groupId,
         bool expensePayersRefs,
         bool expenseSharesRefs,
+        bool ridesRefs,
       })
     >;
 typedef $$ExpensePayersTableCreateCompanionBuilder =
@@ -8616,6 +11539,2049 @@ typedef $$LocalOutboxTableProcessedTableManager =
       LocalOutboxRow,
       PrefetchHooks Function()
     >;
+typedef $$VehiclesTableCreateCompanionBuilder = VehiclesCompanion Function({
+  required String id,
+  required String groupId,
+  required DateTime createdAt,
+  required String updatedAt,
+  Value<DateTime?> deletedAt,
+  required String name,
+  required String fuelType,
+  required int consumptionMilliPer100km,
+  Value<int> wearMilliPerKm,
+  Value<int?> kmRateMilliPerKm,
+  Value<int> rowid,
+});
+typedef $$VehiclesTableUpdateCompanionBuilder = VehiclesCompanion Function({
+  Value<String> id,
+  Value<String> groupId,
+  Value<DateTime> createdAt,
+  Value<String> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<String> name,
+  Value<String> fuelType,
+  Value<int> consumptionMilliPer100km,
+  Value<int> wearMilliPerKm,
+  Value<int?> kmRateMilliPerKm,
+  Value<int> rowid,
+});
+
+final class $$VehiclesTableReferences
+    extends BaseReferences<_$AppDatabase, $VehiclesTable, VehicleRow> {
+  $$VehiclesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $GroupsTable _groupIdTable(_$AppDatabase db) =>
+      db.groups.createAlias('vehicles__group_id__groups__id');
+
+  $$GroupsTableProcessedTableManager get groupId {
+    final $_column = $_itemColumn<String>('group_id')!;
+
+    final manager = $$GroupsTableTableManager(
+      $_db,
+      $_db.groups,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_groupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$RideTemplatesTable, List<RideTemplateRow>>
+  _rideTemplatesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.rideTemplates,
+    aliasName: 'vehicles__id__ride_templates__vehicle_id',
+  );
+
+  $$RideTemplatesTableProcessedTableManager get rideTemplatesRefs {
+    final manager = $$RideTemplatesTableTableManager(
+      $_db,
+      $_db.rideTemplates,
+    ).filter((f) => f.vehicleId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_rideTemplatesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$RidesTable, List<RideRow>> _ridesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.rides,
+    aliasName: 'vehicles__id__rides__vehicle_id',
+  );
+
+  $$RidesTableProcessedTableManager get ridesRefs {
+    final manager = $$RidesTableTableManager(
+      $_db,
+      $_db.rides,
+    ).filter((f) => f.vehicleId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_ridesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$VehiclesTableFilterComposer
+    extends Composer<_$AppDatabase, $VehiclesTable> {
+  $$VehiclesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fuelType => $composableBuilder(
+    column: $table.fuelType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get consumptionMilliPer100km => $composableBuilder(
+    column: $table.consumptionMilliPer100km,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get wearMilliPerKm => $composableBuilder(
+    column: $table.wearMilliPerKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get kmRateMilliPerKm => $composableBuilder(
+    column: $table.kmRateMilliPerKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GroupsTableFilterComposer get groupId {
+    final $$GroupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableFilterComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> rideTemplatesRefs(
+    Expression<bool> Function($$RideTemplatesTableFilterComposer f) f,
+  ) {
+    final $$RideTemplatesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rideTemplates,
+      getReferencedColumn: (t) => t.vehicleId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RideTemplatesTableFilterComposer(
+            $db: $db,
+            $table: $db.rideTemplates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> ridesRefs(
+    Expression<bool> Function($$RidesTableFilterComposer f) f,
+  ) {
+    final $$RidesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rides,
+      getReferencedColumn: (t) => t.vehicleId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RidesTableFilterComposer(
+            $db: $db,
+            $table: $db.rides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$VehiclesTableOrderingComposer
+    extends Composer<_$AppDatabase, $VehiclesTable> {
+  $$VehiclesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fuelType => $composableBuilder(
+    column: $table.fuelType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get consumptionMilliPer100km => $composableBuilder(
+    column: $table.consumptionMilliPer100km,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get wearMilliPerKm => $composableBuilder(
+    column: $table.wearMilliPerKm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get kmRateMilliPerKm => $composableBuilder(
+    column: $table.kmRateMilliPerKm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GroupsTableOrderingComposer get groupId {
+    final $$GroupsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableOrderingComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$VehiclesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $VehiclesTable> {
+  $$VehiclesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get fuelType =>
+      $composableBuilder(column: $table.fuelType, builder: (column) => column);
+
+  GeneratedColumn<int> get consumptionMilliPer100km => $composableBuilder(
+    column: $table.consumptionMilliPer100km,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get wearMilliPerKm => $composableBuilder(
+    column: $table.wearMilliPerKm,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get kmRateMilliPerKm => $composableBuilder(
+    column: $table.kmRateMilliPerKm,
+    builder: (column) => column,
+  );
+
+  $$GroupsTableAnnotationComposer get groupId {
+    final $$GroupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> rideTemplatesRefs<T extends Object>(
+    Expression<T> Function($$RideTemplatesTableAnnotationComposer a) f,
+  ) {
+    final $$RideTemplatesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rideTemplates,
+      getReferencedColumn: (t) => t.vehicleId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RideTemplatesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.rideTemplates,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> ridesRefs<T extends Object>(
+    Expression<T> Function($$RidesTableAnnotationComposer a) f,
+  ) {
+    final $$RidesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.rides,
+      getReferencedColumn: (t) => t.vehicleId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RidesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.rides,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$VehiclesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $VehiclesTable,
+          VehicleRow,
+          $$VehiclesTableFilterComposer,
+          $$VehiclesTableOrderingComposer,
+          $$VehiclesTableAnnotationComposer,
+          $$VehiclesTableCreateCompanionBuilder,
+          $$VehiclesTableUpdateCompanionBuilder,
+          (VehicleRow, $$VehiclesTableReferences),
+          VehicleRow,
+          PrefetchHooks Function({
+            bool groupId,
+            bool rideTemplatesRefs,
+            bool ridesRefs,
+          })
+        > {
+  $$VehiclesTableTableManager(_$AppDatabase db, $VehiclesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$VehiclesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$VehiclesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$VehiclesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> groupId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> fuelType = const Value.absent(),
+                Value<int> consumptionMilliPer100km = const Value.absent(),
+                Value<int> wearMilliPerKm = const Value.absent(),
+                Value<int?> kmRateMilliPerKm = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => VehiclesCompanion(
+                id: id,
+                groupId: groupId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                name: name,
+                fuelType: fuelType,
+                consumptionMilliPer100km: consumptionMilliPer100km,
+                wearMilliPerKm: wearMilliPerKm,
+                kmRateMilliPerKm: kmRateMilliPerKm,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String groupId,
+                required DateTime createdAt,
+                required String updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required String name,
+                required String fuelType,
+                required int consumptionMilliPer100km,
+                Value<int> wearMilliPerKm = const Value.absent(),
+                Value<int?> kmRateMilliPerKm = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => VehiclesCompanion.insert(
+                id: id,
+                groupId: groupId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                name: name,
+                fuelType: fuelType,
+                consumptionMilliPer100km: consumptionMilliPer100km,
+                wearMilliPerKm: wearMilliPerKm,
+                kmRateMilliPerKm: kmRateMilliPerKm,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$VehiclesTable, VehicleRow>(table),
+                  $$VehiclesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                groupId = false,
+                rideTemplatesRefs = false,
+                ridesRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (rideTemplatesRefs) db.rideTemplates,
+                    if (ridesRefs) db.rides,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (groupId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.groupId,
+                            referencedTable: $$VehiclesTableReferences
+                                ._groupIdTable(db),
+                            referencedColumn: $$VehiclesTableReferences
+                                ._groupIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (rideTemplatesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          VehicleRow,
+                          $VehiclesTable,
+                          RideTemplateRow,
+                          $RideTemplatesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$VehiclesTableReferences
+                              ._rideTemplatesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$VehiclesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).rideTemplatesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'vehicle_id',
+                          typedResults: items,
+                        ),
+                      if (ridesRefs)
+                        await $_getPrefetchedDataByColumns<
+                          VehicleRow,
+                          $VehiclesTable,
+                          RideRow,
+                          $RidesTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$VehiclesTableReferences
+                              ._ridesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$VehiclesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).ridesRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'vehicle_id',
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$VehiclesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $VehiclesTable,
+      VehicleRow,
+      $$VehiclesTableFilterComposer,
+      $$VehiclesTableOrderingComposer,
+      $$VehiclesTableAnnotationComposer,
+      $$VehiclesTableCreateCompanionBuilder,
+      $$VehiclesTableUpdateCompanionBuilder,
+      (VehicleRow, $$VehiclesTableReferences),
+      VehicleRow,
+      PrefetchHooks Function({
+        bool groupId,
+        bool rideTemplatesRefs,
+        bool ridesRefs,
+      })
+    >;
+typedef $$RideTemplatesTableCreateCompanionBuilder =
+    RideTemplatesCompanion Function({
+      required String id,
+      required String groupId,
+      required DateTime createdAt,
+      required String updatedAt,
+      Value<DateTime?> deletedAt,
+      required String name,
+      required int distanceMeters,
+      Value<bool> roundTrip,
+      required String vehicleId,
+      Value<String?> defaultDriverId,
+      Value<String> defaultPassengerIds,
+      Value<int> tollsCents,
+      Value<int> rowid,
+    });
+typedef $$RideTemplatesTableUpdateCompanionBuilder =
+    RideTemplatesCompanion Function({
+      Value<String> id,
+      Value<String> groupId,
+      Value<DateTime> createdAt,
+      Value<String> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<String> name,
+      Value<int> distanceMeters,
+      Value<bool> roundTrip,
+      Value<String> vehicleId,
+      Value<String?> defaultDriverId,
+      Value<String> defaultPassengerIds,
+      Value<int> tollsCents,
+      Value<int> rowid,
+    });
+
+final class $$RideTemplatesTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $RideTemplatesTable, RideTemplateRow> {
+  $$RideTemplatesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $GroupsTable _groupIdTable(_$AppDatabase db) =>
+      db.groups.createAlias('ride_templates__group_id__groups__id');
+
+  $$GroupsTableProcessedTableManager get groupId {
+    final $_column = $_itemColumn<String>('group_id')!;
+
+    final manager = $$GroupsTableTableManager(
+      $_db,
+      $_db.groups,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_groupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $VehiclesTable _vehicleIdTable(_$AppDatabase db) =>
+      db.vehicles.createAlias('ride_templates__vehicle_id__vehicles__id');
+
+  $$VehiclesTableProcessedTableManager get vehicleId {
+    final $_column = $_itemColumn<String>('vehicle_id')!;
+
+    final manager = $$VehiclesTableTableManager(
+      $_db,
+      $_db.vehicles,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_vehicleIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $MembersTable _defaultDriverIdTable(_$AppDatabase db) =>
+      db.members.createAlias('ride_templates__default_driver_id__members__id');
+
+  $$MembersTableProcessedTableManager? get defaultDriverId {
+    final $_column = $_itemColumn<String>('default_driver_id');
+    if ($_column == null) return null;
+    final manager = $$MembersTableTableManager(
+      $_db,
+      $_db.members,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_defaultDriverIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$RideTemplatesTableFilterComposer
+    extends Composer<_$AppDatabase, $RideTemplatesTable> {
+  $$RideTemplatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get distanceMeters => $composableBuilder(
+    column: $table.distanceMeters,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get roundTrip => $composableBuilder(
+    column: $table.roundTrip,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get defaultPassengerIds => $composableBuilder(
+    column: $table.defaultPassengerIds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get tollsCents => $composableBuilder(
+    column: $table.tollsCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GroupsTableFilterComposer get groupId {
+    final $$GroupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableFilterComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VehiclesTableFilterComposer get vehicleId {
+    final $$VehiclesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.vehicleId,
+      referencedTable: $db.vehicles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VehiclesTableFilterComposer(
+            $db: $db,
+            $table: $db.vehicles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableFilterComposer get defaultDriverId {
+    final $$MembersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.defaultDriverId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableFilterComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RideTemplatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $RideTemplatesTable> {
+  $$RideTemplatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get distanceMeters => $composableBuilder(
+    column: $table.distanceMeters,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get roundTrip => $composableBuilder(
+    column: $table.roundTrip,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get defaultPassengerIds => $composableBuilder(
+    column: $table.defaultPassengerIds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get tollsCents => $composableBuilder(
+    column: $table.tollsCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GroupsTableOrderingComposer get groupId {
+    final $$GroupsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableOrderingComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VehiclesTableOrderingComposer get vehicleId {
+    final $$VehiclesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.vehicleId,
+      referencedTable: $db.vehicles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VehiclesTableOrderingComposer(
+            $db: $db,
+            $table: $db.vehicles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableOrderingComposer get defaultDriverId {
+    final $$MembersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.defaultDriverId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableOrderingComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RideTemplatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RideTemplatesTable> {
+  $$RideTemplatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get distanceMeters => $composableBuilder(
+    column: $table.distanceMeters,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get roundTrip =>
+      $composableBuilder(column: $table.roundTrip, builder: (column) => column);
+
+  GeneratedColumn<String> get defaultPassengerIds => $composableBuilder(
+    column: $table.defaultPassengerIds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get tollsCents => $composableBuilder(
+    column: $table.tollsCents,
+    builder: (column) => column,
+  );
+
+  $$GroupsTableAnnotationComposer get groupId {
+    final $$GroupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VehiclesTableAnnotationComposer get vehicleId {
+    final $$VehiclesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.vehicleId,
+      referencedTable: $db.vehicles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VehiclesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.vehicles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableAnnotationComposer get defaultDriverId {
+    final $$MembersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.defaultDriverId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RideTemplatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RideTemplatesTable,
+          RideTemplateRow,
+          $$RideTemplatesTableFilterComposer,
+          $$RideTemplatesTableOrderingComposer,
+          $$RideTemplatesTableAnnotationComposer,
+          $$RideTemplatesTableCreateCompanionBuilder,
+          $$RideTemplatesTableUpdateCompanionBuilder,
+          (RideTemplateRow, $$RideTemplatesTableReferences),
+          RideTemplateRow,
+          PrefetchHooks Function({
+            bool groupId,
+            bool vehicleId,
+            bool defaultDriverId,
+          })
+        > {
+  $$RideTemplatesTableTableManager(_$AppDatabase db, $RideTemplatesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RideTemplatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RideTemplatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RideTemplatesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> groupId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> distanceMeters = const Value.absent(),
+                Value<bool> roundTrip = const Value.absent(),
+                Value<String> vehicleId = const Value.absent(),
+                Value<String?> defaultDriverId = const Value.absent(),
+                Value<String> defaultPassengerIds = const Value.absent(),
+                Value<int> tollsCents = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RideTemplatesCompanion(
+                id: id,
+                groupId: groupId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                name: name,
+                distanceMeters: distanceMeters,
+                roundTrip: roundTrip,
+                vehicleId: vehicleId,
+                defaultDriverId: defaultDriverId,
+                defaultPassengerIds: defaultPassengerIds,
+                tollsCents: tollsCents,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String groupId,
+                required DateTime createdAt,
+                required String updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required String name,
+                required int distanceMeters,
+                Value<bool> roundTrip = const Value.absent(),
+                required String vehicleId,
+                Value<String?> defaultDriverId = const Value.absent(),
+                Value<String> defaultPassengerIds = const Value.absent(),
+                Value<int> tollsCents = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RideTemplatesCompanion.insert(
+                id: id,
+                groupId: groupId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                name: name,
+                distanceMeters: distanceMeters,
+                roundTrip: roundTrip,
+                vehicleId: vehicleId,
+                defaultDriverId: defaultDriverId,
+                defaultPassengerIds: defaultPassengerIds,
+                tollsCents: tollsCents,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RideTemplatesTable, RideTemplateRow>(table),
+                  $$RideTemplatesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({groupId = false, vehicleId = false, defaultDriverId = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (groupId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.groupId,
+                            referencedTable: $$RideTemplatesTableReferences
+                                ._groupIdTable(db),
+                            referencedColumn: $$RideTemplatesTableReferences
+                                ._groupIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+                        if (vehicleId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.vehicleId,
+                            referencedTable: $$RideTemplatesTableReferences
+                                ._vehicleIdTable(db),
+                            referencedColumn: $$RideTemplatesTableReferences
+                                ._vehicleIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+                        if (defaultDriverId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.defaultDriverId,
+                            referencedTable: $$RideTemplatesTableReferences
+                                ._defaultDriverIdTable(db),
+                            referencedColumn: $$RideTemplatesTableReferences
+                                ._defaultDriverIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$RideTemplatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RideTemplatesTable,
+      RideTemplateRow,
+      $$RideTemplatesTableFilterComposer,
+      $$RideTemplatesTableOrderingComposer,
+      $$RideTemplatesTableAnnotationComposer,
+      $$RideTemplatesTableCreateCompanionBuilder,
+      $$RideTemplatesTableUpdateCompanionBuilder,
+      (RideTemplateRow, $$RideTemplatesTableReferences),
+      RideTemplateRow,
+      PrefetchHooks Function({
+        bool groupId,
+        bool vehicleId,
+        bool defaultDriverId,
+      })
+    >;
+typedef $$RidesTableCreateCompanionBuilder = RidesCompanion Function({
+  required String id,
+  required String groupId,
+  required DateTime createdAt,
+  required String updatedAt,
+  Value<DateTime?> deletedAt,
+  required DateTime date,
+  required int distanceMeters,
+  Value<bool> roundTrip,
+  Value<int> tollsCents,
+  required String vehicleId,
+  required String driverId,
+  Value<String> passengerIds,
+  Value<bool> driverCounts,
+  required int pricePerUnitMilli,
+  Value<bool> useKmRate,
+  Value<String?> settledExpenseId,
+  Value<int> rowid,
+});
+typedef $$RidesTableUpdateCompanionBuilder = RidesCompanion Function({
+  Value<String> id,
+  Value<String> groupId,
+  Value<DateTime> createdAt,
+  Value<String> updatedAt,
+  Value<DateTime?> deletedAt,
+  Value<DateTime> date,
+  Value<int> distanceMeters,
+  Value<bool> roundTrip,
+  Value<int> tollsCents,
+  Value<String> vehicleId,
+  Value<String> driverId,
+  Value<String> passengerIds,
+  Value<bool> driverCounts,
+  Value<int> pricePerUnitMilli,
+  Value<bool> useKmRate,
+  Value<String?> settledExpenseId,
+  Value<int> rowid,
+});
+
+final class $$RidesTableReferences
+    extends BaseReferences<_$AppDatabase, $RidesTable, RideRow> {
+  $$RidesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $GroupsTable _groupIdTable(_$AppDatabase db) =>
+      db.groups.createAlias('rides__group_id__groups__id');
+
+  $$GroupsTableProcessedTableManager get groupId {
+    final $_column = $_itemColumn<String>('group_id')!;
+
+    final manager = $$GroupsTableTableManager(
+      $_db,
+      $_db.groups,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_groupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $VehiclesTable _vehicleIdTable(_$AppDatabase db) =>
+      db.vehicles.createAlias('rides__vehicle_id__vehicles__id');
+
+  $$VehiclesTableProcessedTableManager get vehicleId {
+    final $_column = $_itemColumn<String>('vehicle_id')!;
+
+    final manager = $$VehiclesTableTableManager(
+      $_db,
+      $_db.vehicles,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_vehicleIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $MembersTable _driverIdTable(_$AppDatabase db) =>
+      db.members.createAlias('rides__driver_id__members__id');
+
+  $$MembersTableProcessedTableManager get driverId {
+    final $_column = $_itemColumn<String>('driver_id')!;
+
+    final manager = $$MembersTableTableManager(
+      $_db,
+      $_db.members,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_driverIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $ExpensesTable _settledExpenseIdTable(_$AppDatabase db) =>
+      db.expenses.createAlias('rides__settled_expense_id__expenses__id');
+
+  $$ExpensesTableProcessedTableManager? get settledExpenseId {
+    final $_column = $_itemColumn<String>('settled_expense_id');
+    if ($_column == null) return null;
+    final manager = $$ExpensesTableTableManager(
+      $_db,
+      $_db.expenses,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_settledExpenseIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$RidesTableFilterComposer extends Composer<_$AppDatabase, $RidesTable> {
+  $$RidesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get distanceMeters => $composableBuilder(
+    column: $table.distanceMeters,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get roundTrip => $composableBuilder(
+    column: $table.roundTrip,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get tollsCents => $composableBuilder(
+    column: $table.tollsCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get passengerIds => $composableBuilder(
+    column: $table.passengerIds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get driverCounts => $composableBuilder(
+    column: $table.driverCounts,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get pricePerUnitMilli => $composableBuilder(
+    column: $table.pricePerUnitMilli,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get useKmRate => $composableBuilder(
+    column: $table.useKmRate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GroupsTableFilterComposer get groupId {
+    final $$GroupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableFilterComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VehiclesTableFilterComposer get vehicleId {
+    final $$VehiclesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.vehicleId,
+      referencedTable: $db.vehicles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VehiclesTableFilterComposer(
+            $db: $db,
+            $table: $db.vehicles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableFilterComposer get driverId {
+    final $$MembersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.driverId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableFilterComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ExpensesTableFilterComposer get settledExpenseId {
+    final $$ExpensesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.settledExpenseId,
+      referencedTable: $db.expenses,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpensesTableFilterComposer(
+            $db: $db,
+            $table: $db.expenses,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RidesTableOrderingComposer
+    extends Composer<_$AppDatabase, $RidesTable> {
+  $$RidesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get distanceMeters => $composableBuilder(
+    column: $table.distanceMeters,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get roundTrip => $composableBuilder(
+    column: $table.roundTrip,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get tollsCents => $composableBuilder(
+    column: $table.tollsCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get passengerIds => $composableBuilder(
+    column: $table.passengerIds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get driverCounts => $composableBuilder(
+    column: $table.driverCounts,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get pricePerUnitMilli => $composableBuilder(
+    column: $table.pricePerUnitMilli,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get useKmRate => $composableBuilder(
+    column: $table.useKmRate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GroupsTableOrderingComposer get groupId {
+    final $$GroupsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableOrderingComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VehiclesTableOrderingComposer get vehicleId {
+    final $$VehiclesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.vehicleId,
+      referencedTable: $db.vehicles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VehiclesTableOrderingComposer(
+            $db: $db,
+            $table: $db.vehicles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableOrderingComposer get driverId {
+    final $$MembersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.driverId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableOrderingComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ExpensesTableOrderingComposer get settledExpenseId {
+    final $$ExpensesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.settledExpenseId,
+      referencedTable: $db.expenses,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpensesTableOrderingComposer(
+            $db: $db,
+            $table: $db.expenses,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RidesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RidesTable> {
+  $$RidesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<int> get distanceMeters => $composableBuilder(
+    column: $table.distanceMeters,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get roundTrip =>
+      $composableBuilder(column: $table.roundTrip, builder: (column) => column);
+
+  GeneratedColumn<int> get tollsCents => $composableBuilder(
+    column: $table.tollsCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get passengerIds => $composableBuilder(
+    column: $table.passengerIds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get driverCounts => $composableBuilder(
+    column: $table.driverCounts,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get pricePerUnitMilli => $composableBuilder(
+    column: $table.pricePerUnitMilli,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get useKmRate =>
+      $composableBuilder(column: $table.useKmRate, builder: (column) => column);
+
+  $$GroupsTableAnnotationComposer get groupId {
+    final $$GroupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VehiclesTableAnnotationComposer get vehicleId {
+    final $$VehiclesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.vehicleId,
+      referencedTable: $db.vehicles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VehiclesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.vehicles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$MembersTableAnnotationComposer get driverId {
+    final $$MembersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.driverId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ExpensesTableAnnotationComposer get settledExpenseId {
+    final $$ExpensesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.settledExpenseId,
+      referencedTable: $db.expenses,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpensesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.expenses,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RidesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RidesTable,
+          RideRow,
+          $$RidesTableFilterComposer,
+          $$RidesTableOrderingComposer,
+          $$RidesTableAnnotationComposer,
+          $$RidesTableCreateCompanionBuilder,
+          $$RidesTableUpdateCompanionBuilder,
+          (RideRow, $$RidesTableReferences),
+          RideRow,
+          PrefetchHooks Function({
+            bool groupId,
+            bool vehicleId,
+            bool driverId,
+            bool settledExpenseId,
+          })
+        > {
+  $$RidesTableTableManager(_$AppDatabase db, $RidesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RidesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RidesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RidesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> groupId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<int> distanceMeters = const Value.absent(),
+                Value<bool> roundTrip = const Value.absent(),
+                Value<int> tollsCents = const Value.absent(),
+                Value<String> vehicleId = const Value.absent(),
+                Value<String> driverId = const Value.absent(),
+                Value<String> passengerIds = const Value.absent(),
+                Value<bool> driverCounts = const Value.absent(),
+                Value<int> pricePerUnitMilli = const Value.absent(),
+                Value<bool> useKmRate = const Value.absent(),
+                Value<String?> settledExpenseId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RidesCompanion(
+                id: id,
+                groupId: groupId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                date: date,
+                distanceMeters: distanceMeters,
+                roundTrip: roundTrip,
+                tollsCents: tollsCents,
+                vehicleId: vehicleId,
+                driverId: driverId,
+                passengerIds: passengerIds,
+                driverCounts: driverCounts,
+                pricePerUnitMilli: pricePerUnitMilli,
+                useKmRate: useKmRate,
+                settledExpenseId: settledExpenseId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String groupId,
+                required DateTime createdAt,
+                required String updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required DateTime date,
+                required int distanceMeters,
+                Value<bool> roundTrip = const Value.absent(),
+                Value<int> tollsCents = const Value.absent(),
+                required String vehicleId,
+                required String driverId,
+                Value<String> passengerIds = const Value.absent(),
+                Value<bool> driverCounts = const Value.absent(),
+                required int pricePerUnitMilli,
+                Value<bool> useKmRate = const Value.absent(),
+                Value<String?> settledExpenseId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RidesCompanion.insert(
+                id: id,
+                groupId: groupId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                date: date,
+                distanceMeters: distanceMeters,
+                roundTrip: roundTrip,
+                tollsCents: tollsCents,
+                vehicleId: vehicleId,
+                driverId: driverId,
+                passengerIds: passengerIds,
+                driverCounts: driverCounts,
+                pricePerUnitMilli: pricePerUnitMilli,
+                useKmRate: useKmRate,
+                settledExpenseId: settledExpenseId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RidesTable, RideRow>(table),
+                  $$RidesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                groupId = false,
+                vehicleId = false,
+                driverId = false,
+                settledExpenseId = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (groupId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.groupId,
+                            referencedTable: $$RidesTableReferences
+                                ._groupIdTable(db),
+                            referencedColumn: $$RidesTableReferences
+                                ._groupIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+                        if (vehicleId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.vehicleId,
+                            referencedTable: $$RidesTableReferences
+                                ._vehicleIdTable(db),
+                            referencedColumn: $$RidesTableReferences
+                                ._vehicleIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+                        if (driverId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.driverId,
+                            referencedTable: $$RidesTableReferences
+                                ._driverIdTable(db),
+                            referencedColumn: $$RidesTableReferences
+                                ._driverIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+                        if (settledExpenseId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.settledExpenseId,
+                            referencedTable: $$RidesTableReferences
+                                ._settledExpenseIdTable(db),
+                            referencedColumn: $$RidesTableReferences
+                                ._settledExpenseIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$RidesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RidesTable,
+      RideRow,
+      $$RidesTableFilterComposer,
+      $$RidesTableOrderingComposer,
+      $$RidesTableAnnotationComposer,
+      $$RidesTableCreateCompanionBuilder,
+      $$RidesTableUpdateCompanionBuilder,
+      (RideRow, $$RidesTableReferences),
+      RideRow,
+      PrefetchHooks Function({
+        bool groupId,
+        bool vehicleId,
+        bool driverId,
+        bool settledExpenseId,
+      })
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -8636,4 +13602,10 @@ class $AppDatabaseManager {
       $$LocalMemberBankTableTableManager(_db, _db.localMemberBank);
   $$LocalOutboxTableTableManager get localOutbox =>
       $$LocalOutboxTableTableManager(_db, _db.localOutbox);
+  $$VehiclesTableTableManager get vehicles =>
+      $$VehiclesTableTableManager(_db, _db.vehicles);
+  $$RideTemplatesTableTableManager get rideTemplates =>
+      $$RideTemplatesTableTableManager(_db, _db.rideTemplates);
+  $$RidesTableTableManager get rides =>
+      $$RidesTableTableManager(_db, _db.rides);
 }
