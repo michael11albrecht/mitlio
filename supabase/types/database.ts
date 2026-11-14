@@ -188,6 +188,42 @@ export type Database = {
           },
         ]
       }
+      fuel_price_cache: {
+        Row: {
+          approximation: string | null
+          fetched_at: string
+          observed_at: string | null
+          price_milli: number
+          scope: string
+          scope_key: string
+          source: string
+          stations: number
+          type: string
+        }
+        Insert: {
+          approximation?: string | null
+          fetched_at?: string
+          observed_at?: string | null
+          price_milli: number
+          scope: string
+          scope_key: string
+          source?: string
+          stations: number
+          type: string
+        }
+        Update: {
+          approximation?: string | null
+          fetched_at?: string
+          observed_at?: string | null
+          price_milli?: number
+          scope?: string
+          scope_key?: string
+          source?: string
+          stations?: number
+          type?: string
+        }
+        Relationships: []
+      }
       group_invites: {
         Row: {
           created_at: string
@@ -347,6 +383,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rate_limits: {
+        Row: {
+          key_hash: string
+          tokens: number
+          updated_at: string
+        }
+        Insert: {
+          key_hash: string
+          tokens: number
+          updated_at?: string
+        }
+        Update: {
+          key_hash?: string
+          tokens?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       ride_templates: {
         Row: {
@@ -630,6 +684,11 @@ export type Database = {
     }
     Functions: {
       can_bootstrap_group: { Args: { gid: string }; Returns: boolean }
+      cleanup_fuel_tables: { Args: never; Returns: undefined }
+      consume_rate_limit: {
+        Args: { p_capacity: number; p_key: string; p_refill_per_sec: number }
+        Returns: boolean
+      }
       create_invite: { Args: { gid: string }; Returns: string }
       is_group_member: { Args: { gid: string }; Returns: boolean }
       join_group: {
@@ -638,6 +697,7 @@ export type Database = {
       }
       revoke_invite: { Args: { invite_id: string }; Returns: undefined }
       upsert_expense: { Args: { payload: Json }; Returns: Json }
+      warm_fuel_national: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

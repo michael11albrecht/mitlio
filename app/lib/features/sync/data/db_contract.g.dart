@@ -17,10 +17,12 @@ abstract final class DbTables {
   static const expensePayers = 'expense_payers';
   static const expenseShares = 'expense_shares';
   static const expenses = 'expenses';
+  static const fuelPriceCache = 'fuel_price_cache';
   static const groupInvites = 'group_invites';
   static const groupMemberships = 'group_memberships';
   static const groups = 'groups';
   static const members = 'members';
+  static const rateLimits = 'rate_limits';
   static const rideTemplates = 'ride_templates';
   static const rides = 'rides';
   static const settlements = 'settlements';
@@ -62,6 +64,19 @@ abstract final class DbExpensesCols {
   static const tripMeta = 'trip_meta';
   static const type = 'type';
   static const updatedAt = 'updated_at';
+}
+
+/// Column names of `fuel_price_cache`.
+abstract final class DbFuelPriceCacheCols {
+  static const approximation = 'approximation';
+  static const fetchedAt = 'fetched_at';
+  static const observedAt = 'observed_at';
+  static const priceMilli = 'price_milli';
+  static const scope = 'scope';
+  static const scopeKey = 'scope_key';
+  static const source = 'source';
+  static const stations = 'stations';
+  static const type = 'type';
 }
 
 /// Column names of `group_invites`.
@@ -109,6 +124,13 @@ abstract final class DbMembersCols {
   static const serverSeq = 'server_seq';
   static const updatedAt = 'updated_at';
   static const userId = 'user_id';
+}
+
+/// Column names of `rate_limits`.
+abstract final class DbRateLimitsCols {
+  static const keyHash = 'key_hash';
+  static const tokens = 'tokens';
+  static const updatedAt = 'updated_at';
 }
 
 /// Column names of `ride_templates`.
@@ -213,6 +235,17 @@ const dbContract = <String, Map<String, DbColumn>>{
     'type': DbColumn(DbColumnType.string, nullable: false),
     'updated_at': DbColumn(DbColumnType.string, nullable: false),
   },
+  'fuel_price_cache': {
+    'approximation': DbColumn(DbColumnType.string, nullable: true),
+    'fetched_at': DbColumn(DbColumnType.string, nullable: false),
+    'observed_at': DbColumn(DbColumnType.string, nullable: true),
+    'price_milli': DbColumn(DbColumnType.number, nullable: false),
+    'scope': DbColumn(DbColumnType.string, nullable: false),
+    'scope_key': DbColumn(DbColumnType.string, nullable: false),
+    'source': DbColumn(DbColumnType.string, nullable: false),
+    'stations': DbColumn(DbColumnType.number, nullable: false),
+    'type': DbColumn(DbColumnType.string, nullable: false),
+  },
   'group_invites': {
     'created_at': DbColumn(DbColumnType.string, nullable: false),
     'created_by': DbColumn(DbColumnType.string, nullable: false),
@@ -251,6 +284,11 @@ const dbContract = <String, Map<String, DbColumn>>{
     'server_seq': DbColumn(DbColumnType.number, nullable: false),
     'updated_at': DbColumn(DbColumnType.string, nullable: false),
     'user_id': DbColumn(DbColumnType.string, nullable: true),
+  },
+  'rate_limits': {
+    'key_hash': DbColumn(DbColumnType.string, nullable: false),
+    'tokens': DbColumn(DbColumnType.number, nullable: false),
+    'updated_at': DbColumn(DbColumnType.string, nullable: false),
   },
   'ride_templates': {
     'created_at': DbColumn(DbColumnType.string, nullable: false),

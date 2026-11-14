@@ -9,8 +9,14 @@ import 'test_support.dart';
 const _localOnlyTables = {'local_member_bank', 'local_outbox'};
 
 /// Server tables with no client mirror. Membership and invites are
-/// authorization data managed by RPCs (P6-T05), not synced rows.
-const _serverOnlyTables = {'group_memberships', 'group_invites'};
+/// authorization data managed by RPCs (P6-T05), not synced rows. The fuel
+/// price cache and rate limiter are edge-function backend tables (P6c).
+const _serverOnlyTables = {
+  'group_memberships',
+  'group_invites',
+  'fuel_price_cache',
+  'rate_limits',
+};
 
 /// Server-only columns on synced tables. `server_seq` is the pull cursor
 /// assigned by a trigger; the client never stores it (tables.dart).
