@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../support/domain_rules_examples.dart';
+
 /// Zero-sum balances over members m0..m(n-1) (n in 1..8): n-1 random ints in
 /// ±100000 (about 30% zeros) and the last the negated sum. Non-shrinking to
 /// keep mutation runs fast.
@@ -55,23 +57,19 @@ void main() {
       Transfer(fromId: f, toId: to, amountCents: a);
 
   group('simplifyDebts examples', () {
-    test('docs example 1', () {
-      expect(simplifyDebts({'A': 1700, 'B': -700, 'C': -1000}, abcd()), [
-        t('C', 'A', 1000),
-        t('B', 'A', 700),
-      ]);
-    });
-
-    test('docs example 2', () {
-      expect(
-        simplifyDebts({'A': 500, 'B': 500, 'C': -600, 'D': -400}, abcd()),
-        [t('C', 'A', 500), t('D', 'B', 400), t('C', 'B', 100)],
-      );
-    });
-
-    test('docs example 3', () {
-      expect(simplifyDebts({'A': 0, 'B': 0}, abcd()), isEmpty);
-    });
+    for (final (i, e) in domainRulesRows('simplify').indexed) {
+      test('docs example ${i + 1}', () {
+        final balances = (e['balances'] as Map).cast<String, int>();
+        final members = [
+          for (final (p, id) in balances.keys.indexed)
+            Member(id: id, position: p),
+        ];
+        expect(simplifyDebts(balances, members), [
+          for (final x in (e['transfers'] as List).cast<Map<String, dynamic>>())
+            t(x['from'] as String, x['to'] as String, x['amount'] as int),
+        ]);
+      });
+    }
   });
 
   group('simplifyDebts edge cases', () {

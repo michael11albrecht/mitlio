@@ -1,19 +1,7 @@
-import 'dart:convert';
-
 import 'package:glados/glados.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
-// Verbatim from docs/domain-rules.md (examples:allocate).
-const _examplesJson = '''
-[
-  {"total": 100,  "weights": [1, 1, 1],    "result": [34, 33, 33]},
-  {"total": 1000, "weights": [1, 2],       "result": [333, 667]},
-  {"total": 10,   "weights": [1, 1, 1, 0], "result": [4, 3, 3, 0]},
-  {"total": 5,    "weights": [3, 3, 1],    "result": [2, 2, 1]},
-  {"total": 1,    "weights": [1, 1, 1],    "result": [1, 0, 0]},
-  {"total": 0,    "weights": [1, 1],       "result": [0, 0]}
-]
-''';
+import '../support/domain_rules_examples.dart';
 
 const _maxCents = 999999999999999;
 
@@ -30,9 +18,7 @@ extension _Gens on Any {
 
 void main() {
   group('examples', () {
-    final examples = (jsonDecode(_examplesJson) as List)
-        .cast<Map<String, dynamic>>();
-    for (final e in examples) {
+    for (final e in domainRulesRows('allocate')) {
       final total = e['total'] as int;
       final weights = (e['weights'] as List).cast<int>();
       final expected = (e['result'] as List).cast<int>();
