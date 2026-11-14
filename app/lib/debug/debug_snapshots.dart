@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/router.dart';
 import 'package:mitlio/debug/drive_types.dart';
 import 'package:mitlio/features/balances/ui/balances_view_model.dart';
+import 'package:mitlio/features/expenses/ui/expense_form_view_model.dart';
+import 'package:mitlio/features/expenses/ui/expenses_view_model.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
 import 'package:mitlio/features/groups/ui/groups_view_model.dart';
 
@@ -31,6 +33,20 @@ String? _openGroupId(ProviderContainer c) {
       : null;
 }
 
+/// The open expense form: `/groups/:id/expenses/new` or
+/// `/groups/:id/expenses/:expenseId`.
+ExpenseFormKey? _openExpenseForm(ProviderContainer c) {
+  final segments = c.read(routerProvider).state.uri.pathSegments;
+  return segments.length == 4 &&
+          segments.first == 'groups' &&
+          segments[2] == 'expenses'
+      ? (
+          groupId: segments[1],
+          expenseId: segments[3] == 'new' ? null : segments[3],
+        )
+      : null;
+}
+
 /// The registry with every screen wired to its ViewModel. Add a line per
 /// slice. Only call under `kDebugMode`.
 DebugSnapshotRegistry buildSnapshotRegistry(ProviderContainer c) =>
@@ -44,6 +60,20 @@ DebugSnapshotRegistry buildSnapshotRegistry(ProviderContainer c) =>
         return id == null
             ? {'status': 'not_open'}
             : c.read(groupDetailViewModelProvider(id).notifier).debugSnapshot();
+      })
+      ..register('expenses', () {
+        final id = _openGroupId(c);
+        return id == null
+            ? {'status': 'not_open'}
+            : c.read(expensesViewModelProvider(id).notifier).debugSnapshot();
+      })
+      ..register('expense_form', () {
+        final key = _openExpenseForm(c);
+        return key == null
+            ? {'status': 'not_open'}
+            : c
+                  .read(expenseFormViewModelProvider(key).notifier)
+                  .debugSnapshot();
       })
       ..register('balances', () {
         final id = _openGroupId(c);

@@ -17,6 +17,7 @@ class AmountField extends StatefulWidget {
     this.cents,
     this.autofocus = false,
     this.focusNode,
+    this.suffix,
     super.key,
   });
 
@@ -30,6 +31,10 @@ class AmountField extends StatefulWidget {
   final int? cents;
   final bool autofocus;
   final FocusNode? focusNode;
+
+  /// Replaces the currency symbol as suffix (e.g. `%` for a two-decimal
+  /// percentage, where [currency] only supplies the number of decimals).
+  final String? suffix;
 
   @override
   State<AmountField> createState() => _AmountFieldState();
@@ -96,7 +101,9 @@ class _AmountFieldState extends State<AmountField> {
       onChanged: _onChanged,
       decoration: InputDecoration(
         labelText: widget.label,
-        suffixText: MoneyFormat.of(context).currencySymbol(widget.currency),
+        suffixText:
+            widget.suffix ??
+            MoneyFormat.of(context).currencySymbol(widget.currency),
         errorText: _invalid ? l10n.amountInvalid : null,
       ),
     );

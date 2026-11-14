@@ -205,4 +205,171 @@ class AppLocalizationsDe extends AppLocalizations {
   String balancesTransfer(String from, String to) {
     return '$from zahlt $to';
   }
+
+  @override
+  String get tabMembers => 'Mitglieder';
+
+  @override
+  String get tabExpenses => 'Ausgaben';
+
+  @override
+  String get expensesEmptyTitle => 'Noch keine Ausgabe';
+
+  @override
+  String get expensesEmptyMessage => 'Trag die erste ein.';
+
+  @override
+  String get expenseAdd => 'Ausgabe hinzufügen';
+
+  @override
+  String get expensesNoMembersMessage =>
+      'Füge zuerst die Leute hinzu, die sich Kosten teilen.';
+
+  @override
+  String get expensesNoMembersAction => 'Mitglieder hinzufügen';
+
+  @override
+  String get expenseToday => 'Heute';
+
+  @override
+  String get expenseYesterday => 'Gestern';
+
+  @override
+  String expensePaidBy(String name) {
+    return '$name hat bezahlt';
+  }
+
+  @override
+  String expensePaidByMore(String name, int count) {
+    return '$name +$count haben bezahlt';
+  }
+
+  @override
+  String expenseDeleted(String title) {
+    return '„$title“ gelöscht';
+  }
+
+  @override
+  String get expenseDelete => 'Löschen';
+
+  @override
+  String get expenseFilterPerson => 'Person';
+
+  @override
+  String get expenseFilterCategory => 'Kategorie';
+
+  @override
+  String get expenseFilterAll => 'Alle';
+
+  @override
+  String get expenseFilterEmptyTitle => 'Nichts gefunden';
+
+  @override
+  String get expenseFilterReset => 'Filter zurücksetzen';
+
+  @override
+  String get expenseCategoryFood => 'Essen & Trinken';
+
+  @override
+  String get expenseCategoryStay => 'Unterkunft';
+
+  @override
+  String get expenseCategoryTransport => 'Verkehr';
+
+  @override
+  String get expenseCategoryFun => 'Freizeit';
+
+  @override
+  String get expenseCategoryOther => 'Sonstiges';
+
+  @override
+  String get expenseFormNew => 'Neue Ausgabe';
+
+  @override
+  String get expenseFormEdit => 'Ausgabe bearbeiten';
+
+  @override
+  String get expenseAmountLabel => 'Betrag';
+
+  @override
+  String get expenseTitleLabel => 'Wofür?';
+
+  @override
+  String get expenseTitleHint => 'z. B. Pizza';
+
+  @override
+  String get expenseDateChange => 'Datum ändern';
+
+  @override
+  String get expensePayerSection => 'Wer hat bezahlt?';
+
+  @override
+  String get expensePayerMulti => 'Mehrere haben bezahlt';
+
+  @override
+  String get expensePayerSingle => 'Nur eine Person hat bezahlt';
+
+  @override
+  String get expenseSplitSection => 'Aufteilung';
+
+  @override
+  String get expenseSplitEqual => 'Gleich';
+
+  @override
+  String get expenseSplitShares => 'Anteile';
+
+  @override
+  String get expenseSplitPercent => 'Prozent';
+
+  @override
+  String get expenseSplitExact => 'Genau';
+
+  @override
+  String get expenseCategorySection => 'Kategorie (optional)';
+
+  @override
+  String get expenseSave => 'Speichern';
+
+  @override
+  String get expenseErrorTitle => 'Gib der Ausgabe einen Titel';
+
+  @override
+  String get expenseErrorAmount => 'Gib einen Betrag ein';
+
+  @override
+  String get expenseErrorNoParticipants => 'Wähle mindestens eine Person';
+
+  @override
+  String get expenseErrorNoPayer => 'Wähle, wer bezahlt hat';
+
+  @override
+  String get expenseErrorGeneric => 'Das passt noch nicht zusammen';
+
+  @override
+  String expenseLeftOver(String amount) {
+    return 'Noch $amount offen';
+  }
+
+  @override
+  String expenseOver(String amount) {
+    return '$amount zu viel';
+  }
+
+  @override
+  String expensePercentSum(String sum) {
+    return 'Zusammen $sum – es müssen 100 % sein';
+  }
+
+  @override
+  String expenseSharesFewer(String name) {
+    return 'Weniger Anteile für $name';
+  }
+
+  @override
+  String expenseSharesMore(String name) {
+    return 'Mehr Anteile für $name';
+  }
+
+  @override
+  String get expenseExcluded => 'Nicht dabei';
 }
