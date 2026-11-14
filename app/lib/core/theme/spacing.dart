@@ -51,6 +51,10 @@ abstract final class Sizes {
   /// last row can scroll clear of it.
   static const double fabClearance = 88;
 
+  /// Width of the currency dropdown next to the amount (label plus a
+  /// three-letter code).
+  static const double currencyPicker = 112;
+
   /// Height of one day of the rides calendar (day number plus an avatar).
   static const double calendarCell = 64;
 }

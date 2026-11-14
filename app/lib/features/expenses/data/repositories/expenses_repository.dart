@@ -4,6 +4,43 @@
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+/// What was actually paid in a foreign currency, and the rate frozen on the
+/// expense. The group-currency amount is derived from it (`convert`).
+final class ForeignAmount {
+  const ForeignAmount({
+    required this.currency,
+    required this.amountCents,
+    required this.ratePpm,
+  });
+
+  final Currency currency;
+
+  /// Minor units of [currency].
+  final int amountCents;
+
+  /// Units of the group currency per 1 [currency], times 1e6.
+  final int ratePpm;
+
+  /// The amount in [group], rounded half-even on the cent. Throws
+  /// [ArgumentError] for a rate <= 0 and `MoneyOverflow` when too large.
+  Money toGroup(Currency group) =>
+      convert(Money(amountCents, currency), group, FxRate(ratePpm));
+
+  @override
+  bool operator ==(Object other) =>
+      other is ForeignAmount &&
+      other.currency == currency &&
+      other.amountCents == amountCents &&
+      other.ratePpm == ratePpm;
+
+  @override
+  int get hashCode => Object.hash(currency, amountCents, ratePpm);
+
+  @override
+  String toString() =>
+      'ForeignAmount($amountCents ${currency.code} @ $ratePpm)';
+}
+
 /// User input for creating or replacing an expense. Validated by the domain
 /// (`Expense.create`) inside the repository.
 final class ExpenseDraft {
@@ -16,12 +53,15 @@ final class ExpenseDraft {
     required this.split,
     this.category,
     this.tripMeta,
+    this.foreign,
   });
 
   final String title;
+
+  /// In the group currency: the split and the payers are computed on it.
   final int amountCents;
 
-  /// Must equal the group currency (foreign currencies land with FX, later).
+  /// Must equal the group currency; a foreign payment goes in [foreign].
   final Currency currency;
   final DateTime date;
 
@@ -33,6 +73,10 @@ final class ExpenseDraft {
   /// JSON of the trip inputs for a trip expense (stored as type `trip`, so
   /// it can be re-edited); null for a regular expense.
   final String? tripMeta;
+
+  /// Set when the amount was paid in another currency; `foreign.toGroup`
+  /// must equal [amountCents].
+  final ForeignAmount? foreign;
 }
 
 /// A stored expense: the validated domain aggregate plus what it needs for
@@ -46,10 +90,16 @@ final class ExpenseEntry {
     required this.createdAt,
     this.category,
     this.tripMeta,
+    this.foreign,
   });
 
   final String groupId;
+
+  /// Always in the group currency.
   final Expense expense;
+
+  /// The original amount and frozen rate of a foreign-currency expense.
+  final ForeignAmount? foreign;
   final SplitSpec split;
   final String? category;
 
@@ -67,11 +117,19 @@ final class ExpenseEntry {
       other.split == split &&
       other.category == category &&
       other.tripMeta == tripMeta &&
+      other.foreign == foreign &&
       other.createdAt == createdAt;
 
   @override
-  int get hashCode =>
-      Object.hash(groupId, expense, split, category, tripMeta, createdAt);
+  int get hashCode => Object.hash(
+    groupId,
+    expense,
+    split,
+    category,
+    tripMeta,
+    foreign,
+    createdAt,
+  );
 
   @override
   String toString() => 'ExpenseEntry($groupId, ${expense.title})';
@@ -118,6 +176,11 @@ RepoResult<Expense> buildExpense({
       ),
     );
   }
+  final foreign = draft.foreign;
+  if (foreign != null) {
+    final problem = _foreignProblem(foreign, draft, groupCurrency);
+    if (problem != null) return Err(InvalidData(problem));
+  }
   return switch (Expense.create(
     id: id,
     title: draft.title,
@@ -131,6 +194,27 @@ RepoResult<Expense> buildExpense({
     Ok<Expense, ExpenseError>(:final value) => Ok(value),
     Err<Expense, ExpenseError>(:final error) => Err(InvalidData('$error')),
   };
+}
+
+String? _foreignProblem(
+  ForeignAmount foreign,
+  ExpenseDraft draft,
+  Currency groupCurrency,
+) {
+  if (foreign.currency == groupCurrency) {
+    return 'foreign currency equals the group currency';
+  }
+  if (foreign.amountCents <= 0 || foreign.ratePpm <= 0) {
+    return 'foreign amount and rate must be positive';
+  }
+  try {
+    if (foreign.toGroup(groupCurrency).cents != draft.amountCents) {
+      return 'amount does not match the converted foreign amount';
+    }
+  } on MoneyOverflow {
+    return 'foreign amount too large';
+  }
+  return null;
 }
 
 /// Persisted name of the split mode (`expenses.split_mode`).

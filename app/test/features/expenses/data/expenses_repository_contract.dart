@@ -122,6 +122,92 @@ void runExpensesRepositoryContract(
       expect(err(await r.expenses.create(gid, d)), isA<InvalidData>());
     });
 
+    group('foreign currency (P7-T01)', () {
+      ExpenseDraft usd({
+        int foreignCents = 1000,
+        int ppm = 920000,
+        int? groupCents,
+        Currency foreignCurrency = Currency.usd,
+      }) {
+        final inGroup =
+            groupCents ??
+            convert(
+              Money(foreignCents, foreignCurrency),
+              eur,
+              FxRate(ppm),
+            ).cents;
+        return ExpenseDraft(
+          title: 'Taxi',
+          amountCents: inGroup,
+          currency: eur,
+          date: DateTime.utc(2026, 2),
+          payers: {m[0].id: inGroup},
+          split: EqualSplit({m[0].id, m[1].id, m[2].id}),
+          foreign: ForeignAmount(
+            currency: foreignCurrency,
+            amountCents: foreignCents,
+            ratePpm: ppm,
+          ),
+        );
+      }
+
+      test(
+        'stores the original, the frozen rate and the group amount',
+        () async {
+          final e = await add(usd());
+          expect(e.expense.amountCents, 920);
+          expect(e.expense.currency, eur);
+          expect(e.expense.shares, {m[0].id: 307, m[1].id: 307, m[2].id: 306});
+          expect(
+            e.foreign,
+            const ForeignAmount(
+              currency: Currency.usd,
+              amountCents: 1000,
+              ratePpm: 920000,
+            ),
+          );
+          expect(ok(await r.expenses.get(e.expense.id)), e);
+          final probe = StreamProbe(r.expenses.watchExpenses(gid));
+          expect((await probe.next()).single, e);
+        },
+      );
+
+      test('a zero-decimal currency converts on the major unit', () async {
+        final e = await add(
+          usd(foreignCents: 12340, ppm: 1600, foreignCurrency: Currency.jpy),
+        );
+        expect(e.expense.amountCents, 1974);
+        expect(e.foreign!.amountCents, 12340);
+      });
+
+      test('update can add and drop the foreign part', () async {
+        final plain = await add();
+        final toUsd = ok(
+          await r.expenses.update(plain.expense.id, usd()),
+        );
+        expect(toUsd.foreign!.ratePpm, 920000);
+        final back = ok(await r.expenses.update(plain.expense.id, draft()));
+        expect(back.foreign, isNull);
+        expect(back.expense.amountCents, 1000);
+      });
+
+      test('a group amount that does not match the rate is rejected', () async {
+        for (final d in [
+          usd(groupCents: 921),
+          usd(ppm: 0, groupCents: 1000),
+          usd(foreignCents: 0, groupCents: 1000),
+          usd(foreignCurrency: eur, groupCents: 1000),
+          usd(
+            foreignCents: Money.maxAbsCents,
+            ppm: 999999999,
+            groupCents: 1000,
+          ),
+        ]) {
+          expect(err(await r.expenses.create(gid, d)), isA<InvalidData>());
+        }
+      });
+    });
+
     test('create in an unknown or deleted group is NotFound', () async {
       expect(err(await r.expenses.create('nope', draft())), isA<NotFound>());
       ok(await r.groups.softDelete(gid));
