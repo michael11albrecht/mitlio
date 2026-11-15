@@ -341,6 +341,45 @@ export type Database = {
           },
         ]
       }
+      group_join_audit: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          member_id: string | null
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          member_id?: string | null
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          member_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_join_audit_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_join_audit_member_id_group_id_fkey"
+            columns: ["member_id", "group_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id", "group_id"]
+          },
+        ]
+      }
       group_memberships: {
         Row: {
           created_at: string

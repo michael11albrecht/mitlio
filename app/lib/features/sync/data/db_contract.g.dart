@@ -21,6 +21,7 @@ abstract final class DbTables {
   static const fuelPriceCache = 'fuel_price_cache';
   static const fxRates = 'fx_rates';
   static const groupInvites = 'group_invites';
+  static const groupJoinAudit = 'group_join_audit';
   static const groupMemberships = 'group_memberships';
   static const groups = 'groups';
   static const members = 'members';
@@ -111,6 +112,15 @@ abstract final class DbGroupInvitesCols {
   static const id = 'id';
   static const revokedAt = 'revoked_at';
   static const tokenHash = 'token_hash';
+}
+
+/// Column names of `group_join_audit`.
+abstract final class DbGroupJoinAuditCols {
+  static const groupId = 'group_id';
+  static const id = 'id';
+  static const joinedAt = 'joined_at';
+  static const memberId = 'member_id';
+  static const userId = 'user_id';
 }
 
 /// Column names of `group_memberships`.
@@ -294,6 +304,13 @@ const dbContract = <String, Map<String, DbColumn>>{
     'id': DbColumn(DbColumnType.string, nullable: false),
     'revoked_at': DbColumn(DbColumnType.string, nullable: true),
     'token_hash': DbColumn(DbColumnType.string, nullable: false),
+  },
+  'group_join_audit': {
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'joined_at': DbColumn(DbColumnType.string, nullable: false),
+    'member_id': DbColumn(DbColumnType.string, nullable: true),
+    'user_id': DbColumn(DbColumnType.string, nullable: false),
   },
   'group_memberships': {
     'created_at': DbColumn(DbColumnType.string, nullable: false),
