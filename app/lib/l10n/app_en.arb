@@ -603,6 +603,69 @@
   "vehicleErrorName": "Enter a name",
   "vehicleErrorConsumption": "Enter the consumption",
   "vehicleSave": "Save",
+  "vehicleCatalogEngine": "{litres} l",
+  "@vehicleCatalogEngine": {
+    "placeholders": {
+      "litres": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogPower": "{kw} kW",
+  "@vehicleCatalogPower": {
+    "placeholders": {
+      "kw": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleCatalogHybrid": "{fuel} hybrid",
+  "@vehicleCatalogHybrid": {
+    "placeholders": {
+      "fuel": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogConsumptionLitre": "{value} l/100 km",
+  "@vehicleCatalogConsumptionLitre": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogConsumptionKwh": "{value} kWh/100 km",
+  "@vehicleCatalogConsumptionKwh": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogSuggestions": "Vehicle suggestions",
+  "vehicleCatalogSource": "Data: EEA, CC BY 4.0",
+  "vehicleCatalogNoMatch": "Not listed? Enter the consumption yourself, e.g. from your trip computer.",
+  "vehicleCatalogUnavailable": "The vehicle list could not be loaded. Enter the consumption yourself, e.g. from your trip computer.",
+  "vehicleCatalogWltpNote": "Manufacturer figure (WLTP). In daily use you usually consume about 20 % more.",
+  "vehicleCatalogWltpNoteElectric": "Manufacturer figure (WLTP). In daily use you usually need somewhat more.",
+  "vehicleCatalogRealisticNote": "Estimated everyday value: manufacturer figure (WLTP) plus about 20 %. This is an estimate, not an official value.",
+  "vehicleCatalogUseRealistic": "Use the realistic value: {value} l/100 km",
+  "@vehicleCatalogUseRealistic": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogPicked": "\"{name}\" applied. Your consumption was replaced.",
+  "@vehicleCatalogPicked": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "templateFormNew": "New route",
   "templateFormEdit": "Edit route",
   "templateNameLabel": "Name",
@@ -780,6 +843,13 @@
   "crashReportsUnavailable": "Not available in this version.",
   "deleteMyDataEntry": "Delete all my data",
   "deleteMyDataEntryHint": "Remove groups, expenses and rides from this device",
+  "licensesEntry": "Sources and licences",
+  "licensesEntryHint": "Data and fonts mitlio uses",
+  "licensesTitle": "Sources and licences",
+  "licensesEeaTitle": "Vehicle list",
+  "licensesEea": "Data: European Environment Agency (EEA), monitoring of CO2 emissions from new passenger cars (Regulation (EU) 2019/631), CC BY 4.0. The values are manufacturer figures (WLTP). mitlio only summarised them and did not change them.",
+  "licensesFontTitle": "PDF font",
+  "licensesFont": "Roboto, Apache License 2.0.",
   "deleteMyDataTitle": "Delete all my data",
   "deleteMyDataWhatTitle": "What gets deleted",
   "deleteMyDataWhat": "On this device: all groups, members, expenses, rides, settlements, payment details (including IBAN and its key) and your settings. Afterwards the app starts as if new.",

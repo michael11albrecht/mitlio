@@ -38,6 +38,11 @@ class SettingsView extends ConsumerWidget {
                 : null,
           ),
           ListTile(
+            title: Text(l10n.licensesEntry),
+            subtitle: Text(l10n.licensesEntryHint),
+            onTap: () => unawaited(context.push('/settings/licenses')),
+          ),
+          ListTile(
             title: Text(
               l10n.deleteMyDataEntry,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(

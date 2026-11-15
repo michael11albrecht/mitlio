@@ -1169,6 +1169,67 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vehicleSave => 'Save';
 
   @override
+  String vehicleCatalogEngine(String litres) {
+    return '$litres l';
+  }
+
+  @override
+  String vehicleCatalogPower(int kw) {
+    return '$kw kW';
+  }
+
+  @override
+  String vehicleCatalogHybrid(String fuel) {
+    return '$fuel hybrid';
+  }
+
+  @override
+  String vehicleCatalogConsumptionLitre(String value) {
+    return '$value l/100 km';
+  }
+
+  @override
+  String vehicleCatalogConsumptionKwh(String value) {
+    return '$value kWh/100 km';
+  }
+
+  @override
+  String get vehicleCatalogSuggestions => 'Vehicle suggestions';
+
+  @override
+  String get vehicleCatalogSource => 'Data: EEA, CC BY 4.0';
+
+  @override
+  String get vehicleCatalogNoMatch =>
+      'Not listed? Enter the consumption yourself, e.g. from your trip computer.';
+
+  @override
+  String get vehicleCatalogUnavailable =>
+      'The vehicle list could not be loaded. Enter the consumption yourself, e.g. from your trip computer.';
+
+  @override
+  String get vehicleCatalogWltpNote =>
+      'Manufacturer figure (WLTP). In daily use you usually consume about 20 % more.';
+
+  @override
+  String get vehicleCatalogWltpNoteElectric =>
+      'Manufacturer figure (WLTP). In daily use you usually need somewhat more.';
+
+  @override
+  String get vehicleCatalogRealisticNote =>
+      'Estimated everyday value: manufacturer figure (WLTP) plus about 20 %. This is an estimate, not an official value.';
+
+  @override
+  String vehicleCatalogUseRealistic(String value) {
+    return 'Use the realistic value: $value l/100 km';
+  }
+
+  @override
+  String vehicleCatalogPicked(String name) {
+    return '\"$name\" applied. Your consumption was replaced.';
+  }
+
+  @override
   String get templateFormNew => 'New route';
 
   @override
@@ -1592,6 +1653,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteMyDataEntryHint =>
       'Remove groups, expenses and rides from this device';
+
+  @override
+  String get licensesEntry => 'Sources and licences';
+
+  @override
+  String get licensesEntryHint => 'Data and fonts mitlio uses';
+
+  @override
+  String get licensesTitle => 'Sources and licences';
+
+  @override
+  String get licensesEeaTitle => 'Vehicle list';
+
+  @override
+  String get licensesEea =>
+      'Data: European Environment Agency (EEA), monitoring of CO2 emissions from new passenger cars (Regulation (EU) 2019/631), CC BY 4.0. The values are manufacturer figures (WLTP). mitlio only summarised them and did not change them.';
+
+  @override
+  String get licensesFontTitle => 'PDF font';
+
+  @override
+  String get licensesFont => 'Roboto, Apache License 2.0.';
 
   @override
   String get deleteMyDataTitle => 'Delete all my data';

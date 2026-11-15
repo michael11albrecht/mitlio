@@ -818,7 +818,7 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 | P9-T06 | Web app target (read-only share link) | |
 | P9-T07 | Per-field merge instead of aggregate LWW, if field data shows lost edits | ADR first |
 | P9-T08 | Ride distance from start and destination: autocomplete + routing via Edge Function proxy (ORS primary, Geoapify fallback), distance stays editable, saved places local-only (#130) | spike for quotas/ToS + ADR first; `needs-decision` |
-| P9-T09 | Car model suggestions: bundled static catalog from EEA CO2 monitoring data (CC BY 4.0) prefills fuel type and consumption, honest WLTP note (#131) | offline, no network; ADR + owner decisions first |
+| P9-T09 | Car model suggestions: bundled static catalog from EEA CO2 monitoring data (CC BY 4.0) prefills fuel type and consumption, honest WLTP note (#131) | offline, no network. **2026-11-15: implemented** (PR for #131): `tool` script `packages/tooling/bin/build_car_catalog.dart`, asset `app/assets/car_catalog/catalog_v1.json.gz` (EEA 2021-2025, WLTP only, no cost-per-km prefill, realistic value +20 % one tap), see `docs/car-catalog.md` |
 
 #### P9r — Receipt photo to expense (agent, ~1–1.5 weeks; after M3, ADR-26)
 

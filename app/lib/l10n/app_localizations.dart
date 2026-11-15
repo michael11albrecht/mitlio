@@ -1987,6 +1987,90 @@ abstract class AppLocalizations {
   /// **'Speichern'**
   String get vehicleSave;
 
+  /// No description provided for @vehicleCatalogEngine.
+  ///
+  /// In de, this message translates to:
+  /// **'{litres} l'**
+  String vehicleCatalogEngine(String litres);
+
+  /// No description provided for @vehicleCatalogPower.
+  ///
+  /// In de, this message translates to:
+  /// **'{kw} kW'**
+  String vehicleCatalogPower(int kw);
+
+  /// No description provided for @vehicleCatalogHybrid.
+  ///
+  /// In de, this message translates to:
+  /// **'{fuel}-Hybrid'**
+  String vehicleCatalogHybrid(String fuel);
+
+  /// No description provided for @vehicleCatalogConsumptionLitre.
+  ///
+  /// In de, this message translates to:
+  /// **'{value} l/100 km'**
+  String vehicleCatalogConsumptionLitre(String value);
+
+  /// No description provided for @vehicleCatalogConsumptionKwh.
+  ///
+  /// In de, this message translates to:
+  /// **'{value} kWh/100 km'**
+  String vehicleCatalogConsumptionKwh(String value);
+
+  /// No description provided for @vehicleCatalogSuggestions.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrzeugvorschläge'**
+  String get vehicleCatalogSuggestions;
+
+  /// No description provided for @vehicleCatalogSource.
+  ///
+  /// In de, this message translates to:
+  /// **'Daten: EEA, CC BY 4.0'**
+  String get vehicleCatalogSource;
+
+  /// No description provided for @vehicleCatalogNoMatch.
+  ///
+  /// In de, this message translates to:
+  /// **'Nicht dabei? Trag den Verbrauch selbst ein, z. B. aus deinem Bordcomputer.'**
+  String get vehicleCatalogNoMatch;
+
+  /// No description provided for @vehicleCatalogUnavailable.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Fahrzeugliste konnte nicht geladen werden. Trag den Verbrauch selbst ein, z. B. aus deinem Bordcomputer.'**
+  String get vehicleCatalogUnavailable;
+
+  /// No description provided for @vehicleCatalogWltpNote.
+  ///
+  /// In de, this message translates to:
+  /// **'Herstellerangabe (WLTP). Im Alltag verbrauchst du meist etwa 20 % mehr.'**
+  String get vehicleCatalogWltpNote;
+
+  /// No description provided for @vehicleCatalogWltpNoteElectric.
+  ///
+  /// In de, this message translates to:
+  /// **'Herstellerangabe (WLTP). Im Alltag brauchst du meist etwas mehr.'**
+  String get vehicleCatalogWltpNoteElectric;
+
+  /// No description provided for @vehicleCatalogRealisticNote.
+  ///
+  /// In de, this message translates to:
+  /// **'Geschätzter Alltagswert: Herstellerangabe (WLTP) plus etwa 20 %. Das ist eine Schätzung, kein offizieller Wert.'**
+  String get vehicleCatalogRealisticNote;
+
+  /// No description provided for @vehicleCatalogUseRealistic.
+  ///
+  /// In de, this message translates to:
+  /// **'Realistischen Wert übernehmen: {value} l/100 km'**
+  String vehicleCatalogUseRealistic(String value);
+
+  /// No description provided for @vehicleCatalogPicked.
+  ///
+  /// In de, this message translates to:
+  /// **'„{name}“ übernommen. Dein Verbrauch wurde ersetzt.'**
+  String vehicleCatalogPicked(String name);
+
   /// No description provided for @templateFormNew.
   ///
   /// In de, this message translates to:
@@ -2706,6 +2790,48 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Gruppen, Ausgaben und Fahrten von diesem Gerät entfernen'**
   String get deleteMyDataEntryHint;
+
+  /// No description provided for @licensesEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Quellen und Lizenzen'**
+  String get licensesEntry;
+
+  /// No description provided for @licensesEntryHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Daten und Schriften, die mitlio nutzt'**
+  String get licensesEntryHint;
+
+  /// No description provided for @licensesTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Quellen und Lizenzen'**
+  String get licensesTitle;
+
+  /// No description provided for @licensesEeaTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrzeugliste'**
+  String get licensesEeaTitle;
+
+  /// No description provided for @licensesEea.
+  ///
+  /// In de, this message translates to:
+  /// **'Daten: Europäische Umweltagentur (EEA), Überwachung der CO2-Emissionen von neuen Pkw (Verordnung (EU) 2019/631), CC BY 4.0. Die Werte sind Herstellerangaben (WLTP). mitlio hat sie nur zusammengefasst und nicht verändert.'**
+  String get licensesEea;
+
+  /// No description provided for @licensesFontTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Schrift im PDF'**
+  String get licensesFontTitle;
+
+  /// No description provided for @licensesFont.
+  ///
+  /// In de, this message translates to:
+  /// **'Roboto, Apache License 2.0.'**
+  String get licensesFont;
 
   /// No description provided for @deleteMyDataTitle.
   ///
