@@ -122,6 +122,12 @@ abstract class AppLocalizations {
   /// **'Nochmal versuchen'**
   String get retry;
 
+  /// Button above the iOS number pad that closes the keyboard.
+  ///
+  /// In de, this message translates to:
+  /// **'Fertig'**
+  String get keyboardDone;
+
   /// No description provided for @amountInvalid.
   ///
   /// In de, this message translates to:

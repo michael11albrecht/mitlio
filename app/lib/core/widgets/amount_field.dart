@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/amount_parser.dart';
 import 'package:mitlio/core/money_format.dart';
 import 'package:mitlio/core/theme/theme.dart';
+import 'package:mitlio/core/widgets/number_pad_done.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -87,24 +88,26 @@ class _AmountFieldState extends State<AmountField> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return TextField(
-      controller: _controller,
-      focusNode: widget.focusNode,
-      autofocus: widget.autofocus,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,\s]')),
-      ],
-      style: MitlioTypography.tabular(
-        Theme.of(context).textTheme.headlineMedium,
-      ),
-      onChanged: _onChanged,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        suffixText:
-            widget.suffix ??
-            MoneyFormat.of(context).currencySymbol(widget.currency),
-        errorText: _invalid ? l10n.amountInvalid : null,
+    return NumberPadDone(
+      child: TextField(
+        controller: _controller,
+        focusNode: widget.focusNode,
+        autofocus: widget.autofocus,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9.,\s]')),
+        ],
+        style: MitlioTypography.tabular(
+          Theme.of(context).textTheme.headlineMedium,
+        ),
+        onChanged: _onChanged,
+        decoration: InputDecoration(
+          labelText: widget.label,
+          suffixText:
+              widget.suffix ??
+              MoneyFormat.of(context).currencySymbol(widget.currency),
+          errorText: _invalid ? l10n.amountInvalid : null,
+        ),
       ),
     );
   }
