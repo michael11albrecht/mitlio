@@ -22,6 +22,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get retry => 'Nochmal versuchen';
 
   @override
+  String get keyboardDone => 'Fertig';
+
+  @override
   String get amountInvalid => 'Das ist kein gültiger Betrag';
 
   @override
@@ -67,6 +70,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get dismiss => 'Schließen';
+
+  @override
+  String get hideSnackBar => 'Ausblenden';
 
   @override
   String get groupNew => 'Neue Gruppe';
@@ -221,6 +227,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get balancesSettledMessage => 'Niemand schuldet jemandem etwas.';
+
+  @override
+  String balancesOpenRides(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count offene Fahrten',
+      one: '1 offene Fahrt',
+    );
+    return 'inkl. $_temp0 ($amount)';
+  }
 
   @override
   String get balancesEmptyTitle => 'Noch nichts zu verrechnen';
@@ -1117,7 +1134,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ridesSettleNote =>
-      'Pro Fahrer entsteht eine Ausgabe. Du kannst das gleich rückgängig machen.';
+      'Die Fahrten zählen schon im Saldo. Beim Abrechnen werden sie gesperrt und pro Fahrer zu einer Ausgabe. Du kannst das gleich rückgängig machen.';
 
   @override
   String get ridesSettleAction => 'Abrechnen';

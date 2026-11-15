@@ -12,6 +12,7 @@ void main() {
   final states = <String, BalancesState>{
     'simplified': sampleBalances,
     'direct': samplePairwise,
+    'open rides': openRidesBalances,
     'settled': settledBalances,
     'no entries': emptyBalances,
     'error': const BalancesFailure(Storage('x')),

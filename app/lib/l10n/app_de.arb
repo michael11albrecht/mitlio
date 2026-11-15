@@ -7,6 +7,10 @@
   "errorTitle": "Das hat nicht geklappt",
   "errorMessage": "Versuch es gleich noch einmal.",
   "retry": "Nochmal versuchen",
+  "keyboardDone": "Fertig",
+  "@keyboardDone": {
+    "description": "Button above the iOS number pad that closes the keyboard."
+  },
   "amountInvalid": "Das ist kein gültiger Betrag",
   "currencyName": "{code, select, EUR{Euro} USD{US-Dollar} GBP{Pfund} CHF{Franken} other{{code}}}",
   "@currencyName": {
@@ -56,6 +60,7 @@
   },
   "undo": "Rückgängig",
   "dismiss": "Schließen",
+  "hideSnackBar": "Ausblenden",
   "groupNew": "Neue Gruppe",
   "groupCreate": "Gruppe anlegen",
   "groupEditTitle": "Gruppe bearbeiten",
@@ -158,6 +163,17 @@
   },
   "balancesSettledTitle": "Alles ausgeglichen",
   "balancesSettledMessage": "Niemand schuldet jemandem etwas.",
+  "balancesOpenRides": "inkl. {count, plural, =1{1 offene Fahrt} other{{count} offene Fahrten}} ({amount})",
+  "@balancesOpenRides": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "balancesEmptyTitle": "Noch nichts zu verrechnen",
   "balancesEmptyMessage": "Sobald es Ausgaben gibt, siehst du hier, wer wem was schuldet.",
   "balancesTransfersTitle": "Wer zahlt wem",
@@ -897,7 +913,7 @@
       }
     }
   },
-  "ridesSettleNote": "Pro Fahrer entsteht eine Ausgabe. Du kannst das gleich rückgängig machen.",
+  "ridesSettleNote": "Die Fahrten zählen schon im Saldo. Beim Abrechnen werden sie gesperrt und pro Fahrer zu einer Ausgabe. Du kannst das gleich rückgängig machen.",
   "ridesSettleAction": "Abrechnen",
   "ridesSettleDone": "{month} abgerechnet",
   "@ridesSettleDone": {
