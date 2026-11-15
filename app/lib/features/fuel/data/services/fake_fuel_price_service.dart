@@ -12,6 +12,7 @@ class FakeFuelPriceService implements FuelPriceService {
       FuelGrade.diesel: 1659,
     },
     this.configured = true,
+    this.areas = true,
     this.age = const Duration(minutes: 12),
   });
 
@@ -23,6 +24,10 @@ class FakeFuelPriceService implements FuelPriceService {
   /// Whether a backend "is configured".
   bool configured;
 
+  /// Whether postcode / nearby lookups work (false mimics the direct EU
+  /// source).
+  bool areas;
+
   /// Makes every call fail with this reason while set.
   FuelFailure? failWith;
 
@@ -31,6 +36,9 @@ class FakeFuelPriceService implements FuelPriceService {
 
   @override
   bool get isConfigured => configured;
+
+  @override
+  bool get supportsAreas => areas;
 
   @override
   Future<FuelServiceResult> fetch(FuelGrade grade, {FuelArea? area}) async {
