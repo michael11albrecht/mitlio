@@ -1163,6 +1163,61 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get ridesDriversTitle => 'Wer fährt?';
+
+  @override
+  String get ridesDriversHelp =>
+      'Nur Fahrer werden als Nächstes vorgeschlagen.';
+
+  @override
+  String get ridesDriverSwitch => 'Fährt selbst';
+
+  @override
+  String ridesDriverNowDrives(String name) {
+    return '$name wird wieder vorgeschlagen';
+  }
+
+  @override
+  String ridesDriverNotSuggested(String name) {
+    return '$name wird nicht mehr vorgeschlagen';
+  }
+
+  @override
+  String get ridesFairnessNotDriving =>
+      'Fährt nicht · wird nicht vorgeschlagen';
+
+  @override
+  String get ridesFairnessChangeDrivers => 'Fahrer ändern';
+
+  @override
+  String get ridesFairnessHow => 'Wie wird das berechnet?';
+
+  @override
+  String get ridesFairnessHowText =>
+      'Vorgeschlagen wird, wer bisher am wenigsten gefahren ist – km gefahren minus km mitgefahren seit der letzten Abrechnung. Bei Gleichstand ist dran, wer am längsten nicht gefahren ist. Nur Mitglieder, die als Fahrer markiert sind, werden vorgeschlagen.';
+
+  @override
+  String ridesDriverPromptTitle(String name) {
+    return 'Fährt $name nicht selbst?';
+  }
+
+  @override
+  String ridesDriverPromptBody(String name, int n) {
+    return '$name ist bei $n Fahrten mitgefahren, aber noch nie gefahren. Als Nichtfahrer wird $name nicht mehr als Nächstes vorgeschlagen.';
+  }
+
+  @override
+  String get ridesDriverPromptMark => 'Als Nichtfahrer markieren';
+
+  @override
+  String ridesDriverPromptKeep(String name) {
+    return '$name fährt auch';
+  }
+
+  @override
+  String get ridesDriverPromptManage => 'Fahrer verwalten';
+
+  @override
   String get settleOpen => 'Ausgleichen';
 
   @override

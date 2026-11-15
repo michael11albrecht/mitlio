@@ -4,20 +4,20 @@ import 'package:mitlio/db/app_database.dart';
 
 import 'generated/schema.dart';
 
-/// Fails when the Drift tables drift from `drift_schemas/drift_schema_v3.json`.
+/// Fails when the Drift tables drift from `drift_schemas/drift_schema_v4.json`.
 /// A schema change needs a version bump, a migration and `make db-schema`.
 void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('fresh v3 schema matches the exported v3 schema', () async {
-    final connection = await verifier.startAt(3);
+  test('fresh v4 schema matches the exported v4 schema', () async {
+    final connection = await verifier.startAt(4);
     final db = AppDatabase(connection);
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 3);
+    await verifier.migrateAndValidate(db, 4);
   });
 
-  test('v1 -> v3 keeps data and adds the rides and revisions tables', () async {
+  test('v1 -> v4 keeps data and adds the rides and revisions tables', () async {
     final schema = await verifier.schemaAt(1);
     schema.rawDatabase
       ..execute(
@@ -33,12 +33,13 @@ void main() {
 
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 3);
+    await verifier.migrateAndValidate(db, 4);
 
     final groups = await db.groupsDao.watchGroups().first;
     expect(groups.single.name, 'Trip');
     final members = await db.membersDao.listAllByGroup('g1');
     expect(members.single.name, 'Ann');
+    expect(members.single.canDrive, isTrue);
 
     // New tables are usable after the upgrade.
     expect(await db.select(db.vehicles).get(), isEmpty);
@@ -47,7 +48,7 @@ void main() {
     expect(await db.select(db.expenseRevisions).get(), isEmpty);
   });
 
-  test('v2 -> v3 keeps expenses and adds a usable revisions table', () async {
+  test('v2 -> v4 keeps expenses and adds a usable revisions table', () async {
     final schema = await verifier.schemaAt(2);
     schema.rawDatabase
       ..execute(
@@ -77,7 +78,7 @@ void main() {
 
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 3);
+    await verifier.migrateAndValidate(db, 4);
 
     expect((await db.select(db.expenses).get()).single.title, 'Dinner');
     expect(await db.select(db.expenseRevisions).get(), isEmpty);
@@ -91,4 +92,32 @@ void main() {
     );
     expect((await db.expensesDao.revisionsOf('e1')).single.revision, 1);
   });
+
+  test(
+    'v3 -> v4 makes existing members drivers and adds the prompt flags',
+    () async {
+      final schema = await verifier.schemaAt(3);
+      schema.rawDatabase
+        ..execute(
+          'INSERT INTO groups (id, name, currency, created_by, created_at, '
+          'updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+          ['g1', 'Trip', 'EUR', 'dev', '2026-01-01T00:00:00.000Z', '0001'],
+        )
+        ..execute(
+          'INSERT INTO members (id, group_id, created_at, updated_at, name, '
+          'position) VALUES (?, ?, ?, ?, ?, ?)',
+          ['m1', 'g1', '2026-01-01T00:00:00.000Z', '0001', 'Ann', 0],
+        );
+
+      final db = AppDatabase(schema.newConnection());
+      addTearDown(db.close);
+      await verifier.migrateAndValidate(db, 4);
+
+      final member = (await db.membersDao.listAllByGroup('g1')).single;
+      expect(member.canDrive, isTrue);
+      expect(await db.membersDao.askedDriverPrompts(), isEmpty);
+      await db.membersDao.markDriverPromptAsked('m1', '0002');
+      expect(await db.membersDao.askedDriverPrompts(), {'m1'});
+    },
+  );
 }

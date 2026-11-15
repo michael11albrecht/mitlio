@@ -21,6 +21,7 @@ part 'app_database.g.dart';
     Settlements,
     LocalMemberBank,
     LocalOutbox,
+    LocalDriverPrompts,
     Vehicles,
     RideTemplates,
     Rides,
@@ -39,7 +40,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -47,11 +48,18 @@ class AppDatabase extends _$AppDatabase {
     onUpgrade: (m, from, to) async {
       if (from < 2) await _from1To2(m);
       if (from < 3) await _from2To3(m);
+      if (from < 4) await _from3To4(m);
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },
   );
+
+  /// v4: who drives, per member, and the local "already asked" flags.
+  Future<void> _from3To4(Migrator m) async {
+    await m.addColumn(members, members.canDrive);
+    await m.createTable(localDriverPrompts);
+  }
 
   /// v3: expense edit history (P7-T03).
   Future<void> _from2To3(Migrator m) async {

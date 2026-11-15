@@ -1,6 +1,7 @@
 import 'package:alchemist/alchemist.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/features/rides/ui/driver_prompt_sheet.dart';
 import 'package:mitlio/features/rides/ui/ride_calendar.dart';
 import 'package:mitlio/features/rides/ui/ride_settle_widgets.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
@@ -49,7 +50,7 @@ Future<void> main() async {
       const RidesSetupView(groupId: 'g-1'),
     ),
     width: _width,
-    height: 640,
+    height: 1000,
   );
 
   Future<void> vehicleForm(String name, VehicleFormState state) => matrixGolden(
@@ -110,6 +111,8 @@ Future<void> main() async {
   );
   await tab('rides_settle_due', settleDueRides, height: 1500);
   await tab('rides_settled_month', settledMonthRides);
+  // Somebody who does not drive: the hint in the fairness card.
+  await tab('rides_non_driver', nonDriverRides, height: 1500);
   for (final (name, state) in [
     ('ride_settle_sheet', settleDueRides),
     ('ride_settle_sheet_nothing', settledMonthRides),
@@ -139,6 +142,13 @@ Future<void> main() async {
 
   await setup('rides_setup_data', setupData);
   await setup('rides_setup_empty', setupEmpty);
+  await setup('rides_setup_non_driver', setupNonDriver);
+  await matrixGolden(
+    'driver_prompt_sheet',
+    () => const DriverPromptSheet(name: 'Chiara Rossi', rides: 5),
+    width: _width,
+    height: 760,
+  );
 
   await vehicleForm('vehicle_form_empty', vehicleFormReady());
   await vehicleForm(

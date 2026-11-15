@@ -207,6 +207,70 @@ void main() {
     });
   });
 
+  group('rides.setCanDrive and rides.answerDriverPrompt', () {
+    test('marks a member as non-driver and back', () async {
+      final params = {
+        'groupId': app.group.id,
+        'memberId': id(1),
+        'canDrive': 'false',
+      };
+      expect(await h['rides.setCanDrive']!(params), {
+        'memberId': id(1),
+        'canDrive': false,
+      });
+      expect(
+        (await h['rides.setCanDrive']!({
+          ...params,
+          'canDrive': 'true',
+        }))['canDrive'],
+        isTrue,
+      );
+    });
+
+    test('rejects bad params and unknown members', () async {
+      expect((await h['rides.setCanDrive']!({}))['error'], 'invalid_params');
+      expect(
+        (await h['rides.setCanDrive']!({
+          'groupId': app.group.id,
+          'memberId': id(1),
+          'canDrive': 'maybe',
+        }))['error'],
+        'invalid_params',
+      );
+      expect(
+        (await h['rides.setCanDrive']!({
+          'groupId': app.group.id,
+          'memberId': 'nope',
+          'canDrive': 'false',
+        }))['error'],
+        'not_found',
+      );
+    });
+
+    test('answers the driver question', () async {
+      expect(
+        await h['rides.answerDriverPrompt']!({
+          'groupId': app.group.id,
+          'memberId': id(1),
+          'canDrive': 'false',
+        }),
+        {'memberId': id(1), 'canDrive': false, 'undoable': true},
+      );
+      expect(
+        (await h['rides.answerDriverPrompt']!({
+          'groupId': app.group.id,
+          'memberId': id(2),
+          'canDrive': 'true',
+        }))['undoable'],
+        isFalse,
+      );
+      expect(
+        (await h['rides.answerDriverPrompt']!({}))['error'],
+        'invalid_params',
+      );
+    });
+  });
+
   group('rides.list and rides.delete', () {
     test('lists the rides of a month', () async {
       final work = await createWork();
