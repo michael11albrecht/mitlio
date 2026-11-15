@@ -791,5 +791,40 @@
   "fuelPlzInvalid": "Please enter five digits",
   "fuelPlzApply": "Apply",
   "fuelNationalAction": "Nationwide",
-  "fuelAttributionFallback": "Fuel price data"
+  "fuelAttributionFallback": "Fuel price data",
+  "routeToggle": "Enter start and destination to calculate the distance",
+  "routeStartLabel": "Start",
+  "routeEndLabel": "Destination",
+  "routeResult": "{km} km by road",
+  "@routeResult": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "routeRecalculate": "Recalculate",
+  "routeSearching": "Searching …",
+  "routeCalculating": "Calculating the distance …",
+  "routeNoMatches": "No matches. Try another place or enter the kilometres yourself.",
+  "routeSavedHome": "Home",
+  "routeSavedWork": "Work",
+  "routeSaveAsHome": "Save as home",
+  "routeSaveAsWork": "Save as work",
+  "routeSavedAsHome": "Saved as home",
+  "routeSavedAsWork": "Saved as work",
+  "routeOffline": "No connection. Just enter the kilometres yourself.",
+  "routeRateLimited": "Too many route requests. Try again later or enter the kilometres yourself.",
+  "routeRateLimitedIn": "Too many route requests. Try again in {minutes} min or enter the kilometres yourself.",
+  "@routeRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "routeNoRoute": "There is no road connection between these places. Check start and destination or enter the kilometres yourself.",
+  "routeServerDown": "The route service is unreachable right now. Try again later or enter the kilometres yourself.",
+  "routeInvalid": "Start and destination do not fit together. Pick two different places or enter the kilometres yourself.",
+  "routeAttributionFallback": "Map and route data © OpenStreetMap contributors"
 }

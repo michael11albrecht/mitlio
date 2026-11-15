@@ -18,6 +18,8 @@ import 'package:mitlio/features/fuel/data/services/fuel_price_service.dart';
 import 'package:mitlio/features/fuel/data/services/geolocator_location_service.dart';
 import 'package:mitlio/features/fx/data/repositories/fx_providers.dart';
 import 'package:mitlio/features/fx/data/services/fx_rate_service.dart';
+import 'package:mitlio/features/routes/data/repositories/route_providers.dart';
+import 'package:mitlio/features/routes/data/services/route_distance_service.dart';
 import 'package:path_provider/path_provider.dart';
 
 // TODO(P8-T01): read from AppConfig once the config files land. Empty in the
@@ -58,6 +60,15 @@ Future<void> main() async {
       if (Platform.isAndroid || Platform.isIOS)
         locationServiceProvider.overrideWithValue(
           const GeolocatorLocationService(),
+        ),
+      // Same for "Strecke berechnen": without a backend the forms show only
+      // the manual kilometre field.
+      if (config.hasBackend)
+        routeDistanceServiceProvider.overrideWithValue(
+          HttpRouteDistanceService(
+            baseUrl: config.supabaseUrl,
+            anonKey: config.supabaseAnonKey,
+          ),
         ),
       // Same for the ECB rate suggestion in the expense form.
       if (config.hasBackend)

@@ -2862,6 +2862,132 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Spritpreisdaten'**
   String get fuelAttributionFallback;
+
+  /// No description provided for @routeToggle.
+  ///
+  /// In de, this message translates to:
+  /// **'Start und Ziel eingeben, Strecke berechnen'**
+  String get routeToggle;
+
+  /// No description provided for @routeStartLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Start'**
+  String get routeStartLabel;
+
+  /// No description provided for @routeEndLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Ziel'**
+  String get routeEndLabel;
+
+  /// No description provided for @routeResult.
+  ///
+  /// In de, this message translates to:
+  /// **'{km} km, Strecke über die Straße'**
+  String routeResult(String km);
+
+  /// No description provided for @routeRecalculate.
+  ///
+  /// In de, this message translates to:
+  /// **'Neu berechnen'**
+  String get routeRecalculate;
+
+  /// No description provided for @routeSearching.
+  ///
+  /// In de, this message translates to:
+  /// **'Suche läuft …'**
+  String get routeSearching;
+
+  /// No description provided for @routeCalculating.
+  ///
+  /// In de, this message translates to:
+  /// **'Strecke wird berechnet …'**
+  String get routeCalculating;
+
+  /// No description provided for @routeNoMatches.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Treffer. Probier einen anderen Ort oder trag die Kilometer selbst ein.'**
+  String get routeNoMatches;
+
+  /// No description provided for @routeSavedHome.
+  ///
+  /// In de, this message translates to:
+  /// **'Zuhause'**
+  String get routeSavedHome;
+
+  /// No description provided for @routeSavedWork.
+  ///
+  /// In de, this message translates to:
+  /// **'Arbeit'**
+  String get routeSavedWork;
+
+  /// No description provided for @routeSaveAsHome.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Zuhause merken'**
+  String get routeSaveAsHome;
+
+  /// No description provided for @routeSaveAsWork.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Arbeit merken'**
+  String get routeSaveAsWork;
+
+  /// No description provided for @routeSavedAsHome.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Zuhause gemerkt'**
+  String get routeSavedAsHome;
+
+  /// No description provided for @routeSavedAsWork.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Arbeit gemerkt'**
+  String get routeSavedAsWork;
+
+  /// No description provided for @routeOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung, trag die Kilometer einfach selbst ein.'**
+  String get routeOffline;
+
+  /// No description provided for @routeRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Streckenanfragen. Versuch es später nochmal oder trag die Kilometer selbst ein.'**
+  String get routeRateLimited;
+
+  /// No description provided for @routeRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Streckenanfragen. Versuch es in {minutes} Min. nochmal oder trag die Kilometer selbst ein.'**
+  String routeRateLimitedIn(int minutes);
+
+  /// No description provided for @routeNoRoute.
+  ///
+  /// In de, this message translates to:
+  /// **'Zwischen diesen Orten gibt es keine Straßenverbindung. Prüf Start und Ziel oder trag die Kilometer selbst ein.'**
+  String get routeNoRoute;
+
+  /// No description provided for @routeServerDown.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.'**
+  String get routeServerDown;
+
+  /// No description provided for @routeInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Start und Ziel passen nicht zusammen. Wähl zwei verschiedene Orte oder trag die Kilometer selbst ein.'**
+  String get routeInvalid;
+
+  /// No description provided for @routeAttributionFallback.
+  ///
+  /// In de, this message translates to:
+  /// **'Karten- und Routendaten © OpenStreetMap-Mitwirkende'**
+  String get routeAttributionFallback;
 }
 
 class _AppLocalizationsDelegate

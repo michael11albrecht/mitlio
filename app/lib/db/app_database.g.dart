@@ -4396,6 +4396,360 @@ class LocalDriverPromptsCompanion
   }
 }
 
+class $LocalPlacesTable extends LocalPlaces
+    with TableInfo<$LocalPlacesTable, LocalPlaceRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalPlacesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _latMeta = const VerificationMeta('lat');
+  @override
+  late final GeneratedColumn<double> lat = GeneratedColumn<double>(
+    'lat',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lngMeta = const VerificationMeta('lng');
+  @override
+  late final GeneratedColumn<double> lng = GeneratedColumn<double>(
+    'lng',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _savedAtMeta = const VerificationMeta(
+    'savedAt',
+  );
+  @override
+  late final GeneratedColumn<String> savedAt = GeneratedColumn<String>(
+    'saved_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [kind, label, lat, lng, savedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_places';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalPlaceRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('lat')) {
+      context.handle(
+        _latMeta,
+        lat.isAcceptableOrUnknown(data['lat']!, _latMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_latMeta);
+    }
+    if (data.containsKey('lng')) {
+      context.handle(
+        _lngMeta,
+        lng.isAcceptableOrUnknown(data['lng']!, _lngMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_lngMeta);
+    }
+    if (data.containsKey('saved_at')) {
+      context.handle(
+        _savedAtMeta,
+        savedAt.isAcceptableOrUnknown(data['saved_at']!, _savedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_savedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {kind};
+  @override
+  LocalPlaceRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalPlaceRow(
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      lat: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}lat'],
+      )!,
+      lng: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}lng'],
+      )!,
+      savedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}saved_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalPlacesTable createAlias(String alias) {
+    return $LocalPlacesTable(attachedDatabase, alias);
+  }
+}
+
+class LocalPlaceRow extends DataClass implements Insertable<LocalPlaceRow> {
+  /// `home` or `work`: one place per kind.
+  final String kind;
+  final String label;
+  final double lat;
+  final double lng;
+  final String savedAt;
+  const LocalPlaceRow({
+    required this.kind,
+    required this.label,
+    required this.lat,
+    required this.lng,
+    required this.savedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['kind'] = Variable<String>(kind);
+    map['label'] = Variable<String>(label);
+    map['lat'] = Variable<double>(lat);
+    map['lng'] = Variable<double>(lng);
+    map['saved_at'] = Variable<String>(savedAt);
+    return map;
+  }
+
+  LocalPlacesCompanion toCompanion(bool nullToAbsent) {
+    return LocalPlacesCompanion(
+      kind: Value(kind),
+      label: Value(label),
+      lat: Value(lat),
+      lng: Value(lng),
+      savedAt: Value(savedAt),
+    );
+  }
+
+  factory LocalPlaceRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalPlaceRow(
+      kind: serializer.fromJson<String>(json['kind']),
+      label: serializer.fromJson<String>(json['label']),
+      lat: serializer.fromJson<double>(json['lat']),
+      lng: serializer.fromJson<double>(json['lng']),
+      savedAt: serializer.fromJson<String>(json['savedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'kind': serializer.toJson<String>(kind),
+      'label': serializer.toJson<String>(label),
+      'lat': serializer.toJson<double>(lat),
+      'lng': serializer.toJson<double>(lng),
+      'savedAt': serializer.toJson<String>(savedAt),
+    };
+  }
+
+  LocalPlaceRow copyWith({
+    String? kind,
+    String? label,
+    double? lat,
+    double? lng,
+    String? savedAt,
+  }) => LocalPlaceRow(
+    kind: kind ?? this.kind,
+    label: label ?? this.label,
+    lat: lat ?? this.lat,
+    lng: lng ?? this.lng,
+    savedAt: savedAt ?? this.savedAt,
+  );
+  LocalPlaceRow copyWithCompanion(LocalPlacesCompanion data) {
+    return LocalPlaceRow(
+      kind: data.kind.present ? data.kind.value : this.kind,
+      label: data.label.present ? data.label.value : this.label,
+      lat: data.lat.present ? data.lat.value : this.lat,
+      lng: data.lng.present ? data.lng.value : this.lng,
+      savedAt: data.savedAt.present ? data.savedAt.value : this.savedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalPlaceRow(')
+          ..write('kind: $kind, ')
+          ..write('label: $label, ')
+          ..write('lat: $lat, ')
+          ..write('lng: $lng, ')
+          ..write('savedAt: $savedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(kind, label, lat, lng, savedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalPlaceRow &&
+          other.kind == this.kind &&
+          other.label == this.label &&
+          other.lat == this.lat &&
+          other.lng == this.lng &&
+          other.savedAt == this.savedAt);
+}
+
+class LocalPlacesCompanion extends UpdateCompanion<LocalPlaceRow> {
+  final Value<String> kind;
+  final Value<String> label;
+  final Value<double> lat;
+  final Value<double> lng;
+  final Value<String> savedAt;
+  final Value<int> rowid;
+  const LocalPlacesCompanion({
+    this.kind = const Value.absent(),
+    this.label = const Value.absent(),
+    this.lat = const Value.absent(),
+    this.lng = const Value.absent(),
+    this.savedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalPlacesCompanion.insert({
+    required String kind,
+    required String label,
+    required double lat,
+    required double lng,
+    required String savedAt,
+    this.rowid = const Value.absent(),
+  }) : kind = Value(kind),
+       label = Value(label),
+       lat = Value(lat),
+       lng = Value(lng),
+       savedAt = Value(savedAt);
+  static Insertable<LocalPlaceRow> custom({
+    Expression<String>? kind,
+    Expression<String>? label,
+    Expression<double>? lat,
+    Expression<double>? lng,
+    Expression<String>? savedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (kind != null) 'kind': kind,
+      if (label != null) 'label': label,
+      if (lat != null) 'lat': lat,
+      if (lng != null) 'lng': lng,
+      if (savedAt != null) 'saved_at': savedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalPlacesCompanion copyWith({
+    Value<String>? kind,
+    Value<String>? label,
+    Value<double>? lat,
+    Value<double>? lng,
+    Value<String>? savedAt,
+    Value<int>? rowid,
+  }) {
+    return LocalPlacesCompanion(
+      kind: kind ?? this.kind,
+      label: label ?? this.label,
+      lat: lat ?? this.lat,
+      lng: lng ?? this.lng,
+      savedAt: savedAt ?? this.savedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (lat.present) {
+      map['lat'] = Variable<double>(lat.value);
+    }
+    if (lng.present) {
+      map['lng'] = Variable<double>(lng.value);
+    }
+    if (savedAt.present) {
+      map['saved_at'] = Variable<String>(savedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalPlacesCompanion(')
+          ..write('kind: $kind, ')
+          ..write('label: $label, ')
+          ..write('lat: $lat, ')
+          ..write('lng: $lng, ')
+          ..write('savedAt: $savedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $VehiclesTable extends Vehicles
     with TableInfo<$VehiclesTable, VehicleRow> {
   @override
@@ -7252,6 +7606,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $LocalOutboxTable localOutbox = $LocalOutboxTable(this);
   late final $LocalDriverPromptsTable localDriverPrompts =
       $LocalDriverPromptsTable(this);
+  late final $LocalPlacesTable localPlaces = $LocalPlacesTable(this);
   late final $VehiclesTable vehicles = $VehiclesTable(this);
   late final $RideTemplatesTable rideTemplates = $RideTemplatesTable(this);
   late final $RidesTable rides = $RidesTable(this);
@@ -7323,6 +7678,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final LocalMemberBankDao localMemberBankDao = LocalMemberBankDao(
     this as AppDatabase,
   );
+  late final LocalPlacesDao localPlacesDao = LocalPlacesDao(
+    this as AppDatabase,
+  );
   late final RidesDao ridesDao = RidesDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -7338,6 +7696,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     localMemberBank,
     localOutbox,
     localDriverPrompts,
+    localPlaces,
     vehicles,
     rideTemplates,
     rides,
@@ -12896,6 +13255,215 @@ typedef $$LocalDriverPromptsTableProcessedTableManager =
       LocalDriverPromptRow,
       PrefetchHooks Function({bool memberId})
     >;
+typedef $$LocalPlacesTableCreateCompanionBuilder =
+    LocalPlacesCompanion Function({
+      required String kind,
+      required String label,
+      required double lat,
+      required double lng,
+      required String savedAt,
+      Value<int> rowid,
+    });
+typedef $$LocalPlacesTableUpdateCompanionBuilder =
+    LocalPlacesCompanion Function({
+      Value<String> kind,
+      Value<String> label,
+      Value<double> lat,
+      Value<double> lng,
+      Value<String> savedAt,
+      Value<int> rowid,
+    });
+
+class $$LocalPlacesTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalPlacesTable> {
+  $$LocalPlacesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lat => $composableBuilder(
+    column: $table.lat,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lng => $composableBuilder(
+    column: $table.lng,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get savedAt => $composableBuilder(
+    column: $table.savedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalPlacesTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalPlacesTable> {
+  $$LocalPlacesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lat => $composableBuilder(
+    column: $table.lat,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lng => $composableBuilder(
+    column: $table.lng,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get savedAt => $composableBuilder(
+    column: $table.savedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalPlacesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalPlacesTable> {
+  $$LocalPlacesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<double> get lat =>
+      $composableBuilder(column: $table.lat, builder: (column) => column);
+
+  GeneratedColumn<double> get lng =>
+      $composableBuilder(column: $table.lng, builder: (column) => column);
+
+  GeneratedColumn<String> get savedAt =>
+      $composableBuilder(column: $table.savedAt, builder: (column) => column);
+}
+
+class $$LocalPlacesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalPlacesTable,
+          LocalPlaceRow,
+          $$LocalPlacesTableFilterComposer,
+          $$LocalPlacesTableOrderingComposer,
+          $$LocalPlacesTableAnnotationComposer,
+          $$LocalPlacesTableCreateCompanionBuilder,
+          $$LocalPlacesTableUpdateCompanionBuilder,
+          (
+            LocalPlaceRow,
+            BaseReferences<_$AppDatabase, $LocalPlacesTable, LocalPlaceRow>,
+          ),
+          LocalPlaceRow,
+          PrefetchHooks Function()
+        > {
+  $$LocalPlacesTableTableManager(_$AppDatabase db, $LocalPlacesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalPlacesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalPlacesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalPlacesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> kind = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<double> lat = const Value.absent(),
+                Value<double> lng = const Value.absent(),
+                Value<String> savedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalPlacesCompanion(
+                kind: kind,
+                label: label,
+                lat: lat,
+                lng: lng,
+                savedAt: savedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String kind,
+                required String label,
+                required double lat,
+                required double lng,
+                required String savedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => LocalPlacesCompanion.insert(
+                kind: kind,
+                label: label,
+                lat: lat,
+                lng: lng,
+                savedAt: savedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$LocalPlacesTable, LocalPlaceRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $LocalPlacesTable,
+                    LocalPlaceRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalPlacesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalPlacesTable,
+      LocalPlaceRow,
+      $$LocalPlacesTableFilterComposer,
+      $$LocalPlacesTableOrderingComposer,
+      $$LocalPlacesTableAnnotationComposer,
+      $$LocalPlacesTableCreateCompanionBuilder,
+      $$LocalPlacesTableUpdateCompanionBuilder,
+      (
+        LocalPlaceRow,
+        BaseReferences<_$AppDatabase, $LocalPlacesTable, LocalPlaceRow>,
+      ),
+      LocalPlaceRow,
+      PrefetchHooks Function()
+    >;
 typedef $$VehiclesTableCreateCompanionBuilder = VehiclesCompanion Function({
   required String id,
   required String groupId,
@@ -15413,6 +15981,8 @@ class $AppDatabaseManager {
       $$LocalOutboxTableTableManager(_db, _db.localOutbox);
   $$LocalDriverPromptsTableTableManager get localDriverPrompts =>
       $$LocalDriverPromptsTableTableManager(_db, _db.localDriverPrompts);
+  $$LocalPlacesTableTableManager get localPlaces =>
+      $$LocalPlacesTableTableManager(_db, _db.localPlaces);
   $$VehiclesTableTableManager get vehicles =>
       $$VehiclesTableTableManager(_db, _db.vehicles);
   $$RideTemplatesTableTableManager get rideTemplates =>
