@@ -38,6 +38,8 @@ DriveResult _result<T>(RepoResult<T> r, DriveResult Function(T) ok) =>
 /// prefix).
 Map<String, DriveHandler> groupsDriveHandlers(ProviderContainer c) {
   GroupsViewModel groups() => c.read(groupsViewModelProvider.notifier);
+  ArchivedGroupsViewModel archived() =>
+      c.read(archivedGroupsViewModelProvider.notifier);
   return {
     'groups.create': (p) async {
       final currency = Currency.tryParse(p['currency'] ?? 'EUR');
@@ -57,6 +59,15 @@ Map<String, DriveHandler> groupsDriveHandlers(ProviderContainer c) {
       await groups().list(),
       (gs) => {'groups': gs.map(_group).toList()},
     ),
+    'groups.archived': (_) async => _result(
+      await archived().list(),
+      (gs) => {'groups': gs.map(_group).toList()},
+    ),
+    'groups.restore': (p) async {
+      final id = p['id'];
+      if (id == null) return invalidParams('need id');
+      return _result(await archived().restore(id), (_) => {'id': id});
+    },
     'members.add': (p) async {
       final (groupId, name) = (p['groupId'], p['name']);
       if (groupId == null || name == null) {

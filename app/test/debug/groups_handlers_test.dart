@@ -102,6 +102,30 @@ void main() {
     );
   });
 
+  test('groups.archived and groups.restore round trip', () async {
+    expect(await h['groups.archived']!({}), {'groups': <Object?>[]});
+    await h['groups.create']!({'name': 'Trip'});
+    ok(await app.groups.softDelete('id-1'));
+    expect(await h['groups.archived']!({}), {
+      'groups': [
+        {'id': 'id-1', 'name': 'Trip', 'currency': 'EUR'},
+      ],
+    });
+    expect(await h['groups.restore']!({'id': 'id-1'}), {'id': 'id-1'});
+    expect(await h['groups.archived']!({}), {'groups': <Object?>[]});
+    expect((await h['groups.list']!({}))['groups'], hasLength(1));
+  });
+
+  test('groups.restore validates and maps errors', () async {
+    expect((await h['groups.restore']!({}))['error'], 'invalid_params');
+    expect((await h['groups.restore']!({'id': 'nope'}))['error'], 'not_found');
+    await h['groups.create']!({'name': 'Trip'});
+    expect((await h['groups.restore']!({'id': 'id-1'}))['error'], 'conflict');
+    ok(await app.groups.softDelete('id-1'));
+    app.groups.failWith = const Storage('s');
+    expect((await h['groups.restore']!({'id': 'id-1'}))['error'], 'internal');
+  });
+
   test('errors map to the documented codes', () async {
     await h['groups.create']!({'name': 'Trip'});
     app.members.failWith = const Conflict('c');

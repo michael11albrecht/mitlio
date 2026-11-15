@@ -45,6 +45,10 @@ abstract interface class GroupsRepository {
   /// Live groups; emits the current list first, then after every change.
   Stream<List<Group>> watchGroups();
 
+  /// Archived (soft-deleted) groups, same order as [watchGroups]; emits the
+  /// current list first, then after every change. [restore] brings one back.
+  Stream<List<Group>> watchArchivedGroups();
+
   Future<RepoResult<Group>> get(String id);
 
   /// [name] is trimmed and must not be empty.
@@ -66,6 +70,7 @@ abstract interface class GroupsRepository {
   /// Soft delete; call the returned [Undo] to bring the group back.
   Future<RepoResult<Undo>> softDelete(String id);
 
+  /// Brings an archived group back. Bumps the sync timestamp like any edit.
   /// [NotFound] for unknown ids, [Conflict] if the group is not deleted.
   Future<RepoResult<void>> restore(String id);
 }

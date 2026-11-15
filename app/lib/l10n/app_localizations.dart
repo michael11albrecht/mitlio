@@ -248,6 +248,36 @@ abstract class AppLocalizations {
   /// **'„{name}“ archiviert'**
   String groupArchived(String name);
 
+  /// No description provided for @groupsArchivedEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Archiviert ({count})'**
+  String groupsArchivedEntry(int count);
+
+  /// No description provided for @groupsArchivedTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Archivierte Gruppen'**
+  String get groupsArchivedTitle;
+
+  /// No description provided for @groupRestore.
+  ///
+  /// In de, this message translates to:
+  /// **'Wiederherstellen'**
+  String get groupRestore;
+
+  /// No description provided for @groupRestoreLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} wiederherstellen'**
+  String groupRestoreLabel(String name);
+
+  /// No description provided for @groupRestored.
+  ///
+  /// In de, this message translates to:
+  /// **'„{name}“ wiederhergestellt'**
+  String groupRestored(String name);
+
   /// No description provided for @membersEmptyTitle.
   ///
   /// In de, this message translates to:

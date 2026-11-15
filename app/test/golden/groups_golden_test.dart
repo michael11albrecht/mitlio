@@ -1,6 +1,7 @@
 import 'package:alchemist/alchemist.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/features/groups/ui/archived_groups_view.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
 import 'package:mitlio/features/groups/ui/group_form_view.dart';
@@ -47,6 +48,25 @@ Future<void> main() async {
     () => _list(const GroupsFailure(Storage('x'))),
   );
   await golden('groups_data', () => _list(GroupsLoaded(sampleGroups)));
+
+  await golden(
+    'groups_data_archived_entry',
+    () => _list(GroupsLoaded(sampleGroups, archivedCount: 2)),
+  );
+  await golden(
+    'groups_archived',
+    () => scoped(
+      archivedStateOverride(GroupsLoaded(sampleGroups)),
+      const ArchivedGroupsView(),
+    ),
+  );
+  await golden(
+    'groups_archived_error',
+    () => scoped(
+      archivedStateOverride(const GroupsFailure(Storage('x'))),
+      const ArchivedGroupsView(),
+    ),
+  );
 
   await golden(
     'group_detail_loading',
