@@ -21,6 +21,50 @@
       }
     }
   },
+  "remoteErrorOffline": "Keine Verbindung. Deine Änderungen sind gespeichert und gehen raus, sobald du online bist.",
+  "remoteErrorRateLimited": "Zu viele Versuche. Versuch es in ein paar Minuten nochmal.",
+  "remoteErrorRateLimitedIn": "Zu viele Versuche. Versuch es in {minutes} Min. nochmal.",
+  "@remoteErrorRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "remoteErrorInviteInvalid": "Dieser Link gilt nicht mehr. Bitte um einen neuen Link.",
+  "remoteErrorMemberAlreadyClaimed": "{name} ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.",
+  "@remoteErrorMemberAlreadyClaimed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteErrorMemberAlreadyClaimedNoName": "Diese Person ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.",
+  "remoteErrorAlreadyConnected": "Du bist in dieser Gruppe schon als {name} verbunden.",
+  "@remoteErrorAlreadyConnected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteErrorAlreadyConnectedNoName": "Du bist in dieser Gruppe schon verbunden.",
+  "remoteErrorMemberGone": "Diese Person gibt es in der Gruppe nicht mehr. Wähl eine andere.",
+  "remoteErrorNotOwner": "Das kann nur, wer die Gruppe erstellt hat.",
+  "remoteErrorNotMember": "Du bist nicht mehr in dieser Gruppe. Deine Daten bleiben auf diesem Handy.",
+  "remoteErrorCannotRemoveSelf": "Dich selbst kannst du hier nicht entfernen.",
+  "remoteErrorVersionTooOld": "Diese Version kann nicht mehr teilen. Aktualisiere mitlio.",
+  "remoteErrorServerDown": "Der Server antwortet gerade nicht. Wir versuchen es gleich nochmal.",
+  "remoteErrorRejected": "„{title}“ konnte nicht geteilt werden. Sie ist nur auf diesem Handy.",
+  "@remoteErrorRejected": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteErrorRejectedNoTitle": "Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.",
   "errorSettingNotSaved": "Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.",
   "errorUndoFailed": "Rückgängig machen hat nicht geklappt. Prüf den Stand und versuch es nochmal.",
   "retry": "Nochmal versuchen",

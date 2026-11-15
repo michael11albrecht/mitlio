@@ -164,6 +164,102 @@ abstract class AppLocalizations {
   /// **'Zu viele Anfragen. Versuch es in {minutes} Min. nochmal.'**
   String errorRateLimitedIn(int minutes);
 
+  /// No description provided for @remoteErrorOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Deine Änderungen sind gespeichert und gehen raus, sobald du online bist.'**
+  String get remoteErrorOffline;
+
+  /// No description provided for @remoteErrorRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Versuche. Versuch es in ein paar Minuten nochmal.'**
+  String get remoteErrorRateLimited;
+
+  /// No description provided for @remoteErrorRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Versuche. Versuch es in {minutes} Min. nochmal.'**
+  String remoteErrorRateLimitedIn(int minutes);
+
+  /// No description provided for @remoteErrorInviteInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Dieser Link gilt nicht mehr. Bitte um einen neuen Link.'**
+  String get remoteErrorInviteInvalid;
+
+  /// No description provided for @remoteErrorMemberAlreadyClaimed.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.'**
+  String remoteErrorMemberAlreadyClaimed(String name);
+
+  /// No description provided for @remoteErrorMemberAlreadyClaimedNoName.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Person ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.'**
+  String get remoteErrorMemberAlreadyClaimedNoName;
+
+  /// No description provided for @remoteErrorAlreadyConnected.
+  ///
+  /// In de, this message translates to:
+  /// **'Du bist in dieser Gruppe schon als {name} verbunden.'**
+  String remoteErrorAlreadyConnected(String name);
+
+  /// No description provided for @remoteErrorAlreadyConnectedNoName.
+  ///
+  /// In de, this message translates to:
+  /// **'Du bist in dieser Gruppe schon verbunden.'**
+  String get remoteErrorAlreadyConnectedNoName;
+
+  /// No description provided for @remoteErrorMemberGone.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Person gibt es in der Gruppe nicht mehr. Wähl eine andere.'**
+  String get remoteErrorMemberGone;
+
+  /// No description provided for @remoteErrorNotOwner.
+  ///
+  /// In de, this message translates to:
+  /// **'Das kann nur, wer die Gruppe erstellt hat.'**
+  String get remoteErrorNotOwner;
+
+  /// No description provided for @remoteErrorNotMember.
+  ///
+  /// In de, this message translates to:
+  /// **'Du bist nicht mehr in dieser Gruppe. Deine Daten bleiben auf diesem Handy.'**
+  String get remoteErrorNotMember;
+
+  /// No description provided for @remoteErrorCannotRemoveSelf.
+  ///
+  /// In de, this message translates to:
+  /// **'Dich selbst kannst du hier nicht entfernen.'**
+  String get remoteErrorCannotRemoveSelf;
+
+  /// No description provided for @remoteErrorVersionTooOld.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Version kann nicht mehr teilen. Aktualisiere mitlio.'**
+  String get remoteErrorVersionTooOld;
+
+  /// No description provided for @remoteErrorServerDown.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Server antwortet gerade nicht. Wir versuchen es gleich nochmal.'**
+  String get remoteErrorServerDown;
+
+  /// No description provided for @remoteErrorRejected.
+  ///
+  /// In de, this message translates to:
+  /// **'„{title}“ konnte nicht geteilt werden. Sie ist nur auf diesem Handy.'**
+  String remoteErrorRejected(String title);
+
+  /// No description provided for @remoteErrorRejectedNoTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.'**
+  String get remoteErrorRejectedNoTitle;
+
   /// No description provided for @errorSettingNotSaved.
   ///
   /// In de, this message translates to:
