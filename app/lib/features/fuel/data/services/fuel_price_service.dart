@@ -26,6 +26,10 @@ abstract interface class FuelPriceService {
   /// Whether a backend is configured. `false` hides the whole feature.
   bool get isConfigured;
 
+  /// Whether postcode and "in meiner Nähe" lookups work. `false` for the
+  /// direct EU source, which only knows the national average.
+  bool get supportsAreas;
+
   /// Without [area] this is the national average: no location involved.
   Future<FuelServiceResult> fetch(FuelGrade grade, {FuelArea? area});
 }
@@ -37,6 +41,9 @@ class UnavailableFuelPriceService implements FuelPriceService {
 
   @override
   bool get isConfigured => false;
+
+  @override
+  bool get supportsAreas => false;
 
   @override
   Future<FuelServiceResult> fetch(FuelGrade grade, {FuelArea? area}) async =>
@@ -61,6 +68,9 @@ class HttpFuelPriceService implements FuelPriceService {
 
   @override
   bool get isConfigured => baseUrl.isNotEmpty;
+
+  @override
+  bool get supportsAreas => true;
 
   /// The request URI for [grade] and [area].
   Uri uriFor(FuelGrade grade, FuelArea? area) {

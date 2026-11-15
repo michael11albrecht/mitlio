@@ -59,6 +59,23 @@ void main() {
     },
   );
 
+  test(
+    'national-only source (no backend): chips on, postcode and nearby off',
+    () async {
+      app.fuel.areas = false;
+      await start();
+      expect(state().available, isTrue);
+      expect(state().price!.priceMilli, 1799);
+      expect(state().canPlz, isFalse);
+      expect(state().canLocate, isFalse);
+      await vm().usePlz('10115');
+      await vm().useNearby();
+      expect(state().scope, FuelScope.national);
+      expect(app.location.asked, 0);
+      expect(app.fuel.calls.every((c) => c.area == null), isTrue);
+    },
+  );
+
   test('a chip tap selects the grade and fills its price', () async {
     await start();
     await vm().selectGrade(FuelGrade.e10);
