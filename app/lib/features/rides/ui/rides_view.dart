@@ -10,6 +10,7 @@ import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/core/widgets/money_text.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
+import 'package:mitlio/features/rides/ui/driver_prompt_sheet.dart';
 import 'package:mitlio/features/rides/ui/quick_log_card.dart';
 import 'package:mitlio/features/rides/ui/ride_calendar.dart';
 import 'package:mitlio/features/rides/ui/ride_settle_widgets.dart';
@@ -75,7 +76,7 @@ class RidesView extends ConsumerWidget {
   }
 }
 
-class _RidesBody extends StatelessWidget {
+class _RidesBody extends StatefulWidget {
   const _RidesBody({
     required this.groupId,
     required this.state,
@@ -85,6 +86,47 @@ class _RidesBody extends StatelessWidget {
   final String groupId;
   final RidesLoaded state;
   final RidesViewModel vm;
+
+  @override
+  State<_RidesBody> createState() => _RidesBodyState();
+}
+
+class _RidesBodyState extends State<_RidesBody> {
+  var _asking = false;
+
+  String get groupId => widget.groupId;
+  RidesLoaded get state => widget.state;
+  RidesViewModel get vm => widget.vm;
+
+  @override
+  void initState() {
+    super.initState();
+    _maybeAsk();
+  }
+
+  @override
+  void didUpdateWidget(_RidesBody oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _maybeAsk();
+  }
+
+  /// Shows the driver question once when the ViewModel has one pending.
+  void _maybeAsk() {
+    final prompt = state.driverPrompt;
+    if (prompt == null || _asking) return;
+    _asking = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await showDriverPromptSheet(
+        context,
+        groupId: groupId,
+        vm: vm,
+        prompt: prompt,
+        name: state.member(prompt.memberId)?.name ?? '',
+      );
+      _asking = false;
+    });
+  }
 
   Future<void> _delete(BuildContext context, RideEntry entry) async {
     final l10n = AppLocalizations.of(context);

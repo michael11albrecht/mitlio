@@ -579,6 +579,21 @@ class $MembersTable extends Members with TableInfo<$MembersTable, MemberRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _canDriveMeta = const VerificationMeta(
+    'canDrive',
+  );
+  @override
+  late final GeneratedColumn<bool> canDrive = GeneratedColumn<bool>(
+    'can_drive',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("can_drive" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -591,6 +606,7 @@ class $MembersTable extends Members with TableInfo<$MembersTable, MemberRow> {
     paypalMe,
     userId,
     ibanHint,
+    canDrive,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -673,6 +689,12 @@ class $MembersTable extends Members with TableInfo<$MembersTable, MemberRow> {
         ibanHint.isAcceptableOrUnknown(data['iban_hint']!, _ibanHintMeta),
       );
     }
+    if (data.containsKey('can_drive')) {
+      context.handle(
+        _canDriveMeta,
+        canDrive.isAcceptableOrUnknown(data['can_drive']!, _canDriveMeta),
+      );
+    }
     return context;
   }
 
@@ -722,6 +744,10 @@ class $MembersTable extends Members with TableInfo<$MembersTable, MemberRow> {
         DriftSqlType.string,
         data['${effectivePrefix}iban_hint'],
       ),
+      canDrive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}can_drive'],
+      )!,
     );
   }
 
@@ -753,6 +779,9 @@ class MemberRow extends DataClass implements Insertable<MemberRow> {
 
   /// Masked hint only; the full IBAN lives in [LocalMemberBank].
   final String? ibanHint;
+
+  /// Whether this member drives; only drivers are suggested as next driver.
+  final bool canDrive;
   const MemberRow({
     required this.id,
     required this.groupId,
@@ -764,6 +793,7 @@ class MemberRow extends DataClass implements Insertable<MemberRow> {
     this.paypalMe,
     this.userId,
     this.ibanHint,
+    required this.canDrive,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -786,6 +816,7 @@ class MemberRow extends DataClass implements Insertable<MemberRow> {
     if (!nullToAbsent || ibanHint != null) {
       map['iban_hint'] = Variable<String>(ibanHint);
     }
+    map['can_drive'] = Variable<bool>(canDrive);
     return map;
   }
 
@@ -809,6 +840,7 @@ class MemberRow extends DataClass implements Insertable<MemberRow> {
       ibanHint: ibanHint == null && nullToAbsent
           ? const Value.absent()
           : Value(ibanHint),
+      canDrive: Value(canDrive),
     );
   }
 
@@ -828,6 +860,7 @@ class MemberRow extends DataClass implements Insertable<MemberRow> {
       paypalMe: serializer.fromJson<String?>(json['paypalMe']),
       userId: serializer.fromJson<String?>(json['userId']),
       ibanHint: serializer.fromJson<String?>(json['ibanHint']),
+      canDrive: serializer.fromJson<bool>(json['canDrive']),
     );
   }
   @override
@@ -844,6 +877,7 @@ class MemberRow extends DataClass implements Insertable<MemberRow> {
       'paypalMe': serializer.toJson<String?>(paypalMe),
       'userId': serializer.toJson<String?>(userId),
       'ibanHint': serializer.toJson<String?>(ibanHint),
+      'canDrive': serializer.toJson<bool>(canDrive),
     };
   }
 
@@ -858,6 +892,7 @@ class MemberRow extends DataClass implements Insertable<MemberRow> {
     Value<String?> paypalMe = const Value.absent(),
     Value<String?> userId = const Value.absent(),
     Value<String?> ibanHint = const Value.absent(),
+    bool? canDrive,
   }) => MemberRow(
     id: id ?? this.id,
     groupId: groupId ?? this.groupId,
@@ -869,6 +904,7 @@ class MemberRow extends DataClass implements Insertable<MemberRow> {
     paypalMe: paypalMe.present ? paypalMe.value : this.paypalMe,
     userId: userId.present ? userId.value : this.userId,
     ibanHint: ibanHint.present ? ibanHint.value : this.ibanHint,
+    canDrive: canDrive ?? this.canDrive,
   );
   MemberRow copyWithCompanion(MembersCompanion data) {
     return MemberRow(
@@ -882,6 +918,7 @@ class MemberRow extends DataClass implements Insertable<MemberRow> {
       paypalMe: data.paypalMe.present ? data.paypalMe.value : this.paypalMe,
       userId: data.userId.present ? data.userId.value : this.userId,
       ibanHint: data.ibanHint.present ? data.ibanHint.value : this.ibanHint,
+      canDrive: data.canDrive.present ? data.canDrive.value : this.canDrive,
     );
   }
 
@@ -897,7 +934,8 @@ class MemberRow extends DataClass implements Insertable<MemberRow> {
           ..write('position: $position, ')
           ..write('paypalMe: $paypalMe, ')
           ..write('userId: $userId, ')
-          ..write('ibanHint: $ibanHint')
+          ..write('ibanHint: $ibanHint, ')
+          ..write('canDrive: $canDrive')
           ..write(')'))
         .toString();
   }
@@ -914,6 +952,7 @@ class MemberRow extends DataClass implements Insertable<MemberRow> {
     paypalMe,
     userId,
     ibanHint,
+    canDrive,
   );
   @override
   bool operator ==(Object other) =>
@@ -928,7 +967,8 @@ class MemberRow extends DataClass implements Insertable<MemberRow> {
           other.position == this.position &&
           other.paypalMe == this.paypalMe &&
           other.userId == this.userId &&
-          other.ibanHint == this.ibanHint);
+          other.ibanHint == this.ibanHint &&
+          other.canDrive == this.canDrive);
 }
 
 class MembersCompanion extends UpdateCompanion<MemberRow> {
@@ -942,6 +982,7 @@ class MembersCompanion extends UpdateCompanion<MemberRow> {
   final Value<String?> paypalMe;
   final Value<String?> userId;
   final Value<String?> ibanHint;
+  final Value<bool> canDrive;
   final Value<int> rowid;
   const MembersCompanion({
     this.id = const Value.absent(),
@@ -954,6 +995,7 @@ class MembersCompanion extends UpdateCompanion<MemberRow> {
     this.paypalMe = const Value.absent(),
     this.userId = const Value.absent(),
     this.ibanHint = const Value.absent(),
+    this.canDrive = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   MembersCompanion.insert({
@@ -967,6 +1009,7 @@ class MembersCompanion extends UpdateCompanion<MemberRow> {
     this.paypalMe = const Value.absent(),
     this.userId = const Value.absent(),
     this.ibanHint = const Value.absent(),
+    this.canDrive = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        groupId = Value(groupId),
@@ -985,6 +1028,7 @@ class MembersCompanion extends UpdateCompanion<MemberRow> {
     Expression<String>? paypalMe,
     Expression<String>? userId,
     Expression<String>? ibanHint,
+    Expression<bool>? canDrive,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -998,6 +1042,7 @@ class MembersCompanion extends UpdateCompanion<MemberRow> {
       if (paypalMe != null) 'paypal_me': paypalMe,
       if (userId != null) 'user_id': userId,
       if (ibanHint != null) 'iban_hint': ibanHint,
+      if (canDrive != null) 'can_drive': canDrive,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1013,6 +1058,7 @@ class MembersCompanion extends UpdateCompanion<MemberRow> {
     Value<String?>? paypalMe,
     Value<String?>? userId,
     Value<String?>? ibanHint,
+    Value<bool>? canDrive,
     Value<int>? rowid,
   }) {
     return MembersCompanion(
@@ -1026,6 +1072,7 @@ class MembersCompanion extends UpdateCompanion<MemberRow> {
       paypalMe: paypalMe ?? this.paypalMe,
       userId: userId ?? this.userId,
       ibanHint: ibanHint ?? this.ibanHint,
+      canDrive: canDrive ?? this.canDrive,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1063,6 +1110,9 @@ class MembersCompanion extends UpdateCompanion<MemberRow> {
     if (ibanHint.present) {
       map['iban_hint'] = Variable<String>(ibanHint.value);
     }
+    if (canDrive.present) {
+      map['can_drive'] = Variable<bool>(canDrive.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1082,6 +1132,7 @@ class MembersCompanion extends UpdateCompanion<MemberRow> {
           ..write('paypalMe: $paypalMe, ')
           ..write('userId: $userId, ')
           ..write('ibanHint: $ibanHint, ')
+          ..write('canDrive: $canDrive, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4122,6 +4173,229 @@ class LocalOutboxCompanion extends UpdateCompanion<LocalOutboxRow> {
   }
 }
 
+class $LocalDriverPromptsTable extends LocalDriverPrompts
+    with TableInfo<$LocalDriverPromptsTable, LocalDriverPromptRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalDriverPromptsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES members (id)',
+    ),
+  );
+  static const VerificationMeta _askedAtMeta = const VerificationMeta(
+    'askedAt',
+  );
+  @override
+  late final GeneratedColumn<String> askedAt = GeneratedColumn<String>(
+    'asked_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [memberId, askedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_driver_prompts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalDriverPromptRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memberIdMeta);
+    }
+    if (data.containsKey('asked_at')) {
+      context.handle(
+        _askedAtMeta,
+        askedAt.isAcceptableOrUnknown(data['asked_at']!, _askedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_askedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {memberId};
+  @override
+  LocalDriverPromptRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalDriverPromptRow(
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      )!,
+      askedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}asked_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalDriverPromptsTable createAlias(String alias) {
+    return $LocalDriverPromptsTable(attachedDatabase, alias);
+  }
+}
+
+class LocalDriverPromptRow extends DataClass
+    implements Insertable<LocalDriverPromptRow> {
+  final String memberId;
+  final String askedAt;
+  const LocalDriverPromptRow({required this.memberId, required this.askedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['member_id'] = Variable<String>(memberId);
+    map['asked_at'] = Variable<String>(askedAt);
+    return map;
+  }
+
+  LocalDriverPromptsCompanion toCompanion(bool nullToAbsent) {
+    return LocalDriverPromptsCompanion(
+      memberId: Value(memberId),
+      askedAt: Value(askedAt),
+    );
+  }
+
+  factory LocalDriverPromptRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalDriverPromptRow(
+      memberId: serializer.fromJson<String>(json['memberId']),
+      askedAt: serializer.fromJson<String>(json['askedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'memberId': serializer.toJson<String>(memberId),
+      'askedAt': serializer.toJson<String>(askedAt),
+    };
+  }
+
+  LocalDriverPromptRow copyWith({String? memberId, String? askedAt}) =>
+      LocalDriverPromptRow(
+        memberId: memberId ?? this.memberId,
+        askedAt: askedAt ?? this.askedAt,
+      );
+  LocalDriverPromptRow copyWithCompanion(LocalDriverPromptsCompanion data) {
+    return LocalDriverPromptRow(
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+      askedAt: data.askedAt.present ? data.askedAt.value : this.askedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalDriverPromptRow(')
+          ..write('memberId: $memberId, ')
+          ..write('askedAt: $askedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(memberId, askedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalDriverPromptRow &&
+          other.memberId == this.memberId &&
+          other.askedAt == this.askedAt);
+}
+
+class LocalDriverPromptsCompanion
+    extends UpdateCompanion<LocalDriverPromptRow> {
+  final Value<String> memberId;
+  final Value<String> askedAt;
+  final Value<int> rowid;
+  const LocalDriverPromptsCompanion({
+    this.memberId = const Value.absent(),
+    this.askedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalDriverPromptsCompanion.insert({
+    required String memberId,
+    required String askedAt,
+    this.rowid = const Value.absent(),
+  }) : memberId = Value(memberId),
+       askedAt = Value(askedAt);
+  static Insertable<LocalDriverPromptRow> custom({
+    Expression<String>? memberId,
+    Expression<String>? askedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (memberId != null) 'member_id': memberId,
+      if (askedAt != null) 'asked_at': askedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalDriverPromptsCompanion copyWith({
+    Value<String>? memberId,
+    Value<String>? askedAt,
+    Value<int>? rowid,
+  }) {
+    return LocalDriverPromptsCompanion(
+      memberId: memberId ?? this.memberId,
+      askedAt: askedAt ?? this.askedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (askedAt.present) {
+      map['asked_at'] = Variable<String>(askedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalDriverPromptsCompanion(')
+          ..write('memberId: $memberId, ')
+          ..write('askedAt: $askedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $VehiclesTable extends Vehicles
     with TableInfo<$VehiclesTable, VehicleRow> {
   @override
@@ -6976,6 +7250,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $LocalOutboxTable localOutbox = $LocalOutboxTable(this);
+  late final $LocalDriverPromptsTable localDriverPrompts =
+      $LocalDriverPromptsTable(this);
   late final $VehiclesTable vehicles = $VehiclesTable(this);
   late final $RideTemplatesTable rideTemplates = $RideTemplatesTable(this);
   late final $RidesTable rides = $RidesTable(this);
@@ -7061,6 +7337,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     settlements,
     localMemberBank,
     localOutbox,
+    localDriverPrompts,
     vehicles,
     rideTemplates,
     rides,
@@ -8179,6 +8456,7 @@ typedef $$MembersTableCreateCompanionBuilder = MembersCompanion Function({
   Value<String?> paypalMe,
   Value<String?> userId,
   Value<String?> ibanHint,
+  Value<bool> canDrive,
   Value<int> rowid,
 });
 typedef $$MembersTableUpdateCompanionBuilder = MembersCompanion Function({
@@ -8192,6 +8470,7 @@ typedef $$MembersTableUpdateCompanionBuilder = MembersCompanion Function({
   Value<String?> paypalMe,
   Value<String?> userId,
   Value<String?> ibanHint,
+  Value<bool> canDrive,
   Value<int> rowid,
 });
 
@@ -8310,6 +8589,30 @@ final class $$MembersTableReferences
     );
   }
 
+  static MultiTypedResultKey<
+    $LocalDriverPromptsTable,
+    List<LocalDriverPromptRow>
+  >
+  _localDriverPromptsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.localDriverPrompts,
+        aliasName: 'members__id__local_driver_prompts__member_id',
+      );
+
+  $$LocalDriverPromptsTableProcessedTableManager get localDriverPromptsRefs {
+    final manager = $$LocalDriverPromptsTableTableManager(
+      $_db,
+      $_db.localDriverPrompts,
+    ).filter((f) => f.memberId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _localDriverPromptsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$RideTemplatesTable, List<RideTemplateRow>>
   _rideTemplatesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.rideTemplates,
@@ -8399,6 +8702,11 @@ class $$MembersTableFilterComposer
 
   ColumnFilters<String> get ibanHint => $composableBuilder(
     column: $table.ibanHint,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get canDrive => $composableBuilder(
+    column: $table.canDrive,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8550,6 +8858,31 @@ class $$MembersTableFilterComposer
     return f(composer);
   }
 
+  Expression<bool> localDriverPromptsRefs(
+    Expression<bool> Function($$LocalDriverPromptsTableFilterComposer f) f,
+  ) {
+    final $$LocalDriverPromptsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.localDriverPrompts,
+      getReferencedColumn: (t) => t.memberId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalDriverPromptsTableFilterComposer(
+            $db: $db,
+            $table: $db.localDriverPrompts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<bool> rideTemplatesRefs(
     Expression<bool> Function($$RideTemplatesTableFilterComposer f) f,
   ) {
@@ -8655,6 +8988,11 @@ class $$MembersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get canDrive => $composableBuilder(
+    column: $table.canDrive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$GroupsTableOrderingComposer get groupId {
     final $$GroupsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -8714,6 +9052,9 @@ class $$MembersTableAnnotationComposer
 
   GeneratedColumn<String> get ibanHint =>
       $composableBuilder(column: $table.ibanHint, builder: (column) => column);
+
+  GeneratedColumn<bool> get canDrive =>
+      $composableBuilder(column: $table.canDrive, builder: (column) => column);
 
   $$GroupsTableAnnotationComposer get groupId {
     final $$GroupsTableAnnotationComposer composer = $composerBuilder(
@@ -8863,6 +9204,32 @@ class $$MembersTableAnnotationComposer
     return f(composer);
   }
 
+  Expression<T> localDriverPromptsRefs<T extends Object>(
+    Expression<T> Function($$LocalDriverPromptsTableAnnotationComposer a) f,
+  ) {
+    final $$LocalDriverPromptsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.localDriverPrompts,
+          getReferencedColumn: (t) => t.memberId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$LocalDriverPromptsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.localDriverPrompts,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
   Expression<T> rideTemplatesRefs<T extends Object>(
     Expression<T> Function($$RideTemplatesTableAnnotationComposer a) f,
   ) {
@@ -8934,6 +9301,7 @@ class $$MembersTableTableManager
             bool sentSettlements,
             bool receivedSettlements,
             bool localMemberBankRefs,
+            bool localDriverPromptsRefs,
             bool rideTemplatesRefs,
             bool ridesRefs,
           })
@@ -8961,6 +9329,7 @@ class $$MembersTableTableManager
                 Value<String?> paypalMe = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> ibanHint = const Value.absent(),
+                Value<bool> canDrive = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MembersCompanion(
                 id: id,
@@ -8973,6 +9342,7 @@ class $$MembersTableTableManager
                 paypalMe: paypalMe,
                 userId: userId,
                 ibanHint: ibanHint,
+                canDrive: canDrive,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8987,6 +9357,7 @@ class $$MembersTableTableManager
                 Value<String?> paypalMe = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> ibanHint = const Value.absent(),
+                Value<bool> canDrive = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MembersCompanion.insert(
                 id: id,
@@ -8999,6 +9370,7 @@ class $$MembersTableTableManager
                 paypalMe: paypalMe,
                 userId: userId,
                 ibanHint: ibanHint,
+                canDrive: canDrive,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -9017,6 +9389,7 @@ class $$MembersTableTableManager
                 sentSettlements = false,
                 receivedSettlements = false,
                 localMemberBankRefs = false,
+                localDriverPromptsRefs = false,
                 rideTemplatesRefs = false,
                 ridesRefs = false,
               }) {
@@ -9028,6 +9401,7 @@ class $$MembersTableTableManager
                     if (sentSettlements) db.settlements,
                     if (receivedSettlements) db.settlements,
                     if (localMemberBankRefs) db.localMemberBank,
+                    if (localDriverPromptsRefs) db.localDriverPrompts,
                     if (rideTemplatesRefs) db.rideTemplates,
                     if (ridesRefs) db.rides,
                   ],
@@ -9163,6 +9537,26 @@ class $$MembersTableTableManager
                           referencedColumn: 'member_id',
                           typedResults: items,
                         ),
+                      if (localDriverPromptsRefs)
+                        await $_getPrefetchedDataByColumns<
+                          MemberRow,
+                          $MembersTable,
+                          LocalDriverPromptRow,
+                          $LocalDriverPromptsTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MembersTableReferences
+                              ._localDriverPromptsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MembersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).localDriverPromptsRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'member_id',
+                          typedResults: items,
+                        ),
                       if (rideTemplatesRefs)
                         await $_getPrefetchedDataByColumns<
                           MemberRow,
@@ -9226,6 +9620,7 @@ typedef $$MembersTableProcessedTableManager =
         bool sentSettlements,
         bool receivedSettlements,
         bool localMemberBankRefs,
+        bool localDriverPromptsRefs,
         bool rideTemplatesRefs,
         bool ridesRefs,
       })
@@ -12227,6 +12622,280 @@ typedef $$LocalOutboxTableProcessedTableManager =
       LocalOutboxRow,
       PrefetchHooks Function()
     >;
+typedef $$LocalDriverPromptsTableCreateCompanionBuilder =
+    LocalDriverPromptsCompanion Function({
+      required String memberId,
+      required String askedAt,
+      Value<int> rowid,
+    });
+typedef $$LocalDriverPromptsTableUpdateCompanionBuilder =
+    LocalDriverPromptsCompanion Function({
+      Value<String> memberId,
+      Value<String> askedAt,
+      Value<int> rowid,
+    });
+
+final class $$LocalDriverPromptsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $LocalDriverPromptsTable,
+          LocalDriverPromptRow
+        > {
+  $$LocalDriverPromptsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $MembersTable _memberIdTable(_$AppDatabase db) =>
+      db.members.createAlias('local_driver_prompts__member_id__members__id');
+
+  $$MembersTableProcessedTableManager get memberId {
+    final $_column = $_itemColumn<String>('member_id')!;
+
+    final manager = $$MembersTableTableManager(
+      $_db,
+      $_db.members,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_memberIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$LocalDriverPromptsTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalDriverPromptsTable> {
+  $$LocalDriverPromptsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get askedAt => $composableBuilder(
+    column: $table.askedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$MembersTableFilterComposer get memberId {
+    final $$MembersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableFilterComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LocalDriverPromptsTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalDriverPromptsTable> {
+  $$LocalDriverPromptsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get askedAt => $composableBuilder(
+    column: $table.askedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$MembersTableOrderingComposer get memberId {
+    final $$MembersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableOrderingComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LocalDriverPromptsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalDriverPromptsTable> {
+  $$LocalDriverPromptsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get askedAt =>
+      $composableBuilder(column: $table.askedAt, builder: (column) => column);
+
+  $$MembersTableAnnotationComposer get memberId {
+    final $$MembersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.memberId,
+      referencedTable: $db.members,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MembersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.members,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LocalDriverPromptsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalDriverPromptsTable,
+          LocalDriverPromptRow,
+          $$LocalDriverPromptsTableFilterComposer,
+          $$LocalDriverPromptsTableOrderingComposer,
+          $$LocalDriverPromptsTableAnnotationComposer,
+          $$LocalDriverPromptsTableCreateCompanionBuilder,
+          $$LocalDriverPromptsTableUpdateCompanionBuilder,
+          (LocalDriverPromptRow, $$LocalDriverPromptsTableReferences),
+          LocalDriverPromptRow,
+          PrefetchHooks Function({bool memberId})
+        > {
+  $$LocalDriverPromptsTableTableManager(
+    _$AppDatabase db,
+    $LocalDriverPromptsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalDriverPromptsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalDriverPromptsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalDriverPromptsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> memberId = const Value.absent(),
+                Value<String> askedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalDriverPromptsCompanion(
+                memberId: memberId,
+                askedAt: askedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String memberId,
+                required String askedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => LocalDriverPromptsCompanion.insert(
+                memberId: memberId,
+                askedAt: askedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$LocalDriverPromptsTable, LocalDriverPromptRow>(
+                    table,
+                  ),
+                  $$LocalDriverPromptsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({memberId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (memberId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.memberId,
+                        referencedTable: $$LocalDriverPromptsTableReferences
+                            ._memberIdTable(db),
+                        referencedColumn: $$LocalDriverPromptsTableReferences
+                            ._memberIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$LocalDriverPromptsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalDriverPromptsTable,
+      LocalDriverPromptRow,
+      $$LocalDriverPromptsTableFilterComposer,
+      $$LocalDriverPromptsTableOrderingComposer,
+      $$LocalDriverPromptsTableAnnotationComposer,
+      $$LocalDriverPromptsTableCreateCompanionBuilder,
+      $$LocalDriverPromptsTableUpdateCompanionBuilder,
+      (LocalDriverPromptRow, $$LocalDriverPromptsTableReferences),
+      LocalDriverPromptRow,
+      PrefetchHooks Function({bool memberId})
+    >;
 typedef $$VehiclesTableCreateCompanionBuilder = VehiclesCompanion Function({
   required String id,
   required String groupId,
@@ -14742,6 +15411,8 @@ class $AppDatabaseManager {
       $$LocalMemberBankTableTableManager(_db, _db.localMemberBank);
   $$LocalOutboxTableTableManager get localOutbox =>
       $$LocalOutboxTableTableManager(_db, _db.localOutbox);
+  $$LocalDriverPromptsTableTableManager get localDriverPrompts =>
+      $$LocalDriverPromptsTableTableManager(_db, _db.localDriverPrompts);
   $$VehiclesTableTableManager get vehicles =>
       $$VehiclesTableTableManager(_db, _db.vehicles);
   $$RideTemplatesTableTableManager get rideTemplates =>

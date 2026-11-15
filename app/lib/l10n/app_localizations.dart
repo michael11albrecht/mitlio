@@ -1963,6 +1963,90 @@ abstract class AppLocalizations {
   /// **'{driven} km gefahren · {ridden} km mitgefahren'**
   String ridesFairnessKm(String driven, String ridden);
 
+  /// No description provided for @ridesDriversTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer fährt?'**
+  String get ridesDriversTitle;
+
+  /// No description provided for @ridesDriversHelp.
+  ///
+  /// In de, this message translates to:
+  /// **'Nur Fahrer werden als Nächstes vorgeschlagen.'**
+  String get ridesDriversHelp;
+
+  /// No description provided for @ridesDriverSwitch.
+  ///
+  /// In de, this message translates to:
+  /// **'Fährt selbst'**
+  String get ridesDriverSwitch;
+
+  /// No description provided for @ridesDriverNowDrives.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} wird wieder vorgeschlagen'**
+  String ridesDriverNowDrives(String name);
+
+  /// No description provided for @ridesDriverNotSuggested.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} wird nicht mehr vorgeschlagen'**
+  String ridesDriverNotSuggested(String name);
+
+  /// No description provided for @ridesFairnessNotDriving.
+  ///
+  /// In de, this message translates to:
+  /// **'Fährt nicht · wird nicht vorgeschlagen'**
+  String get ridesFairnessNotDriving;
+
+  /// No description provided for @ridesFairnessChangeDrivers.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrer ändern'**
+  String get ridesFairnessChangeDrivers;
+
+  /// No description provided for @ridesFairnessHow.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie wird das berechnet?'**
+  String get ridesFairnessHow;
+
+  /// No description provided for @ridesFairnessHowText.
+  ///
+  /// In de, this message translates to:
+  /// **'Vorgeschlagen wird, wer bisher am wenigsten gefahren ist – km gefahren minus km mitgefahren seit der letzten Abrechnung. Bei Gleichstand ist dran, wer am längsten nicht gefahren ist. Nur Mitglieder, die als Fahrer markiert sind, werden vorgeschlagen.'**
+  String get ridesFairnessHowText;
+
+  /// No description provided for @ridesDriverPromptTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Fährt {name} nicht selbst?'**
+  String ridesDriverPromptTitle(String name);
+
+  /// No description provided for @ridesDriverPromptBody.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} ist bei {n} Fahrten mitgefahren, aber noch nie gefahren. Als Nichtfahrer wird {name} nicht mehr als Nächstes vorgeschlagen.'**
+  String ridesDriverPromptBody(String name, int n);
+
+  /// No description provided for @ridesDriverPromptMark.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Nichtfahrer markieren'**
+  String get ridesDriverPromptMark;
+
+  /// No description provided for @ridesDriverPromptKeep.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} fährt auch'**
+  String ridesDriverPromptKeep(String name);
+
+  /// No description provided for @ridesDriverPromptManage.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrer verwalten'**
+  String get ridesDriverPromptManage;
+
   /// No description provided for @settleOpen.
   ///
   /// In de, this message translates to:

@@ -1142,6 +1142,59 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get ridesDriversTitle => 'Who drives?';
+
+  @override
+  String get ridesDriversHelp => 'Only drivers are suggested as next.';
+
+  @override
+  String get ridesDriverSwitch => 'Drives';
+
+  @override
+  String ridesDriverNowDrives(String name) {
+    return '$name is suggested again';
+  }
+
+  @override
+  String ridesDriverNotSuggested(String name) {
+    return '$name is no longer suggested';
+  }
+
+  @override
+  String get ridesFairnessNotDriving => 'Doesn\'t drive · not suggested';
+
+  @override
+  String get ridesFairnessChangeDrivers => 'Change drivers';
+
+  @override
+  String get ridesFairnessHow => 'How is this calculated?';
+
+  @override
+  String get ridesFairnessHowText =>
+      'The person who has driven the least is suggested: km driven minus km ridden since the last settlement. On a tie, whoever drove longest ago is next. Only members marked as drivers are suggested.';
+
+  @override
+  String ridesDriverPromptTitle(String name) {
+    return 'Doesn\'t $name drive?';
+  }
+
+  @override
+  String ridesDriverPromptBody(String name, int n) {
+    return '$name rode along on $n rides but has never driven. As a non-driver, $name is no longer suggested as next.';
+  }
+
+  @override
+  String get ridesDriverPromptMark => 'Mark as non-driver';
+
+  @override
+  String ridesDriverPromptKeep(String name) {
+    return '$name drives too';
+  }
+
+  @override
+  String get ridesDriverPromptManage => 'Manage drivers';
+
+  @override
   String get settleOpen => 'Settle up';
 
   @override

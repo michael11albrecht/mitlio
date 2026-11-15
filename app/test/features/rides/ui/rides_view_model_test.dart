@@ -212,7 +212,7 @@ void main() {
   });
 
   group('smart driver', () {
-    test('without history only the default driver can be suggested', () async {
+    test('without history the first member is suggested', () async {
       await app.seedCommute();
       await open();
       expect(quick().driverId, id(0));
@@ -283,23 +283,20 @@ void main() {
       expect(quick().passengerIds, {id(1)});
     });
 
-    test('a template without a driver falls back to its carpool', () async {
+    test('a template without a driver still suggests a member', () async {
       await app.seedCommute(defaultDriver: null, passengers: {'Ben', 'Cy'});
       await open();
-      // Ben and Cy tie; the earlier member drives.
-      expect(quick().driverId, id(1));
-      expect(quick().passengerIds, {id(2)});
+      // Everybody is a driver and all tie: the earlier member drives.
+      expect(quick().driverId, id(0));
+      expect(quick().passengerIds, {id(1), id(2)});
     });
 
-    test(
-      'a template without driver and passengers falls back to everyone',
-      () async {
-        await app.seedCommute(defaultDriver: null, passengers: {});
-        await open();
-        expect(quick().driverId, id(0));
-        expect(quick().passengerIds, isEmpty);
-      },
-    );
+    test('a template without driver and passengers works too', () async {
+      await app.seedCommute(defaultDriver: null, passengers: {});
+      await open();
+      expect(quick().driverId, id(0));
+      expect(quick().passengerIds, isEmpty);
+    });
   });
 
   group('overrides', () {

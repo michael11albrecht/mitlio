@@ -454,6 +454,7 @@ export type Database = {
       }
       members: {
         Row: {
+          can_drive: boolean
           created_at: string
           deleted_at: string | null
           group_id: string
@@ -467,6 +468,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          can_drive?: boolean
           created_at?: string
           deleted_at?: string | null
           group_id: string
@@ -480,6 +482,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          can_drive?: boolean
           created_at?: string
           deleted_at?: string | null
           group_id?: string

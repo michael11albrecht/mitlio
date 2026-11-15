@@ -99,10 +99,45 @@ class FakeMembersRepository implements MembersRepository {
       position: m.position,
       paypalMe: paypalMe,
       ibanHint: ibanHint,
+      canDrive: m.canDrive,
     );
     _members[id] = updated;
     _changes.add(null);
     return Ok(updated);
+  }
+
+  @override
+  Future<RepoResult<GroupMember>> setCanDrive(
+    String id, {
+    required bool canDrive,
+  }) async {
+    final m = _live(id);
+    if (m == null) return Err(NotFound('member', id));
+    final updated = GroupMember(
+      id: id,
+      groupId: m.groupId,
+      name: m.name,
+      position: m.position,
+      paypalMe: m.paypalMe,
+      ibanHint: m.ibanHint,
+      canDrive: canDrive,
+    );
+    _members[id] = updated;
+    _changes.add(null);
+    return Ok(updated);
+  }
+
+  final _asked = <String>{};
+
+  @override
+  Future<RepoResult<Set<String>>> askedDriverPrompts() async =>
+      Ok(Set.unmodifiable(_asked));
+
+  @override
+  Future<RepoResult<void>> markDriverPromptAsked(String id) async {
+    if (_live(id) == null) return Err(NotFound('member', id));
+    _asked.add(id);
+    return const Ok(null);
   }
 
   @override
@@ -124,6 +159,7 @@ class FakeMembersRepository implements MembersRepository {
         position: positions[i],
         paypalMe: m.paypalMe,
         ibanHint: m.ibanHint,
+        canDrive: m.canDrive,
       );
     }
     _changes.add(null);
