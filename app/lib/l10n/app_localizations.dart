@@ -164,6 +164,12 @@ abstract class AppLocalizations {
   /// **'Schließen'**
   String get dismiss;
 
+  /// No description provided for @hideSnackBar.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausblenden'**
+  String get hideSnackBar;
+
   /// No description provided for @groupNew.
   ///
   /// In de, this message translates to:
