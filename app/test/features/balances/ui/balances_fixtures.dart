@@ -28,6 +28,8 @@ class StubBalancesViewModel extends BalancesViewModel {
         pairwise: s.pairwise,
         mode: mode,
         hasEntries: s.hasEntries,
+        openRideCount: s.openRideCount,
+        openRideCents: s.openRideCents,
       );
     }
   }
@@ -85,6 +87,18 @@ BalancesLoaded get samplePairwise => BalancesLoaded(
   balances: sampleBalances.balances,
   simplified: sampleBalances.simplified,
   pairwise: sampleBalances.pairwise,
+);
+
+/// [sampleBalances] where 3 open rides (13,20 EUR) are part of the numbers.
+final openRidesBalances = BalancesLoaded(
+  group: _group,
+  hasEntries: true,
+  mode: BalancesMode.simplified,
+  balances: sampleBalances.balances,
+  simplified: sampleBalances.simplified,
+  pairwise: sampleBalances.pairwise,
+  openRideCount: 3,
+  openRideCents: 1320,
 );
 
 /// One person even, the rest square.
