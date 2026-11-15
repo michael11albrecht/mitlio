@@ -783,8 +783,8 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 | P9-T05 | Weekly group digest notification | builds on P6b |
 | P9-T06 | Web app target (read-only share link) | |
 | P9-T07 | Per-field merge instead of aggregate LWW, if field data shows lost edits | ADR first |
-| P9-T08 | Ride distance from start and destination: autocomplete + routing via Edge Function proxy (ORS primary, Geoapify fallback), distance stays editable, saved places local-only (ISSUE_A) | spike for quotas/ToS + ADR first; `needs-decision` |
-| P9-T09 | Car model suggestions: bundled static catalog from EEA CO2 monitoring data (CC BY 4.0) prefills fuel type and consumption, honest WLTP note (ISSUE_B) | offline, no network; ADR + owner decisions first |
+| P9-T08 | Ride distance from start and destination: autocomplete + routing via Edge Function proxy (ORS primary, Geoapify fallback), distance stays editable, saved places local-only (#130) | spike for quotas/ToS + ADR first; `needs-decision` |
+| P9-T09 | Car model suggestions: bundled static catalog from EEA CO2 monitoring data (CC BY 4.0) prefills fuel type and consumption, honest WLTP note (#131) | offline, no network; ADR + owner decisions first |
 
 ---
 
