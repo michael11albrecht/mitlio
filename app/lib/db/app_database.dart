@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:mitlio/db/daos/expenses_dao.dart';
 import 'package:mitlio/db/daos/groups_dao.dart';
 import 'package:mitlio/db/daos/local_member_bank_dao.dart';
+import 'package:mitlio/db/daos/local_places_dao.dart';
 import 'package:mitlio/db/daos/members_dao.dart';
 import 'package:mitlio/db/daos/rides_dao.dart';
 import 'package:mitlio/db/daos/settlements_dao.dart';
@@ -22,6 +23,7 @@ part 'app_database.g.dart';
     LocalMemberBank,
     LocalOutbox,
     LocalDriverPrompts,
+    LocalPlaces,
     Vehicles,
     RideTemplates,
     Rides,
@@ -33,6 +35,7 @@ part 'app_database.g.dart';
     ExpensesDao,
     SettlementsDao,
     LocalMemberBankDao,
+    LocalPlacesDao,
     RidesDao,
   ],
 )
@@ -40,7 +43,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -49,11 +52,17 @@ class AppDatabase extends _$AppDatabase {
       if (from < 2) await _from1To2(m);
       if (from < 3) await _from2To3(m);
       if (from < 4) await _from3To4(m);
+      if (from < 5) await _from4To5(m);
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },
   );
+
+  /// v5: saved places for the ride distance lookup (P9-T08), local only.
+  Future<void> _from4To5(Migrator m) async {
+    await m.createTable(localPlaces);
+  }
 
   /// v4: who drives, per member, and the local "already asked" flags.
   Future<void> _from3To4(Migrator m) async {

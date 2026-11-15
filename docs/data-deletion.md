@@ -9,6 +9,7 @@ word (LÖSCHEN / DELETE). There is no dialog and no undo, so this is the one pla
 Deleted immediately and for good:
 
 - all groups, members, expenses, settlements, rides, vehicles, ride templates and the edit history,
+- saved places ("Zuhause", "Arbeit") of the ride distance lookup,
 - payment details, including IBAN, BIC and account name, and the key that encrypts the IBAN (kept in the
   phone's Keychain/Keystore),
 - the crash-report choice (back to "off").

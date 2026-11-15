@@ -1339,5 +1339,40 @@
   "fuelPlzInvalid": "Bitte fünf Ziffern",
   "fuelPlzApply": "Übernehmen",
   "fuelNationalAction": "Bundesweit",
-  "fuelAttributionFallback": "Spritpreisdaten"
+  "fuelAttributionFallback": "Spritpreisdaten",
+  "routeToggle": "Start und Ziel eingeben, Strecke berechnen",
+  "routeStartLabel": "Start",
+  "routeEndLabel": "Ziel",
+  "routeResult": "{km} km, Strecke über die Straße",
+  "@routeResult": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "routeRecalculate": "Neu berechnen",
+  "routeSearching": "Suche läuft …",
+  "routeCalculating": "Strecke wird berechnet …",
+  "routeNoMatches": "Keine Treffer. Probier einen anderen Ort oder trag die Kilometer selbst ein.",
+  "routeSavedHome": "Zuhause",
+  "routeSavedWork": "Arbeit",
+  "routeSaveAsHome": "Als Zuhause merken",
+  "routeSaveAsWork": "Als Arbeit merken",
+  "routeSavedAsHome": "Als Zuhause gemerkt",
+  "routeSavedAsWork": "Als Arbeit gemerkt",
+  "routeOffline": "Keine Verbindung, trag die Kilometer einfach selbst ein.",
+  "routeRateLimited": "Zu viele Streckenanfragen. Versuch es später nochmal oder trag die Kilometer selbst ein.",
+  "routeRateLimitedIn": "Zu viele Streckenanfragen. Versuch es in {minutes} Min. nochmal oder trag die Kilometer selbst ein.",
+  "@routeRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "routeNoRoute": "Zwischen diesen Orten gibt es keine Straßenverbindung. Prüf Start und Ziel oder trag die Kilometer selbst ein.",
+  "routeServerDown": "Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.",
+  "routeInvalid": "Start und Ziel passen nicht zusammen. Wähl zwei verschiedene Orte oder trag die Kilometer selbst ein.",
+  "routeAttributionFallback": "Karten- und Routendaten © OpenStreetMap-Mitwirkende"
 }
