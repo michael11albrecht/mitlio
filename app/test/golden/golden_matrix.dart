@@ -15,6 +15,8 @@ Future<void> matrixGolden(
   double width = 320,
   double height = 320,
   PumpAction pumpBeforeTest = onlyPumpAndSettle,
+  // Wraps the whole app, for what routes pushed by it (sheets) must see.
+  Widget Function(Widget app) wrapApp = _noWrap,
 }) async {
   for (final brightness in Brightness.values) {
     await goldenTest(
@@ -28,10 +30,12 @@ Future<void> matrixGolden(
             SizedBox(
               width: width,
               height: height,
-              child: themedApp(
-                child(),
-                brightness: brightness,
-                textScale: scale,
+              child: wrapApp(
+                themedApp(
+                  child(),
+                  brightness: brightness,
+                  textScale: scale,
+                ),
               ),
             ),
         ],
@@ -39,3 +43,5 @@ Future<void> matrixGolden(
     );
   }
 }
+
+Widget _noWrap(Widget app) => app;

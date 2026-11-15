@@ -366,6 +366,11 @@ class StubRidesViewModel extends RidesViewModel {
 
   @override
   RidesState build() => fixed;
+
+  // The fixed state already is the one the screen shows; the real command
+  // would recompute from repositories the stub does not have.
+  @override
+  void setDate(DateTime? day) {}
 }
 
 class StubRidesSetupViewModel extends RidesSetupViewModel {
