@@ -10,9 +10,14 @@ import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
+import 'package:mitlio/features/rides/data/repositories/rides_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
+
+/// Every ride ever logged (rides are filtered by settled state, not date).
+final _allTime = Custom(DateTime.utc(1900), DateTime.utc(9999));
 
 /// Which "who pays whom" list is shown.
 enum BalancesMode {
@@ -54,6 +59,8 @@ final class BalancesLoaded extends BalancesState {
     required this.pairwise,
     required this.mode,
     required this.hasEntries,
+    this.openRideCount = 0,
+    this.openRideCents = 0,
   });
 
   final Group group;
@@ -64,8 +71,13 @@ final class BalancesLoaded extends BalancesState {
   final List<Transfer> pairwise;
   final BalancesMode mode;
 
-  /// Any expense or settlement exists.
+  /// Any expense, settlement or open ride exists.
   final bool hasEntries;
+
+  /// Rides not yet closed with "Abrechnen"; they count live and are part of
+  /// [balances] already. Their summed cost is [openRideCents].
+  final int openRideCount;
+  final int openRideCents;
 
   Currency get currency => group.currency;
 
@@ -93,8 +105,8 @@ final class BalancesLoaded extends BalancesState {
       .name;
 }
 
-/// Balances tab: net per person and who pays whom, live from expenses and
-/// settlements. Read-only (marking as paid is P4).
+/// Balances tab: net per person and who pays whom, live from expenses,
+/// settlements and open (unsettled) rides. Read-only (marking as paid is P4).
 class BalancesViewModel extends Notifier<BalancesState> {
   BalancesViewModel(this.groupId);
 
@@ -105,6 +117,8 @@ class BalancesViewModel extends Notifier<BalancesState> {
   List<GroupMember>? _members;
   List<ExpenseEntry>? _expenses;
   List<SettlementEntry>? _settlements;
+  List<RideEntry>? _rides;
+  Map<String, Vehicle>? _vehicles;
   BalancesMode _mode = BalancesMode.simplified;
   RepositoryError? _failure;
 
@@ -115,6 +129,8 @@ class BalancesViewModel extends Notifier<BalancesState> {
     _members = null;
     _expenses = null;
     _settlements = null;
+    _rides = null;
+    _vehicles = null;
     _failure = null;
     final subs = [
       _listen(ref.watch(groupsRepositoryProvider).watchGroups(), (groups) {
@@ -132,6 +148,14 @@ class BalancesViewModel extends Notifier<BalancesState> {
       _listen(
         ref.watch(settlementsRepositoryProvider).watchSettlements(groupId),
         (entries) => _settlements = entries,
+      ),
+      _listen(
+        ref.watch(ridesRepositoryProvider).watchRides(groupId, _allTime),
+        (entries) => _rides = entries,
+      ),
+      _listen(
+        ref.watch(vehiclesRepositoryProvider).watchVehicles(groupId),
+        (vehicles) => _vehicles = {for (final v in vehicles) v.id: v},
       ),
     ];
     ref.onDispose(() {
@@ -160,15 +184,27 @@ class BalancesViewModel extends Notifier<BalancesState> {
     final members = _members;
     final expenses = _expenses;
     final settlements = _settlements;
+    final rides = _rides;
+    final vehicles = _vehicles;
     if (failure != null) {
       state = BalancesFailure(failure);
     } else if (!_groupKnown ||
         members == null ||
         expenses == null ||
-        settlements == null) {
+        settlements == null ||
+        rides == null ||
+        vehicles == null) {
       state = const BalancesLoading();
     } else if (_group case final group?) {
-      state = _build(group, members, expenses, settlements, _mode);
+      state = _build(
+        group,
+        members,
+        expenses,
+        settlements,
+        rides,
+        vehicles,
+        _mode,
+      );
     } else {
       state = BalancesFailure(NotFound('group', groupId));
     }
@@ -179,12 +215,24 @@ class BalancesViewModel extends Notifier<BalancesState> {
     List<GroupMember> members,
     List<ExpenseEntry> expenses,
     List<SettlementEntry> settlements,
+    List<RideEntry> rides,
+    Map<String, Vehicle> vehicles,
     BalancesMode mode,
   ) {
     try {
+      final domainMembers = [for (final m in members) m.toDomain()];
+      final open = openRideExpenses(
+        unsettled: [
+          for (final e in rides)
+            if (!e.isSettled) e.ride,
+        ],
+        vehicles: vehicles,
+        currency: group.currency,
+        members: domainMembers,
+      );
       final result = computeBalancesResult(
-        members: [for (final m in members) m.toDomain()],
-        expenses: [for (final e in expenses) e.expense],
+        members: domainMembers,
+        expenses: [for (final e in expenses) e.expense, ...open.expenses],
         settlements: [for (final s in settlements) s.settlement],
       );
       return BalancesLoaded(
@@ -196,7 +244,12 @@ class BalancesViewModel extends Notifier<BalancesState> {
         simplified: result.simplified,
         pairwise: result.pairwise,
         mode: mode,
-        hasEntries: expenses.isNotEmpty || settlements.isNotEmpty,
+        hasEntries:
+            expenses.isNotEmpty ||
+            settlements.isNotEmpty ||
+            open.expenses.isNotEmpty,
+        openRideCount: open.rideCount,
+        openRideCents: open.totalCents,
       );
       // ignore: avoid_catching_errors, the domain signals bad stored data with ArgumentError
     } on ArgumentError catch (e) {
@@ -236,7 +289,24 @@ class BalancesViewModel extends Notifier<BalancesState> {
           .read(settlementsRepositoryProvider)
           .watchSettlements(groupId)
           .first;
-      return switch (_build(group, members, expenses, settlements, _mode)) {
+      final rides = await ref
+          .read(ridesRepositoryProvider)
+          .watchRides(groupId, _allTime)
+          .first;
+      final vehicles = await ref
+          .read(vehiclesRepositoryProvider)
+          .watchVehicles(groupId)
+          .first;
+      final built = _build(
+        group,
+        members,
+        expenses,
+        settlements,
+        rides,
+        {for (final v in vehicles) v.id: v},
+        _mode,
+      );
+      return switch (built) {
         final BalancesLoaded loaded => Ok(loaded),
         BalancesFailure(:final error) => Err(error),
         BalancesLoading() => const Err(Storage('balances not computed')),

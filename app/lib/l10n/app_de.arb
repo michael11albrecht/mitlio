@@ -159,6 +159,17 @@
   },
   "balancesSettledTitle": "Alles ausgeglichen",
   "balancesSettledMessage": "Niemand schuldet jemandem etwas.",
+  "balancesOpenRides": "inkl. {count, plural, =1{1 offene Fahrt} other{{count} offene Fahrten}} ({amount})",
+  "@balancesOpenRides": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "balancesEmptyTitle": "Noch nichts zu verrechnen",
   "balancesEmptyMessage": "Sobald es Ausgaben gibt, siehst du hier, wer wem was schuldet.",
   "balancesTransfersTitle": "Wer zahlt wem",
@@ -898,7 +909,7 @@
       }
     }
   },
-  "ridesSettleNote": "Pro Fahrer entsteht eine Ausgabe. Du kannst das gleich rückgängig machen.",
+  "ridesSettleNote": "Die Fahrten zählen schon im Saldo. Beim Abrechnen werden sie gesperrt und pro Fahrer zu einer Ausgabe. Du kannst das gleich rückgängig machen.",
   "ridesSettleAction": "Abrechnen",
   "ridesSettleDone": "{month} abgerechnet",
   "@ridesSettleDone": {
