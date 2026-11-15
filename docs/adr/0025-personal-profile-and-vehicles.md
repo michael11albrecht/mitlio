@@ -21,8 +21,14 @@ at the end.
    (initials + colour by default, emoji or photo optional), PayPal.Me handle. The full IBAN stays in
    a local-only table (`local_profile_bank`), exactly like `local_member_bank` (§8). Before P6 sync
    the profile never leaves the device. After P6-T07 the profile is tied to the account; connecting
-   to a person (ADR-24) copies name, avatar and PayPal.Me to that person. IBAN sharing is not part
-   of this ADR (owner decision §12 #9).
+   to a person (ADR-24) copies name, avatar and PayPal.Me to that person.
+   **IBAN sharing (§12 #9):** never stored readable on the server. Before P6: "Mein QR-Code teilen"
+   sends the EPC QR as an image via the share sheet. After P6b: the payer can tap "Nach IBAN fragen"
+   → the payee gets a push and can tap "Freigeben" (no visible rejection, ignoring is fine); the payee
+   is also offered "IBAN für Bob freigeben" when someone owes them and they have no PayPal. Release is
+   per person, revocable, end-to-end encrypted to the recipient's device key (server relays
+   ciphertext only); the recipient deletes it when the transfer is marked paid unless the payee chose
+   "dauerhaft teilen".
 2. **Personal vehicles ("Meine Autos").** Vehicles the user owns or can use are set up once in
    `user_vehicles` (local, later synced to the own account only). Using one in a group creates a
    **linked copy** in the group's `vehicles` (`source_user_vehicle_id`). Editing the personal car
@@ -37,8 +43,13 @@ at the end.
    by km) or **fixed** (insurance, tax, loan, parking). Default share basis is **running costs only**,
    because private ride sharing in Germany is exempt from the passenger transport law only if the
    total payment does not exceed the trip's operating costs (PBefG §1 Abs. 2 Nr. 1); including fixed
-   costs is an explicit opt-in with a plain hint (owner decision §12 #10). Without the calculator the
-   flat default stays (today's behaviour).
+   costs is the user's choice, one tap away, both options showing their ct/km result (§12 #10).
+   **Operating-cost hint:** whenever passengers together would pay more than the trip's fuel plus
+   running costs (full costs, high km rate or extras), an inline, non-blocking hint explains the
+   PBefG limit ("Keine Rechtsberatung", wording reviewed by the owner before release). A separate
+   plausibility hint ("Bitte prüfen") flags likely typos (e.g. > 1 €/km total, > 30 l/100 km). Never
+   a dialog, never blocks saving, shown once per trip/car until the choice changes. Without the
+   calculator the flat default stays (today's behaviour).
 4. **Guided setup flow pattern** (`app/lib/core/ui/setup_flow/`), reused by every setup:
    - one question per screen, at most two related values; a picture/visual on every step;
    - optional steps are yes/no cards or have "Überspringen"; nothing is required except where the
@@ -83,8 +94,9 @@ at the end.
   column `vehicles.source_user_vehicle_id`. Migration is `critical`.
 - New domain code: PayPal.Me handle normalisation/validation, vehicle cost model and
   `vehicleExtraCostPerKm` (int milli, property tests like the rest of the domain).
-- Illustrations are vector assets; drawing them in `CustomPainter` avoids a new dependency, an SVG
-  renderer (`flutter_svg`) would need a rationale in the PR (owner decision §12 #11).
+- Illustrations are drawn by the agent as vector art in `CustomPainter` (no new dependency, §12 #11).
+  If the owner finds them too ugly in the golden review, a new experiment follows (e.g. designer SVGs
+  + `flutter_svg`).
 - The "Ich" member prefill makes group creation faster but must stay editable (one person may use
   another name in a group).
 - Profile photo is a nice-to-have (backlog); its sync waits for Storage (P9-T01).
