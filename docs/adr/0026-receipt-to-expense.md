@@ -1,6 +1,6 @@
 # ADR-26: Receipt photo to expense, recognised on the device
 
-- **Status:** proposed (owner idea 2026-11-15; backlog, after M3)
+- **Status:** accepted (owner 2026-11-15; backlog, after M3)
 - **Date:** 2026-11-15
 
 ## Context
