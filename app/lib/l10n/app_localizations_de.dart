@@ -72,6 +72,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dismiss => 'Schließen';
 
   @override
+  String get hideSnackBar => 'Ausblenden';
+
+  @override
   String get groupNew => 'Neue Gruppe';
 
   @override
