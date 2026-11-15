@@ -26,6 +26,7 @@ class DriftMembersRepository implements MembersRepository {
     position: r.position,
     paypalMe: r.paypalMe,
     ibanHint: r.ibanHint,
+    canDrive: r.canDrive,
   );
 
   @override
@@ -104,6 +105,33 @@ class DriftMembersRepository implements MembersRepository {
     );
     return _get(id);
   });
+
+  @override
+  Future<RepoResult<GroupMember>> setCanDrive(
+    String id, {
+    required bool canDrive,
+  }) => guardStorage(() async {
+    final changed = await _db.membersDao.setCanDrive(
+      id: id,
+      canDrive: canDrive,
+      updatedAt: Hlc.now(_clock),
+    );
+    return changed ? _get(id) : Err(NotFound('member', id));
+  });
+
+  @override
+  Future<RepoResult<Set<String>>> askedDriverPrompts() =>
+      guardStorage(() async => Ok(await _db.membersDao.askedDriverPrompts()));
+
+  @override
+  Future<RepoResult<void>> markDriverPromptAsked(String id) =>
+      guardStorage(() async {
+        if (await _db.membersDao.findById(id) == null) {
+          return Err(NotFound('member', id));
+        }
+        await _db.membersDao.markDriverPromptAsked(id, Hlc.now(_clock));
+        return const Ok(null);
+      });
 
   @override
   Future<RepoResult<void>> reorder(String groupId, List<String> orderedIds) =>

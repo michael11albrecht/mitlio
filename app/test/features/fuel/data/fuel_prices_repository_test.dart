@@ -187,4 +187,25 @@ void main() {
       },
     );
   });
+
+  test(
+    'national-only service: no postcode, no nearby, no area request',
+    () async {
+      service.areas = false;
+      expect(repo.supportsAreas, isFalse);
+      expect(repo.canLocate, isFalse);
+      expect(
+        await repo.forPlz(FuelGrade.e5, '10115'),
+        isA<FuelMissing>().having(
+          (m) => m.reason,
+          'reason',
+          FuelFailure.unavailable,
+        ),
+      );
+      expect(await repo.nearby(FuelGrade.e5), isA<FuelMissing>());
+      expect(service.calls, isEmpty);
+      expect(location.asked, 0);
+      expect(await repo.national(FuelGrade.e5), isA<FuelFound>());
+    },
+  );
 }

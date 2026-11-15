@@ -12,6 +12,7 @@ import 'package:mitlio/core/widgets/undo_snack_bar.dart';
 import 'package:mitlio/features/rides/ui/quick_log_card.dart';
 import 'package:mitlio/features/rides/ui/rides_calculator.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
+import 'package:mitlio/features/rides/ui/rides_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -34,6 +35,7 @@ class RidesSetupView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final vm = ref.read(ridesSetupViewModelProvider(groupId).notifier);
+    final ridesVm = ref.read(ridesViewModelProvider(groupId).notifier);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.ridesSettingsTitle)),
       body: switch (ref.watch(ridesSetupViewModelProvider(groupId))) {
@@ -45,6 +47,7 @@ class RidesSetupView extends ConsumerWidget {
           groupId: groupId,
           state: loaded,
           vm: vm,
+          ridesVm: ridesVm,
         ),
       },
     );
@@ -52,11 +55,42 @@ class RidesSetupView extends ConsumerWidget {
 }
 
 class _Lists extends StatelessWidget {
-  const _Lists({required this.groupId, required this.state, required this.vm});
+  const _Lists({
+    required this.groupId,
+    required this.state,
+    required this.vm,
+    required this.ridesVm,
+  });
 
   final String groupId;
   final RidesSetupLoaded state;
   final RidesSetupViewModel vm;
+
+  /// Owns the "who drives" command (the rides tab asks the same question).
+  final RidesViewModel ridesVm;
+
+  Future<void> _setCanDrive(
+    BuildContext context,
+    GroupMember member, {
+    required bool canDrive,
+  }) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final result = await ridesVm.setCanDrive(member.id, canDrive: canDrive);
+    if (!context.mounted) return;
+    switch (result) {
+      case Ok(:final value):
+        showUndoSnackBar(
+          context,
+          message: canDrive
+              ? l10n.ridesDriverNowDrives(member.name)
+              : l10n.ridesDriverNotSuggested(member.name),
+          undo: value,
+        );
+      case Err(:final error):
+        showErrorSnackBar(messenger, l10n, error);
+    }
+  }
 
   Future<void> _delete(
     BuildContext context, {
@@ -172,6 +206,16 @@ class _Lists extends StatelessWidget {
             ),
           ),
         ),
+        _Header(l10n.ridesDriversTitle),
+        _Muted(l10n.ridesDriversHelp),
+        for (final m in state.members)
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(m.name),
+            subtitle: Text(l10n.ridesDriverSwitch),
+            value: m.canDrive,
+            onChanged: (v) => unawaited(_setCanDrive(context, m, canDrive: v)),
+          ),
       ],
     );
   }

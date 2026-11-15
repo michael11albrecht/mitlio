@@ -391,6 +391,54 @@ void main() {
       expect(find.text('Anna'), findsOneWidget);
     });
 
+    testWidgets('an archived group can be restored from the archive', (
+      tester,
+    ) async {
+      await seed();
+      ok(await app.groups.softDelete(trip.id));
+      await pumpMitlio(tester, app);
+
+      // The only group is archived: onboarding plus the quiet entry.
+      expect(find.text('Archiviert (1)'), findsOneWidget);
+      await tester.tap(find.text('Archiviert (1)'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Archivierte Gruppen'), findsOneWidget);
+      expect(find.text('Trip'), findsOneWidget);
+      await tester.tap(find.text('Wiederherstellen'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.text('„Trip“ wiederhergestellt'), findsOneWidget);
+
+      await tester.tap(find.text('Rückgängig'));
+      await tester.pumpAndSettle();
+      expect(find.text('Wiederherstellen'), findsOneWidget);
+
+      await back(tester);
+      expect(find.text('Archiviert (1)'), findsOneWidget);
+    });
+
+    testWidgets('a failing restore says why and keeps the group archived', (
+      tester,
+    ) async {
+      await seed();
+      ok(await app.groups.softDelete(trip.id));
+      await pumpMitlio(tester, app);
+      await tester.tap(find.text('Archiviert (1)'));
+      await tester.pumpAndSettle();
+      app.groups.failWith = const Storage('x');
+      await tester.tap(find.text('Wiederherstellen'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Prüf den freien Speicher'), findsOne);
+      expect(find.text('Wiederherstellen'), findsOneWidget);
+    });
+
+    testWidgets('no archive entry while nothing is archived', (tester) async {
+      await seed();
+      await pumpMitlio(tester, app);
+      expect(find.textContaining('Archiviert'), findsNothing);
+    });
+
     testWidgets('an archived group shows the error state, not a crash', (
       tester,
     ) async {

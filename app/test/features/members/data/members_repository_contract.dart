@@ -135,6 +135,55 @@ void runMembersRepositoryContract(
       expect([for (final m in next) m.name], ['Ben', 'Ann']);
     });
 
+    test(
+      'members drive by default and setCanDrive changes only that',
+      () async {
+        final a = ok(
+          await r.members.add(groupId, name: 'Ann', paypalMe: 'ann'),
+        );
+        expect(a.canDrive, isTrue);
+        final off = ok(await r.members.setCanDrive(a.id, canDrive: false));
+        expect(off.canDrive, isFalse);
+        expect(off.name, 'Ann');
+        expect(off.paypalMe, 'ann');
+        expect(ok(await r.members.list(groupId)), [off]);
+        // Editing the member or reordering keeps the mark.
+        final renamed = ok(
+          await r.members.update(a.id, name: 'Anna', paypalMe: 'ann'),
+        );
+        expect(renamed.canDrive, isFalse);
+        ok(await r.members.reorder(groupId, [a.id]));
+        expect(ok(await r.members.list(groupId)).single.canDrive, isFalse);
+        final on = ok(await r.members.setCanDrive(a.id, canDrive: true));
+        expect(on.canDrive, isTrue);
+      },
+    );
+
+    test('setCanDrive reports unknown and deleted members', () async {
+      final a = ok(await r.members.add(groupId, name: 'Ann'));
+      expect(
+        err(await r.members.setCanDrive('nope', canDrive: false)),
+        const NotFound('member', 'nope'),
+      );
+      ok(await r.members.softDelete(a.id));
+      expect(
+        err(await r.members.setCanDrive(a.id, canDrive: false)),
+        NotFound('member', a.id),
+      );
+    });
+
+    test('driver prompts are remembered per member', () async {
+      final a = ok(await r.members.add(groupId, name: 'Ann'));
+      expect(ok(await r.members.askedDriverPrompts()), isEmpty);
+      ok(await r.members.markDriverPromptAsked(a.id));
+      ok(await r.members.markDriverPromptAsked(a.id));
+      expect(ok(await r.members.askedDriverPrompts()), {a.id});
+      expect(
+        err(await r.members.markDriverPromptAsked('nope')),
+        const NotFound('member', 'nope'),
+      );
+    });
+
     test('list of an unknown group is empty', () async {
       expect(ok(await r.members.list('nope')), isEmpty);
     });

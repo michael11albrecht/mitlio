@@ -5,6 +5,7 @@ import 'package:mitlio/core/keyboard.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/features/balances/ui/balances_view.dart';
 import 'package:mitlio/features/expenses/ui/expense_form_view.dart';
+import 'package:mitlio/features/groups/ui/archived_groups_view.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view.dart';
 import 'package:mitlio/features/groups/ui/group_form_view.dart';
 import 'package:mitlio/features/groups/ui/groups_view.dart';
@@ -56,6 +57,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'groups/new',
             builder: (context, state) => const GroupFormView(),
+          ),
+          GoRoute(
+            path: 'groups/archived',
+            builder: (context, state) => const ArchivedGroupsView(),
           ),
           GoRoute(
             path: 'groups/:id',

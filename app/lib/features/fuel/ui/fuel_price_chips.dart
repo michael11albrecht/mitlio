@@ -190,11 +190,12 @@ class _FuelPriceChipsState extends ConsumerState<FuelPriceChips> {
                   label: Text(l10n.fuelNearby),
                   onPressed: () => unawaited(_vm.useNearby()),
                 ),
-              ActionChip(
-                avatar: const Icon(Icons.pin_drop_outlined),
-                label: Text(l10n.fuelPlzAction),
-                onPressed: () => setState(() => _plzOpen = !_plzOpen),
-              ),
+              if (s.canPlz)
+                ActionChip(
+                  avatar: const Icon(Icons.pin_drop_outlined),
+                  label: Text(l10n.fuelPlzAction),
+                  onPressed: () => setState(() => _plzOpen = !_plzOpen),
+                ),
               if (s.scope != FuelScope.national)
                 ActionChip(
                   label: Text(l10n.fuelNationalAction),

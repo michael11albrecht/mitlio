@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/error_snack_bar.dart';
@@ -267,13 +268,21 @@ class _DriverBlock extends StatelessWidget {
 
 /// Per person: km driven vs km ridden in the shown month and the net, plus
 /// who is up next (the quick log's driver rule).
-class FairnessSection extends StatelessWidget {
+class FairnessSection extends StatefulWidget {
   const FairnessSection({required this.state, super.key});
 
   final RidesLoaded state;
 
   @override
+  State<FairnessSection> createState() => _FairnessSectionState();
+}
+
+class _FairnessSectionState extends State<FairnessSection> {
+  var _explaining = false;
+
+  @override
   Widget build(BuildContext context) {
+    final state = widget.state;
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final separator = MoneyFormat.of(context).decimalSeparator;
@@ -303,7 +312,32 @@ class FairnessSection extends StatelessWidget {
                   ),
                 ),
               ),
-            const SizedBox(height: Spacing.sm),
+            Wrap(
+              children: [
+                TextButton.icon(
+                  icon: const Icon(Icons.info_outline),
+                  label: Text(l10n.ridesFairnessHow),
+                  onPressed: () => setState(() => _explaining = !_explaining),
+                ),
+                TextButton(
+                  onPressed: () => unawaited(
+                    context.push('/groups/${state.group.id}/rides/settings'),
+                  ),
+                  child: Text(l10n.ridesFairnessChangeDrivers),
+                ),
+              ],
+            ),
+            if (_explaining)
+              Padding(
+                padding: const EdgeInsets.only(bottom: Spacing.sm),
+                child: Text(
+                  l10n.ridesFairnessHowText,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            const SizedBox(height: Spacing.xs),
             for (final row in rows)
               MergeSemantics(
                 child: Padding(
@@ -339,6 +373,13 @@ class FairnessSection extends StatelessWidget {
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
+                            if (!row.isDriverCandidate)
+                              Text(
+                                l10n.ridesFairnessNotDriving,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
                           ],
                         ),
                       ),

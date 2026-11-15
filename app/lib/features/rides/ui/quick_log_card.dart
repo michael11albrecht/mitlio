@@ -55,12 +55,21 @@ class QuickLogCard extends StatefulWidget {
     required this.groupId,
     required this.state,
     required this.vm,
+    this.embedded = false,
+    this.onSaved,
     super.key,
   });
 
   final String groupId;
   final RidesLoaded state;
   final RidesViewModel vm;
+
+  /// Just the form, for a sheet that has its own header (no card, title,
+  /// settings or "back to today").
+  final bool embedded;
+
+  /// Called after a successful save, once the undo snackbar is up.
+  final VoidCallback? onSaved;
 
   @override
   State<QuickLogCard> createState() => _QuickLogCardState();
@@ -84,6 +93,7 @@ class _QuickLogCardState extends State<QuickLogCard> {
           ),
           undo: value.undo,
         );
+        widget.onSaved?.call();
       case Err(:final error):
         showErrorSnackBar(messenger, l10n, error);
     }
@@ -94,6 +104,7 @@ class _QuickLogCardState extends State<QuickLogCard> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final quick = widget.state.quick!;
+    if (widget.embedded) return _form(context, quick);
     final title = quick.isToday
         ? l10n.quickLogTitleToday
         : l10n.quickLogTitleDate(
@@ -195,7 +206,7 @@ class _QuickLogCardState extends State<QuickLogCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (!quick.isToday)
+        if (!quick.isToday && !widget.embedded)
           Align(
             alignment: AlignmentDirectional.centerStart,
             child: TextButton(

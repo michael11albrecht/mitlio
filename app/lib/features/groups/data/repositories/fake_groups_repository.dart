@@ -29,6 +29,19 @@ class FakeGroupsRepository implements GroupsRepository {
         }),
   );
 
+  @override
+  Stream<List<Group>> watchArchivedGroups() => watchSnapshots(
+    _changes.stream,
+    () =>
+        [
+          for (final g in _groups.values)
+            if (_deleted.contains(g.id)) g,
+        ]..sort((a, b) {
+          final byTime = a.createdAt.compareTo(b.createdAt);
+          return byTime != 0 ? byTime : a.id.compareTo(b.id);
+        }),
+  );
+
   Group? _live(String id) => _deleted.contains(id) ? null : _groups[id];
 
   @override

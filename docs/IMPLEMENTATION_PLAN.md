@@ -595,7 +595,7 @@ Shared infrastructure first, then vertical slices. Each slice = repository + Vie
 | P3-T03 | Repository interfaces + Drift impls + in-memory fakes + **shared contract test suite** for Groups, Members, Expenses, Settlements | contract tests pass for both impls | safe |
 | P3-T04 | DebugDrive skeleton: `ext.mitlio.ping/reset/seed/state/navigate/errors`, `packages/drive_client` CLI, `tool/drive.sh`, `make drive-up` | `make drive-up && tool/drive.sh ext.mitlio.ping` returns JSON in CI (desktop-it) | critical (debug/) |
 | P3-T05 | Design system: theme, spacing, `MoneyText`, `MemberAvatar`, `AmountField` (cents-safe input), empty/error states + goldens | goldens green | safe |
-| P3-T06 | Slice **Groups**: list, create, edit name/currency, archive; members add/rename/reorder/remove (blocked if member has entries) | VM tests, widget tests, goldens, `ext.mitlio.groups.create`, IT: create group with 4 members | safe |
+| P3-T06 | Slice **Groups**: list, create, edit name/currency, archive and restore (home shows a quiet "Archived (N)" entry, only when N > 0, to `/groups/archived`; restore bumps `updated_at` like an edit); members add/rename/reorder/remove (blocked if member has entries) | VM tests, widget tests, goldens, `ext.mitlio.groups.create`, IT: create group with 4 members | safe |
 | P3-T07 | Slice **Expense form**: title, amount, currency (= group currency in MVP), date, category, payers (single/multi), split modes incl. exclusion, live per-person preview | VM covers all modes + validation; IT: add each split mode | safe |
 | P3-T08 | Slice **Expense list**: per group, grouped by date, filter by member/category, swipe to delete (soft) | IT: add → delete → balances update | safe |
 | P3-T09 | Slice **Trip cost form**: km, consumption, fuel price, tolls/ferry, wear, km-rate toggle, driver, passengers, driverCounts; shows breakdown | IT via `ext.mitlio.trips.add` and via UI | safe |
@@ -658,6 +658,7 @@ Go live **early** (before the app ships) — SEO needs months to compound. Until
 | P6c-T04 | `pg_cron` job refreshing national/state averages periodically (computed from station data within provider limits) | pgTAP + function test | critical |
 | P6c-T05 | App `FuelPriceService` (+ fake): chips in ride/trip form, auto-fill per vehicle fuel type, price frozen on the ride; offline → last known value with age label | VM tests; IT via fake | safe |
 | P6c-T06 | Abuse protection: per-IP rate limit on the function, CORS restricted to own domain + app | test | critical |
+| P6c-T07 | **Decided 2026-11-15: direct EU source in the app.** Without a configured backend the app fetches the German national average (E5, Diesel; E10 as E5 with "≈") itself from the EU Weekly Oil Bulletin XLSX (`EuOilBulletinService`, port of `_shared/oil_bulletin.ts`), cached on the device (12 h, weekly file, offline = last file). "In meiner Nähe" and postcode stay server-only (Tankerkönig) and are hidden without a backend; with a backend configured the Edge Function stays the source. Privacy: the device contacts `energy.ec.europa.eu` (IP visible to the European Commission, no personal data, no location sent), see `docs/data-flows.md` | parser + service tests with the real bulletin file, VM/widget tests: chips without backend, no postcode/nearby | safe |
 
 ### P5 — Real-world validation (human, 1 weekend + 1–2 days fixes)
 
@@ -680,7 +681,7 @@ Backend tasks are all `critical` → human review. Agents still write them; pgTA
 | P6-T02 | Migration 001: tables (§2.4) with constraints, `server_seq` sequence + trigger, `updated_at` validation, soft delete | `supabase db reset` green; squawk clean | critical |
 | P6-T03 | RLS: `is_group_member(group_id)` `security definer` function; policies select/insert/update per table; no hard delete | pgTAP: member allow, non-member deny, anon deny for every table; `rls_coverage.sql` asserts every table has RLS enabled + tests | critical |
 | P6-T04 | RPC `upsert_expense(payload jsonb)`: transactional replace of payers/shares, invariant checks (sums), LWW compare on HLC, returns server row | pgTAP: invariant violation rejected; stale HLC ignored; newer wins | critical |
-| P6-T05 | Invites: `create_invite(group_id)` → token (store hash only, 7-day expiry, revocable); `join_group(token, member_id?)` claims a participant or creates one | pgTAP: expired/revoked/reused tokens; cannot join twice | critical |
+| P6-T05 | Invites: `create_invite(group_id)` → token (store hash only, owner only, no expiry, a new link revokes all others; amended by ADR-24); `join_group(token, member_id?)` claims a participant or creates one (people and accounts are separate layers; one account per person, several accounts per person tbd, amended by ADR-24) | pgTAP: expired/revoked/reused tokens; cannot join twice | critical |
 | P6-T06 | Generated TS/Dart types + CI drift check (`supabase gen types` diff) | CI fails on stale types | critical |
 | P6-T07 | App auth: anonymous sign-in on first share action, session persistence, sign-out wipes local server-linked data (with confirmation) | VM tests with fake auth **No silent errors (§2.6 #9):** sign-in failure (network, rate limit) shows cause + next step; sign-out failure keeps data and says so. | critical  |
 | P6-T08 | HLC implementation in domain (`Hlc.now(clock, last)`, `Hlc.receive`, compare) | property tests: monotonic, causality | safe |
@@ -766,7 +767,7 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 |---|---|---|---|
 | P8-T01 | Flavors `dev`/`prod` (bundle ids, app names, Supabase URLs via `--dart-define-from-file`) | both build locally | critical |
 | P8-T02 | fastlane match (or Codemagic) for iOS signing; Android keystore in secrets; Play service account | signed builds in CI | critical |
-| P8-T03 | `deploy-dev.yml`: merge → staging migrations; nightly-if-changed → TestFlight + Play internal | build appears in TestFlight | critical |
+| P8-T03 | `deploy-dev.yml`: merge → staging migrations; nightly-if-changed → TestFlight + Play internal. **2026-11-15: backend half done** (merge with `supabase/**` deploys migrations + Edge Functions to staging); app builds to TestFlight + Play later | build appears in TestFlight | critical |
 | P8-T04 | `release.yml`: tag → `production` environment approval → prod migrations → smoke drive scenario vs staging → store submission (phased) | dry run on a `v0.0.1-rc` tag | critical |
 | P8-T05 | `release-please` for changelog + version bump from conventional commits | release PR generated | critical |
 | P8-T06 | `check_release_strip.sh`: build release, assert no `ext.mitlio` strings / debug symbols in binary | fails if `kDebugMode` guard removed | critical |

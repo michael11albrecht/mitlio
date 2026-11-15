@@ -331,7 +331,7 @@ void main() {
       expect(find.text('Fahrt gelöscht'), findsOneWidget);
     });
 
-    rideTest('an empty day offers to log a ride for it', (tester) async {
+    Future<void> openEmptyDay(WidgetTester tester) async {
       await seedMonth();
       await pumpRides(tester, app, location: ridesTab());
       await tester.tap(
@@ -344,15 +344,42 @@ void main() {
       expect(find.text('Keine Fahrt an diesem Tag'), findsOneWidget);
       await tester.tap(find.text('Fahrt für diesen Tag erfassen'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Gefahren am'), findsOneWidget);
-      await tester.tap(find.widgetWithText(FilledButton, 'Speichern'));
+    }
+
+    rideTest('an empty day logs a ride for it inside the sheet', (
+      tester,
+    ) async {
+      await openEmptyDay(tester);
+      // The form replaced the button, in the sheet, still headed by the day.
+      expect(find.text('Fahrt für diesen Tag erfassen'), findsNothing);
+      expect(find.text('Dienstag, 10. März 2026'), findsOneWidget);
+      final save = find.widgetWithText(FilledButton, 'Speichern');
+      expect(
+        find.descendant(of: find.byType(BottomSheet), matching: save),
+        findsOneWidget,
+      );
+      await tester.tap(save.last);
       await tester.pumpAndSettle();
+      expect(find.byType(BottomSheet), findsNothing);
       expect(
         (await stored()).map((r) => r.date),
         contains(DateTime.utc(2026, 3, 10)),
       );
+      expect(find.textContaining('Gespeichert'), findsOneWidget);
+      expect(find.text('Rückgängig'), findsOneWidget);
       // Today stays open for today's ride.
       expect(find.text('Heute gefahren'), findsWidgets);
+    });
+
+    rideTest('closing the sheet unsaved goes back to today', (tester) async {
+      await openEmptyDay(tester);
+      expect(find.textContaining('Gefahren am'), findsOneWidget);
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pumpAndSettle();
+      expect(find.byType(BottomSheet), findsNothing);
+      expect(find.text('Heute gefahren'), findsWidgets);
+      expect(find.textContaining('Gefahren am'), findsNothing);
+      expect(await stored(), hasLength(3));
     });
 
     rideTest('rides of a settled period are locked', (tester) async {

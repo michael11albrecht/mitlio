@@ -41,6 +41,7 @@ final class FuelPriceState {
     this.staleReason,
     this.retryAfter,
     this.canLocate = false,
+    this.canPlz = true,
     this.fill,
   });
 
@@ -68,6 +69,10 @@ final class FuelPriceState {
 
   /// "In meiner Nähe" can be offered.
   final bool canLocate;
+
+  /// The postcode field can be offered (not with the direct EU source,
+  /// which only knows the national average).
+  final bool canPlz;
   final FuelFill? fill;
 
   FuelPriceState copyWith({
@@ -95,6 +100,7 @@ final class FuelPriceState {
     staleReason: clearFailure ? staleReason : staleReason ?? this.staleReason,
     retryAfter: clearFailure ? retryAfter : retryAfter ?? this.retryAfter,
     canLocate: canLocate ?? this.canLocate,
+    canPlz: canPlz,
     fill: fill ?? this.fill,
   );
 }
@@ -122,6 +128,7 @@ class FuelPriceViewModel extends Notifier<FuelPriceState> {
       available: repo.isAvailable,
       grade: initialGrade,
       canLocate: repo.canLocate,
+      canPlz: repo.supportsAreas,
     );
   }
 
@@ -143,6 +150,7 @@ class FuelPriceViewModel extends Notifier<FuelPriceState> {
   /// The average around a typed postcode; a malformed one is
   /// `FuelFailure.invalidParams` and changes nothing else.
   Future<void> usePlz(String plz) async {
+    if (!_repo.supportsAreas) return;
     final text = plz.trim();
     if (!PlzArea.isValid(text)) {
       state = state.copyWith(failure: FuelFailure.invalidParams);

@@ -127,6 +127,16 @@ void main() {
       expect(find.text('PLZ eingeben'), findsOneWidget);
     });
 
+    tripTest('national-only source (no backend): no postcode, no nearby', (
+      tester,
+    ) async {
+      app.fuel.areas = false;
+      await open(tester);
+      expect(find.text('E5'), findsWidgets);
+      expect(find.text('In meiner Nähe'), findsNothing);
+      expect(find.text('PLZ eingeben'), findsNothing);
+    });
+
     tripTest('"in meiner Nähe" asks for the position only on tap', (
       tester,
     ) async {

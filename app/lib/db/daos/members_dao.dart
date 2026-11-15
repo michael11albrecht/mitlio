@@ -4,7 +4,7 @@ import 'package:mitlio/db/tables.dart';
 
 part 'members_dao.g.dart';
 
-@DriftAccessor(tables: [Members])
+@DriftAccessor(tables: [Members, LocalDriverPrompts])
 class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
   MembersDao(super.attachedDatabase);
 
@@ -63,6 +63,34 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
         );
     return n > 0;
   }
+
+  /// Sets [canDrive]. Returns true if a live row changed.
+  Future<bool> setCanDrive({
+    required String id,
+    required bool canDrive,
+    required String updatedAt,
+  }) async {
+    final n =
+        await (update(
+          members,
+        )..where((m) => m.id.equals(id) & m.deletedAt.isNull())).write(
+          MembersCompanion(
+            canDrive: Value(canDrive),
+            updatedAt: Value(updatedAt),
+          ),
+        );
+    return n > 0;
+  }
+
+  /// Ids of the members already asked whether they drive (local only).
+  Future<Set<String>> askedDriverPrompts() async => {
+    for (final r in await select(localDriverPrompts).get()) r.memberId,
+  };
+
+  Future<void> markDriverPromptAsked(String memberId, String at) =>
+      into(localDriverPrompts).insertOnConflictUpdate(
+        LocalDriverPromptsCompanion.insert(memberId: memberId, askedAt: at),
+      );
 
   /// Moves a live member to [position]. Returns true if a live row changed.
   Future<bool> setPosition({

@@ -24,6 +24,8 @@ Contract for driving a running **debug** build of the app through the same ViewM
 | `ext.mitlio.errors` | none | `{"errors": [{"time", "source", "error", "stackTrace"}]}`; returns and clears the captured errors |
 | `ext.mitlio.groups.create` | `name` (required), `currency` (ISO code, default `EUR`), `members` (JSON list of names, default none) | `{"id", "name", "currency"}`; calls `GroupsViewModel.create` |
 | `ext.mitlio.groups.list` | none | `{"groups": [{"id", "name", "currency"}]}`; calls `GroupsViewModel.list` |
+| `ext.mitlio.groups.archived` | none | `{"groups": [{"id", "name", "currency"}]}` (archived groups); calls `ArchivedGroupsViewModel.list` |
+| `ext.mitlio.groups.restore` | `id` (required) | `{"id"}`; calls `ArchivedGroupsViewModel.restore` (`not_found` unknown, `conflict` if not archived) |
 | `ext.mitlio.members.add` | `groupId`, `name` (both required) | `{"id", "name", "position"}`; calls `GroupDetailViewModel.addMember` |
 
 `navigate` also reaches the first-run routes `/welcome` (onboarding, shown on `/` while no group exists) and `/trip` (the trip form without a group). Onboarding has no commands of its own: the commute path creates its group through `GroupsViewModel.create`, i.e. what `groups.create` calls.
