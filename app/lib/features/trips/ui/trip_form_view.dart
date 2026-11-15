@@ -10,6 +10,7 @@ import 'package:mitlio/core/widgets/empty_state.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/core/widgets/money_text.dart';
+import 'package:mitlio/core/widgets/number_pad_done.dart';
 import 'package:mitlio/core/widgets/result_card.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
 import 'package:mitlio/features/fuel/ui/fuel_price_chips.dart';
@@ -389,21 +390,23 @@ class _NumberField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return TextField(
-      controller: controller,
-      autofocus: autofocus,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,\s]')),
-      ],
-      style: MitlioTypography.tabular(
-        large ? Theme.of(context).textTheme.headlineMedium : null,
-      ),
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        labelText: label,
-        suffixText: suffix,
-        errorText: error ? l10n.tripNumberInvalid : null,
+    return NumberPadDone(
+      child: TextField(
+        controller: controller,
+        autofocus: autofocus,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9.,\s]')),
+        ],
+        style: MitlioTypography.tabular(
+          large ? Theme.of(context).textTheme.headlineMedium : null,
+        ),
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          labelText: label,
+          suffixText: suffix,
+          errorText: error ? l10n.tripNumberInvalid : null,
+        ),
       ),
     );
   }
