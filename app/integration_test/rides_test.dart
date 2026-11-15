@@ -143,13 +143,16 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Fahrt für diesen Tag erfassen'));
       await tester.pumpAndSettle();
+      // The form is in the day sheet; the main card has the same widgets.
+      Finder inSheet(Finder f) =>
+          find.descendant(of: find.byType(BottomSheet), matching: f);
       if (day == 1) {
         // Ben takes over once; from then on the fair-driver suggestion
         // alternates by itself.
-        await tester.tap(find.widgetWithText(ChoiceChip, 'Ben'));
+        await tester.tap(inSheet(find.widgetWithText(ChoiceChip, 'Ben')));
         await tester.pumpAndSettle();
       }
-      await tester.tap(find.widgetWithText(FilledButton, 'Speichern'));
+      await tester.tap(inSheet(find.widgetWithText(FilledButton, 'Speichern')));
       await tester.pumpAndSettle();
     }
 
