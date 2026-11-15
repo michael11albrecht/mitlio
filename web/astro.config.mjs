@@ -9,7 +9,8 @@ export default defineConfig({
   // Playwright serves a second build with a fake FUEL_API_URL from its own folder (scripts/serve-fuel-fixture.mjs).
   outDir: process.env.ASTRO_OUT_DIR ?? './dist',
   trailingSlash: 'always',
-  build: { format: 'directory' },
+  // Stylesheets stay external so the CSP can use style-src 'self' (PW-T10).
+  build: { format: 'directory', inlineStylesheets: 'never' },
   i18n: {
     defaultLocale: 'de',
     locales: ['de', 'en'],
