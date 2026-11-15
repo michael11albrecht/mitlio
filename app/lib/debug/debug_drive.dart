@@ -20,6 +20,7 @@ import 'package:mitlio/debug/handlers/rides.dart';
 import 'package:mitlio/debug/handlers/routes.dart';
 import 'package:mitlio/debug/handlers/settle.dart';
 import 'package:mitlio/debug/handlers/statistics.dart';
+import 'package:mitlio/debug/handlers/sync.dart';
 import 'package:mitlio/debug/handlers/trips.dart';
 
 export 'package:mitlio/debug/debug_data_control.dart';
@@ -122,6 +123,7 @@ void registerDebugDrive(ProviderContainer container) {
     ...exportDriveHandlers(container),
     ...statisticsDriveHandlers(container),
     ...fuelDriveHandlers(container),
+    ...syncDriveHandlers(container),
     ...routeDriveHandlers(container),
   };
   for (final entry in handlers.entries) {

@@ -8,6 +8,7 @@ import 'package:mitlio/core/app.dart';
 import 'package:mitlio/core/app_config.dart';
 import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/crash/crash_reporter.dart';
+import 'package:mitlio/core/hlc.dart';
 import 'package:mitlio/core/logging.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/remote/remote_backend.dart';
@@ -90,6 +91,10 @@ Future<void> main() async {
       appDatabaseProvider.overrideWithValue(db),
       crashReporterProvider.overrideWithValue(crashReporter),
     ],
+  );
+  // One node id per install, created on first start (plan 2.4, ADR-07).
+  Hlc.init(
+    await db.syncStateDao.hlcNodeId(container.read(idGeneratorProvider)),
   );
   container.read(errorSinkProvider).install();
   if (kDebugMode) registerDebugDrive(container);
