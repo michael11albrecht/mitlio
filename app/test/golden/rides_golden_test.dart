@@ -1,4 +1,5 @@
 import 'package:alchemist/alchemist.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/rides/ui/ride_calendar.dart';
 import 'package:mitlio/features/rides/ui/ride_settle_widgets.dart';
@@ -24,15 +25,21 @@ Future<void> main() async {
     RidesState state, {
     double height = _tabHeight,
     PumpAction pump = onlyPumpAndSettle,
+    bool scopeOutside = false,
   }) => matrixGolden(
     name,
-    () => scopedRides(
-      ridesStateOverride(state),
-      const RidesView(groupId: 'g-1'),
-    ),
+    () => scopeOutside
+        ? const RidesView(groupId: 'g-1')
+        : scopedRides(
+            ridesStateOverride(state),
+            const RidesView(groupId: 'g-1'),
+          ),
     width: _width,
     height: height,
     pumpBeforeTest: pump,
+    wrapApp: scopeOutside
+        ? (app) => scopedRides(ridesStateOverride(state), app)
+        : (app) => app,
   );
 
   Future<void> setup(String name, RidesSetupState state) => matrixGolden(
@@ -79,6 +86,28 @@ Future<void> main() async {
   await tab('rides_pick_route', pickRouteRides);
   await tab('rides_done_today', doneTodayRides);
   // Period settlement (P3r-T06) and the fairness view (P3r-T07).
+  // The day sheet, with the quick log form for a day without rides.
+  await tab(
+    'rides_day_sheet_form',
+    loadedRides(quick: sampleQuick(template: sampleTemplate, isToday: false)),
+    // Sheets live in the navigator, above the screen's own scope.
+    scopeOutside: true,
+    height: 1500,
+    pump: (tester) async {
+      await tester.pumpAndSettle();
+      // One app per text scale: open the day in each.
+      final day = find.descendant(
+        of: find.byType(RideCalendar),
+        matching: find.text('10'),
+      );
+      for (var i = 0; i < 2; i++) {
+        await tester.tap(day.at(i));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Fahrt für diesen Tag erfassen'));
+        await tester.pumpAndSettle();
+      }
+    },
+  );
   await tab('rides_settle_due', settleDueRides, height: 1500);
   await tab('rides_settled_month', settledMonthRides);
   for (final (name, state) in [

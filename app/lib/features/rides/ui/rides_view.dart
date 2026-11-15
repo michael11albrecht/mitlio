@@ -159,13 +159,21 @@ class _RidesBody extends StatelessWidget {
     );
   }
 
-  Future<void> _openDay(BuildContext context, DateTime day) =>
-      showModalBottomSheet<void>(
-        context: context,
-        showDragHandle: true,
-        isScrollControlled: true,
-        builder: (_) => _DaySheet(groupId: groupId, day: day),
-      );
+  Future<void> _openDay(BuildContext context, DateTime day) async {
+    var logging = false;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _DaySheet(
+        groupId: groupId,
+        day: day,
+        onLog: () => logging = true,
+      ),
+    );
+    // Closed without saving: the card must not keep the past date.
+    if (logging) vm.setDate(null);
+  }
 }
 
 /// One logged ride: who drove, how far, who rode along, what it cost. Swipe
@@ -278,14 +286,28 @@ class RideRow extends StatelessWidget {
 
 /// Bottom sheet of one calendar day: its rides (delete with undo, lock for
 /// settled ones) or, if empty, the way to log a ride for that day.
-class _DaySheet extends ConsumerWidget {
-  const _DaySheet({required this.groupId, required this.day});
+class _DaySheet extends ConsumerStatefulWidget {
+  const _DaySheet({
+    required this.groupId,
+    required this.day,
+    required this.onLog,
+  });
 
   final String groupId;
   final DateTime day;
+  final VoidCallback onLog;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_DaySheet> createState() => _DaySheetState();
+}
+
+class _DaySheetState extends ConsumerState<_DaySheet> {
+  var _logging = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final groupId = widget.groupId;
+    final day = widget.day;
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final vm = ref.read(ridesViewModelProvider(groupId).notifier);
@@ -295,7 +317,11 @@ class _DaySheet extends ConsumerWidget {
     final date = MaterialLocalizations.of(context).formatFullDate(day);
     return SafeArea(
       child: SingleChildScrollView(
-        padding: Spacing.screen.copyWith(top: Spacing.xs),
+        padding: Spacing.screen
+            .copyWith(top: Spacing.xs)
+            .add(
+              EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+            ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -338,16 +364,26 @@ class _DaySheet extends ConsumerWidget {
               ),
             if (state.quick != null) ...[
               const SizedBox(height: Spacing.sm),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.tonal(
-                  onPressed: () {
-                    vm.setDate(day);
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(l10n.ridesDayLog),
+              if (_logging)
+                QuickLogCard(
+                  groupId: groupId,
+                  state: state,
+                  vm: vm,
+                  embedded: true,
+                  onSaved: () => Navigator.of(context).pop(),
+                )
+              else
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.tonal(
+                    onPressed: () {
+                      widget.onLog();
+                      vm.setDate(day);
+                      setState(() => _logging = true);
+                    },
+                    child: Text(l10n.ridesDayLog),
+                  ),
                 ),
-              ),
             ],
           ],
         ),
