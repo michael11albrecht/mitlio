@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/money_format.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/empty_state.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
@@ -91,6 +92,21 @@ class _Loaded extends StatelessWidget {
         ],
         for (final b in _ordered)
           _BalanceRow(balance: b, currency: state.currency),
+        if (state.openRideCount > 0)
+          Padding(
+            padding: const EdgeInsets.only(bottom: Spacing.sm),
+            child: Text(
+              l10n.balancesOpenRides(
+                state.openRideCount,
+                MoneyFormat.of(
+                  context,
+                ).format(state.openRideCents, state.currency),
+              ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
+          ),
         if (!state.isSettled) ...[
           const SizedBox(height: Spacing.lg),
           Semantics(

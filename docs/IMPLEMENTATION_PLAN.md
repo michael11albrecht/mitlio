@@ -615,7 +615,7 @@ The ride log is the app's headline feature for commuters.
 | P3r-T03 | Drift tables `vehicles`, `ride_templates`, `rides` + repositories + contract tests | contract tests green | critical (schema) |
 | P3r-T04 | Vehicles UI: add/edit vehicle with consumption, fuel type, wear rate | VM + widget + goldens | safe |
 | P3r-T05 | **Quick log**: home-screen "Heute gefahren" — pick template, driver, toggle passengers, 2 taps to save; calendar view of who drove when | IT: log 10 commute days via UI and via `ext.mitlio.rides.log`; perf: open → saved < 3 taps | safe |
-| P3r-T06 | Period settlement: "Abrechnen für Oktober" turns rides into expenses (locked rides, undo possible) → flows into balances/settle | IT: month of rides → expected transfers fixture | safe |
+| P3r-T06 | Period settlement: "Abrechnen für Oktober" turns rides into expenses (locked rides, undo possible). **Amended 2026-11-15: rides count live.** Unsettled rides are in balances/settle immediately (same domain path: `planSettlement` → `rideAggregateToExpense`, so numbers before and after "Abrechnen" are identical, never double counted); Abrechnen = close the period (lock rides, expenses for the history). Balances show "inkl. n offene Fahrten (€)" | IT: month of rides → expected transfers fixture | safe |
 | P3r-T07 | Fairness view: per person km driven vs ridden, "wer ist als Nächstes dran" suggestion | VM tests | safe |
 | P3r-T08 | Deep link import `mitlio://ride?km=…&l100=…&price=…&n=…` (from web calculator) → prefilled ride form | IT via `ext.mitlio.navigate` with link | safe |
 
