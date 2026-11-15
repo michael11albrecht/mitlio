@@ -1,6 +1,6 @@
 {
   "FLAVOR": "dev",
-  "SUPABASE_URL": "",
-  "SUPABASE_ANON_KEY": "",
+  "SUPABASE_URL": "https://vnlshkpxcvriiaguniro.supabase.co",
+  "SUPABASE_ANON_KEY": "sb_publishable_58b6bizAUmGn44SJQuCDig_nXeMoi9i",
   "SENTRY_DSN": ""
 }
