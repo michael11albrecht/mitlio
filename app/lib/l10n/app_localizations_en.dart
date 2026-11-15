@@ -1379,6 +1379,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacySection => 'Privacy';
 
   @override
+  String get privacySummary =>
+      'Your data stays on this device. The app only asks our server for fuel prices and exchange rates; your location only if you tap \"Near me\". Crash reports are off until you turn them on.';
+
+  @override
+  String get privacyPolicyEntry => 'Privacy policy';
+
+  @override
+  String get imprintEntry => 'Imprint';
+
+  @override
   String get crashReportsLabel => 'Send crash reports';
 
   @override

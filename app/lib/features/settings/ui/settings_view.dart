@@ -5,9 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/features/settings/ui/crash_reporting_view_model.dart';
+import 'package:mitlio/features/settings/ui/legal_links_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 
-/// Settings: today only the "Datenschutz" section (opt-in crash reports).
+/// Settings: today only the "Datenschutz" section (summary, links to the
+/// website texts, opt-in crash reports, delete my data).
 class SettingsView extends ConsumerWidget {
   const SettingsView({super.key});
 
@@ -24,6 +26,20 @@ class SettingsView extends ConsumerWidget {
           Text(
             l10n.privacySection,
             style: Theme.of(context).textTheme.titleSmall,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Spacing.md),
+            child: Text(l10n.privacySummary),
+          ),
+          ListTile(
+            title: Text(l10n.privacyPolicyEntry),
+            trailing: const Icon(Icons.open_in_new),
+            onTap: () => unawaited(_open(context, ref, privacy: true)),
+          ),
+          ListTile(
+            title: Text(l10n.imprintEntry),
+            trailing: const Icon(Icons.open_in_new),
+            onTap: () => unawaited(_open(context, ref, privacy: false)),
           ),
           SwitchListTile(
             title: Text(l10n.crashReportsLabel),
@@ -50,5 +66,24 @@ class SettingsView extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _open(
+    BuildContext context,
+    WidgetRef ref, {
+    required bool privacy,
+  }) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final copied = AppLocalizations.of(context).paymentLinkCopied;
+    final vm = ref.read(legalLinksViewModelProvider);
+    final lang = Localizations.localeOf(context).languageCode;
+    final opened = await (privacy
+        ? vm.openPrivacy(lang)
+        : vm.openImprint(lang));
+    if (!opened) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(copied)));
+    }
   }
 }

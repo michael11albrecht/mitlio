@@ -2389,6 +2389,24 @@ abstract class AppLocalizations {
   /// **'Datenschutz'**
   String get privacySection;
 
+  /// No description provided for @privacySummary.
+  ///
+  /// In de, this message translates to:
+  /// **'Deine Daten bleiben auf diesem Gerät. Nur für Spritpreise und Wechselkurse fragt die App unseren Server; Standort nur, wenn du \"In meiner Nähe\" antippst. Absturzberichte sind aus, bis du sie einschaltest.'**
+  String get privacySummary;
+
+  /// No description provided for @privacyPolicyEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Datenschutzerklärung'**
+  String get privacyPolicyEntry;
+
+  /// No description provided for @imprintEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Impressum'**
+  String get imprintEntry;
+
   /// No description provided for @crashReportsLabel.
   ///
   /// In de, this message translates to:
