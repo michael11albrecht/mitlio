@@ -766,7 +766,7 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 |---|---|---|---|
 | P8-T01 | Flavors `dev`/`prod` (bundle ids, app names, Supabase URLs via `--dart-define-from-file`) | both build locally | critical |
 | P8-T02 | fastlane match (or Codemagic) for iOS signing; Android keystore in secrets; Play service account | signed builds in CI | critical |
-| P8-T03 | `deploy-dev.yml`: merge → staging migrations; nightly-if-changed → TestFlight + Play internal | build appears in TestFlight | critical |
+| P8-T03 | `deploy-dev.yml`: merge → staging migrations; nightly-if-changed → TestFlight + Play internal. **2026-11-15: backend half done** (merge with `supabase/**` deploys migrations + Edge Functions to staging); app builds to TestFlight + Play later | build appears in TestFlight | critical |
 | P8-T04 | `release.yml`: tag → `production` environment approval → prod migrations → smoke drive scenario vs staging → store submission (phased) | dry run on a `v0.0.1-rc` tag | critical |
 | P8-T05 | `release-please` for changelog + version bump from conventional commits | release PR generated | critical |
 | P8-T06 | `check_release_strip.sh`: build release, assert no `ext.mitlio` strings / debug symbols in binary | fails if `kDebugMode` guard removed | critical |
