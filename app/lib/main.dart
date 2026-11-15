@@ -8,7 +8,10 @@ import 'package:mitlio/core/app.dart';
 import 'package:mitlio/core/app_config.dart';
 import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/crash/crash_reporter.dart';
+import 'package:mitlio/core/logging.dart';
 import 'package:mitlio/core/providers.dart';
+import 'package:mitlio/core/remote/remote_backend.dart';
+import 'package:mitlio/core/remote/secure_local_storage.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/debug/debug_drive.dart';
@@ -39,8 +42,14 @@ Future<void> main() async {
   );
   await crashReporter.start();
   const config = AppConfig.fromEnvironment();
+  final remoteBackend = await RemoteBackend.initialize(
+    config,
+    store: const FlutterSecretStore(),
+    logger: const DeveloperLogger(),
+  );
   final container = ProviderContainer(
     overrides: [
+      remoteBackendProvider.overrideWithValue(remoteBackend),
       // With a backend: its Edge Function (national, postcode, nearby).
       // Without: the national average straight from the EU Weekly Oil
       // Bulletin, cached in a file; no postcode, no location.

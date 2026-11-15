@@ -30,6 +30,7 @@ export 'src/split/split_error.dart';
 export 'src/split/split_spec.dart';
 export 'src/sync/hlc.dart';
 export 'src/sync/hlc_error.dart';
+export 'src/sync/merge.dart';
 export 'src/trip/trip_cost.dart';
 export 'src/trip/trip_error.dart';
 export 'src/trip/trip_input.dart';

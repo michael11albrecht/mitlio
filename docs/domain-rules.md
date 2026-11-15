@@ -521,3 +521,56 @@ Hybrid logical clock for sync `updated_at` (`Hlc`, `packages/domain/lib/src/sync
   {"op": "parse", "input": "garbage", "error": "HlcInvalidFormat"}
 ]
 ```
+
+## Sync merge
+
+Which version of an aggregate wins on pull (`decide`, `mergeAggregate`, `packages/domain/lib/src/sync/merge.dart`).
+Pure last-write-wins on the root's `updated_at` HLC (ADR-07).
+
+- `SyncVersion {updatedAt: Hlc, deletedAt: DateTime?}`; `deletedAt != null` is a tombstone. A tombstone is a version
+  like any other: a newer restore beats an older delete and vice versa.
+- `decide(local?, remote, pendingLocal?)`:
+  - `pendingLocal` (unpushed outbox op) set: `pendingLocal > remote` -> `keepLocal` (the push will win); otherwise
+    `applyRemoteDropPending`.
+  - no pending, no local row -> `applyRemote`; `remote > local` -> `applyRemote`; `remote < local` -> `keepLocal`;
+    equal HLC -> `same` (replay is a no-op).
+- An expense aggregate is `{expense, payers, shares}`: children follow the root decision and are replaced as a unit
+  (`mergeAggregate`); no per-child merge.
+- Convergence: applying any permutation of versions yields the max HLC; applying a version twice changes nothing.
+
+Rows: `local`/`remote`/`pending` are HLC strings (`null` = absent); `localDeleted`/`remoteDeleted` mark tombstones.
+
+<!-- examples:sync_merge -->
+```json
+[
+  {"name": "no local row", "local": null, "remote": "2026-01-01T00:00:00.001Z-0000-a", "decision": "applyRemote"},
+  {"name": "remote newer wall", "local": "2026-01-01T00:00:00.000Z-0000-a", "remote": "2026-01-01T00:00:00.001Z-0000-b",
+   "decision": "applyRemote"},
+  {"name": "remote newer counter", "local": "2026-01-01T00:00:00.000Z-0001-a", "remote": "2026-01-01T00:00:00.000Z-0002-a",
+   "decision": "applyRemote"},
+  {"name": "remote newer node id tiebreak", "local": "2026-01-01T00:00:00.000Z-0001-a", "remote": "2026-01-01T00:00:00.000Z-0001-b",
+   "decision": "applyRemote"},
+  {"name": "local newer", "local": "2026-01-01T00:00:00.002Z-0000-a", "remote": "2026-01-01T00:00:00.001Z-0000-b",
+   "decision": "keepLocal"},
+  {"name": "equal HLC is a replay", "local": "2026-01-01T00:00:00.000Z-0000-a", "remote": "2026-01-01T00:00:00.000Z-0000-a",
+   "decision": "same"},
+  {"name": "newer restore beats older delete", "local": "2026-01-01T00:00:00.000Z-0000-a", "localDeleted": true,
+   "remote": "2026-01-01T00:00:00.001Z-0000-b", "decision": "applyRemote"},
+  {"name": "newer delete beats older edit", "local": "2026-01-01T00:00:00.000Z-0000-a",
+   "remote": "2026-01-01T00:00:00.001Z-0000-b", "remoteDeleted": true, "decision": "applyRemote"},
+  {"name": "older delete loses to local edit", "local": "2026-01-01T00:00:00.002Z-0000-a",
+   "remote": "2026-01-01T00:00:00.001Z-0000-b", "remoteDeleted": true, "decision": "keepLocal"},
+  {"name": "equal HLC tombstones", "local": "2026-01-01T00:00:00.000Z-0000-a", "localDeleted": true,
+   "remote": "2026-01-01T00:00:00.000Z-0000-a", "remoteDeleted": true, "decision": "same"},
+  {"name": "pending newer than remote", "local": "2026-01-01T00:00:00.003Z-0000-a",
+   "remote": "2026-01-01T00:00:00.001Z-0000-b", "pending": "2026-01-01T00:00:00.003Z-0000-a", "decision": "keepLocal"},
+  {"name": "pending older than remote", "local": "2026-01-01T00:00:00.000Z-0000-a",
+   "remote": "2026-01-01T00:00:00.002Z-0000-b", "pending": "2026-01-01T00:00:00.001Z-0000-a",
+   "decision": "applyRemoteDropPending"},
+  {"name": "pending equal to remote (own echo)", "local": "2026-01-01T00:00:00.001Z-0000-a",
+   "remote": "2026-01-01T00:00:00.001Z-0000-a", "pending": "2026-01-01T00:00:00.001Z-0000-a",
+   "decision": "applyRemoteDropPending"},
+  {"name": "pending without local row, newer", "local": null,
+   "remote": "2026-01-01T00:00:00.001Z-0000-b", "pending": "2026-01-01T00:00:00.002Z-0000-a", "decision": "keepLocal"}
+]
+```
