@@ -37,7 +37,6 @@ not deployed), CI with coverage, mutation and golden gates, agent pipeline.
 - [ ] Accounts: Supabase EU project + secrets, Firebase project (FCM, Hosting), own domain (`SITE_URL`), Sentry DSN, Tankerkönig API key (nearby prices only)
 - [ ] Signing: App Store Connect name reservation, iOS signing, Android keystore, Play service account (P1-T12, P8-T02)
 - [ ] Legal texts: Impressum and Datenschutzerklärung (P7-T07, technical basis in [`docs/data-deletion.md`](docs/data-deletion.md))
-- [ ] Cookie-free analytics choice for the website (PW-T09)
 - [ ] Release 0.2.0 (release-please PR #98)
 - [ ] Repo settings: required checks and approvals; agent-fix-ci cost limit; auto-merge for `safe` PRs (P8-T07)
 - [ ] Undecided: several accounts per person (e.g. couples)
@@ -49,7 +48,7 @@ not deployed), CI with coverage, mutation and golden gates, agent pipeline.
 3. [ ] **Sync in the app** (P6-T07–T16): anonymous sign-in, outbox, push/pull, realtime, two-device E2E, share/join UI with "Wer bist du?", convert local group to shared, minimum-version gate
 4. [ ] **Push notifications** (P6b): FCM setup, notification outbox + `notify` function, per-group settings, quiet hours, hide amounts
 5. [ ] **Delivery** (P8-T03/T04): staging deploy on merge, TestFlight + Play internal nightly, release workflow with approval
-6. [ ] **Website live** (PW-T10/T11): Firebase Hosting on own domain, security headers, app links, Search Console
+6. [ ] **Website live** (PW-T10/T11): Firebase Hosting on own domain, security headers, app links, Google Search Console via DNS TXT (no analytics script, PW-T09 decided)
 
 **Later (backlog, P9):** receipt photos, on-device receipt OCR, recurring expenses, opt-in payment
 reminders, weekly digest, read-only web share link, per-field merge if field data shows lost edits.

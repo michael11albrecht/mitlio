@@ -122,6 +122,12 @@ abstract class AppLocalizations {
   /// **'Nochmal versuchen'**
   String get retry;
 
+  /// Button above the iOS number pad that closes the keyboard.
+  ///
+  /// In de, this message translates to:
+  /// **'Fertig'**
+  String get keyboardDone;
+
   /// No description provided for @amountInvalid.
   ///
   /// In de, this message translates to:
@@ -163,6 +169,12 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Schließen'**
   String get dismiss;
+
+  /// No description provided for @hideSnackBar.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausblenden'**
+  String get hideSnackBar;
 
   /// No description provided for @groupNew.
   ///
@@ -427,6 +439,12 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Niemand schuldet jemandem etwas.'**
   String get balancesSettledMessage;
+
+  /// No description provided for @balancesOpenRides.
+  ///
+  /// In de, this message translates to:
+  /// **'inkl. {count, plural, =1{1 offene Fahrt} other{{count} offene Fahrten}} ({amount})'**
+  String balancesOpenRides(int count, String amount);
 
   /// No description provided for @balancesEmptyTitle.
   ///
@@ -1924,7 +1942,7 @@ abstract class AppLocalizations {
   /// No description provided for @ridesSettleNote.
   ///
   /// In de, this message translates to:
-  /// **'Pro Fahrer entsteht eine Ausgabe. Du kannst das gleich rückgängig machen.'**
+  /// **'Die Fahrten zählen schon im Saldo. Beim Abrechnen werden sie gesperrt und pro Fahrer zu einer Ausgabe. Du kannst das gleich rückgängig machen.'**
   String get ridesSettleNote;
 
   /// No description provided for @ridesSettleAction.

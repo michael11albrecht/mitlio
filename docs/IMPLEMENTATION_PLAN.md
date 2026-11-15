@@ -615,7 +615,7 @@ The ride log is the app's headline feature for commuters.
 | P3r-T03 | Drift tables `vehicles`, `ride_templates`, `rides` + repositories + contract tests | contract tests green | critical (schema) |
 | P3r-T04 | Vehicles UI: add/edit vehicle with consumption, fuel type, wear rate | VM + widget + goldens | safe |
 | P3r-T05 | **Quick log**: home-screen "Heute gefahren" — pick template, driver, toggle passengers, 2 taps to save; calendar view of who drove when | IT: log 10 commute days via UI and via `ext.mitlio.rides.log`; perf: open → saved < 3 taps | safe |
-| P3r-T06 | Period settlement: "Abrechnen für Oktober" turns rides into expenses (locked rides, undo possible) → flows into balances/settle | IT: month of rides → expected transfers fixture | safe |
+| P3r-T06 | Period settlement: "Abrechnen für Oktober" turns rides into expenses (locked rides, undo possible). **Amended 2026-11-15: rides count live.** Unsettled rides are in balances/settle immediately (same domain path: `planSettlement` → `rideAggregateToExpense`, so numbers before and after "Abrechnen" are identical, never double counted); Abrechnen = close the period (lock rides, expenses for the history). Balances show "inkl. n offene Fahrten (€)" | IT: month of rides → expected transfers fixture | safe |
 | P3r-T07 | Fairness view: per person km driven vs ridden, "wer ist als Nächstes dran" suggestion | VM tests | safe |
 | P3r-T08 | Deep link import `mitlio://ride?km=…&l100=…&price=…&n=…` (from web calculator) → prefilled ride form | IT via `ext.mitlio.navigate` with link | safe |
 
@@ -643,7 +643,7 @@ Go live **early** (before the app ships) — SEO needs months to compound. Until
 | PW-T06 | App CTA: sticky "Regelmäßig fahren? Fahrten speichern & monatlich abrechnen" → smart app banner (`apple-itunes-app` meta), Play badge, deep link carrying the trip (P3r-T08) | link format test | safe |
 | PW-T07 | Landing pages per search intent (each with calculator embedded + unique explanatory content + FAQ): `/fahrtkostenrechner`, `/spritkosten-teilen`, `/fahrgemeinschaft-kosten-aufteilen`, `/pendler-fahrgemeinschaft`, `/mitfahrer-kosten-berechnen`, `/kilometerpauschale-rechner`, `/elektroauto-ladekosten-teilen`; EN equivalents later | human reviews copy; each page unique title/description/H1 | safe |
 | PW-T08 | Structured data: `WebApplication`/`SoftwareApplication`, `FAQPage`, `HowTo`, `Organization`; OG/Twitter images generated at build | `tool/seo_check` validates JSON-LD; Rich Results Test manual once | safe |
-| PW-T09 | Privacy-friendly analytics without cookies (e.g. GoatCounter/Plausible/Cloudflare Web Analytics) — no consent banner needed; events: calculation done, share, app CTA click | no cookies set (Playwright asserts `document.cookie` empty) | critical (privacy) |
+| PW-T09 | **Decided 2026-11-15: no analytics script.** Google Search Console only (verified via DNS TXT, no code on the page), covered by PW-T11. Revisit with GoatCounter/Pirsch if on-site numbers are needed | no cookies set (Playwright asserts `document.cookie` empty) | critical (privacy) |
 | PW-T10 | Hosting: Firebase Hosting on own domain, preview channels per PR, cache headers, security headers (CSP), `/.well-known/*` for app links | headers test; preview URL commented on PR | critical |
 | PW-T11 | Google Search Console + Bing Webmaster verification, sitemap submission; monthly SEO report (impressions, CTR, top queries) into `docs/seo-metrics.md` | Search Console shows indexed pages | critical (human) |
 
@@ -657,6 +657,7 @@ Go live **early** (before the app ships) — SEO needs months to compound. Until
 | P6c-T04 | `pg_cron` job refreshing national/state averages periodically (computed from station data within provider limits) | pgTAP + function test | critical |
 | P6c-T05 | App `FuelPriceService` (+ fake): chips in ride/trip form, auto-fill per vehicle fuel type, price frozen on the ride; offline → last known value with age label | VM tests; IT via fake | safe |
 | P6c-T06 | Abuse protection: per-IP rate limit on the function, CORS restricted to own domain + app | test | critical |
+| P6c-T07 | **Decided 2026-11-15: direct EU source in the app.** Without a configured backend the app fetches the German national average (E5, Diesel; E10 as E5 with "≈") itself from the EU Weekly Oil Bulletin XLSX (`EuOilBulletinService`, port of `_shared/oil_bulletin.ts`), cached on the device (12 h, weekly file, offline = last file). "In meiner Nähe" and postcode stay server-only (Tankerkönig) and are hidden without a backend; with a backend configured the Edge Function stays the source. Privacy: the device contacts `energy.ec.europa.eu` (IP visible to the European Commission, no personal data, no location sent), see `docs/data-flows.md` | parser + service tests with the real bulletin file, VM/widget tests: chips without backend, no postcode/nearby | safe |
 
 ### P5 — Real-world validation (human, 1 weekend + 1–2 days fixes)
 
@@ -679,7 +680,7 @@ Backend tasks are all `critical` → human review. Agents still write them; pgTA
 | P6-T02 | Migration 001: tables (§2.4) with constraints, `server_seq` sequence + trigger, `updated_at` validation, soft delete | `supabase db reset` green; squawk clean | critical |
 | P6-T03 | RLS: `is_group_member(group_id)` `security definer` function; policies select/insert/update per table; no hard delete | pgTAP: member allow, non-member deny, anon deny for every table; `rls_coverage.sql` asserts every table has RLS enabled + tests | critical |
 | P6-T04 | RPC `upsert_expense(payload jsonb)`: transactional replace of payers/shares, invariant checks (sums), LWW compare on HLC, returns server row | pgTAP: invariant violation rejected; stale HLC ignored; newer wins | critical |
-| P6-T05 | Invites: `create_invite(group_id)` → token (store hash only, 7-day expiry, revocable); `join_group(token, member_id?)` claims a participant or creates one | pgTAP: expired/revoked/reused tokens; cannot join twice | critical |
+| P6-T05 | Invites: `create_invite(group_id)` → token (store hash only, owner only, no expiry, a new link revokes all others; amended by ADR-24); `join_group(token, member_id?)` claims a participant or creates one (people and accounts are separate layers; one account per person, several accounts per person tbd, amended by ADR-24) | pgTAP: expired/revoked/reused tokens; cannot join twice | critical |
 | P6-T06 | Generated TS/Dart types + CI drift check (`supabase gen types` diff) | CI fails on stale types | critical |
 | P6-T07 | App auth: anonymous sign-in on first share action, session persistence, sign-out wipes local server-linked data (with confirmation) | VM tests with fake auth | critical |
 | P6-T08 | HLC implementation in domain (`Hlc.now(clock, last)`, `Hlc.receive`, compare) | property tests: monotonic, causality | safe |
@@ -783,6 +784,8 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 | P9-T05 | Weekly group digest notification | builds on P6b |
 | P9-T06 | Web app target (read-only share link) | |
 | P9-T07 | Per-field merge instead of aggregate LWW, if field data shows lost edits | ADR first |
+| P9-T08 | Ride distance from start and destination: autocomplete + routing via Edge Function proxy (ORS primary, Geoapify fallback), distance stays editable, saved places local-only (#130) | spike for quotas/ToS + ADR first; `needs-decision` |
+| P9-T09 | Car model suggestions: bundled static catalog from EEA CO2 monitoring data (CC BY 4.0) prefills fuel type and consumption, honest WLTP note (#131) | offline, no network; ADR + owner decisions first |
 
 ---
 

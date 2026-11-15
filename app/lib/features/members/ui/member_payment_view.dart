@@ -124,6 +124,7 @@ class _MemberPaymentSheetState extends ConsumerState<MemberPaymentSheet> {
       MemberPaymentFailure() => ErrorState(onRetry: vm.retry),
       MemberPaymentLoaded(:final fieldErrors, :final saveError) => SafeArea(
         child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           padding: EdgeInsets.only(
             left: Spacing.md,
             right: Spacing.md,

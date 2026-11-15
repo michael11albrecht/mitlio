@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/decimal_parser.dart';
 import 'package:mitlio/core/money_format.dart';
 import 'package:mitlio/core/theme/theme.dart';
+import 'package:mitlio/core/widgets/number_pad_done.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 
 /// Exchange-rate input: `1 USD = [0,92] €`. Reports parts per million
@@ -84,19 +85,21 @@ class _RateFieldState extends State<RateField> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return TextField(
-      controller: _controller,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,\s]')),
-      ],
-      style: MitlioTypography.tabular(Theme.of(context).textTheme.titleLarge),
-      onChanged: _onChanged,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        prefixText: '1 ${widget.fromCode} = ',
-        suffixText: widget.toSymbol,
-        errorText: _invalid ? l10n.rateInvalid : widget.errorText,
+    return NumberPadDone(
+      child: TextField(
+        controller: _controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9.,\s]')),
+        ],
+        style: MitlioTypography.tabular(Theme.of(context).textTheme.titleLarge),
+        onChanged: _onChanged,
+        decoration: InputDecoration(
+          labelText: widget.label,
+          prefixText: '1 ${widget.fromCode} = ',
+          suffixText: widget.toSymbol,
+          errorText: _invalid ? l10n.rateInvalid : widget.errorText,
+        ),
       ),
     );
   }
