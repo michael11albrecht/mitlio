@@ -643,7 +643,7 @@ ADR-25. Data set up once per user, reused in every group. Entry points are inlin
 
 | ID | Task | Accept | Risk |
 |---|---|---|---|
-| PU-T01 | ADR-25 + this plan section | owner review | critical (plan) |
+| PU-T01 | ADR-25 + this plan section | owner approved 2026-11-15 | critical (plan) |
 | PU-T02 | Domain: `PaypalMeHandle.parse` (accepts `paypal.me/x`, full URL, `@x`, `x`; normalises, rejects invalid chars/length) and link builder with optional amount | examples + property (parse ∘ format = id) + edge cases | safe |
 | PU-T03 | Domain: `VehicleCostProfile` + `vehicleExtraCostPerKm(profile, basis)` → `wear_milli_per_km`; month/year normalisation, depreciation = (purchase − resale) / keep_years, basis `running`/`full`; breakdown per category for charts | property: Σ category milli = total (largest remainder); monotonic in each cost; annual_km = 0 rejected | safe |
 | PU-T04 | Drift: `profile`, `local_profile_bank`, `user_vehicles`, `user_vehicle_costs`, `vehicles.source_user_vehicle_id`; repositories + fakes + contract tests; arch test: sync code never reads `local_profile_bank` | schema + migration test; contract tests | critical (schema, PII) |
@@ -909,9 +909,9 @@ tool/drive.sh ext.mitlio.balances.get '{"groupId":"<id>"}'
 | 8 | Positioning | private taxometer + SEO web calculator funnel, live clickable fuel prices | Product positioning section, P3r, PW, P6c, ADR-19/20 |
 | 7 | Monthly budget | as low as sensible | ADR-18 / §6.8: ~€45–80 dev, ~€30 maintenance; Claude via existing subscription (no extra LLM spend), GitHub spend limit $0 |
 
-| 9 | Share IBAN with the group? (ADR-25) | proposal from owner discussion 2026-11-15, **confirm**: never readable on the server; QR image via share sheet now; after P6b ask → push → approve, per person, end-to-end encrypted, deleted when paid | §8 amended by PU-T17 |
+| 9 | Share IBAN with the group? (ADR-25) | **yes, as proposed** (2026-11-15): never readable on the server; QR image via share sheet now; after P6b ask → push → approve, per person, end-to-end encrypted, deleted when paid | §8 amended by PU-T17 |
 | 10 | Car cost basis (ADR-25) | **user's choice** (2026-11-15); default running costs only; inline non-blocking PBefG hint when passengers pay more than operating costs, plus plausibility hint | PU-T03/T09/T15; owner reviews hint wording |
 | 11 | Illustrations | **agent draws vector art in code** (2026-11-15); too ugly → new experiment | PU-T06 |
-| 12 | Order | **open** — proposal: PU after P4/P3r, before P6-T07; PU-T13 photo in backlog | §11 |
+| 12 | Order | **PU after P4/P3r, before P6-T07** (2026-11-15); PU-T13 photo in backlog; PU-T14/T17 after P6-T07/P6b | §11 |
 
 No open owner questions remain for P0–P1.

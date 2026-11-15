@@ -1,6 +1,6 @@
 # ADR-25: Personal profile, personal vehicles and guided setup flows
 
-- **Status:** proposed (owner idea 2026-11-15; open points in plan §12 #9–#12)
+- **Status:** accepted (owner decisions 2026-11-15, plan §12 #9–#12)
 - **Date:** 2026-11-15
 
 ## Context
