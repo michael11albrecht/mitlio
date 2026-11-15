@@ -1,6 +1,7 @@
--- squawk-ignore-file prefer-robust-stmts
+-- squawk-ignore-file prefer-robust-stmts, require-concurrent-index-creation
 -- Justification: the Supabase CLI applies each migration file once, in a transaction. Functions are
--- replaced with `create or replace` (same signatures); the new column has a constant default.
+-- replaced with `create or replace` (same signatures); the new column has a constant default; the
+-- partial unique index is built on a tiny server-only table inside the same transaction.
 -- 0010_people_accounts: server side of ADR-24 (people vs. accounts, one rotating invite link,
 -- owner role). Amends P6-T04/T05 (0001, 0003); supersedes the group lock idea of #89.
 --
@@ -9,6 +10,8 @@
 --     membership of each group (created_at, then id) becomes 'owner'. A BEFORE INSERT trigger
 --     (SECURITY DEFINER, so it sees all rows regardless of RLS) forces role = 'owner' iff the group
 --     has no membership yet (the bootstrap case) and 'member' otherwise, ignoring the client value.
+--     A partial unique index (group_id) where role = 'owner' enforces one owner per group, so two
+--     concurrent bootstraps cannot both become owner (the loser fails with 23505).
 --     Clients have no UPDATE grant on group_memberships, so they cannot change a role afterwards.
 --     `unique (group_id, user_id)` and `unique (group_id, member_id)` stay (one account per person;
 --     several accounts per person is tbd, see ADR-24).
@@ -23,7 +26,8 @@
 --     membership (access ends); the person row and all expenses stay. If members.user_id of that
 --     person equals the removed user it is set to null.
 --   * delete_my_data(): same as 0008, but if the caller owns a group, ownership passes to the oldest
---     remaining membership of that group before the caller's memberships are deleted.
+--     remaining membership of that group after the caller's memberships are deleted (the one-owner
+--     index forbids promoting first).
 --
 -- Security model: all functions SECURITY DEFINER, search_path = '', fully qualified, gated on
 -- auth.uid() first. anon/PUBLIC have no EXECUTE.
@@ -43,6 +47,9 @@ where gm.id in (
   select distinct on (g.group_id) g.id
   from public.group_memberships g
   order by g.group_id, g.created_at, g.id);
+
+create unique index group_memberships_one_owner on public.group_memberships (group_id)
+  where role = 'owner';
 
 create function public.set_membership_role() returns trigger
 language plpgsql
@@ -210,6 +217,7 @@ set search_path = ''
 as $$
 declare
   v_uid uuid := (select auth.uid());
+  v_owned uuid[];
   v_memberships bigint;
   v_members bigint;
   v_tokens bigint := 0;
@@ -220,19 +228,20 @@ begin
     raise exception 'not authenticated' using errcode = 'insufficient_privilege';
   end if;
 
-  update public.group_memberships gm set role = 'owner'
-  where gm.id in (
-    select distinct on (o.group_id) o.id
-    from public.group_memberships o
-    where o.user_id <> v_uid
-      and o.group_id in (
-        select mine.group_id from public.group_memberships mine
-        where mine.user_id = v_uid and mine.role = 'owner')
-    order by o.group_id, o.created_at, o.id);
+  select array_agg(mine.group_id) into v_owned
+  from public.group_memberships mine
+  where mine.user_id = v_uid and mine.role = 'owner';
 
   -- The membership rows reference members (member_id), so they go before anything else.
   with d as (delete from public.group_memberships gm where gm.user_id = v_uid returning 1)
   select count(*) into v_memberships from d;
+
+  update public.group_memberships gm set role = 'owner'
+  where gm.id in (
+    select distinct on (o.group_id) o.id
+    from public.group_memberships o
+    where o.group_id = any (coalesce(v_owned, '{}'))
+    order by o.group_id, o.created_at, o.id);
 
   -- Non-authoritative display link; the trigger bumps server_seq so peers pull the change.
   with u as (

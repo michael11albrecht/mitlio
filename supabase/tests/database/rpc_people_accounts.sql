@@ -3,7 +3,7 @@
 -- Actors: alice (creates group A, owner), bob/carol (joiners), mallory (nobody).
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(37);
+select plan(39);
 
 create schema tests;
 grant usage on schema tests to anon, authenticated;
@@ -78,6 +78,17 @@ select is((select role from public.group_memberships
            where user_id = '00000000-0000-0000-0000-000000000004'), 'member',
   'the trigger forces member on a populated group even for direct inserts');
 delete from public.group_memberships where user_id = '00000000-0000-0000-0000-000000000004';
+
+alter table public.group_memberships disable trigger set_membership_role;
+select throws_ok(
+  $q$insert into public.group_memberships (group_id, user_id, role)
+     values ('00000000-0000-0000-0001-000000000001', '00000000-0000-0000-0000-000000000004', 'owner')$q$,
+  '23505', null, 'a second owner insert violates the one-owner index');
+alter table public.group_memberships enable trigger set_membership_role;
+select throws_ok(
+  $q$update public.group_memberships set role = 'owner'
+     where user_id = '00000000-0000-0000-0000-000000000002'$q$,
+  '23505', null, 'a second owner via update violates the one-owner index');
 
 select is((select expires_at from public.group_invites
            where token_hash = sha256(convert_to(current_setting('t.tok1'), 'UTF8'))),
