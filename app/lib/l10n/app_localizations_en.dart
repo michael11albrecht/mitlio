@@ -69,6 +69,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dismiss => 'Dismiss';
 
   @override
+  String get hideSnackBar => 'Dismiss';
+
+  @override
   String get groupNew => 'New group';
 
   @override

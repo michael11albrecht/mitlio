@@ -56,6 +56,7 @@
   },
   "undo": "Rückgängig",
   "dismiss": "Schließen",
+  "hideSnackBar": "Ausblenden",
   "groupNew": "Neue Gruppe",
   "groupCreate": "Gruppe anlegen",
   "groupEditTitle": "Gruppe bearbeiten",
