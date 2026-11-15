@@ -1,8 +1,9 @@
-# Opens/updates the release PR from conventional commits (P8-T05). Opening the PR only:
-# skip-github-release is set in .release-please-config.json, so nothing is tagged or published here.
+# Opens/updates the release PR from conventional commits (P8-T05). Merging the release PR tags
+# `mitlio-vX.Y.Z` and creates a GitHub release (no store upload happens here).
 # The GitHub App token (same App as agent-implement) is used so CI runs on the release PR;
 # GITHUB_TOKEN-created PRs do not trigger workflows. The App needs contents + pull-requests write.
-# Note: the yaml updater rewrites app/pubspec.yaml `version`; the `+build` suffix is not preserved.
+# app/pubspec.yaml is bumped by the generic updater on the `x-release-please-version` line only
+# (comments survive); it carries no `+build` suffix, CI passes --build-number instead.
 name: release-please
 on:
   push:
