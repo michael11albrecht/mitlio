@@ -99,3 +99,10 @@ in a tight loop; honour `Retry-After`.
 
 The hourly `pg_cron` job (`fuel-prices-warm-national`) calls the function for the three fuel types with that header. It
 does nothing until the Vault secrets `fuel_prices_url`, `fuel_prices_anon_key` and `fuel_prices_warm_token` exist.
+
+## Direct EU source in the app (no backend)
+
+Since 2026-11-15 (ADR-20 amendment) the app does not need this function for the national average: without a
+configured backend `EuOilBulletinService` downloads the same bulletin file the function reads and returns the same values
+(`source: eu-oil-bulletin`, E10 as E5 with `approximation`, `fetchedAt` = date in force). Postcode and nearby need this
+function and are hidden without it.

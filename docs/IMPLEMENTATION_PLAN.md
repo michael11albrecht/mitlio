@@ -657,6 +657,7 @@ Go live **early** (before the app ships) — SEO needs months to compound. Until
 | P6c-T04 | `pg_cron` job refreshing national/state averages periodically (computed from station data within provider limits) | pgTAP + function test | critical |
 | P6c-T05 | App `FuelPriceService` (+ fake): chips in ride/trip form, auto-fill per vehicle fuel type, price frozen on the ride; offline → last known value with age label | VM tests; IT via fake | safe |
 | P6c-T06 | Abuse protection: per-IP rate limit on the function, CORS restricted to own domain + app | test | critical |
+| P6c-T07 | **Decided 2026-11-15: direct EU source in the app.** Without a configured backend the app fetches the German national average (E5, Diesel; E10 as E5 with "≈") itself from the EU Weekly Oil Bulletin XLSX (`EuOilBulletinService`, port of `_shared/oil_bulletin.ts`), cached on the device (12 h, weekly file, offline = last file). "In meiner Nähe" and postcode stay server-only (Tankerkönig) and are hidden without a backend; with a backend configured the Edge Function stays the source. Privacy: the device contacts `energy.ec.europa.eu` (IP visible to the European Commission, no personal data, no location sent), see `docs/data-flows.md` | parser + service tests with the real bulletin file, VM/widget tests: chips without backend, no postcode/nearby | safe |
 
 ### P5 — Real-world validation (human, 1 weekend + 1–2 days fixes)
 
