@@ -902,6 +902,69 @@
   "vehicleErrorName": "Gib einen Namen ein",
   "vehicleErrorConsumption": "Gib den Verbrauch ein",
   "vehicleSave": "Speichern",
+  "vehicleCatalogEngine": "{litres} l",
+  "@vehicleCatalogEngine": {
+    "placeholders": {
+      "litres": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogPower": "{kw} kW",
+  "@vehicleCatalogPower": {
+    "placeholders": {
+      "kw": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleCatalogHybrid": "{fuel}-Hybrid",
+  "@vehicleCatalogHybrid": {
+    "placeholders": {
+      "fuel": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogConsumptionLitre": "{value} l/100 km",
+  "@vehicleCatalogConsumptionLitre": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogConsumptionKwh": "{value} kWh/100 km",
+  "@vehicleCatalogConsumptionKwh": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogSuggestions": "Fahrzeugvorschläge",
+  "vehicleCatalogSource": "Daten: EEA, CC BY 4.0",
+  "vehicleCatalogNoMatch": "Nicht dabei? Trag den Verbrauch selbst ein, z. B. aus deinem Bordcomputer.",
+  "vehicleCatalogUnavailable": "Die Fahrzeugliste konnte nicht geladen werden. Trag den Verbrauch selbst ein, z. B. aus deinem Bordcomputer.",
+  "vehicleCatalogWltpNote": "Herstellerangabe (WLTP). Im Alltag verbrauchst du meist etwa 20 % mehr.",
+  "vehicleCatalogWltpNoteElectric": "Herstellerangabe (WLTP). Im Alltag brauchst du meist etwas mehr.",
+  "vehicleCatalogRealisticNote": "Geschätzter Alltagswert: Herstellerangabe (WLTP) plus etwa 20 %. Das ist eine Schätzung, kein offizieller Wert.",
+  "vehicleCatalogUseRealistic": "Realistischen Wert übernehmen: {value} l/100 km",
+  "@vehicleCatalogUseRealistic": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogPicked": "„{name}“ übernommen. Dein Verbrauch wurde ersetzt.",
+  "@vehicleCatalogPicked": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "templateFormNew": "Neue Strecke",
   "templateFormEdit": "Strecke bearbeiten",
   "templateNameLabel": "Name",
@@ -1205,6 +1268,13 @@
   "crashReportsUnavailable": "In dieser Version nicht verfügbar.",
   "deleteMyDataEntry": "Alle meine Daten löschen",
   "deleteMyDataEntryHint": "Gruppen, Ausgaben und Fahrten von diesem Gerät entfernen",
+  "licensesEntry": "Quellen und Lizenzen",
+  "licensesEntryHint": "Daten und Schriften, die mitlio nutzt",
+  "licensesTitle": "Quellen und Lizenzen",
+  "licensesEeaTitle": "Fahrzeugliste",
+  "licensesEea": "Daten: Europäische Umweltagentur (EEA), Überwachung der CO2-Emissionen von neuen Pkw (Verordnung (EU) 2019/631), CC BY 4.0. Die Werte sind Herstellerangaben (WLTP). mitlio hat sie nur zusammengefasst und nicht verändert.",
+  "licensesFontTitle": "Schrift im PDF",
+  "licensesFont": "Roboto, Apache License 2.0.",
   "deleteMyDataTitle": "Alle meine Daten löschen",
   "deleteMyDataWhatTitle": "Das wird gelöscht",
   "deleteMyDataWhat": "Auf diesem Gerät: alle Gruppen, Mitglieder, Ausgaben, Fahrten, Ausgleiche, Zahlungsdaten (auch IBAN und der zugehörige Schlüssel) und deine Einstellungen. Danach startet die App wie neu.",

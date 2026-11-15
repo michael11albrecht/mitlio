@@ -18,6 +18,7 @@ export 'src/money/money.dart';
 export 'src/payment/epc_qr.dart';
 export 'src/payment/iban.dart';
 export 'src/payment/paypal_me.dart';
+export 'src/rides/car_catalog.dart';
 export 'src/rides/ride.dart';
 export 'src/rides/ride_aggregate.dart';
 export 'src/rides/ride_cost.dart';

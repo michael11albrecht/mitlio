@@ -131,6 +131,44 @@ void main() {
         ),
       ),
       ('with errors', vehicleFormReady(showErrors: true)),
+      (
+        'with car suggestions',
+        vehicleFormReady(
+          name: 'Golf',
+          suggestions: sampleCatalogEntries.take(3).toList(),
+        ),
+      ),
+      (
+        'after a catalog pick',
+        vehicleFormReady(
+          name: 'VW Golf',
+          consumption: 5600,
+          fromCatalog: sampleCatalogEntries.first,
+        ),
+      ),
+      (
+        'after taking the realistic value',
+        vehicleFormReady(
+          name: 'VW Golf',
+          consumption: 6720,
+          fromCatalog: sampleCatalogEntries.first,
+          realisticApplied: true,
+        ),
+      ),
+      (
+        'electric catalog pick',
+        vehicleFormReady(
+          name: 'Tesla Model 3',
+          fuel: FuelType.electric,
+          consumption: 14900,
+          fromCatalog: sampleCatalogEntries.last,
+        ),
+      ),
+      ('no catalog match', vehicleFormReady(name: 'Trabant', noMatch: true)),
+      (
+        'catalog unavailable',
+        vehicleFormReady(name: 'Golf', catalogUnavailable: true),
+      ),
     ]) {
       forEachMode(
         name,

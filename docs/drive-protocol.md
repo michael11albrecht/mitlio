@@ -27,6 +27,8 @@ Contract for driving a running **debug** build of the app through the same ViewM
 | `ext.mitlio.groups.archived` | none | `{"groups": [{"id", "name", "currency"}]}` (archived groups); calls `ArchivedGroupsViewModel.list` |
 | `ext.mitlio.groups.restore` | `id` (required) | `{"id"}`; calls `ArchivedGroupsViewModel.restore` (`not_found` unknown, `conflict` if not archived) |
 | `ext.mitlio.members.add` | `groupId`, `name` (both required) | `{"id", "name", "position"}`; calls `GroupDetailViewModel.addMember` |
+| `ext.mitlio.vehicles.catalogSearch` | `groupId`, `query` (required), `vehicleId` (optional, edit form) | `{"query", "suggestions": [{"name", "fuelType", "hybrid", "engineCc", "powerKw", "consumptionMilliPer100km"}], "noMatch", "catalogUnavailable"}`; calls `VehicleFormViewModel.searchCatalog` (bundled EEA car list, offline, max 5 hits) on the form instance the screen uses
+| `ext.mitlio.vehicles.catalogPick` | `groupId`, `index` (into the last `catalogSearch`), `vehicleId` (optional) | `{"name", "fuelType", "consumptionMilliPer100km", "fromCatalog", "undoable"}`; calls `VehicleFormViewModel.applyCatalogEntry` (`invalid_params` for an index outside the suggestions)
 
 `navigate` also reaches the first-run routes `/welcome` (onboarding, shown on `/` while no group exists) and `/trip` (the trip form without a group). Onboarding has no commands of its own: the commute path creates its group through `GroupsViewModel.create`, i.e. what `groups.create` calls.
 

@@ -19,4 +19,5 @@ dev_dependencies:
 executables:
   coverage_gate: coverage_gate
   deps_policy: deps_policy
+  build_car_catalog: build_car_catalog
   gen_app_identity: gen_app_identity

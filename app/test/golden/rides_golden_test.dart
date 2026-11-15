@@ -12,6 +12,7 @@ import 'package:mitlio/features/rides/ui/template_form_view.dart';
 import 'package:mitlio/features/rides/ui/template_form_view_model.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
+import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../features/rides/ui/rides_fixtures.dart';
 import 'golden_matrix.dart';
@@ -150,6 +151,47 @@ Future<void> main() async {
     height: 760,
   );
 
+  // The car catalog typeahead and its honest WLTP line (P9-T09).
+  await vehicleForm(
+    'vehicle_form_suggestions',
+    vehicleFormReady(
+      name: 'Golf',
+      suggestions: [
+        ...sampleCatalogEntries.take(3),
+        const CarCatalogEntry(
+          make: 'VW',
+          model: 'Golf',
+          fuelType: FuelType.petrol,
+          hybrid: true,
+          engineCc: 1400,
+          powerKw: 110,
+          consumptionMilliPer100km: 5200,
+        ),
+        sampleCatalogEntries.last,
+      ],
+    ),
+  );
+  await vehicleForm(
+    'vehicle_form_catalog_pick',
+    vehicleFormReady(
+      name: 'VW Golf',
+      consumption: 5600,
+      fromCatalog: sampleCatalogEntries.first,
+    ),
+  );
+  await vehicleForm(
+    'vehicle_form_catalog_realistic',
+    vehicleFormReady(
+      name: 'VW Golf',
+      consumption: 6720,
+      fromCatalog: sampleCatalogEntries.first,
+      realisticApplied: true,
+    ),
+  );
+  await vehicleForm(
+    'vehicle_form_catalog_unavailable',
+    vehicleFormReady(name: 'Golf', catalogUnavailable: true),
+  );
   await vehicleForm('vehicle_form_empty', vehicleFormReady());
   await vehicleForm(
     'vehicle_form_filled',

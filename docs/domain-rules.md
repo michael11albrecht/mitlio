@@ -474,6 +474,27 @@ Check: 40 km × 6.5 l/100 km = 2.6 l. At 1.799 € that is 4.6774 € → 468 ct
 - So A gets 234 + 156 = 390 for the driver-A aggregate.
 - r2 (B, A, C in tie order A, B, C): 153/152/152.
 
+## Car catalog (P9-T09)
+
+The vehicle form suggests cars from a bundled catalog built offline from the EEA CO2 monitoring data
+(`docs/car-catalog.md`). Pure functions in `packages/domain/lib/src/rides/car_catalog.dart`.
+
+- A `CarCatalogEntry` is one (make, model, fuel, engine in 100 cm3, power in 5 kW) variant with the
+  **manufacturer (WLTP) consumption** in thousandths of l or kWh per 100 km. Fuel is petrol, diesel or electric;
+  mild/full hybrids are petrol/diesel with `hybrid: true`. Plug-in hybrids are not catalogued (WLTP values far too
+  optimistic).
+- Search: query folded (case, umlauts, accents, punctuation to spaces: `Citroen` = `Citroën`, `id3` = `ID.3`), at least
+  2 characters. Every typed word must be a prefix of a word of make, model or a make alias (`volkswagen` for VW,
+  `mercedes` for Mercedes-Benz), or of the model/"make model" with spaces removed. Ranking: model or "make model"
+  starts with the whole query first, then shorter model names, then name, fuel (petrol, petrol hybrid, diesel, diesel
+  hybrid, electric), engine, power. At most `limit` (5) hits, one per (name, fuel) before a second variant.
+- **Realistic value** (`realisticConsumptionMilli`): `wltp x 1.20`, rounded half up, only for petrol and diesel
+  (also hybrids). `realWorldGapPercent = 20` is the ICCT/EU Commission real-world gap estimate (SWD(2024) 59: 23.7 %
+  petrol, 18.1 % diesel in 2021; ICCT 2025: about 20 %). Electric and other fuels: no sourced factor, `null`.
+  It is always shown as an estimate, never as an official value.
+
+Examples: petrol 5600 -> 6720; diesel 4500 -> 5400; 3 -> 4 (3.6); 2 -> 2 (2.4); 5 -> 6 (6.0).
+
 ## HLC
 
 Hybrid logical clock for sync `updated_at` (`Hlc`, `packages/domain/lib/src/sync/hlc.dart`).
