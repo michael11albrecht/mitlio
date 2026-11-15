@@ -116,11 +116,77 @@ abstract class AppLocalizations {
   /// **'Versuch es gleich noch einmal.'**
   String get errorMessage;
 
+  /// No description provided for @errorNotFound.
+  ///
+  /// In de, this message translates to:
+  /// **'Das gibt es nicht mehr. Geh einen Schritt zurück und lad neu.'**
+  String get errorNotFound;
+
+  /// No description provided for @errorConflict.
+  ///
+  /// In de, this message translates to:
+  /// **'Das geht gerade nicht, weil sich etwas geändert hat. Prüf den Stand und versuch es nochmal.'**
+  String get errorConflict;
+
+  /// No description provided for @errorLocked.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist schon abgerechnet und lässt sich nicht mehr ändern.'**
+  String get errorLocked;
+
+  /// No description provided for @errorInvalidData.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Eingabe passt nicht. Prüf sie und versuch es nochmal.'**
+  String get errorInvalidData;
+
+  /// No description provided for @errorStorage.
+  ///
+  /// In de, this message translates to:
+  /// **'Das hat nicht geklappt. Prüf den freien Speicher deines Geräts und versuch es nochmal.'**
+  String get errorStorage;
+
+  /// No description provided for @shareFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Teilen hat nicht geklappt. Versuch es nochmal.'**
+  String get shareFailed;
+
+  /// No description provided for @errorRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Anfragen. Versuch es in ein paar Minuten nochmal.'**
+  String get errorRateLimited;
+
+  /// No description provided for @errorRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Anfragen. Versuch es in {minutes} Min. nochmal.'**
+  String errorRateLimitedIn(int minutes);
+
+  /// No description provided for @errorSettingNotSaved.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.'**
+  String get errorSettingNotSaved;
+
+  /// No description provided for @errorUndoFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Rückgängig machen hat nicht geklappt. Prüf den Stand und versuch es nochmal.'**
+  String get errorUndoFailed;
+
   /// No description provided for @retry.
   ///
   /// In de, this message translates to:
   /// **'Nochmal versuchen'**
   String get retry;
+
+  /// Button above the iOS number pad that closes the keyboard.
+  ///
+  /// In de, this message translates to:
+  /// **'Fertig'**
+  String get keyboardDone;
 
   /// No description provided for @amountInvalid.
   ///
@@ -163,6 +229,12 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Schließen'**
   String get dismiss;
+
+  /// No description provided for @hideSnackBar.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausblenden'**
+  String get hideSnackBar;
 
   /// No description provided for @groupNew.
   ///
@@ -235,6 +307,36 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'„{name}“ archiviert'**
   String groupArchived(String name);
+
+  /// No description provided for @groupsArchivedEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Archiviert ({count})'**
+  String groupsArchivedEntry(int count);
+
+  /// No description provided for @groupsArchivedTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Archivierte Gruppen'**
+  String get groupsArchivedTitle;
+
+  /// No description provided for @groupRestore.
+  ///
+  /// In de, this message translates to:
+  /// **'Wiederherstellen'**
+  String get groupRestore;
+
+  /// No description provided for @groupRestoreLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} wiederherstellen'**
+  String groupRestoreLabel(String name);
+
+  /// No description provided for @groupRestored.
+  ///
+  /// In de, this message translates to:
+  /// **'„{name}“ wiederhergestellt'**
+  String groupRestored(String name);
 
   /// No description provided for @membersEmptyTitle.
   ///
@@ -427,6 +529,12 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Niemand schuldet jemandem etwas.'**
   String get balancesSettledMessage;
+
+  /// No description provided for @balancesOpenRides.
+  ///
+  /// In de, this message translates to:
+  /// **'inkl. {count, plural, =1{1 offene Fahrt} other{{count} offene Fahrten}} ({amount})'**
+  String balancesOpenRides(int count, String amount);
 
   /// No description provided for @balancesEmptyTitle.
   ///
@@ -1924,7 +2032,7 @@ abstract class AppLocalizations {
   /// No description provided for @ridesSettleNote.
   ///
   /// In de, this message translates to:
-  /// **'Pro Fahrer entsteht eine Ausgabe. Du kannst das gleich rückgängig machen.'**
+  /// **'Die Fahrten zählen schon im Saldo. Beim Abrechnen werden sie gesperrt und pro Fahrer zu einer Ausgabe. Du kannst das gleich rückgängig machen.'**
   String get ridesSettleNote;
 
   /// No description provided for @ridesSettleAction.
@@ -1962,6 +2070,90 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'{driven} km gefahren · {ridden} km mitgefahren'**
   String ridesFairnessKm(String driven, String ridden);
+
+  /// No description provided for @ridesDriversTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer fährt?'**
+  String get ridesDriversTitle;
+
+  /// No description provided for @ridesDriversHelp.
+  ///
+  /// In de, this message translates to:
+  /// **'Nur Fahrer werden als Nächstes vorgeschlagen.'**
+  String get ridesDriversHelp;
+
+  /// No description provided for @ridesDriverSwitch.
+  ///
+  /// In de, this message translates to:
+  /// **'Fährt selbst'**
+  String get ridesDriverSwitch;
+
+  /// No description provided for @ridesDriverNowDrives.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} wird wieder vorgeschlagen'**
+  String ridesDriverNowDrives(String name);
+
+  /// No description provided for @ridesDriverNotSuggested.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} wird nicht mehr vorgeschlagen'**
+  String ridesDriverNotSuggested(String name);
+
+  /// No description provided for @ridesFairnessNotDriving.
+  ///
+  /// In de, this message translates to:
+  /// **'Fährt nicht · wird nicht vorgeschlagen'**
+  String get ridesFairnessNotDriving;
+
+  /// No description provided for @ridesFairnessChangeDrivers.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrer ändern'**
+  String get ridesFairnessChangeDrivers;
+
+  /// No description provided for @ridesFairnessHow.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie wird das berechnet?'**
+  String get ridesFairnessHow;
+
+  /// No description provided for @ridesFairnessHowText.
+  ///
+  /// In de, this message translates to:
+  /// **'Vorgeschlagen wird, wer bisher am wenigsten gefahren ist – km gefahren minus km mitgefahren seit der letzten Abrechnung. Bei Gleichstand ist dran, wer am längsten nicht gefahren ist. Nur Mitglieder, die als Fahrer markiert sind, werden vorgeschlagen.'**
+  String get ridesFairnessHowText;
+
+  /// No description provided for @ridesDriverPromptTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Fährt {name} nicht selbst?'**
+  String ridesDriverPromptTitle(String name);
+
+  /// No description provided for @ridesDriverPromptBody.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} ist bei {n} Fahrten mitgefahren, aber noch nie gefahren. Als Nichtfahrer wird {name} nicht mehr als Nächstes vorgeschlagen.'**
+  String ridesDriverPromptBody(String name, int n);
+
+  /// No description provided for @ridesDriverPromptMark.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Nichtfahrer markieren'**
+  String get ridesDriverPromptMark;
+
+  /// No description provided for @ridesDriverPromptKeep.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} fährt auch'**
+  String ridesDriverPromptKeep(String name);
+
+  /// No description provided for @ridesDriverPromptManage.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrer verwalten'**
+  String get ridesDriverPromptManage;
 
   /// No description provided for @settleOpen.
   ///
@@ -2562,6 +2754,48 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'offline, zuletzt bekannt'**
   String get fuelOfflineNote;
+
+  /// No description provided for @fuelStaleRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'zu viele Anfragen, zuletzt bekannt'**
+  String get fuelStaleRateLimited;
+
+  /// No description provided for @fuelStaleRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'zu viele Anfragen, in {minutes} Min. nochmal, zuletzt bekannt'**
+  String fuelStaleRateLimitedIn(int minutes);
+
+  /// No description provided for @fuelStaleServer.
+  ///
+  /// In de, this message translates to:
+  /// **'Preisdienst nicht erreichbar, zuletzt bekannt'**
+  String get fuelStaleServer;
+
+  /// No description provided for @fuelRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Preisabfragen – versuch es in ein paar Minuten nochmal.'**
+  String get fuelRateLimited;
+
+  /// No description provided for @fuelRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Preisabfragen – versuch es in {minutes} Min. nochmal.'**
+  String fuelRateLimitedIn(int minutes);
+
+  /// No description provided for @fuelOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Prüf dein Netz oder trag den Preis selbst ein.'**
+  String get fuelOffline;
+
+  /// No description provided for @fuelServerDown.
+  ///
+  /// In de, this message translates to:
+  /// **'Preisdienst gerade nicht erreichbar. Versuch es später nochmal oder trag den Preis selbst ein.'**
+  String get fuelServerDown;
 
   /// No description provided for @fuelNoPrice.
   ///

@@ -205,7 +205,10 @@ void main() {
       await tester.drag(find.text('Taxi'), const Offset(-600, 0));
       await settle(tester);
       expect(find.text('Taxi'), findsOneWidget);
-      expect(find.text('Das hat nicht geklappt'), findsOneWidget);
+      expect(
+        find.textContaining('Prüf den freien Speicher'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('the semantic delete action does the same', (tester) async {
@@ -517,7 +520,10 @@ void main() {
       await fill(tester, amount: '5', title: 'Eis');
       app.expenses.failWith = const Storage('x');
       await save(tester);
-      expect(find.text('Das hat nicht geklappt'), findsOneWidget);
+      expect(
+        find.textContaining('Prüf den freien Speicher'),
+        findsOneWidget,
+      );
       expect(find.text('Neue Ausgabe'), findsOneWidget);
     });
 

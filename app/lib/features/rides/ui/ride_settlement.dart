@@ -76,6 +76,7 @@ final class FairnessRow {
     required this.metersDriven,
     required this.metersRidden,
     required this.netCents,
+    this.isDriverCandidate = true,
   });
 
   final String memberId;
@@ -89,6 +90,10 @@ final class FairnessRow {
   /// What the others owe this person for the period's rides (negative: this
   /// person owes). Sums to zero over the group.
   final int netCents;
+
+  /// Whether the next-driver suggestion considers this person. False for
+  /// someone who never drove the vehicle.
+  final bool isDriverCandidate;
 }
 
 /// Per member: metres driven, metres ridden and the net in cents over
@@ -99,6 +104,7 @@ List<FairnessRow> computeFairness({
   required Map<String, Vehicle> vehicles,
   required Currency currency,
   required List<Member> members,
+  Set<String>? driverCandidates,
 }) {
   final driven = {for (final m in members) m.id: 0};
   final ridden = {for (final m in members) m.id: 0};
@@ -129,6 +135,7 @@ List<FairnessRow> computeFairness({
         metersDriven: driven[m.id]!,
         metersRidden: ridden[m.id]!,
         netCents: net[m.id]!,
+        isDriverCandidate: driverCandidates?.contains(m.id) ?? true,
       ),
   ];
 }

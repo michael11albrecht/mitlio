@@ -19,7 +19,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorMessage => 'Give it another try in a moment.';
 
   @override
+  String get errorNotFound =>
+      'That no longer exists. Go back a step and reload.';
+
+  @override
+  String get errorConflict =>
+      'That is not possible right now because something changed. Check the current state and try again.';
+
+  @override
+  String get errorLocked =>
+      'That is already settled and can no longer be changed.';
+
+  @override
+  String get errorInvalidData =>
+      'That input does not fit. Check it and try again.';
+
+  @override
+  String get errorStorage =>
+      'That did not work. Check your device\'s free storage and try again.';
+
+  @override
+  String get shareFailed => 'Sharing did not work. Try again.';
+
+  @override
+  String get errorRateLimited =>
+      'Too many requests. Try again in a few minutes.';
+
+  @override
+  String errorRateLimitedIn(int minutes) {
+    return 'Too many requests. Try again in $minutes min.';
+  }
+
+  @override
+  String get errorSettingNotSaved =>
+      'The setting could not be saved. Try again.';
+
+  @override
+  String get errorUndoFailed =>
+      'Undo did not work. Check the current state and try again.';
+
+  @override
   String get retry => 'Try again';
+
+  @override
+  String get keyboardDone => 'Done';
 
   @override
   String get amountInvalid => 'That is not a valid amount';
@@ -69,6 +112,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dismiss => 'Dismiss';
 
   @override
+  String get hideSnackBar => 'Dismiss';
+
+  @override
   String get groupNew => 'New group';
 
   @override
@@ -105,6 +151,27 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String groupArchived(String name) {
     return '“$name” archived';
+  }
+
+  @override
+  String groupsArchivedEntry(int count) {
+    return 'Archived ($count)';
+  }
+
+  @override
+  String get groupsArchivedTitle => 'Archived groups';
+
+  @override
+  String get groupRestore => 'Restore';
+
+  @override
+  String groupRestoreLabel(String name) {
+    return 'Restore $name';
+  }
+
+  @override
+  String groupRestored(String name) {
+    return '“$name” restored';
   }
 
   @override
@@ -220,6 +287,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get balancesSettledMessage => 'Nobody owes anybody anything.';
+
+  @override
+  String balancesOpenRides(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count open rides',
+      one: '1 open ride',
+    );
+    return 'incl. $_temp0 ($amount)';
+  }
 
   @override
   String get balancesEmptyTitle => 'Nothing to settle yet';
@@ -1113,7 +1191,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ridesSettleNote =>
-      'One expense per driver. You can undo it right away.';
+      'The rides already count in the balances. Settling locks them and creates one expense per driver. You can undo it right away.';
 
   @override
   String get ridesSettleAction => 'Settle';
@@ -1140,6 +1218,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String ridesFairnessKm(String driven, String ridden) {
     return '$driven km driven · $ridden km ridden';
   }
+
+  @override
+  String get ridesDriversTitle => 'Who drives?';
+
+  @override
+  String get ridesDriversHelp => 'Only drivers are suggested as next.';
+
+  @override
+  String get ridesDriverSwitch => 'Drives';
+
+  @override
+  String ridesDriverNowDrives(String name) {
+    return '$name is suggested again';
+  }
+
+  @override
+  String ridesDriverNotSuggested(String name) {
+    return '$name is no longer suggested';
+  }
+
+  @override
+  String get ridesFairnessNotDriving => 'Doesn\'t drive · not suggested';
+
+  @override
+  String get ridesFairnessChangeDrivers => 'Change drivers';
+
+  @override
+  String get ridesFairnessHow => 'How is this calculated?';
+
+  @override
+  String get ridesFairnessHowText =>
+      'The person who has driven the least is suggested: km driven minus km ridden since the last settlement. On a tie, whoever drove longest ago is next. Only members marked as drivers are suggested.';
+
+  @override
+  String ridesDriverPromptTitle(String name) {
+    return 'Doesn\'t $name drive?';
+  }
+
+  @override
+  String ridesDriverPromptBody(String name, int n) {
+    return '$name rode along on $n rides but has never driven. As a non-driver, $name is no longer suggested as next.';
+  }
+
+  @override
+  String get ridesDriverPromptMark => 'Mark as non-driver';
+
+  @override
+  String ridesDriverPromptKeep(String name) {
+    return '$name drives too';
+  }
+
+  @override
+  String get ridesDriverPromptManage => 'Manage drivers';
 
   @override
   String get settleOpen => 'Settle up';
@@ -1480,6 +1611,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fuelOfflineNote => 'offline, last known';
+
+  @override
+  String get fuelStaleRateLimited => 'too many requests, last known';
+
+  @override
+  String fuelStaleRateLimitedIn(int minutes) {
+    return 'too many requests, retry in $minutes min, last known';
+  }
+
+  @override
+  String get fuelStaleServer => 'price service unreachable, last known';
+
+  @override
+  String get fuelRateLimited =>
+      'Too many price requests – try again in a few minutes.';
+
+  @override
+  String fuelRateLimitedIn(int minutes) {
+    return 'Too many price requests – try again in $minutes min.';
+  }
+
+  @override
+  String get fuelOffline =>
+      'No connection. Check your network or enter the price yourself.';
+
+  @override
+  String get fuelServerDown =>
+      'The price service is unreachable right now. Try again later or enter the price yourself.';
 
   @override
   String get fuelNoPrice =>

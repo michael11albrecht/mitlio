@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/brand_mark.dart';
@@ -40,8 +41,8 @@ class OnboardingBody extends ConsumerWidget {
         unawaited(router.push('/groups/${value.id}?tab=rides'));
       case Err(error: InvalidData()):
         break; // Busy: the first tap is already on its way.
-      case Err():
-        messenger.showSnackBar(SnackBar(content: Text(l10n.errorTitle)));
+      case Err(:final error):
+        showErrorSnackBar(messenger, l10n, error);
     }
   }
 

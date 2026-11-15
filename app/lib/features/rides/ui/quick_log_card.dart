@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/money_format.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/member_avatar.dart';
@@ -54,12 +55,21 @@ class QuickLogCard extends StatefulWidget {
     required this.groupId,
     required this.state,
     required this.vm,
+    this.embedded = false,
+    this.onSaved,
     super.key,
   });
 
   final String groupId;
   final RidesLoaded state;
   final RidesViewModel vm;
+
+  /// Just the form, for a sheet that has its own header (no card, title,
+  /// settings or "back to today").
+  final bool embedded;
+
+  /// Called after a successful save, once the undo snackbar is up.
+  final VoidCallback? onSaved;
 
   @override
   State<QuickLogCard> createState() => _QuickLogCardState();
@@ -83,8 +93,9 @@ class _QuickLogCardState extends State<QuickLogCard> {
           ),
           undo: value.undo,
         );
-      case Err():
-        messenger.showSnackBar(SnackBar(content: Text(l10n.errorTitle)));
+        widget.onSaved?.call();
+      case Err(:final error):
+        showErrorSnackBar(messenger, l10n, error);
     }
   }
 
@@ -93,6 +104,7 @@ class _QuickLogCardState extends State<QuickLogCard> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final quick = widget.state.quick!;
+    if (widget.embedded) return _form(context, quick);
     final title = quick.isToday
         ? l10n.quickLogTitleToday
         : l10n.quickLogTitleDate(
@@ -194,7 +206,7 @@ class _QuickLogCardState extends State<QuickLogCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (!quick.isToday)
+        if (!quick.isToday && !widget.embedded)
           Align(
             alignment: AlignmentDirectional.centerStart,
             child: TextButton(

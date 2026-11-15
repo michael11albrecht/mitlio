@@ -278,7 +278,7 @@ void main() {
     app.settlements.failWith = const Storage('disk');
     await tester.tap(find.byTooltip('Ausgleich löschen'));
     await tester.pumpAndSettle();
-    expect(find.text('Das hat nicht geklappt'), findsOneWidget);
+    expect(find.textContaining('Prüf den freien Speicher'), findsOneWidget);
     expect(find.textContaining('4,00'), findsOneWidget);
   });
 
@@ -296,7 +296,10 @@ void main() {
     await pumpMitlio(tester, app, location: route());
     await tester.tap(find.byTooltip('Zusammenfassung teilen'));
     await tester.pumpAndSettle();
-    expect(find.text('Das hat nicht geklappt'), findsOneWidget);
+    expect(
+      find.text('Teilen hat nicht geklappt. Versuch es nochmal.'),
+      findsOneWidget,
+    );
   });
 
   phoneTest('English copy', (tester) async {

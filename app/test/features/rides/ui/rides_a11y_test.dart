@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/features/rides/ui/driver_prompt_sheet.dart';
 import 'package:mitlio/features/rides/ui/ride_calendar.dart';
 import 'package:mitlio/features/rides/ui/ride_settle_widgets.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
@@ -26,6 +27,7 @@ void main() {
       ('route not picked', pickRouteRides),
       ('done today with a locked ride', doneTodayRides),
       ('settlement due', settleDueRides),
+      ('a non-driver in the fairness card', nonDriverRides),
       ('month settled', settledMonthRides),
       ('first run', onboardingRides),
       ('no members', noMembersRides),
@@ -94,6 +96,7 @@ void main() {
   group('cars and routes', () {
     for (final (name, state) in <(String, RidesSetupState)>[
       ('data', setupData),
+      ('with a non-driver', setupNonDriver),
       ('empty', setupEmpty),
       ('error', const RidesSetupFailure(Storage('x'))),
     ]) {
@@ -107,6 +110,12 @@ void main() {
       );
     }
   });
+
+  forEachMode(
+    'driver prompt sheet',
+    () => const DriverPromptSheet(name: 'Chiara Rossi', rides: 5),
+    (tester, _, _) => expectAccessible(tester),
+  );
 
   group('vehicle form', () {
     for (final (name, state) in <(String, VehicleFormState)>[

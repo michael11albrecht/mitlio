@@ -51,7 +51,8 @@ final class TripMeta {
         driverCounts: m['driverCounts'] as bool,
       );
     } on Object {
-      // Any malformed document (bad JSON, missing or mistyped field).
+      // Any malformed document (bad JSON, missing or mistyped field): the trip
+      // is shown without its inputs, nothing the user did failed.
       return null;
     }
   }

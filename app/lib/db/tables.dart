@@ -52,6 +52,9 @@ class Members extends Table with SyncColumns {
 
   /// Masked hint only; the full IBAN lives in [LocalMemberBank].
   TextColumn get ibanHint => text().nullable()();
+
+  /// Whether this member drives; only drivers are suggested as next driver.
+  BoolColumn get canDrive => boolean().withDefault(const Constant(true))();
 }
 
 @DataClassName('ExpenseRow')
@@ -214,6 +217,17 @@ class LocalMemberBank extends Table {
   TextColumn get accountName => text().nullable()();
 
   TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {memberId};
+}
+
+/// Members already asked "does X not drive?" (rides nudge, schema v4). Local
+/// only, never synced: it is per device and not worth a server column.
+@DataClassName('LocalDriverPromptRow')
+class LocalDriverPrompts extends Table {
+  TextColumn get memberId => text().references(Members, #id)();
+  TextColumn get askedAt => text()();
 
   @override
   Set<Column<Object>> get primaryKey => {memberId};

@@ -35,7 +35,7 @@ import 'fake_platform.dart';
 class FlakyGroups extends FakeGroupsRepository {
   FlakyGroups({required super.clock, required super.ids});
 
-  /// Fails `create`, `update` and `softDelete` while set.
+  /// Fails `create`, `update`, `softDelete` and `restore` while set.
   RepositoryError? failWith;
 
   /// Makes `watchGroups` emit this error while set.
@@ -44,6 +44,14 @@ class FlakyGroups extends FakeGroupsRepository {
   @override
   Stream<List<Group>> watchGroups() =>
       watchError != null ? Stream.error(watchError!) : super.watchGroups();
+
+  /// Makes `watchArchivedGroups` emit this error while set.
+  Object? archivedWatchError;
+
+  @override
+  Stream<List<Group>> watchArchivedGroups() => archivedWatchError != null
+      ? Stream.error(archivedWatchError!)
+      : super.watchArchivedGroups();
 
   @override
   Future<RepoResult<Group>> create({
@@ -66,6 +74,10 @@ class FlakyGroups extends FakeGroupsRepository {
   @override
   Future<RepoResult<Undo>> softDelete(String id) async =>
       failWith != null ? Err(failWith!) : super.softDelete(id);
+
+  @override
+  Future<RepoResult<void>> restore(String id) async =>
+      failWith != null ? Err(failWith!) : super.restore(id);
 }
 
 /// Members fake whose commands and stream can be made to fail.
@@ -92,6 +104,18 @@ class FlakyMembers extends FakeMembersRepository {
   }) async => failWith != null
       ? Err(failWith!)
       : super.add(groupId, name: name, paypalMe: paypalMe, ibanHint: ibanHint);
+
+  @override
+  Future<RepoResult<GroupMember>> setCanDrive(
+    String id, {
+    required bool canDrive,
+  }) async => failWith != null
+      ? Err(failWith!)
+      : super.setCanDrive(id, canDrive: canDrive);
+
+  @override
+  Future<RepoResult<void>> markDriverPromptAsked(String id) async =>
+      failWith != null ? Err(failWith!) : super.markDriverPromptAsked(id);
 
   @override
   Future<RepoResult<GroupMember>> update(

@@ -33,15 +33,16 @@ String rideDayKey(DateTime date) {
 final _everything = Custom(DateTime.utc(2000), DateTime.utc(2100));
 
 /// Who drives next: the one rule behind both the quick log's driver default
-/// and the fairness view's "Als Nächstes dran". Only unsettled rides count
-/// towards the balance; everything counts towards "drove longest ago".
+/// and the fairness view's "Als Nächstes dran". Only drivers (not in
+/// [nonDrivers]) are suggested. Only unsettled rides count towards the
+/// balance; everything counts towards "drove longest ago".
 String? nextDriver({
   required List<String> members,
-  required RideTemplate template,
   required Iterable<RideEntry> entries,
+  Set<String> nonDrivers = const {},
 }) => suggestDriver(
   members: members,
-  template: template,
+  nonDrivers: nonDrivers,
   history: [for (final e in entries) e.ride],
   unsettled: [
     for (final e in entries)
@@ -92,6 +93,15 @@ final class QuickLog {
       template != null && driverId != null && preview != null && !saving;
 }
 
+/// The pending "does [memberId] not drive?" question after a logged ride:
+/// [rides] is how often they rode along without ever driving.
+final class DriverPrompt {
+  const DriverPrompt({required this.memberId, required this.rides});
+
+  final String memberId;
+  final int rides;
+}
+
 sealed class RidesState {
   const RidesState();
 }
@@ -116,6 +126,7 @@ final class RidesLoaded extends RidesState {
     required this.month,
     required this.today,
     required this.quick,
+    this.driverPrompt,
   });
 
   final Group group;
@@ -136,6 +147,10 @@ final class RidesLoaded extends RidesState {
 
   /// Null while there is no template to log with.
   final QuickLog? quick;
+
+  /// Set right after a ride was logged when somebody who never drove keeps
+  /// riding along and was never asked; null otherwise.
+  final DriverPrompt? driverPrompt;
 
   /// Nothing to log with yet: the first-run state.
   bool get isOnboarding => templates.isEmpty;
@@ -182,22 +197,34 @@ final class RidesLoaded extends RidesState {
   bool get isMonthOver =>
       !today.isBefore(DateTime.utc(month.year, month.month + 1, 0));
 
+  /// Members marked as not driving.
+  Set<String> get nonDriverIds => {
+    for (final m in members)
+      if (!m.canDrive) m.id,
+  };
+
+  /// The members the next-driver suggestion considers.
+  Set<String> get driverCandidateIds => driverCandidates(
+    members: [for (final m in members) m.id],
+    nonDrivers: nonDriverIds,
+  );
+
   /// Per member: km driven, km ridden and the net in the shown month.
   List<FairnessRow> get fairness => computeFairness(
     rides: [for (final e in monthEntries) e.ride],
     vehicles: _vehicleMap,
     currency: group.currency,
     members: _domainMembers,
+    driverCandidates: driverCandidateIds,
   );
 
   /// "Als Nächstes dran": the quick log's driver rule, ignoring what the
   /// user picked by hand. Null without a route or a member.
   String? get nextDriverId {
-    final template = quick?.template ?? templates.firstOrNull;
-    if (template == null || members.isEmpty) return null;
+    if (templates.isEmpty || members.isEmpty) return null;
     return nextDriver(
       members: [for (final m in members) m.id],
-      template: template,
+      nonDrivers: nonDriverIds,
       entries: entries,
     );
   }
@@ -260,6 +287,11 @@ class RidesViewModel extends Notifier<RidesState> {
   RepositoryError? _failure;
   Month? _month;
 
+  /// Members already asked whether they drive (local), and whether a ride
+  /// was just logged so that asking is due now.
+  var _asked = <String>{};
+  var _promptArmed = false;
+
   // The user's overrides of the quick log; null means "use the default".
   String? _templateId;
   String? _driverId;
@@ -283,6 +315,8 @@ class RidesViewModel extends Notifier<RidesState> {
     _entries = null;
     _failure = null;
     _hidden.clear();
+    _asked = {};
+    _promptArmed = false;
     final subs = [
       _listen(ref.watch(groupsRepositoryProvider).watchGroups(), (groups) {
         _group = groups.where((g) => g.id == groupId).firstOrNull;
@@ -367,8 +401,26 @@ class RidesViewModel extends Notifier<RidesState> {
           entries: live,
           today: today,
         ),
+        driverPrompt: _promptArmed ? _driverPrompt(members, live) : null,
       );
     }
+  }
+
+  DriverPrompt? _driverPrompt(
+    List<GroupMember> members,
+    List<RideEntry> entries,
+  ) {
+    final rides = [for (final e in entries) e.ride];
+    for (final m in members) {
+      final n = shouldAskNonDriver(
+        memberId: m.id,
+        canDrive: m.canDrive,
+        alreadyAsked: _asked.contains(m.id),
+        rides: rides,
+      );
+      if (n != null) return DriverPrompt(memberId: m.id, rides: n);
+    }
+    return null;
   }
 
   QuickLog? _quick({
@@ -397,7 +449,14 @@ class RidesViewModel extends Notifier<RidesState> {
         ? null
         : (_driverId != null && ids.contains(_driverId))
         ? _driverId
-        : nextDriver(members: ids, template: template, entries: entries);
+        : nextDriver(
+            members: ids,
+            nonDrivers: {
+              for (final m in members)
+                if (!m.canDrive) m.id,
+            },
+            entries: entries,
+          );
     final passengers = template == null || driver == null
         ? const <String>{}
         : {
@@ -661,6 +720,7 @@ class RidesViewModel extends Notifier<RidesState> {
     final stored = await rides.log(groupId, ride);
     if (stored case Err(:final error)) return Err(error);
     final entry = (stored as Ok<RideEntry, RepositoryError>).value;
+    await _armDriverPrompt();
     final summary = summarizeRide(
       ride,
       vehicle,
@@ -688,6 +748,69 @@ class RidesViewModel extends Notifier<RidesState> {
         }),
       ),
     );
+  }
+
+  /// Makes the driver question due after a logged ride (if one is pending).
+  Future<void> _armDriverPrompt() async {
+    final asked = await ref
+        .read(membersRepositoryProvider)
+        .askedDriverPrompts();
+    if (asked case Ok(:final value)) _asked = {...value};
+    _promptArmed = true;
+    _emit();
+  }
+
+  /// Sets whether [memberId] drives. The returned [Undo] sets it back.
+  /// [NotFound] for an unknown member.
+  Future<RepoResult<Undo>> setCanDrive(
+    String memberId, {
+    required bool canDrive,
+  }) async {
+    final members = ref.read(membersRepositoryProvider);
+    final listed = await members.list(groupId);
+    if (listed case Err(:final error)) return Err(error);
+    final before = (listed as Ok<List<GroupMember>, RepositoryError>).value
+        .where((m) => m.id == memberId)
+        .firstOrNull;
+    if (before == null) return Err(NotFound('member', memberId));
+    final result = await members.setCanDrive(memberId, canDrive: canDrive);
+    return switch (result) {
+      Err(:final error) => Err(error),
+      Ok() => Ok(
+        Undo(() async {
+          final back = await members.setCanDrive(
+            memberId,
+            canDrive: before.canDrive,
+          );
+          return switch (back) {
+            Ok() => const Ok<void, RepositoryError>(null),
+            Err(:final error) => Err<void, RepositoryError>(error),
+          };
+        }),
+      ),
+    };
+  }
+
+  /// Answers the driver question: [canDrive] false marks the member as not
+  /// driving (the returned [Undo] reverts it), true keeps them as a driver
+  /// (null). Either way the member is never asked again; dismissing the
+  /// question counts as true.
+  Future<RepoResult<Undo?>> answerDriverPrompt(
+    String memberId, {
+    required bool canDrive,
+  }) async {
+    final marked = await ref
+        .read(membersRepositoryProvider)
+        .markDriverPromptAsked(memberId);
+    if (marked case Err(:final error)) return Err(error);
+    _asked = {..._asked, memberId};
+    _promptArmed = false;
+    _emit();
+    if (canDrive) return const Ok(null);
+    return switch (await setCanDrive(memberId, canDrive: false)) {
+      Ok(:final value) => Ok(value),
+      Err(:final error) => Err(error),
+    };
   }
 
   // --- list ---
@@ -735,6 +858,8 @@ class RidesViewModel extends Notifier<RidesState> {
       :final templates,
       :final vehicles,
       :final isOnboarding,
+      :final members,
+      :final driverPrompt,
     ) =>
       {
         'status': isOnboarding ? 'empty' : 'data',
@@ -742,6 +867,13 @@ class RidesViewModel extends Notifier<RidesState> {
         'currency': group.currency.code,
         'month': '${month.year}-${month.month.toString().padLeft(2, '0')}',
         'vehicles': vehicles.length,
+        'nonDrivers': [
+          for (final m in members)
+            if (!m.canDrive) m.id,
+        ],
+        'driverPrompt': driverPrompt == null
+            ? null
+            : {'memberId': driverPrompt.memberId, 'rides': driverPrompt.rides},
         'templates': templates.length,
         'rides': [for (final e in monthEntries) rideJson(e)],
         'quick': quick == null

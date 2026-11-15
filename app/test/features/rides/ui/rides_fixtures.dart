@@ -366,6 +366,11 @@ class StubRidesViewModel extends RidesViewModel {
 
   @override
   RidesState build() => fixed;
+
+  // The fixed state already is the one the screen shows; the real command
+  // would recompute from repositories the stub does not have.
+  @override
+  void setDate(DateTime? day) {}
 }
 
 class StubRidesSetupViewModel extends RidesSetupViewModel {
@@ -435,6 +440,18 @@ final sampleGroup = Group(
 final List<GroupMember> sampleMembers = [
   for (var i = 0; i < _names.length; i++)
     GroupMember(id: 'm-$i', groupId: 'g-1', name: _names[i], position: i),
+];
+
+/// Like [sampleMembers], but Chiara does not drive.
+final List<GroupMember> membersWithNonDriver = [
+  for (final m in sampleMembers)
+    GroupMember(
+      id: m.id,
+      groupId: m.groupId,
+      name: m.name,
+      position: m.position,
+      canDrive: m.position != 2,
+    ),
 ];
 
 final sampleVehicle = Vehicle(
@@ -535,11 +552,13 @@ RidesLoaded loadedRides({
   List<RideEntry>? entries,
   QuickLog? quick,
   DateTime? today,
+  List<GroupMember>? members,
+  DriverPrompt? driverPrompt,
 }) {
   final ts = templates ?? [sampleTemplate];
   return RidesLoaded(
     group: sampleGroup,
-    members: sampleMembers,
+    members: members ?? sampleMembers,
     vehicles: [sampleVehicle],
     templates: ts,
     entries:
@@ -552,6 +571,7 @@ RidesLoaded loadedRides({
     month: const Month(2026, 3),
     today: today ?? DateTime.utc(2026, 3),
     quick: ts.isEmpty ? null : (quick ?? sampleQuick(template: ts.first)),
+    driverPrompt: driverPrompt,
   );
 }
 
@@ -579,6 +599,18 @@ final RidesLoaded doneTodayRides = loadedRides(
 
 /// March is over: the settlement card is offered.
 final RidesLoaded settleDueRides = loadedRides(today: DateTime.utc(2026, 4, 2));
+
+/// Chiara is marked as a non-driver: the fairness card says so.
+final RidesLoaded nonDriverRides = loadedRides(
+  today: DateTime.utc(2026, 4, 2),
+  members: membersWithNonDriver,
+);
+
+/// A ride was just logged and Chiara only ever rides along.
+final RidesLoaded driverPromptRides = loadedRides(
+  members: sampleMembers,
+  driverPrompt: const DriverPrompt(memberId: 'm-2', rides: 5),
+);
 
 /// March is over and already settled: no card, the sheet has nothing to do.
 final RidesLoaded settledMonthRides = loadedRides(
@@ -617,6 +649,13 @@ final RidesSetupLoaded setupData = RidesSetupLoaded(
   members: sampleMembers,
   vehicles: [sampleVehicle],
   templates: [sampleTemplate, sampleTemplate2],
+);
+
+final RidesSetupLoaded setupNonDriver = RidesSetupLoaded(
+  group: sampleGroup,
+  members: membersWithNonDriver,
+  vehicles: [sampleVehicle],
+  templates: [sampleTemplate],
 );
 
 final RidesSetupLoaded setupEmpty = RidesSetupLoaded(

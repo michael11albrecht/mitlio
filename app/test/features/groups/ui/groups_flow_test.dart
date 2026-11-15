@@ -167,7 +167,7 @@ void main() {
       app.groups.failWith = const Storage('x');
       await tester.enterText(find.byType(TextField), 'Trip');
       await submit(tester);
-      expect(find.text('Das hat nicht geklappt'), findsOneWidget);
+      expect(find.textContaining('Prüf den freien Speicher'), findsOne);
       expect(find.text('Neue Gruppe'), findsOneWidget);
     });
   });
@@ -205,6 +205,46 @@ void main() {
 
       await tester.tap(find.text('Rückgängig'));
       await tester.pumpAndSettle();
+      expect(find.text('Ben'), findsOneWidget);
+    });
+
+    testWidgets('a failing remove says why and keeps the member', (
+      tester,
+    ) async {
+      await seed();
+      await pumpMitlio(tester, app, location: '/groups/${trip.id}');
+      app.members.failWith = const Storage('x');
+      await tester.tap(find.byTooltip('Ben entfernen'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Prüf den freien Speicher'), findsOne);
+      expect(find.text('Ben'), findsOneWidget);
+    });
+
+    testWidgets('a failing add says why and keeps the typed name', (
+      tester,
+    ) async {
+      await seed();
+      await pumpMitlio(tester, app, location: '/groups/${trip.id}');
+      app.members.failWith = const RateLimited(
+        retryAfter: Duration(minutes: 3),
+      );
+      await addMember(tester, 'Dora');
+      expect(find.textContaining('Zu viele Anfragen'), findsOne);
+      expect(find.textContaining('in 3 Min. nochmal'), findsOne);
+      expect(find.text('Dora'), findsOneWidget); // still in the field
+    });
+
+    testWidgets('a failing rename says why and keeps the old name', (
+      tester,
+    ) async {
+      await seed();
+      await pumpMitlio(tester, app, location: '/groups/${trip.id}');
+      app.members.failWith = const Storage('x');
+      await tester.tap(find.text('Ben'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Benno');
+      await submit(tester);
+      expect(find.textContaining('Prüf den freien Speicher'), findsOne);
       expect(find.text('Ben'), findsOneWidget);
     });
 
@@ -334,6 +374,69 @@ void main() {
       await tester.tap(find.text('Rückgängig'));
       await tester.pumpAndSettle();
       expect(find.text('Trip'), findsOneWidget);
+    });
+
+    testWidgets('a failing archive says why and stays on the group', (
+      tester,
+    ) async {
+      await seed();
+      await pumpMitlio(tester, app, location: '/groups/${trip.id}');
+      app.groups.failWith = const Storage('x');
+      await tester.tap(find.byTooltip('Mehr'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Gruppe archivieren'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Prüf den freien Speicher'), findsOne);
+      expect(find.text('Willkommen bei mitlio'), findsNothing);
+      expect(find.text('Anna'), findsOneWidget);
+    });
+
+    testWidgets('an archived group can be restored from the archive', (
+      tester,
+    ) async {
+      await seed();
+      ok(await app.groups.softDelete(trip.id));
+      await pumpMitlio(tester, app);
+
+      // The only group is archived: onboarding plus the quiet entry.
+      expect(find.text('Archiviert (1)'), findsOneWidget);
+      await tester.tap(find.text('Archiviert (1)'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Archivierte Gruppen'), findsOneWidget);
+      expect(find.text('Trip'), findsOneWidget);
+      await tester.tap(find.text('Wiederherstellen'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.text('„Trip“ wiederhergestellt'), findsOneWidget);
+
+      await tester.tap(find.text('Rückgängig'));
+      await tester.pumpAndSettle();
+      expect(find.text('Wiederherstellen'), findsOneWidget);
+
+      await back(tester);
+      expect(find.text('Archiviert (1)'), findsOneWidget);
+    });
+
+    testWidgets('a failing restore says why and keeps the group archived', (
+      tester,
+    ) async {
+      await seed();
+      ok(await app.groups.softDelete(trip.id));
+      await pumpMitlio(tester, app);
+      await tester.tap(find.text('Archiviert (1)'));
+      await tester.pumpAndSettle();
+      app.groups.failWith = const Storage('x');
+      await tester.tap(find.text('Wiederherstellen'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Prüf den freien Speicher'), findsOne);
+      expect(find.text('Wiederherstellen'), findsOneWidget);
+    });
+
+    testWidgets('no archive entry while nothing is archived', (tester) async {
+      await seed();
+      await pumpMitlio(tester, app);
+      expect(find.textContaining('Archiviert'), findsNothing);
     });
 
     testWidgets('an archived group shows the error state, not a crash', (

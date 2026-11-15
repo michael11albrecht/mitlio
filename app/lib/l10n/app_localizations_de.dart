@@ -19,7 +19,50 @@ class AppLocalizationsDe extends AppLocalizations {
   String get errorMessage => 'Versuch es gleich noch einmal.';
 
   @override
+  String get errorNotFound =>
+      'Das gibt es nicht mehr. Geh einen Schritt zurück und lad neu.';
+
+  @override
+  String get errorConflict =>
+      'Das geht gerade nicht, weil sich etwas geändert hat. Prüf den Stand und versuch es nochmal.';
+
+  @override
+  String get errorLocked =>
+      'Das ist schon abgerechnet und lässt sich nicht mehr ändern.';
+
+  @override
+  String get errorInvalidData =>
+      'Die Eingabe passt nicht. Prüf sie und versuch es nochmal.';
+
+  @override
+  String get errorStorage =>
+      'Das hat nicht geklappt. Prüf den freien Speicher deines Geräts und versuch es nochmal.';
+
+  @override
+  String get shareFailed => 'Teilen hat nicht geklappt. Versuch es nochmal.';
+
+  @override
+  String get errorRateLimited =>
+      'Zu viele Anfragen. Versuch es in ein paar Minuten nochmal.';
+
+  @override
+  String errorRateLimitedIn(int minutes) {
+    return 'Zu viele Anfragen. Versuch es in $minutes Min. nochmal.';
+  }
+
+  @override
+  String get errorSettingNotSaved =>
+      'Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.';
+
+  @override
+  String get errorUndoFailed =>
+      'Rückgängig machen hat nicht geklappt. Prüf den Stand und versuch es nochmal.';
+
+  @override
   String get retry => 'Nochmal versuchen';
+
+  @override
+  String get keyboardDone => 'Fertig';
 
   @override
   String get amountInvalid => 'Das ist kein gültiger Betrag';
@@ -69,6 +112,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dismiss => 'Schließen';
 
   @override
+  String get hideSnackBar => 'Ausblenden';
+
+  @override
   String get groupNew => 'Neue Gruppe';
 
   @override
@@ -105,6 +151,27 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String groupArchived(String name) {
     return '„$name“ archiviert';
+  }
+
+  @override
+  String groupsArchivedEntry(int count) {
+    return 'Archiviert ($count)';
+  }
+
+  @override
+  String get groupsArchivedTitle => 'Archivierte Gruppen';
+
+  @override
+  String get groupRestore => 'Wiederherstellen';
+
+  @override
+  String groupRestoreLabel(String name) {
+    return '$name wiederherstellen';
+  }
+
+  @override
+  String groupRestored(String name) {
+    return '„$name“ wiederhergestellt';
   }
 
   @override
@@ -221,6 +288,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get balancesSettledMessage => 'Niemand schuldet jemandem etwas.';
+
+  @override
+  String balancesOpenRides(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count offene Fahrten',
+      one: '1 offene Fahrt',
+    );
+    return 'inkl. $_temp0 ($amount)';
+  }
 
   @override
   String get balancesEmptyTitle => 'Noch nichts zu verrechnen';
@@ -1117,7 +1195,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ridesSettleNote =>
-      'Pro Fahrer entsteht eine Ausgabe. Du kannst das gleich rückgängig machen.';
+      'Die Fahrten zählen schon im Saldo. Beim Abrechnen werden sie gesperrt und pro Fahrer zu einer Ausgabe. Du kannst das gleich rückgängig machen.';
 
   @override
   String get ridesSettleAction => 'Abrechnen';
@@ -1144,6 +1222,61 @@ class AppLocalizationsDe extends AppLocalizations {
   String ridesFairnessKm(String driven, String ridden) {
     return '$driven km gefahren · $ridden km mitgefahren';
   }
+
+  @override
+  String get ridesDriversTitle => 'Wer fährt?';
+
+  @override
+  String get ridesDriversHelp =>
+      'Nur Fahrer werden als Nächstes vorgeschlagen.';
+
+  @override
+  String get ridesDriverSwitch => 'Fährt selbst';
+
+  @override
+  String ridesDriverNowDrives(String name) {
+    return '$name wird wieder vorgeschlagen';
+  }
+
+  @override
+  String ridesDriverNotSuggested(String name) {
+    return '$name wird nicht mehr vorgeschlagen';
+  }
+
+  @override
+  String get ridesFairnessNotDriving =>
+      'Fährt nicht · wird nicht vorgeschlagen';
+
+  @override
+  String get ridesFairnessChangeDrivers => 'Fahrer ändern';
+
+  @override
+  String get ridesFairnessHow => 'Wie wird das berechnet?';
+
+  @override
+  String get ridesFairnessHowText =>
+      'Vorgeschlagen wird, wer bisher am wenigsten gefahren ist – km gefahren minus km mitgefahren seit der letzten Abrechnung. Bei Gleichstand ist dran, wer am längsten nicht gefahren ist. Nur Mitglieder, die als Fahrer markiert sind, werden vorgeschlagen.';
+
+  @override
+  String ridesDriverPromptTitle(String name) {
+    return 'Fährt $name nicht selbst?';
+  }
+
+  @override
+  String ridesDriverPromptBody(String name, int n) {
+    return '$name ist bei $n Fahrten mitgefahren, aber noch nie gefahren. Als Nichtfahrer wird $name nicht mehr als Nächstes vorgeschlagen.';
+  }
+
+  @override
+  String get ridesDriverPromptMark => 'Als Nichtfahrer markieren';
+
+  @override
+  String ridesDriverPromptKeep(String name) {
+    return '$name fährt auch';
+  }
+
+  @override
+  String get ridesDriverPromptManage => 'Fahrer verwalten';
 
   @override
   String get settleOpen => 'Ausgleichen';
@@ -1486,6 +1619,34 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get fuelOfflineNote => 'offline, zuletzt bekannt';
+
+  @override
+  String get fuelStaleRateLimited => 'zu viele Anfragen, zuletzt bekannt';
+
+  @override
+  String fuelStaleRateLimitedIn(int minutes) {
+    return 'zu viele Anfragen, in $minutes Min. nochmal, zuletzt bekannt';
+  }
+
+  @override
+  String get fuelStaleServer => 'Preisdienst nicht erreichbar, zuletzt bekannt';
+
+  @override
+  String get fuelRateLimited =>
+      'Zu viele Preisabfragen – versuch es in ein paar Minuten nochmal.';
+
+  @override
+  String fuelRateLimitedIn(int minutes) {
+    return 'Zu viele Preisabfragen – versuch es in $minutes Min. nochmal.';
+  }
+
+  @override
+  String get fuelOffline =>
+      'Keine Verbindung. Prüf dein Netz oder trag den Preis selbst ein.';
+
+  @override
+  String get fuelServerDown =>
+      'Preisdienst gerade nicht erreichbar. Versuch es später nochmal oder trag den Preis selbst ein.';
 
   @override
   String get fuelNoPrice =>
