@@ -12,6 +12,7 @@ Astro static SEO site (de default at `/`, en at `/en/`). Plan: `docs/IMPLEMENTAT
   optionally `FUEL_API_ANON_KEY` at build time. Empty (default): the chips are not rendered and the page makes no request.
   Location is only requested after the "In meiner Nähe" tap and sent rounded to 2 decimals. Playwright tests for it
   (`tests/fuel.spec.ts`) run against a second build with a fake URL (`scripts/serve-fuel-fixture.mjs`, `dist-fuel/`, gitignored).
+- Hosting, CSP, `/.well-known` app links: `docs/hosting.md` (`tests/hosting.spec.ts`).
 - `npm run lhci` runs Lighthouse CI against `dist/` (needs Chrome; set `CHROME_PATH` if not found).
 - `src/styles/tokens.css` holds placeholder design tokens (TODO P3-T05: mirror the app theme).
 - Legal pages (`/impressum/`, `/datenschutz/`) are `noindex` placeholders: the owner supplies the text.
