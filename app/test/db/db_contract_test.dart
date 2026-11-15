@@ -17,11 +17,12 @@ const _localOnlyTables = {
 /// authorization data managed by RPCs (P6-T05), not synced rows. The fuel
 /// price cache, the FX rate cache and the rate limiter are edge-function
 /// backend tables (P6c, P7-T02). The revisions are trigger-written history
-/// (P7-T03).
+/// (P7-T03). The join audit is written only by join_group (#89).
 const _serverOnlyTables = {
   'expense_revisions',
   'group_memberships',
   'group_invites',
+  'group_join_audit',
   'fuel_price_cache',
   'fx_rates',
   'rate_limits',
