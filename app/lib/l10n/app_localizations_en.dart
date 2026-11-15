@@ -222,6 +222,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get balancesSettledMessage => 'Nobody owes anybody anything.';
 
   @override
+  String balancesOpenRides(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count open rides',
+      one: '1 open ride',
+    );
+    return 'incl. $_temp0 ($amount)';
+  }
+
+  @override
   String get balancesEmptyTitle => 'Nothing to settle yet';
 
   @override
@@ -1113,7 +1124,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ridesSettleNote =>
-      'One expense per driver. You can undo it right away.';
+      'The rides already count in the balances. Settling locks them and creates one expense per driver. You can undo it right away.';
 
   @override
   String get ridesSettleAction => 'Settle';
