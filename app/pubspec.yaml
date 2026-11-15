@@ -1,7 +1,8 @@
 name: mitlio
 description: mitlio — the private taxometer. Share car rides and group expenses fairly.
 publish_to: none
-version: 0.1.0+1
+# Build number comes from CI (--build-number); release-please bumps this line.
+version: 0.1.0 # x-release-please-version
 resolution: workspace
 
 environment:
