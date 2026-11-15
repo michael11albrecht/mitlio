@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mitlio/core/id_generator.dart';
+import 'package:mitlio/db/daos/sync_state_dao.dart';
 import 'package:mitlio/debug/debug_data_control.dart';
 
 import '../features/repo_test_support.dart';
@@ -56,5 +58,17 @@ void main() {
     await control.wipe();
     final again = await control.seed('groups');
     expect(again['ids'], hasLength(5));
+  });
+
+  test('wipe clears sync state but keeps the install node id', () async {
+    final seeded = await seedGroup(r);
+    final dao = r.db!.syncStateDao;
+    await dao.setState(seeded.groupId, SyncState.shared);
+    await dao.setCursor(seeded.groupId, 'expenses', 2);
+    final nodeId = await dao.hlcNodeId(SequentialIdGenerator());
+    await control.wipe();
+    expect(await dao.groupSync(seeded.groupId), isNull);
+    expect(await dao.cursorsOf(seeded.groupId), isEmpty);
+    expect(await dao.setting(hlcNodeIdKey), nodeId);
   });
 }
