@@ -954,6 +954,58 @@
       }
     }
   },
+  "ridesDriversTitle": "Wer fährt?",
+  "ridesDriversHelp": "Nur Fahrer werden als Nächstes vorgeschlagen.",
+  "ridesDriverSwitch": "Fährt selbst",
+  "ridesDriverNowDrives": "{name} wird wieder vorgeschlagen",
+  "@ridesDriverNowDrives": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesDriverNotSuggested": "{name} wird nicht mehr vorgeschlagen",
+  "@ridesDriverNotSuggested": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesFairnessNotDriving": "Fährt nicht · wird nicht vorgeschlagen",
+  "ridesFairnessChangeDrivers": "Fahrer ändern",
+  "ridesFairnessHow": "Wie wird das berechnet?",
+  "ridesFairnessHowText": "Vorgeschlagen wird, wer bisher am wenigsten gefahren ist – km gefahren minus km mitgefahren seit der letzten Abrechnung. Bei Gleichstand ist dran, wer am längsten nicht gefahren ist. Nur Mitglieder, die als Fahrer markiert sind, werden vorgeschlagen.",
+  "ridesDriverPromptTitle": "Fährt {name} nicht selbst?",
+  "@ridesDriverPromptTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesDriverPromptBody": "{name} ist bei {n} Fahrten mitgefahren, aber noch nie gefahren. Als Nichtfahrer wird {name} nicht mehr als Nächstes vorgeschlagen.",
+  "@ridesDriverPromptBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "ridesDriverPromptMark": "Als Nichtfahrer markieren",
+  "ridesDriverPromptKeep": "{name} fährt auch",
+  "@ridesDriverPromptKeep": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ridesDriverPromptManage": "Fahrer verwalten",
   "@@x-feature-settle": "settle",
   "settleOpen": "Ausgleichen",
   "settleTitle": "Ausgleichen",

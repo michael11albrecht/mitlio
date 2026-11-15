@@ -6,12 +6,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/app.dart';
 import 'package:mitlio/core/app_config.dart';
+import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/crash/crash_reporter.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/debug/debug_drive.dart';
 import 'package:mitlio/features/fuel/data/repositories/fuel_providers.dart';
+import 'package:mitlio/features/fuel/data/services/eu_oil_bulletin_service.dart';
 import 'package:mitlio/features/fuel/data/services/fuel_price_service.dart';
 import 'package:mitlio/features/fuel/data/services/geolocator_location_service.dart';
 import 'package:mitlio/features/fx/data/repositories/fx_providers.dart';
@@ -37,15 +39,20 @@ Future<void> main() async {
   const config = AppConfig.fromEnvironment();
   final container = ProviderContainer(
     overrides: [
-      // No backend configured: the service reports unavailable and the
-      // price chips stay hidden.
-      if (config.hasBackend)
-        fuelPriceServiceProvider.overrideWithValue(
-          HttpFuelPriceService(
-            baseUrl: config.supabaseUrl,
-            anonKey: config.supabaseAnonKey,
-          ),
-        ),
+      // With a backend: its Edge Function (national, postcode, nearby).
+      // Without: the national average straight from the EU Weekly Oil
+      // Bulletin, cached in a file; no postcode, no location.
+      fuelPriceServiceProvider.overrideWithValue(
+        config.hasBackend
+            ? HttpFuelPriceService(
+                baseUrl: config.supabaseUrl,
+                anonKey: config.supabaseAnonKey,
+              )
+            : EuOilBulletinService(
+                clock: const SystemClock(),
+                cacheFile: File('${dir.path}/eu_oil_bulletin.json'),
+              ),
+      ),
       // Coarse location only on the shipped mobile targets; the Linux harness
       // keeps the no-op service.
       if (Platform.isAndroid || Platform.isIOS)

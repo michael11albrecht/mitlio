@@ -18,6 +18,7 @@ Never run `supabase link` / `supabase db push` from an agent; deploys are an own
 | `migrations/0008_delete_my_data.sql` | `delete_my_data()` RPC: removes the caller's memberships, unlinks their members, deletes their auth user; shared group data stays (`docs/data-deletion.md`). |
 | `migrations/0007_expense_revisions.sql` | `expense_revisions` (member read, trigger-written snapshots before each expense change, newest 50 kept). Client twin: Drift schema v3. |
 | `migrations/0009_join_hardening.sql` | `join_group` per-user rate limit (10/hour, SQLSTATE `P0429` `rate_limited`) and `group_join_audit` (member read, written only by `join_group`). |
+| `migrations/0010_people_accounts.sql` | ADR-24: `group_memberships.role` (owner/member, trigger-enforced), owner-only `create_invite` (non-expiring, revokes other links) and `revoke_invite`, `connect_member`, `remove_membership`, `delete_my_data` hands ownership on. |
 | `functions/` | Edge Functions (Deno 2.1.4). `fuel-prices/`, `fx-rates/` + pure logic in `_shared/`; `tests/coverage_gate.sh` (unit, >= 90 %) and `tests/run_integration.sh` (`functions serve` + provider stub). CI only; never `functions deploy` from an agent. |
 | `tests/database/*.sql` | pgTAP: `rls_policies.sql` (per-table matrix), `rls_bootstrap.sql`, `rls_coverage.sql` (every table has RLS and tests), `schema_invariants.sql`. |
 

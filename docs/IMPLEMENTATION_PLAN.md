@@ -657,6 +657,7 @@ Go live **early** (before the app ships) — SEO needs months to compound. Until
 | P6c-T04 | `pg_cron` job refreshing national/state averages periodically (computed from station data within provider limits) | pgTAP + function test | critical |
 | P6c-T05 | App `FuelPriceService` (+ fake): chips in ride/trip form, auto-fill per vehicle fuel type, price frozen on the ride; offline → last known value with age label | VM tests; IT via fake | safe |
 | P6c-T06 | Abuse protection: per-IP rate limit on the function, CORS restricted to own domain + app | test | critical |
+| P6c-T07 | **Decided 2026-11-15: direct EU source in the app.** Without a configured backend the app fetches the German national average (E5, Diesel; E10 as E5 with "≈") itself from the EU Weekly Oil Bulletin XLSX (`EuOilBulletinService`, port of `_shared/oil_bulletin.ts`), cached on the device (12 h, weekly file, offline = last file). "In meiner Nähe" and postcode stay server-only (Tankerkönig) and are hidden without a backend; with a backend configured the Edge Function stays the source. Privacy: the device contacts `energy.ec.europa.eu` (IP visible to the European Commission, no personal data, no location sent), see `docs/data-flows.md` | parser + service tests with the real bulletin file, VM/widget tests: chips without backend, no postcode/nearby | safe |
 
 ### P5 — Real-world validation (human, 1 weekend + 1–2 days fixes)
 
@@ -679,7 +680,7 @@ Backend tasks are all `critical` → human review. Agents still write them; pgTA
 | P6-T02 | Migration 001: tables (§2.4) with constraints, `server_seq` sequence + trigger, `updated_at` validation, soft delete | `supabase db reset` green; squawk clean | critical |
 | P6-T03 | RLS: `is_group_member(group_id)` `security definer` function; policies select/insert/update per table; no hard delete | pgTAP: member allow, non-member deny, anon deny for every table; `rls_coverage.sql` asserts every table has RLS enabled + tests | critical |
 | P6-T04 | RPC `upsert_expense(payload jsonb)`: transactional replace of payers/shares, invariant checks (sums), LWW compare on HLC, returns server row | pgTAP: invariant violation rejected; stale HLC ignored; newer wins | critical |
-| P6-T05 | Invites: `create_invite(group_id)` → token (store hash only, 7-day expiry, revocable); `join_group(token, member_id?)` claims a participant or creates one | pgTAP: expired/revoked/reused tokens; cannot join twice | critical |
+| P6-T05 | Invites: `create_invite(group_id)` → token (store hash only, owner only, no expiry, a new link revokes all others; amended by ADR-24); `join_group(token, member_id?)` claims a participant or creates one (people and accounts are separate layers; one account per person, several accounts per person tbd, amended by ADR-24) | pgTAP: expired/revoked/reused tokens; cannot join twice | critical |
 | P6-T06 | Generated TS/Dart types + CI drift check (`supabase gen types` diff) | CI fails on stale types | critical |
 | P6-T07 | App auth: anonymous sign-in on first share action, session persistence, sign-out wipes local server-linked data (with confirmation) | VM tests with fake auth | critical |
 | P6-T08 | HLC implementation in domain (`Hlc.now(clock, last)`, `Hlc.receive`, compare) | property tests: monotonic, causality | safe |

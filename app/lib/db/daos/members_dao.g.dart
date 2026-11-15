@@ -6,6 +6,8 @@ part of 'members_dao.dart';
 mixin _$MembersDaoMixin on DatabaseAccessor<AppDatabase> {
   $GroupsTable get groups => attachedDatabase.groups;
   $MembersTable get members => attachedDatabase.members;
+  $LocalDriverPromptsTable get localDriverPrompts =>
+      attachedDatabase.localDriverPrompts;
   MembersDaoManager get managers => MembersDaoManager(this);
 }
 
@@ -16,4 +18,9 @@ class MembersDaoManager {
       $$GroupsTableTableManager(_db.attachedDatabase, _db.groups);
   $$MembersTableTableManager get members =>
       $$MembersTableTableManager(_db.attachedDatabase, _db.members);
+  $$LocalDriverPromptsTableTableManager get localDriverPrompts =>
+      $$LocalDriverPromptsTableTableManager(
+        _db.attachedDatabase,
+        _db.localDriverPrompts,
+      );
 }
