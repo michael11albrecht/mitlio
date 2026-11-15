@@ -2,7 +2,7 @@
 
 Backend for mitlio (ADR-06): Postgres + RLS. Plan: `docs/IMPLEMENTATION_PLAN.md` §2.4 (data model), §8 (security).
 
-No hosted project is linked. `project_id` in `config.toml` only names the local Docker stack.
+Staging is deployed by CI (see "Deploy to staging"); no hosted project is linked locally. `project_id` in `config.toml` only names the local Docker stack.
 Never run `supabase link` / `supabase db push` from an agent; deploys are an owner step.
 
 ## Layout
@@ -45,3 +45,46 @@ make help       # without Docker the Docker targets print "needs Docker" and exi
 - Enable RLS, grant `select, insert, update` to `authenticated` only (no `anon`, no `delete`: soft delete via `deleted_at`).
 - Add the table to the registry in `tests/database/rls_coverage.sql` and to `TABLES` coverage in `rls_policies.sql`, or CI fails.
 - Server-only data never mirrors client-only secrets: **no IBAN columns** (`members.iban_hint` is a masked hint, max 14 chars).
+
+## Deploy to staging
+
+`.github/workflows/deploy-dev.yml` (P8-T03, backend half) runs on every push to `main` that touches
+`supabase/**`, and on manual `workflow_dispatch` (Actions tab, branch `main`). It uses the GitHub environment
+`staging` (secrets `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, `SUPABASE_DB_PASSWORD`) and runs:
+
+1. `supabase link`, then `supabase db push --dry-run` (printed to the job summary), then `supabase db push --yes`.
+   No `--include-all`: out-of-order migrations fail instead of being applied silently.
+2. `supabase functions deploy <name> --use-api` for every directory in `functions/` with an `index.ts`
+   (`fuel-prices`, `fx-rates`). `_shared/` and `tests/` are not functions. `verify_jwt` stays at its default
+   (on); clients and pg_cron call with the anon key as bearer token.
+3. Smoke check: `supabase migration list` must show every local migration applied remotely, else the job fails.
+
+The first run applies migrations 0001..latest to the empty project. The PR gate (`db.yml`) has already
+validated them; the deploy job does not re-run tests. Deploys are serialized (`concurrency: deploy-staging`).
+The access token expires after 90 days: rotate it in the `staging` environment before then.
+
+### Owner steps (one time, not automated)
+
+- Extensions: migrations run `create extension if not exists` for `pgcrypto` (schema `extensions`),
+  `pg_cron` (schema `pg_catalog`) and `pg_net` (schema `extensions`). All are available on the Free plan. If the
+  first push fails on one of them, enable it in Dashboard > Database > Extensions and re-run the workflow.
+- Auth: enable anonymous sign-ins (Dashboard > Authentication > Sign In / Providers), as in `config.toml`.
+- Edge Function secrets, set once with `supabase secrets set NAME=value --project-ref <ref>` (never in CI):
+
+  | Secret | Function | Purpose |
+  |---|---|---|
+  | `TANKERKOENIG_API_KEY` | fuel-prices | Tankerkoenig key; optional, without it fuel prices are unavailable |
+  | `FUEL_WARM_TOKEN` | fuel-prices | shared secret for the pg_cron cache warm-up |
+  | `FUEL_RATE_LIMIT_SALT` | fuel-prices | salt for hashed rate-limit keys |
+  | `FUEL_ALLOWED_ORIGINS` | fuel-prices | CORS origins |
+  | `TANKERKOENIG_BASE_URL`, `OIL_BULLETIN_URL` | fuel-prices | optional overrides |
+  | `FX_WARM_TOKEN` | fx-rates | shared secret for the pg_cron warm-up |
+  | `FX_RATE_LIMIT_SALT` | fx-rates | salt for hashed rate-limit keys |
+  | `FX_ALLOWED_ORIGINS` | fx-rates | CORS origins |
+  | `FX_PROVIDER_URL` | fx-rates | optional override |
+
+  `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected by the platform.
+- pg_cron warm-up jobs read Vault secrets and silently do nothing until they exist: `fuel_prices_url`,
+  `fuel_prices_anon_key`, `fuel_prices_warm_token` (same value as `FUEL_WARM_TOKEN`), and `fx_rates_url`,
+  `fx_rates_anon_key`, `fx_rates_warm_token` (same value as `FX_WARM_TOKEN`). Create them in the SQL editor with
+  `select vault.create_secret('<value>', '<name>');`.
