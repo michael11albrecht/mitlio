@@ -51,6 +51,74 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get remoteErrorOffline =>
+      'Keine Verbindung. Deine Änderungen sind gespeichert und gehen raus, sobald du online bist.';
+
+  @override
+  String get remoteErrorRateLimited =>
+      'Zu viele Versuche. Versuch es in ein paar Minuten nochmal.';
+
+  @override
+  String remoteErrorRateLimitedIn(int minutes) {
+    return 'Zu viele Versuche. Versuch es in $minutes Min. nochmal.';
+  }
+
+  @override
+  String get remoteErrorInviteInvalid =>
+      'Dieser Link gilt nicht mehr. Bitte um einen neuen Link.';
+
+  @override
+  String remoteErrorMemberAlreadyClaimed(String name) {
+    return '$name ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.';
+  }
+
+  @override
+  String get remoteErrorMemberAlreadyClaimedNoName =>
+      'Diese Person ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.';
+
+  @override
+  String remoteErrorAlreadyConnected(String name) {
+    return 'Du bist in dieser Gruppe schon als $name verbunden.';
+  }
+
+  @override
+  String get remoteErrorAlreadyConnectedNoName =>
+      'Du bist in dieser Gruppe schon verbunden.';
+
+  @override
+  String get remoteErrorMemberGone =>
+      'Diese Person gibt es in der Gruppe nicht mehr. Wähl eine andere.';
+
+  @override
+  String get remoteErrorNotOwner =>
+      'Das kann nur, wer die Gruppe erstellt hat.';
+
+  @override
+  String get remoteErrorNotMember =>
+      'Du bist nicht mehr in dieser Gruppe. Deine Daten bleiben auf diesem Handy.';
+
+  @override
+  String get remoteErrorCannotRemoveSelf =>
+      'Dich selbst kannst du hier nicht entfernen.';
+
+  @override
+  String get remoteErrorVersionTooOld =>
+      'Diese Version kann nicht mehr teilen. Aktualisiere mitlio.';
+
+  @override
+  String get remoteErrorServerDown =>
+      'Der Server antwortet gerade nicht. Wir versuchen es gleich nochmal.';
+
+  @override
+  String remoteErrorRejected(String title) {
+    return '„$title“ konnte nicht geteilt werden. Sie ist nur auf diesem Handy.';
+  }
+
+  @override
+  String get remoteErrorRejectedNoTitle =>
+      'Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.';
+
+  @override
   String get errorSettingNotSaved =>
       'Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.';
 

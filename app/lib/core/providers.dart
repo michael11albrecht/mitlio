@@ -3,6 +3,7 @@ import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/crash/crash_reporter.dart';
 import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/logging.dart';
+import 'package:mitlio/core/remote/remote_backend.dart';
 
 /// Root providers. Override in tests / DebugDrive with fakes (ADR-23: plain
 /// providers, no codegen).
@@ -26,4 +27,10 @@ final errorSinkProvider = Provider<ErrorSink>(
     logger: ref.watch(loggerProvider),
     crashReporter: ref.watch(crashReporterProvider),
   ),
+);
+
+/// The Supabase client holder. Default: no backend (fully local); `main`
+/// overrides it when `AppConfig.hasBackend`.
+final remoteBackendProvider = Provider<RemoteBackend>(
+  (ref) => const RemoteBackend.none(),
 );
