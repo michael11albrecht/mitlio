@@ -233,6 +233,22 @@ class LocalDriverPrompts extends Table {
   Set<Column<Object>> get primaryKey => {memberId};
 }
 
+/// Saved start/destination places "home" and "work" for the ride distance
+/// lookup (P9-T08, schema v5). Local only, never synced, covered by "delete
+/// my data": addresses are personal data and stay on this device.
+@DataClassName('LocalPlaceRow')
+class LocalPlaces extends Table {
+  /// `home` or `work`: one place per kind.
+  TextColumn get kind => text()();
+  TextColumn get label => text()();
+  RealColumn get lat => real()();
+  RealColumn get lng => real()();
+  TextColumn get savedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {kind};
+}
+
 /// Edit history of an expense (P7-T03, schema v3): one row per update or
 /// soft delete, holding the aggregate as it was *before* the change.
 /// Local-only for now: the server writes its own revisions from a trigger and

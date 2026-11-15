@@ -1834,4 +1834,78 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get fuelAttributionFallback => 'Spritpreisdaten';
+
+  @override
+  String get routeToggle => 'Start und Ziel eingeben, Strecke berechnen';
+
+  @override
+  String get routeStartLabel => 'Start';
+
+  @override
+  String get routeEndLabel => 'Ziel';
+
+  @override
+  String routeResult(String km) {
+    return '$km km, Strecke über die Straße';
+  }
+
+  @override
+  String get routeRecalculate => 'Neu berechnen';
+
+  @override
+  String get routeSearching => 'Suche läuft …';
+
+  @override
+  String get routeCalculating => 'Strecke wird berechnet …';
+
+  @override
+  String get routeNoMatches =>
+      'Keine Treffer. Probier einen anderen Ort oder trag die Kilometer selbst ein.';
+
+  @override
+  String get routeSavedHome => 'Zuhause';
+
+  @override
+  String get routeSavedWork => 'Arbeit';
+
+  @override
+  String get routeSaveAsHome => 'Als Zuhause merken';
+
+  @override
+  String get routeSaveAsWork => 'Als Arbeit merken';
+
+  @override
+  String get routeSavedAsHome => 'Als Zuhause gemerkt';
+
+  @override
+  String get routeSavedAsWork => 'Als Arbeit gemerkt';
+
+  @override
+  String get routeOffline =>
+      'Keine Verbindung, trag die Kilometer einfach selbst ein.';
+
+  @override
+  String get routeRateLimited =>
+      'Zu viele Streckenanfragen. Versuch es später nochmal oder trag die Kilometer selbst ein.';
+
+  @override
+  String routeRateLimitedIn(int minutes) {
+    return 'Zu viele Streckenanfragen. Versuch es in $minutes Min. nochmal oder trag die Kilometer selbst ein.';
+  }
+
+  @override
+  String get routeNoRoute =>
+      'Zwischen diesen Orten gibt es keine Straßenverbindung. Prüf Start und Ziel oder trag die Kilometer selbst ein.';
+
+  @override
+  String get routeServerDown =>
+      'Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.';
+
+  @override
+  String get routeInvalid =>
+      'Start und Ziel passen nicht zusammen. Wähl zwei verschiedene Orte oder trag die Kilometer selbst ein.';
+
+  @override
+  String get routeAttributionFallback =>
+      'Karten- und Routendaten © OpenStreetMap-Mitwirkende';
 }
