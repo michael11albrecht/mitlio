@@ -31,6 +31,12 @@ Set<String>? _ids(String? raw) {
   }
 }
 
+bool? _bool(String? raw) => switch (raw) {
+  'true' => true,
+  'false' => false,
+  _ => null,
+};
+
 DateTime? _day(String? raw) {
   final m = RegExp(r'^(\d{4})-(\d{2})-(\d{2})$').firstMatch(raw ?? '');
   return m == null
@@ -160,6 +166,38 @@ Map<String, DriveHandler> ridesDriveHandlers(ProviderContainer c) {
       if (entry case Err(:final error)) return driveError(error);
       final groupId = (entry as Ok<RideEntry, RepositoryError>).value.groupId;
       return _result(await rides(groupId).deleteRide(id), (_) => {'id': id});
+    },
+    'rides.setCanDrive': (p) async {
+      final groupId = p['groupId'];
+      final memberId = p['memberId'];
+      final canDrive = _bool(p['canDrive']);
+      if (groupId == null || memberId == null || canDrive == null) {
+        return invalidParams(
+          'need groupId, memberId and canDrive (true|false)',
+        );
+      }
+      return _result(
+        await rides(groupId).setCanDrive(memberId, canDrive: canDrive),
+        (_) => {'memberId': memberId, 'canDrive': canDrive},
+      );
+    },
+    'rides.answerDriverPrompt': (p) async {
+      final groupId = p['groupId'];
+      final memberId = p['memberId'];
+      final canDrive = _bool(p['canDrive']);
+      if (groupId == null || memberId == null || canDrive == null) {
+        return invalidParams(
+          'need groupId, memberId and canDrive (true|false)',
+        );
+      }
+      return _result(
+        await rides(groupId).answerDriverPrompt(memberId, canDrive: canDrive),
+        (undo) => {
+          'memberId': memberId,
+          'canDrive': canDrive,
+          'undoable': undo != null,
+        },
+      );
     },
     'vehicles.create': (p) async {
       final groupId = p['groupId'];

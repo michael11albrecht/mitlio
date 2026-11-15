@@ -14,6 +14,7 @@ final class GroupMember {
     required this.position,
     this.paypalMe,
     this.ibanHint,
+    this.canDrive = true,
   });
 
   final String id;
@@ -27,6 +28,9 @@ final class GroupMember {
   /// Masked hint only; the full IBAN is local-only (plan §8).
   final String? ibanHint;
 
+  /// Whether this member drives. Only drivers are suggested as next driver.
+  final bool canDrive;
+
   Member toDomain() => Member(id: id, position: position);
 
   @override
@@ -37,11 +41,12 @@ final class GroupMember {
       other.name == name &&
       other.position == position &&
       other.paypalMe == paypalMe &&
-      other.ibanHint == ibanHint;
+      other.ibanHint == ibanHint &&
+      other.canDrive == canDrive;
 
   @override
   int get hashCode =>
-      Object.hash(id, groupId, name, position, paypalMe, ibanHint);
+      Object.hash(id, groupId, name, position, paypalMe, ibanHint, canDrive);
 
   @override
   String toString() => 'GroupMember($id, $name, #$position)';
@@ -76,6 +81,21 @@ abstract interface class MembersRepository {
     String? paypalMe,
     String? ibanHint,
   });
+
+  /// Sets whether [id] drives. [NotFound] for unknown or deleted members.
+  /// Name and hints stay as they are.
+  Future<RepoResult<GroupMember>> setCanDrive(
+    String id, {
+    required bool canDrive,
+  });
+
+  /// Ids of members already asked whether they drive (the rides nudge).
+  /// Local only, never synced.
+  Future<RepoResult<Set<String>>> askedDriverPrompts();
+
+  /// Remembers that [id] was asked, whatever the answer. [NotFound] for
+  /// unknown members.
+  Future<RepoResult<void>> markDriverPromptAsked(String id);
 
   /// Reorders the live members of [groupId]. [orderedIds] must contain
   /// exactly the live member ids ([InvalidData] otherwise). The members take

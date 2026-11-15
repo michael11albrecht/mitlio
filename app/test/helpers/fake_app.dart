@@ -106,6 +106,18 @@ class FlakyMembers extends FakeMembersRepository {
       : super.add(groupId, name: name, paypalMe: paypalMe, ibanHint: ibanHint);
 
   @override
+  Future<RepoResult<GroupMember>> setCanDrive(
+    String id, {
+    required bool canDrive,
+  }) async => failWith != null
+      ? Err(failWith!)
+      : super.setCanDrive(id, canDrive: canDrive);
+
+  @override
+  Future<RepoResult<void>> markDriverPromptAsked(String id) async =>
+      failWith != null ? Err(failWith!) : super.markDriverPromptAsked(id);
+
+  @override
   Future<RepoResult<GroupMember>> update(
     String id, {
     required String name,
