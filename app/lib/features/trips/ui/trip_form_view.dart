@@ -175,6 +175,7 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
           Expanded(
             child: ListView(
               padding: Spacing.screen,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: [
                 _ResultArea(state: s, nameOf: nameOf),
                 gap(),

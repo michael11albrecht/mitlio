@@ -132,6 +132,7 @@ class _FormBody extends StatelessWidget {
     final symbol = MoneyFormat.of(context).currencySymbol(form.currency);
     return ListView(
       padding: Spacing.screen,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       children: [
         TextField(
           controller: name,
