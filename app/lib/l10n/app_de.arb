@@ -7,6 +7,10 @@
   "errorTitle": "Das hat nicht geklappt",
   "errorMessage": "Versuch es gleich noch einmal.",
   "retry": "Nochmal versuchen",
+  "keyboardDone": "Fertig",
+  "@keyboardDone": {
+    "description": "Button above the iOS number pad that closes the keyboard."
+  },
   "amountInvalid": "Das ist kein gültiger Betrag",
   "currencyName": "{code, select, EUR{Euro} USD{US-Dollar} GBP{Pfund} CHF{Franken} other{{code}}}",
   "@currencyName": {

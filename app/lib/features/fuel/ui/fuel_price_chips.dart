@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/money_format.dart';
 import 'package:mitlio/core/theme/theme.dart';
+import 'package:mitlio/core/widgets/number_pad_done.dart';
 import 'package:mitlio/features/fuel/ui/fuel_price_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart' show Currency;
@@ -189,19 +190,21 @@ class _FuelPriceChipsState extends ConsumerState<FuelPriceChips> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: TextField(
-                      controller: _plz,
-                      autofocus: true,
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.done,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(5),
-                      ],
-                      onSubmitted: (_) => _applyPlz(),
-                      decoration: InputDecoration(
-                        labelText: l10n.fuelPlzLabel,
-                        errorText: _plzInvalid ? l10n.fuelPlzInvalid : null,
+                    child: NumberPadDone(
+                      child: TextField(
+                        controller: _plz,
+                        autofocus: true,
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(5),
+                        ],
+                        onSubmitted: (_) => _applyPlz(),
+                        decoration: InputDecoration(
+                          labelText: l10n.fuelPlzLabel,
+                          errorText: _plzInvalid ? l10n.fuelPlzInvalid : null,
+                        ),
                       ),
                     ),
                   ),
