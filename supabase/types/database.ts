@@ -386,6 +386,7 @@ export type Database = {
           group_id: string
           id: string
           member_id: string | null
+          role: string
           user_id: string
         }
         Insert: {
@@ -393,6 +394,7 @@ export type Database = {
           group_id: string
           id?: string
           member_id?: string | null
+          role?: string
           user_id: string
         }
         Update: {
@@ -400,6 +402,7 @@ export type Database = {
           group_id?: string
           id?: string
           member_id?: string | null
+          role?: string
           user_id?: string
         }
         Relationships: [
@@ -804,6 +807,10 @@ export type Database = {
       can_bootstrap_group: { Args: { gid: string }; Returns: boolean }
       cleanup_fuel_tables: { Args: never; Returns: undefined }
       cleanup_fx_rates: { Args: never; Returns: undefined }
+      connect_member: {
+        Args: { gid: string; member_id: string }
+        Returns: Json
+      }
       consume_rate_limit: {
         Args: { p_capacity: number; p_key: string; p_refill_per_sec: number }
         Returns: boolean
@@ -815,6 +822,7 @@ export type Database = {
         Args: { claim_member_id?: string; token: string }
         Returns: Json
       }
+      remove_membership: { Args: { membership_id: string }; Returns: undefined }
       revoke_invite: { Args: { invite_id: string }; Returns: undefined }
       upsert_expense: { Args: { payload: Json }; Returns: Json }
       warm_fuel_national: { Args: never; Returns: undefined }
