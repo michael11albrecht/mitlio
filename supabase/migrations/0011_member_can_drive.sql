@@ -1,4 +1,4 @@
--- 0010_member_can_drive: who drives, per member (rides fairness).
+-- 0011_member_can_drive: who drives, per member (rides fairness).
 --
 -- Server side of the Drift column `members.can_drive` (schema v4). Only members with
 -- can_drive = true are suggested as next driver; everyone drives by default.
