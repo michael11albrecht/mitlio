@@ -1,3 +1,4 @@
+import 'package:mitlio/features/rides/ui/ride_settlement.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 /// Net balances plus both "who pays whom" views for one group.
@@ -96,4 +97,76 @@ List<Transfer> pairwiseDebts({
             : position[a.toId]!.compareTo(position[b.toId]!);
       });
   return result;
+}
+
+/// What the not yet settled rides add to the balances.
+final class OpenRides {
+  const OpenRides({
+    required this.expenses,
+    required this.rideCount,
+    required this.totalCents,
+  });
+
+  const OpenRides.none() : expenses = const [], rideCount = 0, totalCents = 0;
+
+  /// One expense per driver and month, exactly the ones "Abrechnen" would
+  /// create, so live balances equal the balances after closing the month.
+  final List<Expense> expenses;
+  final int rideCount;
+  final int totalCents;
+}
+
+/// Internal name of the throwaway expenses; never shown.
+const _draftTitle = 'open-rides';
+
+/// The [unsettled] rides as the expenses their month's settlement
+/// would create (`planSettlement` -> `rideAggregateToExpense`; no money math
+/// here). Settled rides are already expenses and stay out. A month whose
+/// rides the domain rejects or whose vehicle is unknown is skipped, as
+/// settling it is impossible too.
+OpenRides openRideExpenses({
+  required Iterable<Ride> unsettled,
+  required Map<String, Vehicle> vehicles,
+  required Currency currency,
+  required List<Member> members,
+}) {
+  final months = {for (final r in unsettled) Month(r.date.year, r.date.month)};
+  final expenses = <Expense>[];
+  var rideCount = 0;
+  var totalCents = 0;
+  for (final month in months) {
+    final plan = planSettlement(
+      unsettled: unsettled,
+      month: month,
+      vehicles: vehicles,
+      currency: currency,
+      members: members,
+    );
+    if (plan == null) continue;
+    final monthExpenses = <Expense>[];
+    for (final driver in plan.drivers) {
+      final expense = rideAggregateToExpense(
+        id: 'open-rides-${month.year}-${month.month}-${driver.driverId}',
+        title: _draftTitle,
+        date: DateTime.utc(month.year, month.month),
+        aggregate: driver.aggregate,
+        currency: currency,
+        members: members,
+      );
+      if (expense is! Ok<Expense, ExpenseError>) {
+        monthExpenses.clear();
+        break;
+      }
+      monthExpenses.add(expense.value);
+    }
+    if (monthExpenses.isEmpty) continue;
+    expenses.addAll(monthExpenses);
+    rideCount += plan.rideCount;
+    totalCents += plan.totalCents;
+  }
+  return OpenRides(
+    expenses: expenses,
+    rideCount: rideCount,
+    totalCents: totalCents,
+  );
 }

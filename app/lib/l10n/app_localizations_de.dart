@@ -244,6 +244,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get balancesSettledMessage => 'Niemand schuldet jemandem etwas.';
 
   @override
+  String balancesOpenRides(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count offene Fahrten',
+      one: '1 offene Fahrt',
+    );
+    return 'inkl. $_temp0 ($amount)';
+  }
+
+  @override
   String get balancesEmptyTitle => 'Noch nichts zu verrechnen';
 
   @override
@@ -1138,7 +1149,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ridesSettleNote =>
-      'Pro Fahrer entsteht eine Ausgabe. Du kannst das gleich rückgängig machen.';
+      'Die Fahrten zählen schon im Saldo. Beim Abrechnen werden sie gesperrt und pro Fahrer zu einer Ausgabe. Du kannst das gleich rückgängig machen.';
 
   @override
   String get ridesSettleAction => 'Abrechnen';
