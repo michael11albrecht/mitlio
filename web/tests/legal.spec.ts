@@ -77,7 +77,8 @@ test.describe('legal pages', () => {
       await page.goto(path);
       const body = await page.locator('main').innerText();
       expect(future.length).toBeGreaterThan(0);
-      for (const s of future) expect(body).not.toContain(s.heading);
+      // Headings may appear in running text ("Push-Nachrichten gibt es noch nicht"), so compare the bodies.
+      for (const s of future) for (const p of s.paragraphs ?? []) expect(body).not.toContain(p);
       expect(body).not.toContain('Firebase Cloud Messaging');
     }
   });
