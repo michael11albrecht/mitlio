@@ -1,0 +1,3 @@
+# Test fixture, not a secret: a fake rate-limit key_hash in a pgTAP test (supabase/tests/database/fuel_prices.sql).
+72870af30d61413d836eb755d0348ea33de1a994:supabase/tests/database/fuel_prices.sql:generic-api-key:58
+0b0fe0d9ada022f616854274a1124fc2e022c3fa:supabase/tests/database/fuel_prices.sql:generic-api-key:58
