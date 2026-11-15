@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mitlio/core/crash/route_breadcrumbs.dart';
+import 'package:mitlio/core/keyboard.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/features/balances/ui/balances_view.dart';
 import 'package:mitlio/features/expenses/ui/expense_form_view.dart';
@@ -24,7 +25,10 @@ import 'package:mitlio/features/trips/ui/trip_form_view_model.dart'
 /// back always returns to the list.
 final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
-    observers: [RouteBreadcrumbObserver(ref.watch(crashReporterProvider))],
+    observers: [
+      RouteBreadcrumbObserver(ref.watch(crashReporterProvider)),
+      KeyboardDismissObserver(),
+    ],
     routes: [
       GoRoute(
         path: '/',

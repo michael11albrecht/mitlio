@@ -104,6 +104,7 @@ class _GroupFormViewState extends ConsumerState<GroupFormView> {
           Expanded(
             child: ListView(
               padding: Spacing.screen,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: [
                 TextField(
                   controller: _name,
