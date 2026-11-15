@@ -1,6 +1,6 @@
 // Single source of truth for the public origin. The domain is not bought yet:
-// override with the SITE_URL env var at build time, or change the default here.
-export const SITE_URL = process.env.SITE_URL ?? 'https://mitlio.web.app';
+// override with the SITE_URL env var at build time (empty counts as unset), or change the default here.
+export const SITE_URL = process.env.SITE_URL || 'https://mitlio.web.app';
 
 // Store listings. Empty until the app is published (owner decision): the calculator then shows
 // "App kommt bald". Once set, store badges, an "open in app" deep link and the
@@ -15,3 +15,12 @@ export const PLAY_STORE_URL = process.env.PLAY_STORE_URL ?? '';
 // (shipped to browsers on purpose, see docs/fuel-prices-api.md); optional.
 export const FUEL_API_URL = process.env.FUEL_API_URL ?? '';
 export const FUEL_API_ANON_KEY = process.env.FUEL_API_ANON_KEY ?? '';
+
+// App links (PW-T10). Needed for /.well-known/apple-app-site-association and /.well-known/assetlinks.json, which are
+// generated at build time (scripts/write-hosting-files.mjs). Both stay empty until the apps are signed (owner decision):
+// an empty value means the matching file is NOT emitted (a 404 is honest, a file with placeholder ids would make
+// iOS/Android cache a broken association). APPLE_TEAM_ID is the 10-character Apple Developer Team ID.
+// ANDROID_SHA256_CERT_FINGERPRINTS is a comma-separated list of the release signing cert SHA-256 fingerprints
+// (AA:BB:...:FF, 32 bytes), including the Play App Signing key once the app is on Play.
+export const APPLE_TEAM_ID = process.env.APPLE_TEAM_ID ?? '';
+export const ANDROID_SHA256_CERT_FINGERPRINTS = process.env.ANDROID_SHA256_CERT_FINGERPRINTS ?? '';
