@@ -11,6 +11,7 @@
   "moneySpokenNegative": "minus {amount}",
   "undo": "Undo",
   "dismiss": "Dismiss",
+  "hideSnackBar": "Dismiss",
   "groupNew": "New group",
   "groupCreate": "Create group",
   "groupEditTitle": "Edit group",
