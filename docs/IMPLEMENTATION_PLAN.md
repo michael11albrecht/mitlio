@@ -643,7 +643,7 @@ Go live **early** (before the app ships) — SEO needs months to compound. Until
 | PW-T06 | App CTA: sticky "Regelmäßig fahren? Fahrten speichern & monatlich abrechnen" → smart app banner (`apple-itunes-app` meta), Play badge, deep link carrying the trip (P3r-T08) | link format test | safe |
 | PW-T07 | Landing pages per search intent (each with calculator embedded + unique explanatory content + FAQ): `/fahrtkostenrechner`, `/spritkosten-teilen`, `/fahrgemeinschaft-kosten-aufteilen`, `/pendler-fahrgemeinschaft`, `/mitfahrer-kosten-berechnen`, `/kilometerpauschale-rechner`, `/elektroauto-ladekosten-teilen`; EN equivalents later | human reviews copy; each page unique title/description/H1 | safe |
 | PW-T08 | Structured data: `WebApplication`/`SoftwareApplication`, `FAQPage`, `HowTo`, `Organization`; OG/Twitter images generated at build | `tool/seo_check` validates JSON-LD; Rich Results Test manual once | safe |
-| PW-T09 | Privacy-friendly analytics without cookies (e.g. GoatCounter/Plausible/Cloudflare Web Analytics) — no consent banner needed; events: calculation done, share, app CTA click | no cookies set (Playwright asserts `document.cookie` empty) | critical (privacy) |
+| PW-T09 | **Decided 2026-11-15: no analytics script.** Google Search Console only (verified via DNS TXT, no code on the page), covered by PW-T11. Revisit with GoatCounter/Pirsch if on-site numbers are needed | no cookies set (Playwright asserts `document.cookie` empty) | critical (privacy) |
 | PW-T10 | Hosting: Firebase Hosting on own domain, preview channels per PR, cache headers, security headers (CSP), `/.well-known/*` for app links | headers test; preview URL commented on PR | critical |
 | PW-T11 | Google Search Console + Bing Webmaster verification, sitemap submission; monthly SEO report (impressions, CTR, top queries) into `docs/seo-metrics.md` | Search Console shows indexed pages | critical (human) |
 
@@ -783,6 +783,8 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 | P9-T05 | Weekly group digest notification | builds on P6b |
 | P9-T06 | Web app target (read-only share link) | |
 | P9-T07 | Per-field merge instead of aggregate LWW, if field data shows lost edits | ADR first |
+| P9-T08 | Ride distance from start and destination: autocomplete + routing via Edge Function proxy (ORS primary, Geoapify fallback), distance stays editable, saved places local-only (#130) | spike for quotas/ToS + ADR first; `needs-decision` |
+| P9-T09 | Car model suggestions: bundled static catalog from EEA CO2 monitoring data (CC BY 4.0) prefills fuel type and consumption, honest WLTP note (#131) | offline, no network; ADR + owner decisions first |
 
 ---
 
