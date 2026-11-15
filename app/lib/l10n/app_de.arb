@@ -75,6 +75,32 @@
       }
     }
   },
+  "groupsArchivedEntry": "Archiviert ({count})",
+  "@groupsArchivedEntry": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupsArchivedTitle": "Archivierte Gruppen",
+  "groupRestore": "Wiederherstellen",
+  "groupRestoreLabel": "{name} wiederherstellen",
+  "@groupRestoreLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupRestored": "„{name}“ wiederhergestellt",
+  "@groupRestored": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "membersEmptyTitle": "Noch niemand dabei",
   "membersEmptyMessage": "Füge die Leute hinzu, mit denen du teilst.",
   "memberAddLabel": "Name hinzufügen",

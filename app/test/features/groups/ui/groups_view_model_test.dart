@@ -120,6 +120,71 @@ void main() {
     });
   });
 
+  group('archived groups', () {
+    ArchivedGroupsViewModel archivedVm() =>
+        container.read(archivedGroupsViewModelProvider.notifier);
+    GroupsState archivedState() =>
+        container.read(archivedGroupsViewModelProvider);
+
+    Future<void> openArchived() async {
+      container.listen(archivedGroupsViewModelProvider, (_, _) {});
+      await pumpEventQueue();
+    }
+
+    test('the list counts archived groups; restore brings one back', () async {
+      await open();
+      await openArchived();
+      expect(archivedState(), isA<GroupsLoaded>());
+      expect((state() as GroupsLoaded).archivedCount, 0);
+      final g = ok(await vm().create(name: 'Trip', currency: Currency.eur));
+      ok(await vm().archive(g.id));
+      await pumpEventQueue();
+      expect((state() as GroupsLoaded).archivedCount, 1);
+      expect((archivedState() as GroupsLoaded).groups, [g]);
+      expect(ok(await archivedVm().list()), [g]);
+
+      ok(await archivedVm().restore(g.id));
+      await pumpEventQueue();
+      expect((state() as GroupsLoaded).groups, [g]);
+      expect((state() as GroupsLoaded).archivedCount, 0);
+      expect((archivedState() as GroupsLoaded).isEmpty, isTrue);
+    });
+
+    test('undo of a restore archives the group again', () async {
+      await open();
+      await openArchived();
+      final g = ok(await vm().create(name: 'Trip', currency: Currency.eur));
+      ok(await vm().archive(g.id));
+      final undo = ok(await archivedVm().restore(g.id));
+      ok(await undo());
+      await pumpEventQueue();
+      expect((archivedState() as GroupsLoaded).groups, [g]);
+    });
+
+    test('restore reports unknown, live and failing repositories', () async {
+      await open();
+      await openArchived();
+      expect(err(await archivedVm().restore('nope')), isA<NotFound>());
+      final g = ok(await vm().create(name: 'Trip', currency: Currency.eur));
+      expect(err(await archivedVm().restore(g.id)), isA<Conflict>());
+      ok(await vm().archive(g.id));
+      app.groups.failWith = const Storage('x');
+      expect(err(await archivedVm().restore(g.id)), isA<Storage>());
+    });
+
+    test('a failing stream shows the error', () async {
+      app.groups.archivedWatchError = const Storage('db down');
+      await openArchived();
+      expect(archivedState(), isA<GroupsFailure>());
+      expect(archivedVm().debugSnapshot()['status'], 'error');
+      app.groups.archivedWatchError = null;
+      archivedVm().retry();
+      await pumpEventQueue();
+      expect(archivedState(), isA<GroupsLoaded>());
+      expect(archivedVm().debugSnapshot()['status'], 'empty');
+    });
+  });
+
   group('failure', () {
     test('a failing stream shows the error; retry recovers', () async {
       app.groups.watchError = const Storage('db down');

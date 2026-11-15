@@ -108,6 +108,27 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String groupsArchivedEntry(int count) {
+    return 'Archived ($count)';
+  }
+
+  @override
+  String get groupsArchivedTitle => 'Archived groups';
+
+  @override
+  String get groupRestore => 'Restore';
+
+  @override
+  String groupRestoreLabel(String name) {
+    return 'Restore $name';
+  }
+
+  @override
+  String groupRestored(String name) {
+    return '“$name” restored';
+  }
+
+  @override
   String get membersEmptyTitle => 'Nobody here yet';
 
   @override

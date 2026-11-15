@@ -23,6 +23,32 @@
   "groupMenu": "More",
   "groupArchive": "Archive group",
   "groupArchived": "“{name}” archived",
+  "groupsArchivedEntry": "Archived ({count})",
+  "@groupsArchivedEntry": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupsArchivedTitle": "Archived groups",
+  "groupRestore": "Restore",
+  "groupRestoreLabel": "Restore {name}",
+  "@groupRestoreLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupRestored": "“{name}” restored",
+  "@groupRestored": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "membersEmptyTitle": "Nobody here yet",
   "membersEmptyMessage": "Add the people you share with.",
   "memberAddLabel": "Add a name",

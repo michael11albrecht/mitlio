@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/features/groups/ui/archived_groups_view.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view.dart';
 import 'package:mitlio/features/groups/ui/group_form_view.dart';
 import 'package:mitlio/features/groups/ui/groups_view.dart';
@@ -35,6 +37,31 @@ void main() {
         const GroupsView(),
       ),
       (tester, _, _) => expectAccessible(tester),
+    );
+  });
+
+  group('archived groups', () {
+    forEachMode(
+      'list with archived entry',
+      () => scoped(
+        groupsStateOverride(GroupsLoaded(sampleGroups, archivedCount: 2)),
+        const GroupsView(),
+      ),
+      (tester, _, _) => expectAccessible(tester),
+    );
+    forEachMode(
+      'archived screen',
+      () => scoped(
+        archivedStateOverride(GroupsLoaded(sampleGroups)),
+        const ArchivedGroupsView(),
+      ),
+      (tester, _, _) async {
+        await expectAccessible(tester);
+        expect(
+          tester.getSemantics(find.byType(TextButton).first).label,
+          endsWith('Wochenende in den Bergen wiederherstellen'),
+        );
+      },
     );
   });
 
