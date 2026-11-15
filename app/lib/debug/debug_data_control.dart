@@ -51,10 +51,12 @@ class DriftDebugDataControl implements DebugDataControl {
   final ScenarioSeeder? _seeder;
 
   /// Deletes every row. Tables are declared parents first, so deleting in
-  /// reverse order never violates a foreign key.
+  /// reverse order never violates a foreign key. `local_settings` stays: it
+  /// holds the install's HLC node id, which is not user data.
   @override
   Future<void> wipe() => _db.transaction(() async {
     for (final table in _db.allTables.toList().reversed) {
+      if (table == _db.localSettings) continue;
       await _db.delete(table).go();
     }
   });
