@@ -27,3 +27,4 @@ Source of truth for the summary table: `docs/IMPLEMENTATION_PLAN.md` §1. Each A
 | [ADR-23](0023-riverpod-without-codegen.md) | Riverpod without codegen |
 | [ADR-24](0024-people-accounts-invite-link.md) | People vs. accounts, one rotating invite link, owner removal |
 | [ADR-25](0025-personal-profile-and-vehicles.md) | Personal profile, personal vehicles and guided setup flows |
+| [ADR-26](0026-receipt-to-expense.md) | Receipt photo to expense, recognised on the device |

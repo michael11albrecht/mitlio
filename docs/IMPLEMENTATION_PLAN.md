@@ -79,6 +79,7 @@ mitlio web calculator (free, no ads, no popups, no signup, instant result)
 | ADR-20 | Fuel prices | Germany: **Tankerkönig API** (MTS-K data, CC BY 4.0, free API key) proxied + cached by a Supabase Edge Function; Austria: E-Control Spritpreisrechner API; elsewhere: EU Weekly Oil Bulletin national averages; EV: manual kWh price with a sensible default. Client never sees API keys; attribution shown | Live clickable prices are the core differentiator; caching keeps us inside provider rate limits and terms | Verify terms + limits in P1-T01 spike before building |
 | ADR-18 | Cost policy | Lean budget with hard caps, see §6.8 | Owner wants minimum sensible spend | Monthly review of `docs/agent-metrics.md` |
 | ADR-25 | Personal profile, personal vehicles, guided setup flows | Profile (name, avatar, PayPal.Me; IBAN local-only) and cars are set up **once per user** and reused in every group (linked copies); optional real-cost calculator → personal ct/km; rare multi-input flows use one-question-per-screen step flows with progress + finish celebration, daily flows stay one screen | Same data typed into every group; wear rate is a guess; long forms overwhelm | If people keep different payment details per group (P5) |
+| ADR-26 | Receipt photo to expense | Platform document scanner + **on-device OCR** (ML Kit / Apple Vision) behind `ReceiptOcrService`; parsing total/merchant/date/category is pure Dart in the domain; result prefills the normal one-screen expense form | No server cost per receipt, photos stay on the device | If fixture accuracy stays below the gate |
 
 Each ADR becomes a file in `docs/adr/NNNN-title.md` in P0.
 
@@ -810,7 +811,7 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 | ID | Task | Notes |
 |---|---|---|
 | P9-T01 | Receipt photo attach (Supabase Storage, RLS by group, image compression) | storage policies need pgTAP-equivalent tests |
-| P9-T02 | OCR of receipts (on-device ML Kit) prefilling amount/date | behind feature flag |
+| P9-T02 | OCR of receipts → see **P9r** below | ADR-26 |
 | P9-T03 | Recurring expenses (rule engine in domain) | domain-first |
 | P9-T04 | Payment reminders ("you owe Anna 23 €" after N days, opt-in) | builds on P6b outbox + cron |
 | P9-T05 | Weekly group digest notification | builds on P6b |
@@ -818,6 +819,20 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 | P9-T07 | Per-field merge instead of aggregate LWW, if field data shows lost edits | ADR first |
 | P9-T08 | Ride distance from start and destination: autocomplete + routing via Edge Function proxy (ORS primary, Geoapify fallback), distance stays editable, saved places local-only (#130) | spike for quotas/ToS + ADR first; `needs-decision` |
 | P9-T09 | Car model suggestions: bundled static catalog from EEA CO2 monitoring data (CC BY 4.0) prefills fuel type and consumption, honest WLTP note (#131) | offline, no network; ADR + owner decisions first |
+
+#### P9r — Receipt photo to expense (agent, ~1–1.5 weeks; after M3, ADR-26)
+
+Goal: photo → title, total, date, category prefilled → user only picks the people. Daily flow, so one screen and tap budget, no step flow.
+
+| ID | Task | Accept | Risk |
+|---|---|---|---|
+| P9r-T01 | Spike: document scanner + OCR on Android (ML Kit) and iOS (Apple Vision): accuracy on 10 receipts, app size delta, fully offline, no usage data sent | spike note in `docs/`; deps pass `deps_policy` | safe |
+| P9r-T02 | Fixture set: ~30 anonymised receipts as OCR JSON (lines + boxes) with expected `ReceiptDraft` in `tool/fixtures/receipts/` (owner collects receipts) | fixtures + README; no photos in repo | safe |
+| P9r-T03 | Domain `parseReceipt(lines) → ReceiptDraft` (total, merchant, date, currency, category guess, confidence per field) | examples + property (never returns amount ≤ 0, total ≥ any line item) + fixture gate: total correct ≥ 90 %, merchant ≥ 80 % | safe |
+| P9r-T04 | `ReceiptOcrService` interface + platform impls + fake; scanner wrapper | service tests with fake; IT on Android emulator with a fixture image | critical (new deps) |
+| P9r-T05 | UX: "Foto" on add-expense → scanner → prefilled form, "erkannt" markers, receipt crop next to total, focus on people picker; low confidence = empty field; failure = plain message | IT; tap budget `add_expense_from_receipt` ≤ 4 taps (+ scanner shutter) | safe |
+| P9r-T06 | Petrol-station receipt → offer to log as ride fuel price (litres + price/l detected) | VM tests | safe |
+| P9r-T07 | *Later:* split by line items ("wer hatte was") from the parsed lines | builds on T03 | safe |
 
 ---
 
