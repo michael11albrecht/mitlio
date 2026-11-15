@@ -14,6 +14,7 @@ const _localOnlyTables = {
   'local_group_sync',
   'local_sync_cursor',
   'local_settings',
+  'local_places',
   'expense_revisions',
 };
 

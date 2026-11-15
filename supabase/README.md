@@ -20,6 +20,7 @@ Never run `supabase link` / `supabase db push` from an agent; deploys are an own
 | `migrations/0009_join_hardening.sql` | `join_group` per-user rate limit (10/hour, SQLSTATE `P0429` `rate_limited`) and `group_join_audit` (member read, written only by `join_group`). |
 | `migrations/0010_people_accounts.sql` | ADR-24: `group_memberships.role` (owner/member, trigger-enforced), owner-only `create_invite` (non-expiring, revokes other links) and `revoke_invite`, `connect_member`, `remove_membership`, `delete_my_data` hands ownership on. |
 | `functions/` | Edge Functions (Deno 2.1.4). `fuel-prices/`, `fx-rates/` + pure logic in `_shared/`; `tests/coverage_gate.sh` (unit, >= 90 %) and `tests/run_integration.sh` (`functions serve` + provider stub). CI only; never `functions deploy` from an agent. |
+| `functions/route-distance/` | P9-T08: start/destination text to coordinates and driving distance via openrouteservice (primary) or Geoapify (fallback), no migration (reuses `consume_rate_limit`). Contract: `../docs/route-distance-api.md`. |
 | `tests/database/*.sql` | pgTAP: `rls_policies.sql` (per-table matrix), `rls_bootstrap.sql`, `rls_coverage.sql` (every table has RLS and tests), `schema_invariants.sql`. |
 
 ## Run locally (needs Docker)
@@ -55,7 +56,7 @@ make help       # without Docker the Docker targets print "needs Docker" and exi
 1. `supabase link`, then `supabase db push --dry-run` (printed to the job summary), then `supabase db push --yes`.
    No `--include-all`: out-of-order migrations fail instead of being applied silently.
 2. `supabase functions deploy <name> --use-api` for every directory in `functions/` with an `index.ts`
-   (`fuel-prices`, `fx-rates`). `_shared/` and `tests/` are not functions. `verify_jwt` stays at its default
+   (`fuel-prices`, `fx-rates`, `route-distance`). `_shared/` and `tests/` are not functions. `verify_jwt` stays at its default
    (on); clients and pg_cron call with the anon key as bearer token.
 3. Smoke check: `supabase migration list` must show every local migration applied remotely, else the job fails.
 
@@ -82,6 +83,11 @@ The access token expires after 90 days: rotate it in the `staging` environment b
   | `FX_RATE_LIMIT_SALT` | fx-rates | salt for hashed rate-limit keys |
   | `FX_ALLOWED_ORIGINS` | fx-rates | CORS origins |
   | `FX_PROVIDER_URL` | fx-rates | optional override |
+  | `ORS_API_KEY` | route-distance | openrouteservice key: sign up for free at <https://openrouteservice.org/dev/#/signup>, create a token, `supabase secrets set ORS_API_KEY=<token> --project-ref <ref>`. Without any provider key the feature answers 503 and the app falls back to manual km |
+  | `GEOAPIFY_API_KEY` | route-distance | optional fallback provider key (<https://www.geoapify.com/>) |
+  | `ROUTE_PROVIDER` | route-distance | optional order, default `openrouteservice,geoapify`; e.g. `geoapify` to switch without an app update |
+  | `ROUTE_RATE_LIMIT_SALT`, `ROUTE_ALLOWED_ORIGINS` | route-distance | salt for hashed rate-limit keys, CORS origins |
+  | `ROUTE_SUGGEST_PER_MIN`, `ROUTE_DISTANCE_PER_MIN`, `ROUTE_SUGGEST_DAILY`, `ROUTE_DISTANCE_DAILY` | route-distance | optional limits (defaults 30/10 per user and minute, 1000/1500 global per UTC day: keep the daily ones below the provider quota) |
 
   `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected by the platform.
 - pg_cron warm-up jobs read Vault secrets and silently do nothing until they exist: `fuel_prices_url`,

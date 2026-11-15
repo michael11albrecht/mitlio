@@ -6,20 +6,20 @@ import 'package:mitlio/db/daos/sync_state_dao.dart';
 
 import 'generated/schema.dart';
 
-/// Fails when the Drift tables drift from `drift_schemas/drift_schema_v5.json`.
+/// Fails when the Drift tables drift from `drift_schemas/drift_schema_v6.json`.
 /// A schema change needs a version bump, a migration and `make db-schema`.
 void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('fresh v5 schema matches the exported v5 schema', () async {
-    final connection = await verifier.startAt(5);
+  test('fresh v6 schema matches the exported v6 schema', () async {
+    final connection = await verifier.startAt(6);
     final db = AppDatabase(connection);
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 5);
+    await verifier.migrateAndValidate(db, 6);
   });
 
-  test('v1 -> v5 keeps data and adds the rides and revisions tables', () async {
+  test('v1 -> v6 keeps data and adds the rides and revisions tables', () async {
     final schema = await verifier.schemaAt(1);
     schema.rawDatabase
       ..execute(
@@ -35,7 +35,7 @@ void main() {
 
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 5);
+    await verifier.migrateAndValidate(db, 6);
 
     final groups = await db.groupsDao.watchGroups().first;
     expect(groups.single.name, 'Trip');
@@ -50,7 +50,7 @@ void main() {
     expect(await db.select(db.expenseRevisions).get(), isEmpty);
   });
 
-  test('v2 -> v5 keeps expenses and adds a usable revisions table', () async {
+  test('v2 -> v6 keeps expenses and adds a usable revisions table', () async {
     final schema = await verifier.schemaAt(2);
     schema.rawDatabase
       ..execute(
@@ -80,7 +80,7 @@ void main() {
 
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 5);
+    await verifier.migrateAndValidate(db, 6);
 
     expect((await db.select(db.expenses).get()).single.title, 'Dinner');
     expect(await db.select(db.expenseRevisions).get(), isEmpty);
@@ -96,7 +96,7 @@ void main() {
   });
 
   test(
-    'v3 -> v5 makes existing members drivers and adds the prompt flags',
+    'v3 -> v6 makes existing members drivers and adds the prompt flags',
     () async {
       final schema = await verifier.schemaAt(3);
       schema.rawDatabase
@@ -113,7 +113,7 @@ void main() {
 
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 5);
+      await verifier.migrateAndValidate(db, 6);
 
       final member = (await db.membersDao.listAllByGroup('g1')).single;
       expect(member.canDrive, isTrue);
@@ -123,10 +123,36 @@ void main() {
     },
   );
 
+  test('v4 -> v6 adds the local places table and keeps the rest', () async {
+    final schema = await verifier.schemaAt(4);
+    schema.rawDatabase.execute(
+      'INSERT INTO groups (id, name, currency, created_by, created_at, '
+      'updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+      ['g1', 'Trip', 'EUR', 'dev', '2026-01-01T00:00:00.000Z', '0001'],
+    );
+
+    final db = AppDatabase(schema.newConnection());
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 6);
+
+    expect((await db.groupsDao.watchGroups().first).single.name, 'Trip');
+    expect(await db.localPlacesDao.all(), isEmpty);
+    await db.localPlacesDao.upsert(
+      LocalPlacesCompanion.insert(
+        kind: 'home',
+        label: 'Karlsruhe',
+        lat: 49,
+        lng: 8,
+        savedAt: '2026-11-15T10:00:00.000Z',
+      ),
+    );
+    expect((await db.localPlacesDao.all()).single.label, 'Karlsruhe');
+  });
+
   test(
-    'v4 -> v5 adds the sync tables, keeps data, recreates the outbox',
+    'v5 -> v6 adds the sync tables, keeps data, recreates the outbox',
     () async {
-      final schema = await verifier.schemaAt(4);
+      final schema = await verifier.schemaAt(5);
       schema.rawDatabase
         ..execute(
           'INSERT INTO groups (id, name, currency, created_by, created_at, '
@@ -141,7 +167,7 @@ void main() {
 
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 5);
+      await verifier.migrateAndValidate(db, 6);
 
       expect((await db.groupsDao.watchGroups().first).single.name, 'Trip');
       final member = (await db.membersDao.listAllByGroup('g1')).single;

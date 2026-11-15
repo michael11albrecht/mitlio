@@ -164,6 +164,102 @@ abstract class AppLocalizations {
   /// **'Zu viele Anfragen. Versuch es in {minutes} Min. nochmal.'**
   String errorRateLimitedIn(int minutes);
 
+  /// No description provided for @remoteErrorOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Deine Änderungen sind gespeichert und gehen raus, sobald du online bist.'**
+  String get remoteErrorOffline;
+
+  /// No description provided for @remoteErrorRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Versuche. Versuch es in ein paar Minuten nochmal.'**
+  String get remoteErrorRateLimited;
+
+  /// No description provided for @remoteErrorRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Versuche. Versuch es in {minutes} Min. nochmal.'**
+  String remoteErrorRateLimitedIn(int minutes);
+
+  /// No description provided for @remoteErrorInviteInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Dieser Link gilt nicht mehr. Bitte um einen neuen Link.'**
+  String get remoteErrorInviteInvalid;
+
+  /// No description provided for @remoteErrorMemberAlreadyClaimed.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.'**
+  String remoteErrorMemberAlreadyClaimed(String name);
+
+  /// No description provided for @remoteErrorMemberAlreadyClaimedNoName.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Person ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.'**
+  String get remoteErrorMemberAlreadyClaimedNoName;
+
+  /// No description provided for @remoteErrorAlreadyConnected.
+  ///
+  /// In de, this message translates to:
+  /// **'Du bist in dieser Gruppe schon als {name} verbunden.'**
+  String remoteErrorAlreadyConnected(String name);
+
+  /// No description provided for @remoteErrorAlreadyConnectedNoName.
+  ///
+  /// In de, this message translates to:
+  /// **'Du bist in dieser Gruppe schon verbunden.'**
+  String get remoteErrorAlreadyConnectedNoName;
+
+  /// No description provided for @remoteErrorMemberGone.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Person gibt es in der Gruppe nicht mehr. Wähl eine andere.'**
+  String get remoteErrorMemberGone;
+
+  /// No description provided for @remoteErrorNotOwner.
+  ///
+  /// In de, this message translates to:
+  /// **'Das kann nur, wer die Gruppe erstellt hat.'**
+  String get remoteErrorNotOwner;
+
+  /// No description provided for @remoteErrorNotMember.
+  ///
+  /// In de, this message translates to:
+  /// **'Du bist nicht mehr in dieser Gruppe. Deine Daten bleiben auf diesem Handy.'**
+  String get remoteErrorNotMember;
+
+  /// No description provided for @remoteErrorCannotRemoveSelf.
+  ///
+  /// In de, this message translates to:
+  /// **'Dich selbst kannst du hier nicht entfernen.'**
+  String get remoteErrorCannotRemoveSelf;
+
+  /// No description provided for @remoteErrorVersionTooOld.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Version kann nicht mehr teilen. Aktualisiere mitlio.'**
+  String get remoteErrorVersionTooOld;
+
+  /// No description provided for @remoteErrorServerDown.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Server antwortet gerade nicht. Wir versuchen es gleich nochmal.'**
+  String get remoteErrorServerDown;
+
+  /// No description provided for @remoteErrorRejected.
+  ///
+  /// In de, this message translates to:
+  /// **'„{title}“ konnte nicht geteilt werden. Sie ist nur auf diesem Handy.'**
+  String remoteErrorRejected(String title);
+
+  /// No description provided for @remoteErrorRejectedNoTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.'**
+  String get remoteErrorRejectedNoTitle;
+
   /// No description provided for @errorSettingNotSaved.
   ///
   /// In de, this message translates to:
@@ -2862,6 +2958,132 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Spritpreisdaten'**
   String get fuelAttributionFallback;
+
+  /// No description provided for @routeToggle.
+  ///
+  /// In de, this message translates to:
+  /// **'Start und Ziel eingeben, Strecke berechnen'**
+  String get routeToggle;
+
+  /// No description provided for @routeStartLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Start'**
+  String get routeStartLabel;
+
+  /// No description provided for @routeEndLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Ziel'**
+  String get routeEndLabel;
+
+  /// No description provided for @routeResult.
+  ///
+  /// In de, this message translates to:
+  /// **'{km} km, Strecke über die Straße'**
+  String routeResult(String km);
+
+  /// No description provided for @routeRecalculate.
+  ///
+  /// In de, this message translates to:
+  /// **'Neu berechnen'**
+  String get routeRecalculate;
+
+  /// No description provided for @routeSearching.
+  ///
+  /// In de, this message translates to:
+  /// **'Suche läuft …'**
+  String get routeSearching;
+
+  /// No description provided for @routeCalculating.
+  ///
+  /// In de, this message translates to:
+  /// **'Strecke wird berechnet …'**
+  String get routeCalculating;
+
+  /// No description provided for @routeNoMatches.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Treffer. Probier einen anderen Ort oder trag die Kilometer selbst ein.'**
+  String get routeNoMatches;
+
+  /// No description provided for @routeSavedHome.
+  ///
+  /// In de, this message translates to:
+  /// **'Zuhause'**
+  String get routeSavedHome;
+
+  /// No description provided for @routeSavedWork.
+  ///
+  /// In de, this message translates to:
+  /// **'Arbeit'**
+  String get routeSavedWork;
+
+  /// No description provided for @routeSaveAsHome.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Zuhause merken'**
+  String get routeSaveAsHome;
+
+  /// No description provided for @routeSaveAsWork.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Arbeit merken'**
+  String get routeSaveAsWork;
+
+  /// No description provided for @routeSavedAsHome.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Zuhause gemerkt'**
+  String get routeSavedAsHome;
+
+  /// No description provided for @routeSavedAsWork.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Arbeit gemerkt'**
+  String get routeSavedAsWork;
+
+  /// No description provided for @routeOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung, trag die Kilometer einfach selbst ein.'**
+  String get routeOffline;
+
+  /// No description provided for @routeRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Streckenanfragen. Versuch es später nochmal oder trag die Kilometer selbst ein.'**
+  String get routeRateLimited;
+
+  /// No description provided for @routeRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Streckenanfragen. Versuch es in {minutes} Min. nochmal oder trag die Kilometer selbst ein.'**
+  String routeRateLimitedIn(int minutes);
+
+  /// No description provided for @routeNoRoute.
+  ///
+  /// In de, this message translates to:
+  /// **'Zwischen diesen Orten gibt es keine Straßenverbindung. Prüf Start und Ziel oder trag die Kilometer selbst ein.'**
+  String get routeNoRoute;
+
+  /// No description provided for @routeServerDown.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.'**
+  String get routeServerDown;
+
+  /// No description provided for @routeInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Start und Ziel passen nicht zusammen. Wähl zwei verschiedene Orte oder trag die Kilometer selbst ein.'**
+  String get routeInvalid;
+
+  /// No description provided for @routeAttributionFallback.
+  ///
+  /// In de, this message translates to:
+  /// **'Karten- und Routendaten © OpenStreetMap-Mitwirkende'**
+  String get routeAttributionFallback;
 }
 
 class _AppLocalizationsDelegate

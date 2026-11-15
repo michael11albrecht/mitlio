@@ -1098,9 +1098,7 @@
     },
     {
       "id": 7,
-      "references": [
-        0
-      ],
+      "references": [],
       "type": "table",
       "data": {
         "name": "local_outbox",
@@ -1120,42 +1118,6 @@
             "default_client_dart": null,
             "dsl_features": [
               "auto-increment"
-            ]
-          },
-          {
-            "name": "op_id",
-            "getter_name": "opId",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "group_id",
-            "getter_name": "groupId",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "defaultConstraints": "REFERENCES \"groups\" (id)",
-            "dialectAwareDefaultConstraints": {
-              "sqlite": "REFERENCES \"groups\" (id)"
-            },
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": [
-              {
-                "foreign_key": {
-                  "to": {
-                    "table": "groups",
-                    "column": "id"
-                  },
-                  "initially_deferred": false,
-                  "on_update": null,
-                  "on_delete": null
-                }
-              }
             ]
           },
           {
@@ -1199,16 +1161,6 @@
             "dsl_features": []
           },
           {
-            "name": "created_at",
-            "getter_name": "createdAt",
-            "moor_type": "dateTime",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
             "name": "attempts",
             "getter_name": "attempts",
             "moor_type": "int",
@@ -1217,36 +1169,11 @@
             "default_dart": "const CustomExpression('0')",
             "default_client_dart": null,
             "dsl_features": []
-          },
-          {
-            "name": "next_attempt_at",
-            "getter_name": "nextAttemptAt",
-            "moor_type": "dateTime",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "last_error_code",
-            "getter_name": "lastErrorCode",
-            "moor_type": "string",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
           }
         ],
         "is_virtual": false,
         "without_rowid": false,
-        "constraints": [],
-        "unique_keys": [
-          [
-            "op_id"
-          ]
-        ]
+        "constraints": []
       }
     },
     {
@@ -1306,6 +1233,73 @@
     },
     {
       "id": 9,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "local_places",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "kind",
+            "getter_name": "kind",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "label",
+            "getter_name": "label",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "lat",
+            "getter_name": "lat",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "lng",
+            "getter_name": "lng",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "saved_at",
+            "getter_name": "savedAt",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "kind"
+        ]
+      }
+    },
+    {
+      "id": 10,
       "references": [
         0
       ],
@@ -1511,10 +1505,10 @@
       }
     },
     {
-      "id": 10,
+      "id": 11,
       "references": [
         0,
-        9,
+        10,
         1
       ],
       "type": "table",
@@ -1742,10 +1736,10 @@
       }
     },
     {
-      "id": 11,
+      "id": 12,
       "references": [
         0,
-        9,
+        10,
         1,
         2
       ],
@@ -2057,7 +2051,7 @@
       }
     },
     {
-      "id": 12,
+      "id": 13,
       "references": [
         2,
         0
@@ -2198,215 +2192,7 @@
       }
     },
     {
-      "id": 13,
-      "references": [
-        0
-      ],
-      "type": "table",
-      "data": {
-        "name": "local_group_sync",
-        "was_declared_in_moor": false,
-        "columns": [
-          {
-            "name": "group_id",
-            "getter_name": "groupId",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "defaultConstraints": "REFERENCES \"groups\" (id)",
-            "dialectAwareDefaultConstraints": {
-              "sqlite": "REFERENCES \"groups\" (id)"
-            },
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": [
-              {
-                "foreign_key": {
-                  "to": {
-                    "table": "groups",
-                    "column": "id"
-                  },
-                  "initially_deferred": false,
-                  "on_update": null,
-                  "on_delete": null
-                }
-              }
-            ]
-          },
-          {
-            "name": "state",
-            "getter_name": "state",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "role",
-            "getter_name": "role",
-            "moor_type": "string",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "last_push_at",
-            "getter_name": "lastPushAt",
-            "moor_type": "dateTime",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "last_pull_at",
-            "getter_name": "lastPullAt",
-            "moor_type": "dateTime",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "last_error_code",
-            "getter_name": "lastErrorCode",
-            "moor_type": "string",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "last_error_at",
-            "getter_name": "lastErrorAt",
-            "moor_type": "dateTime",
-            "nullable": true,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          }
-        ],
-        "is_virtual": false,
-        "without_rowid": false,
-        "constraints": [],
-        "explicit_pk": [
-          "group_id"
-        ]
-      }
-    },
-    {
       "id": 14,
-      "references": [
-        0
-      ],
-      "type": "table",
-      "data": {
-        "name": "local_sync_cursor",
-        "was_declared_in_moor": false,
-        "columns": [
-          {
-            "name": "group_id",
-            "getter_name": "groupId",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "defaultConstraints": "REFERENCES \"groups\" (id)",
-            "dialectAwareDefaultConstraints": {
-              "sqlite": "REFERENCES \"groups\" (id)"
-            },
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": [
-              {
-                "foreign_key": {
-                  "to": {
-                    "table": "groups",
-                    "column": "id"
-                  },
-                  "initially_deferred": false,
-                  "on_update": null,
-                  "on_delete": null
-                }
-              }
-            ]
-          },
-          {
-            "name": "table_name",
-            "getter_name": "syncedTable",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "cursor",
-            "getter_name": "cursor",
-            "moor_type": "int",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": "const CustomExpression('0')",
-            "default_client_dart": null,
-            "dsl_features": []
-          }
-        ],
-        "is_virtual": false,
-        "without_rowid": false,
-        "constraints": [],
-        "explicit_pk": [
-          "group_id",
-          "table_name"
-        ]
-      }
-    },
-    {
-      "id": 15,
-      "references": [],
-      "type": "table",
-      "data": {
-        "name": "local_settings",
-        "was_declared_in_moor": false,
-        "columns": [
-          {
-            "name": "key",
-            "getter_name": "key",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "value",
-            "getter_name": "value",
-            "moor_type": "string",
-            "nullable": false,
-            "customConstraints": null,
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          }
-        ],
-        "is_virtual": false,
-        "without_rowid": false,
-        "constraints": [],
-        "explicit_pk": [
-          "key"
-        ]
-      }
-    },
-    {
-      "id": 16,
       "references": [
         1
       ],
@@ -2425,7 +2211,7 @@
       }
     },
     {
-      "id": 17,
+      "id": 15,
       "references": [
         2
       ],
@@ -2444,7 +2230,7 @@
       }
     },
     {
-      "id": 18,
+      "id": 16,
       "references": [
         3
       ],
@@ -2463,7 +2249,7 @@
       }
     },
     {
-      "id": 19,
+      "id": 17,
       "references": [
         3
       ],
@@ -2482,7 +2268,7 @@
       }
     },
     {
-      "id": 20,
+      "id": 18,
       "references": [
         3
       ],
@@ -2501,7 +2287,7 @@
       }
     },
     {
-      "id": 21,
+      "id": 19,
       "references": [
         4
       ],
@@ -2520,7 +2306,7 @@
       }
     },
     {
-      "id": 22,
+      "id": 20,
       "references": [
         4
       ],
@@ -2539,7 +2325,7 @@
       }
     },
     {
-      "id": 23,
+      "id": 21,
       "references": [
         4
       ],
@@ -2558,7 +2344,7 @@
       }
     },
     {
-      "id": 24,
+      "id": 22,
       "references": [
         5
       ],
@@ -2577,13 +2363,13 @@
       }
     },
     {
-      "id": 25,
+      "id": 23,
       "references": [
-        9
+        10
       ],
       "type": "index",
       "data": {
-        "on": 9,
+        "on": 10,
         "name": "vehicles_group_id",
         "sql": null,
         "unique": false,
@@ -2596,13 +2382,13 @@
       }
     },
     {
-      "id": 26,
+      "id": 24,
       "references": [
-        10
+        11
       ],
       "type": "index",
       "data": {
-        "on": 10,
+        "on": 11,
         "name": "ride_templates_group_id",
         "sql": null,
         "unique": false,
@@ -2615,13 +2401,13 @@
       }
     },
     {
-      "id": 27,
+      "id": 25,
       "references": [
-        11
+        12
       ],
       "type": "index",
       "data": {
-        "on": 11,
+        "on": 12,
         "name": "rides_group_date",
         "sql": null,
         "unique": false,
@@ -2638,13 +2424,13 @@
       }
     },
     {
-      "id": 28,
+      "id": 26,
       "references": [
-        12
+        13
       ],
       "type": "index",
       "data": {
-        "on": 12,
+        "on": 13,
         "name": "expense_revisions_expense_revision",
         "sql": null,
         "unique": true,
@@ -2661,13 +2447,13 @@
       }
     },
     {
-      "id": 29,
+      "id": 27,
       "references": [
-        12
+        13
       ],
       "type": "index",
       "data": {
-        "on": 12,
+        "on": 13,
         "name": "expense_revisions_group_id",
         "sql": null,
         "unique": false,
@@ -2749,7 +2535,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"local_outbox\" (\"seq\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"op_id\" TEXT NOT NULL, \"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"entity\" TEXT NOT NULL, \"entity_id\" TEXT NOT NULL, \"op\" TEXT NOT NULL, \"payload\" TEXT NOT NULL, \"created_at\" TEXT NOT NULL, \"attempts\" INTEGER NOT NULL DEFAULT 0, \"next_attempt_at\" TEXT NULL, \"last_error_code\" TEXT NULL, UNIQUE (\"op_id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"local_outbox\" (\"seq\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"entity\" TEXT NOT NULL, \"entity_id\" TEXT NOT NULL, \"op\" TEXT NOT NULL, \"payload\" TEXT NOT NULL, \"attempts\" INTEGER NOT NULL DEFAULT 0);"
         }
       ]
     },
@@ -2759,6 +2545,15 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE TABLE IF NOT EXISTS \"local_driver_prompts\" (\"member_id\" TEXT NOT NULL REFERENCES members (id), \"asked_at\" TEXT NOT NULL, PRIMARY KEY (\"member_id\"));"
+        }
+      ]
+    },
+    {
+      "name": "local_places",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"local_places\" (\"kind\" TEXT NOT NULL, \"label\" TEXT NOT NULL, \"lat\" REAL NOT NULL, \"lng\" REAL NOT NULL, \"saved_at\" TEXT NOT NULL, PRIMARY KEY (\"kind\"));"
         }
       ]
     },
@@ -2795,33 +2590,6 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE TABLE IF NOT EXISTS \"expense_revisions\" (\"id\" TEXT NOT NULL, \"expense_id\" TEXT NOT NULL REFERENCES expenses (id), \"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"revision\" INTEGER NOT NULL CHECK(\"revision\" > 0), \"changed_at\" TEXT NOT NULL, \"author_member_id\" TEXT NULL, \"snapshot\" TEXT NOT NULL, PRIMARY KEY (\"id\"));"
-        }
-      ]
-    },
-    {
-      "name": "local_group_sync",
-      "sql": [
-        {
-          "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"local_group_sync\" (\"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"state\" TEXT NOT NULL, \"role\" TEXT NULL, \"last_push_at\" TEXT NULL, \"last_pull_at\" TEXT NULL, \"last_error_code\" TEXT NULL, \"last_error_at\" TEXT NULL, PRIMARY KEY (\"group_id\"));"
-        }
-      ]
-    },
-    {
-      "name": "local_sync_cursor",
-      "sql": [
-        {
-          "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"local_sync_cursor\" (\"group_id\" TEXT NOT NULL REFERENCES \"groups\" (id), \"table_name\" TEXT NOT NULL, \"cursor\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"group_id\", \"table_name\"));"
-        }
-      ]
-    },
-    {
-      "name": "local_settings",
-      "sql": [
-        {
-          "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"local_settings\" (\"key\" TEXT NOT NULL, \"value\" TEXT NOT NULL, PRIMARY KEY (\"key\"));"
         }
       ]
     },

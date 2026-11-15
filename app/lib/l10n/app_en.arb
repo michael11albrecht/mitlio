@@ -18,6 +18,50 @@
       }
     }
   },
+  "remoteErrorOffline": "No connection. Your changes are saved and will go out as soon as you are online.",
+  "remoteErrorRateLimited": "Too many attempts. Try again in a few minutes.",
+  "remoteErrorRateLimitedIn": "Too many attempts. Try again in {minutes} min.",
+  "@remoteErrorRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "remoteErrorInviteInvalid": "This link is no longer valid. Ask for a new link.",
+  "remoteErrorMemberAlreadyClaimed": "{name} is already connected to another phone. Pick a different person.",
+  "@remoteErrorMemberAlreadyClaimed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteErrorMemberAlreadyClaimedNoName": "This person is already connected to another phone. Pick a different person.",
+  "remoteErrorAlreadyConnected": "You are already connected to this group as {name}.",
+  "@remoteErrorAlreadyConnected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteErrorAlreadyConnectedNoName": "You are already connected to this group.",
+  "remoteErrorMemberGone": "This person is no longer in the group. Pick a different one.",
+  "remoteErrorNotOwner": "Only the person who created the group can do this.",
+  "remoteErrorNotMember": "You are no longer in this group. Your data stays on this phone.",
+  "remoteErrorCannotRemoveSelf": "You cannot remove yourself here.",
+  "remoteErrorVersionTooOld": "This version can no longer share. Update mitlio.",
+  "remoteErrorServerDown": "The server is not responding right now. We will try again shortly.",
+  "remoteErrorRejected": "“{title}” could not be shared. It is only on this phone.",
+  "@remoteErrorRejected": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteErrorRejectedNoTitle": "This could not be shared. It is only on this phone.",
   "errorSettingNotSaved": "The setting could not be saved. Try again.",
   "errorUndoFailed": "Undo did not work. Check the current state and try again.",
   "retry": "Try again",
@@ -791,5 +835,40 @@
   "fuelPlzInvalid": "Please enter five digits",
   "fuelPlzApply": "Apply",
   "fuelNationalAction": "Nationwide",
-  "fuelAttributionFallback": "Fuel price data"
+  "fuelAttributionFallback": "Fuel price data",
+  "routeToggle": "Enter start and destination to calculate the distance",
+  "routeStartLabel": "Start",
+  "routeEndLabel": "Destination",
+  "routeResult": "{km} km by road",
+  "@routeResult": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "routeRecalculate": "Recalculate",
+  "routeSearching": "Searching …",
+  "routeCalculating": "Calculating the distance …",
+  "routeNoMatches": "No matches. Try another place or enter the kilometres yourself.",
+  "routeSavedHome": "Home",
+  "routeSavedWork": "Work",
+  "routeSaveAsHome": "Save as home",
+  "routeSaveAsWork": "Save as work",
+  "routeSavedAsHome": "Saved as home",
+  "routeSavedAsWork": "Saved as work",
+  "routeOffline": "No connection. Just enter the kilometres yourself.",
+  "routeRateLimited": "Too many route requests. Try again later or enter the kilometres yourself.",
+  "routeRateLimitedIn": "Too many route requests. Try again in {minutes} min or enter the kilometres yourself.",
+  "@routeRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "routeNoRoute": "There is no road connection between these places. Check start and destination or enter the kilometres yourself.",
+  "routeServerDown": "The route service is unreachable right now. Try again later or enter the kilometres yourself.",
+  "routeInvalid": "Start and destination do not fit together. Pick two different places or enter the kilometres yourself.",
+  "routeAttributionFallback": "Map and route data © OpenStreetMap contributors"
 }

@@ -21,6 +21,50 @@
       }
     }
   },
+  "remoteErrorOffline": "Keine Verbindung. Deine Änderungen sind gespeichert und gehen raus, sobald du online bist.",
+  "remoteErrorRateLimited": "Zu viele Versuche. Versuch es in ein paar Minuten nochmal.",
+  "remoteErrorRateLimitedIn": "Zu viele Versuche. Versuch es in {minutes} Min. nochmal.",
+  "@remoteErrorRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "remoteErrorInviteInvalid": "Dieser Link gilt nicht mehr. Bitte um einen neuen Link.",
+  "remoteErrorMemberAlreadyClaimed": "{name} ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.",
+  "@remoteErrorMemberAlreadyClaimed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteErrorMemberAlreadyClaimedNoName": "Diese Person ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.",
+  "remoteErrorAlreadyConnected": "Du bist in dieser Gruppe schon als {name} verbunden.",
+  "@remoteErrorAlreadyConnected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteErrorAlreadyConnectedNoName": "Du bist in dieser Gruppe schon verbunden.",
+  "remoteErrorMemberGone": "Diese Person gibt es in der Gruppe nicht mehr. Wähl eine andere.",
+  "remoteErrorNotOwner": "Das kann nur, wer die Gruppe erstellt hat.",
+  "remoteErrorNotMember": "Du bist nicht mehr in dieser Gruppe. Deine Daten bleiben auf diesem Handy.",
+  "remoteErrorCannotRemoveSelf": "Dich selbst kannst du hier nicht entfernen.",
+  "remoteErrorVersionTooOld": "Diese Version kann nicht mehr teilen. Aktualisiere mitlio.",
+  "remoteErrorServerDown": "Der Server antwortet gerade nicht. Wir versuchen es gleich nochmal.",
+  "remoteErrorRejected": "„{title}“ konnte nicht geteilt werden. Sie ist nur auf diesem Handy.",
+  "@remoteErrorRejected": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteErrorRejectedNoTitle": "Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.",
   "errorSettingNotSaved": "Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.",
   "errorUndoFailed": "Rückgängig machen hat nicht geklappt. Prüf den Stand und versuch es nochmal.",
   "retry": "Nochmal versuchen",
@@ -1295,5 +1339,40 @@
   "fuelPlzInvalid": "Bitte fünf Ziffern",
   "fuelPlzApply": "Übernehmen",
   "fuelNationalAction": "Bundesweit",
-  "fuelAttributionFallback": "Spritpreisdaten"
+  "fuelAttributionFallback": "Spritpreisdaten",
+  "routeToggle": "Start und Ziel eingeben, Strecke berechnen",
+  "routeStartLabel": "Start",
+  "routeEndLabel": "Ziel",
+  "routeResult": "{km} km, Strecke über die Straße",
+  "@routeResult": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "routeRecalculate": "Neu berechnen",
+  "routeSearching": "Suche läuft …",
+  "routeCalculating": "Strecke wird berechnet …",
+  "routeNoMatches": "Keine Treffer. Probier einen anderen Ort oder trag die Kilometer selbst ein.",
+  "routeSavedHome": "Zuhause",
+  "routeSavedWork": "Arbeit",
+  "routeSaveAsHome": "Als Zuhause merken",
+  "routeSaveAsWork": "Als Arbeit merken",
+  "routeSavedAsHome": "Als Zuhause gemerkt",
+  "routeSavedAsWork": "Als Arbeit gemerkt",
+  "routeOffline": "Keine Verbindung, trag die Kilometer einfach selbst ein.",
+  "routeRateLimited": "Zu viele Streckenanfragen. Versuch es später nochmal oder trag die Kilometer selbst ein.",
+  "routeRateLimitedIn": "Zu viele Streckenanfragen. Versuch es in {minutes} Min. nochmal oder trag die Kilometer selbst ein.",
+  "@routeRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "routeNoRoute": "Zwischen diesen Orten gibt es keine Straßenverbindung. Prüf Start und Ziel oder trag die Kilometer selbst ein.",
+  "routeServerDown": "Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.",
+  "routeInvalid": "Start und Ziel passen nicht zusammen. Wähl zwei verschiedene Orte oder trag die Kilometer selbst ein.",
+  "routeAttributionFallback": "Karten- und Routendaten © OpenStreetMap-Mitwirkende"
 }

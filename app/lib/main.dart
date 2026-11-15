@@ -9,7 +9,10 @@ import 'package:mitlio/core/app_config.dart';
 import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/crash/crash_reporter.dart';
 import 'package:mitlio/core/hlc.dart';
+import 'package:mitlio/core/logging.dart';
 import 'package:mitlio/core/providers.dart';
+import 'package:mitlio/core/remote/remote_backend.dart';
+import 'package:mitlio/core/remote/secure_local_storage.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/debug/debug_drive.dart';
@@ -19,6 +22,8 @@ import 'package:mitlio/features/fuel/data/services/fuel_price_service.dart';
 import 'package:mitlio/features/fuel/data/services/geolocator_location_service.dart';
 import 'package:mitlio/features/fx/data/repositories/fx_providers.dart';
 import 'package:mitlio/features/fx/data/services/fx_rate_service.dart';
+import 'package:mitlio/features/routes/data/repositories/route_providers.dart';
+import 'package:mitlio/features/routes/data/services/route_distance_service.dart';
 import 'package:path_provider/path_provider.dart';
 
 // TODO(P8-T01): read from AppConfig once the config files land. Empty in the
@@ -38,8 +43,14 @@ Future<void> main() async {
   );
   await crashReporter.start();
   const config = AppConfig.fromEnvironment();
+  final remoteBackend = await RemoteBackend.initialize(
+    config,
+    store: const FlutterSecretStore(),
+    logger: const DeveloperLogger(),
+  );
   final container = ProviderContainer(
     overrides: [
+      remoteBackendProvider.overrideWithValue(remoteBackend),
       // With a backend: its Edge Function (national, postcode, nearby).
       // Without: the national average straight from the EU Weekly Oil
       // Bulletin, cached in a file; no postcode, no location.
@@ -59,6 +70,15 @@ Future<void> main() async {
       if (Platform.isAndroid || Platform.isIOS)
         locationServiceProvider.overrideWithValue(
           const GeolocatorLocationService(),
+        ),
+      // Same for "Strecke berechnen": without a backend the forms show only
+      // the manual kilometre field.
+      if (config.hasBackend)
+        routeDistanceServiceProvider.overrideWithValue(
+          HttpRouteDistanceService(
+            baseUrl: config.supabaseUrl,
+            anonKey: config.supabaseAnonKey,
+          ),
         ),
       // Same for the ECB rate suggestion in the expense form.
       if (config.hasBackend)

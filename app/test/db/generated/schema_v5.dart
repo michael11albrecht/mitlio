@@ -763,22 +763,6 @@ class LocalOutbox extends Table with TableInfo {
     requiredDuringInsert: false,
     $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
   );
-  late final GeneratedColumn<String> opId = GeneratedColumn<String>(
-    'op_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
-    'group_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL REFERENCES "groups"(id)',
-  );
   late final GeneratedColumn<String> entity = GeneratedColumn<String>(
     'entity',
     aliasedName,
@@ -811,14 +795,6 @@ class LocalOutbox extends Table with TableInfo {
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
   late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
     'attempts',
     aliasedName,
@@ -828,35 +804,14 @@ class LocalOutbox extends Table with TableInfo {
     $customConstraints: 'NOT NULL DEFAULT 0',
     defaultValue: const CustomExpression('0'),
   );
-  late final GeneratedColumn<String> nextAttemptAt = GeneratedColumn<String>(
-    'next_attempt_at',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
-  late final GeneratedColumn<String> lastErrorCode = GeneratedColumn<String>(
-    'last_error_code',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
   @override
   List<GeneratedColumn> get $columns => [
     seq,
-    opId,
-    groupId,
     entity,
     entityId,
     op,
     payload,
-    createdAt,
     attempts,
-    nextAttemptAt,
-    lastErrorCode,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -865,10 +820,6 @@ class LocalOutbox extends Table with TableInfo {
   static const String $name = 'local_outbox';
   @override
   Set<GeneratedColumn> get $primaryKey => {seq};
-  @override
-  List<Set<GeneratedColumn>> get uniqueKeys => [
-    {opId},
-  ];
   @override
   Never map(Map<String, dynamic> data, {String? tablePrefix}) {
     throw UnsupportedError('TableInfo.map in schema verification code');
@@ -879,8 +830,6 @@ class LocalOutbox extends Table with TableInfo {
     return LocalOutbox(attachedDatabase, alias);
   }
 
-  @override
-  List<String> get customConstraints => const ['UNIQUE(op_id)'];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -927,6 +876,76 @@ class LocalDriverPrompts extends Table with TableInfo {
 
   @override
   List<String> get customConstraints => const ['PRIMARY KEY(member_id)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class LocalPlaces extends Table with TableInfo {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  LocalPlaces(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<double> lat = GeneratedColumn<double>(
+    'lat',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<double> lng = GeneratedColumn<double>(
+    'lng',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> savedAt = GeneratedColumn<String>(
+    'saved_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [kind, label, lat, lng, savedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_places';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {kind};
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  @override
+  LocalPlaces createAlias(String alias) {
+    return LocalPlaces(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(kind)'];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -1471,203 +1490,6 @@ class ExpenseRevisions extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
-class LocalGroupSync extends Table with TableInfo {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  LocalGroupSync(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
-    'group_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL REFERENCES "groups"(id)',
-  );
-  late final GeneratedColumn<String> state = GeneratedColumn<String>(
-    'state',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  late final GeneratedColumn<String> role = GeneratedColumn<String>(
-    'role',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
-  late final GeneratedColumn<String> lastPushAt = GeneratedColumn<String>(
-    'last_push_at',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
-  late final GeneratedColumn<String> lastPullAt = GeneratedColumn<String>(
-    'last_pull_at',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
-  late final GeneratedColumn<String> lastErrorCode = GeneratedColumn<String>(
-    'last_error_code',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
-  late final GeneratedColumn<String> lastErrorAt = GeneratedColumn<String>(
-    'last_error_at',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL',
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    groupId,
-    state,
-    role,
-    lastPushAt,
-    lastPullAt,
-    lastErrorCode,
-    lastErrorAt,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'local_group_sync';
-  @override
-  Set<GeneratedColumn> get $primaryKey => {groupId};
-  @override
-  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
-    throw UnsupportedError('TableInfo.map in schema verification code');
-  }
-
-  @override
-  LocalGroupSync createAlias(String alias) {
-    return LocalGroupSync(attachedDatabase, alias);
-  }
-
-  @override
-  List<String> get customConstraints => const ['PRIMARY KEY(group_id)'];
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class LocalSyncCursor extends Table with TableInfo {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  LocalSyncCursor(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
-    'group_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL REFERENCES "groups"(id)',
-  );
-  late final GeneratedColumn<String> tableName$ = GeneratedColumn<String>(
-    'table_name',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  late final GeneratedColumn<int> cursor = GeneratedColumn<int>(
-    'cursor',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0',
-    defaultValue: const CustomExpression('0'),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [groupId, tableName$, cursor];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'local_sync_cursor';
-  @override
-  Set<GeneratedColumn> get $primaryKey => {groupId, tableName$};
-  @override
-  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
-    throw UnsupportedError('TableInfo.map in schema verification code');
-  }
-
-  @override
-  LocalSyncCursor createAlias(String alias) {
-    return LocalSyncCursor(attachedDatabase, alias);
-  }
-
-  @override
-  List<String> get customConstraints => const [
-    'PRIMARY KEY(group_id, table_name)',
-  ];
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class LocalSettings extends Table with TableInfo {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  LocalSettings(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<String> key = GeneratedColumn<String>(
-    'key',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  late final GeneratedColumn<String> value = GeneratedColumn<String>(
-    'value',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  @override
-  List<GeneratedColumn> get $columns => [key, value];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'local_settings';
-  @override
-  Set<GeneratedColumn> get $primaryKey => {key};
-  @override
-  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
-    throw UnsupportedError('TableInfo.map in schema verification code');
-  }
-
-  @override
-  LocalSettings createAlias(String alias) {
-    return LocalSettings(attachedDatabase, alias);
-  }
-
-  @override
-  List<String> get customConstraints => const ['PRIMARY KEY("key")'];
-  @override
-  bool get dontWriteConstraints => true;
-}
-
 class DatabaseAtV5 extends GeneratedDatabase {
   DatabaseAtV5(QueryExecutor e) : super(e);
   late final Groups groups = Groups(this);
@@ -1679,13 +1501,11 @@ class DatabaseAtV5 extends GeneratedDatabase {
   late final LocalMemberBank localMemberBank = LocalMemberBank(this);
   late final LocalOutbox localOutbox = LocalOutbox(this);
   late final LocalDriverPrompts localDriverPrompts = LocalDriverPrompts(this);
+  late final LocalPlaces localPlaces = LocalPlaces(this);
   late final Vehicles vehicles = Vehicles(this);
   late final RideTemplates rideTemplates = RideTemplates(this);
   late final Rides rides = Rides(this);
   late final ExpenseRevisions expenseRevisions = ExpenseRevisions(this);
-  late final LocalGroupSync localGroupSync = LocalGroupSync(this);
-  late final LocalSyncCursor localSyncCursor = LocalSyncCursor(this);
-  late final LocalSettings localSettings = LocalSettings(this);
   late final Index membersGroupId = Index(
     'members_group_id',
     'CREATE INDEX members_group_id ON members (group_id)',
@@ -1756,13 +1576,11 @@ class DatabaseAtV5 extends GeneratedDatabase {
     localMemberBank,
     localOutbox,
     localDriverPrompts,
+    localPlaces,
     vehicles,
     rideTemplates,
     rides,
     expenseRevisions,
-    localGroupSync,
-    localSyncCursor,
-    localSettings,
     membersGroupId,
     expensesGroupId,
     expensePayersExpenseId,
