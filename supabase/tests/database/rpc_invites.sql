@@ -1,5 +1,5 @@
--- Invite RPCs (P6-T05): create_invite, revoke_invite, join_group.
--- Actors: alice (member of A, unlinked), bob/carol/dave (joiners), mallory (nobody).
+-- Invite RPCs (P6-T05, amended by ADR-24): create_invite, revoke_invite, join_group.
+-- Actors: alice (owner of A, unlinked), bob/carol/dave (joiners), mallory (nobody).
 begin;
 create extension if not exists pgtap with schema extensions;
 select plan(34);
@@ -57,15 +57,15 @@ select throws_ok($q$select public.create_invite('00000000-0000-0000-0001-0000000
 select tests.as_user('00000000-0000-0000-0000-000000000001');
 select lives_ok(
   $q$select set_config('t.tok', public.create_invite('00000000-0000-0000-0001-000000000001'), true)$q$,
-  'a member can create an invite');
+  'the owner can create an invite');
 select is(length(current_setting('t.tok')), 43, 'token is 32 bytes base64url (43 chars)');
 select matches(current_setting('t.tok'), '^[A-Za-z0-9_-]{43}$', 'token is url-safe');
 select is(
   (select count(*) from public.group_invites
    where group_id = '00000000-0000-0000-0001-000000000001'
      and token_hash = sha256(convert_to(current_setting('t.tok'), 'UTF8'))
-     and expires_at = now() + interval '7 days'),
-  1::bigint, 'only sha256(token) is stored, expiry is 7 days');
+     and expires_at = 'infinity'),
+  1::bigint, 'only sha256(token) is stored, the link does not expire (ADR-24)');
 
 reset role;
 select is_empty(
@@ -110,8 +110,8 @@ select is((select count(*) from public.group_memberships
            where group_id = '00000000-0000-0000-0001-000000000001'
              and user_id = '00000000-0000-0000-0000-000000000002'), 1::bigint,
   'no duplicate membership after the second join');
-select lives_ok($q$select public.create_invite('00000000-0000-0000-0001-000000000001')$q$,
-  'a joined member can create invites');
+select throws_ok($q$select public.create_invite('00000000-0000-0000-0001-000000000001')$q$,
+  '42501', null, 'a joined non-owner member cannot create invites (ADR-24)');
 
 -- join_group: claiming -----------------------------------------------------------------------------
 select tests.as_user('00000000-0000-0000-0000-000000000004');
@@ -154,13 +154,13 @@ select lives_ok(
   $q$select set_config('t.inv',
        (select id::text from public.group_invites
         where token_hash = sha256(convert_to(current_setting('t.tok2'), 'UTF8'))), true)$q$,
-  'a member can read the invite id');
+  'the owner can read the invite id');
 select tests.as_user('00000000-0000-0000-0000-000000000003');
 select throws_ok($q$select public.revoke_invite(current_setting('t.inv')::uuid)$q$,
   '42501', null, 'a non-member cannot revoke an invite');
 select tests.as_user('00000000-0000-0000-0000-000000000001');
 select lives_ok($q$select public.revoke_invite(current_setting('t.inv')::uuid)$q$,
-  'a member can revoke an invite');
+  'the owner can revoke an invite');
 select tests.as_user('00000000-0000-0000-0000-000000000005');
 select throws_ok($q$select public.join_group(current_setting('t.tok2'))$q$,
   '22023', 'invite_invalid', 'a revoked token fails');

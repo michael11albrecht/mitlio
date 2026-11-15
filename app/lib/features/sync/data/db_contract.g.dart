@@ -129,6 +129,7 @@ abstract final class DbGroupMembershipsCols {
   static const groupId = 'group_id';
   static const id = 'id';
   static const memberId = 'member_id';
+  static const role = 'role';
   static const userId = 'user_id';
 }
 
@@ -317,6 +318,7 @@ const dbContract = <String, Map<String, DbColumn>>{
     'group_id': DbColumn(DbColumnType.string, nullable: false),
     'id': DbColumn(DbColumnType.string, nullable: false),
     'member_id': DbColumn(DbColumnType.string, nullable: true),
+    'role': DbColumn(DbColumnType.string, nullable: false),
     'user_id': DbColumn(DbColumnType.string, nullable: false),
   },
   'groups': {
