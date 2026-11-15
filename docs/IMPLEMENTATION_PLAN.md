@@ -78,6 +78,7 @@ mitlio web calculator (free, no ads, no popups, no signup, instant result)
 | ADR-19 | Web calculator stack | **Astro** static site (prerendered HTML per landing page, zero JS by default) + one small calculator island. Calculation logic = **the Dart domain compiled to JS** (`packages/domain_web`, `dart compile js`, exported via `dart:js_interop`) so web and app compute identical cents; parity additionally guarded by shared fixture tests | Flutter Web renders to canvas → poor SEO and heavy first load; a TS re-implementation would drift from the app | If dart2js bundle > 150 kB gz → TS port with fixture parity tests |
 | ADR-20 | Fuel prices | Germany: **Tankerkönig API** (MTS-K data, CC BY 4.0, free API key) proxied + cached by a Supabase Edge Function; Austria: E-Control Spritpreisrechner API; elsewhere: EU Weekly Oil Bulletin national averages; EV: manual kWh price with a sensible default. Client never sees API keys; attribution shown | Live clickable prices are the core differentiator; caching keeps us inside provider rate limits and terms | Verify terms + limits in P1-T01 spike before building |
 | ADR-18 | Cost policy | Lean budget with hard caps, see §6.8 | Owner wants minimum sensible spend | Monthly review of `docs/agent-metrics.md` |
+| ADR-25 | Personal profile, personal vehicles, guided setup flows | Profile (name, avatar, PayPal.Me; IBAN local-only) and cars are set up **once per user** and reused in every group (linked copies); optional real-cost calculator → personal ct/km; rare multi-input flows use one-question-per-screen step flows with progress + finish celebration, daily flows stay one screen | Same data typed into every group; wear rate is a guess; long forms overwhelm | If people keep different payment details per group (P5) |
 
 Each ADR becomes a file in `docs/adr/NNNN-title.md` in P0.
 
@@ -192,7 +193,11 @@ Common columns on every synced table: `id uuid pk`, `group_id uuid`, `created_at
 | `expense_payers` | `expense_id`, `member_id`, `paid_cents` | Child of aggregate |
 | `expense_shares` | `expense_id`, `member_id`, `share_cents`, `weight` (for share/percent modes, for re-editing) | Child of aggregate |
 | `settlements` | `from_member`, `to_member`, `amount_cents`, `currency`, `date`, `method` (`paypal`/`sepa`/`cash`/`other`) | |
-| `vehicles` | `owner_member_id`, `name`, `fuel_type` (`e5`/`e10`/`diesel`/`lpg`/`electric`), `consumption_milli` (l or kWh per 100 km × 1000), `wear_rate_cents_per_km`, `default_pricing` (`consumption`/`km_rate`) | Per group; reused by rides |
+| `vehicles` | `owner_member_id`, `name`, `fuel_type` (`e5`/`e10`/`diesel`/`lpg`/`electric`), `consumption_milli` (l or kWh per 100 km × 1000), `wear_rate_cents_per_km`, `default_pricing` (`consumption`/`km_rate`), `source_user_vehicle_id?` (PU) | Per group; reused by rides; linked copy of a personal car if `source_user_vehicle_id` is set (ADR-25) |
+| `profile` | `display_name`, `avatar_kind` (`initials`/`emoji`/`photo`), `avatar_value`, `avatar_color`, `paypal_me`, `setup_state jsonb` (finished/dismissed flows, resume step) | Client only, one row (PU); tied to the account and copied to connected persons after P6-T07 |
+| `local_profile_bank` | `iban`, `bic?`, `account_holder` | Client only, **never synced** (like `local_member_bank`, §8) |
+| `user_vehicles` | `name`, `kind_icon`, `fuel_type`, `consumption_milli`, `wear_milli_per_km` (flat or calculated), `km_rate_milli?`, `cost_basis` (`flat`/`running`/`full`) | Client only (PU), later synced to the own account only |
+| `user_vehicle_costs` | `user_vehicle_id`, `category` (`insurance`/`tax`/`maintenance`/`tyres`/`repairs`/`loan`/`depreciation`/`parking`/`other`), `amount_cents`, `period` (`month`/`year`), `kind` (`running`/`fixed`), plus vehicle-level `annual_km`, `purchase_price_cents?`, `resale_cents?`, `keep_years?` | Input for `vehicleExtraCostPerKm` (PU) |
 | `ride_templates` | `name` ("Arbeit"), `vehicle_id`, `distance_m`, `default_driver`, `default_passengers[]`, `return_trip bool` | Commute presets |
 | `rides` | `template_id?`, `vehicle_id`, `driver_member_id`, `passenger_ids[]`, `date`, `distance_m`, `fuel_price_milli` (per l/kWh, frozen), `price_source` (`manual`/`tankerkoenig`/…), `extras_cents`, `expense_id?` | One logged ride; aggregated into an `expense` per settlement period (or immediately for one-offs) |
 | `fuel_price_cache` | `region_key`, `fuel_type`, `price_milli`, `source`, `fetched_at` | Server only, public read (P6c) |
@@ -244,6 +249,8 @@ Invariants (enforced in domain + DB constraints + pgTAP):
 | **Accessibility** | `meetsGuideline(textContrastGuideline / androidTapTargetGuideline / iOSTapTargetGuideline / labeledTapTargetGuideline)` in widget tests of every screen; axe on web |
 | **Empty/error/loading states** | every screen VM exposes them; golden per state |
 | **Human UX gate** | PRs that add a new screen or change navigation get label `ux-review` (path-based: `app/lib/**/ui/*_view.dart` new files, router changes) → `critical`, owner looks at the golden diff images attached by CI |
+
+**Choosing the flow pattern** (ADR-25, owner rule 2026-11-15): *rare* flows (one-time or a few times a year) with more than ~3 inputs use the **step flow** (`core/ui/setup_flow/`): one question per screen (max two related values), a visual on every step, yes/no cards and "Überspringen" for optional data, segmented progress, autosave per step, result shown live. Only one-time setups and long rare flows end with a celebration. *Frequent* flows (log ride, add expense, mark paid) stay **one compact screen** with smart defaults and tap budgets: no progress bar, no extra screens, no celebration. Editing existing data always uses a compact list that opens a single field/step. The pattern per flow is listed in ADR-25 §4; a new flow states its pattern in the issue.
 
 **Design process for agents:** each UI task issue contains a small wireframe (ASCII or image) and the tap budget; the agent attaches before/after goldens to the PR; the reviewer agent checks against §2.6 principles.
 
@@ -630,6 +637,30 @@ The ride log is the app's headline feature for commuters.
 | P4-T04 | Settlement history + undo (soft delete) | VM + IT | safe |
 | P4-T05 | Share summary as text (share sheet) | widget test | safe |
 
+### PU — Personal profile, personal cars & guided setup (agent + human UX review, ~1.5–2 weeks; after P4/P3r, before P6-T07 app sync)
+
+ADR-25. Data set up once per user, reused in every group. Entry points are inline, just-in-time cards (settle screen without own payment details, vehicle picker in a group, second group created) plus "Mein Profil" / "Meine Autos" in settings — never a forced setup at first launch. All new screens get `ux-review`.
+
+| ID | Task | Accept | Risk |
+|---|---|---|---|
+| PU-T01 | ADR-25 + this plan section | owner approved 2026-11-15 | critical (plan) |
+| PU-T02 | Domain: `PaypalMeHandle.parse` (accepts `paypal.me/x`, full URL, `@x`, `x`; normalises, rejects invalid chars/length) and link builder with optional amount | examples + property (parse ∘ format = id) + edge cases | safe |
+| PU-T03 | Domain: `VehicleCostProfile` + `vehicleExtraCostPerKm(profile, basis)` → `wear_milli_per_km`; month/year normalisation, depreciation = (purchase − resale) / keep_years, basis `running`/`full`; breakdown per category for charts | property: Σ category milli = total (largest remainder); monotonic in each cost; annual_km = 0 rejected | safe |
+| PU-T04 | Drift: `profile`, `local_profile_bank`, `user_vehicles`, `user_vehicle_costs`, `vehicles.source_user_vehicle_id`; repositories + fakes + contract tests; arch test: sync code never reads `local_profile_bank` | schema + migration test; contract tests | critical (schema, PII) |
+| PU-T05 | Step-flow framework `core/ui/setup_flow/`: `SetupFlowViewModel` (steps, skip, back, autosave/resume via `setup_state`), `StepScaffold` (visual slot, ≤ 2 inputs, primary "Weiter", "Überspringen"), `YesNoStep`, segmented progress, live result slot, `FinishStep` with celebration (respects reduce-motion, light haptic); DebugDrive `ext.mitlio.setup.{state,next,skip,back}`; `docs/ux-budgets.md`: per-step tap budget (answer ≤ 2 taps) | VM tests incl. resume after kill; goldens light/dark × 1.0/2.0 of each step type; a11y guidelines | safe |
+| PU-T06 | Illustration set (vector art in `CustomPainter`, §12 #11; owner judges goldens, too ugly → new experiment): profile/avatar, PayPal step mockups (neutral phone frame, highlighted tap, no PayPal logo), IBAN + QR preview, car types/fuel icons, cost categories, finish celebration | goldens; no raw colours outside `core/theme` | safe |
+| PU-T07 | **Profile flow:** name → avatar (initials/colour default, emoji; photo later PU-T13) → "Möchtest du per PayPal Geld bekommen?" yes/no → PayPal.Me step with "So findest du deinen Link" (3–4 illustrated sub-steps, texts in ARB, "Link testen", "Noch kein PayPal.Me? Jetzt erstellen") → "Lieber per Überweisung (QR-Code)?" yes/no → IBAN step (live 4-group formatting, checksum, paste button, holder prefilled from name, "bleibt nur auf deinem Gerät", preview of the QR a friend scans) → finish with profile card preview | IT via UI and via `ext.mitlio.setup.*`; each step skippable; tap budget `profile_setup` | safe |
+| PU-T08 | **Car flow:** "Hast du ein Auto?" → name + type icon → fuel type (icon grid) → consumption (slider + number, "weiß ich nicht" → typical value per type, later car catalog #131) → extra cost: "Pauschale (≈ X ct/km)" or "Genau ausrechnen (2 min)" → finish with result "Dein Auto kostet ≈ 23 ct/km" + "Noch ein Auto?" (family car) | IT; tap budget `car_setup`; result equals `rideCost` fixtures | safe |
+| PU-T09 | **Cost calculator flow** (sub-flow of PU-T08): annual km (slider + presets 5/10/15/20 Tkm) → one category per screen as yes/no + amount with month/year toggle (insurance, tax, inspection, tyres, repairs, loan/leasing, depreciation as 3 small questions, parking, other) → basis choice running-only (default) vs. full, both with live ct/km → result: ct/km + stacked bar/donut per category, live while typing | VM tests for every step + skip path; goldens of result chart | safe |
+| PU-T10 | Group integration: "Mein Auto" in group vehicle picker creates linked copy; personal edits propagate to linked copies with undo snackbar; unlink; new group prefills the "Ich" member (name, avatar, PayPal); settle screen uses own profile PayPal/IBAN for the own member | IT: edit personal car → 2 groups updated → undo restores; closed periods unchanged | safe |
+| PU-T11 | Entry points + edit: inline just-in-time cards (dismiss = permanent, stored in `setup_state`), settings "Mein Profil" / "Meine Autos" as compact lists (row → single step), completeness shown only there (no badges elsewhere) | widget tests: card shown once, gone after dismiss/finish | safe |
+| PU-T12 | Move existing rare multi-input flows onto the step flow per ADR-25 §4: first-group onboarding (P7-T06, max 3 steps), commute template form, month settlement review → confirm. Daily flows (ride, expense, mark paid) explicitly unchanged | tap budgets of daily flows unchanged; goldens updated with reasons | safe |
+| PU-T13 | *Nice to have:* profile photo (camera/gallery, square crop, compress ≤ 100 kB, local only); sync after P9-T01 Storage | widget test; no photo leaves device before P9-T01 | safe |
+| PU-T15 | Domain + VM: `operatingCostCheck(trip)` → inline PBefG hint when passengers together pay more than fuel + running costs; plausibility hint for likely typos; shown in car flow, ride/trip result, web calculator | examples + property (never fires when share basis = running and no extras); hint never blocks save | safe |
+| PU-T16 | "Mein QR-Code teilen": EPC QR as image via share sheet (pre-P6, zero server) | widget test; golden | safe |
+| PU-T17 | After P6b: IBAN request/release — "Nach IBAN fragen" → push → "Freigeben"; proactive "IBAN für X freigeben"; per-device key pair, sealed box to recipient, server stores ciphertext only, revocable, deleted on paid | pgTAP: server never holds plaintext column; RLS recipient-only; IT on staging | critical (PII, crypto) |
+| PU-T14 | After P6-T07: profile tied to account; connecting to a person (ADR-24) copies name, avatar, PayPal.Me; profile edit updates all connected persons | pgTAP/IT on staging | critical (sync) |
+
 ### PW — SEO web calculator (agent + human content review, ~5–7 days; start right after P2-T07)
 
 Go live **early** (before the app ships) — SEO needs months to compound. Until the app is in the stores, the CTA is "App kommt bald — Benachrichtigen" (email waitlist via Supabase table + double opt-in, or simply skip and show store badges once live).
@@ -792,7 +823,7 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 
 ## 8. Security & privacy guardrails
 
-- **IBANs:** stored only locally (`local_member_bank`), never synced; architecture test asserts sync code never imports it. Only a masked hint (`DE89 …3000`) may be synced if the user opts in.
+- **IBANs:** stored only locally (`local_member_bank`, `local_profile_bank`), never synced; architecture test asserts sync code never imports them. Only a masked hint (`DE89 …3000`) may be synced if the user opts in. Person-to-person release (PU-T17, ADR-25) is end-to-end encrypted; the server only relays ciphertext.
 - **RLS on every table**, enforced by a CI check (`rls_coverage.sql` fails if a table lacks RLS or tests).
 - **Invite tokens:** 128-bit random, stored as SHA-256 hash, expiring, revocable, single member claim.
 - **Secrets:** none in repo (`gitleaks`), Supabase anon key only in app; service role key only in Edge Functions env.
@@ -860,6 +891,7 @@ tool/drive.sh ext.mitlio.balances.get '{"groupId":"<id>"}'
 | M1 Local MVP | P2–P5 incl. P3r | ~3–4 weeks | usable single-device app incl. ride log, field-tested |
 | MW Web live | PW + P6c (parallel to M1) | ~1.5 weeks | SEO calculator with live fuel prices indexed, waitlist/app CTA |
 | M2 Shared groups | P6 + P6b (+P8 in parallel) | ~3–4 weeks | multi-device offline-first sync, push notifications, TestFlight/Play internal |
+| MU Personal setup | PU (before P6-T07, can run parallel to P7) | ~1.5–2 weeks | profile + cars once per user, guided setup flows |
 | M3 Store release | P7 + P8-T04 | ~2 weeks | v1.0 in stores |
 | M4 Autonomy | P8-T07/T08 | ongoing | safe PRs auto-merge, nightly mutation loop self-heals |
 
@@ -876,5 +908,10 @@ tool/drive.sh ext.mitlio.balances.get '{"groupId":"<id>"}'
 | 6 | Domain | don't care → **revised: own domain recommended** because of the SEO funnel | ADR-17: e.g. `mitlio.de` (~€10–20/year) on Firebase Hosting; needs owner purchase before PW-T10 |
 | 8 | Positioning | private taxometer + SEO web calculator funnel, live clickable fuel prices | Product positioning section, P3r, PW, P6c, ADR-19/20 |
 | 7 | Monthly budget | as low as sensible | ADR-18 / §6.8: ~€45–80 dev, ~€30 maintenance; Claude via existing subscription (no extra LLM spend), GitHub spend limit $0 |
+
+| 9 | Share IBAN with the group? (ADR-25) | **yes, as proposed** (2026-11-15): never readable on the server; QR image via share sheet now; after P6b ask → push → approve, per person, end-to-end encrypted, deleted when paid | §8 amended by PU-T17 |
+| 10 | Car cost basis (ADR-25) | **user's choice** (2026-11-15); default running costs only; inline non-blocking PBefG hint when passengers pay more than operating costs, plus plausibility hint | PU-T03/T09/T15; owner reviews hint wording |
+| 11 | Illustrations | **agent draws vector art in code** (2026-11-15); too ugly → new experiment | PU-T06 |
+| 12 | Order | **PU after P4/P3r, before P6-T07** (2026-11-15); PU-T13 photo in backlog; PU-T14/T17 after P6-T07/P6b | §11 |
 
 No open owner questions remain for P0–P1.
