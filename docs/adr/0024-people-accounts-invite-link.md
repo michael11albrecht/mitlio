@@ -16,9 +16,8 @@ Splitting must not wait for anyone to join.
    - **Accounts** (`group_memberships`, server-only) are who may read/write the group.
    - An account *connects* to a person on join ("Wer bist du?") or later, which unlocks that person's
      PayPal/IBAN for settlement and targets push notifications at expenses involving that person.
-2. **A person may have several accounts** (a couple paying from a joint account is one person).
-   Drop `unique (group_id, member_id)` on `group_memberships`. An account connects to at most one
-   person per group. `members.user_id` becomes a non-authoritative "first connected account" hint.
+2. **One account per person (unchanged).** Several accounts per person (e.g. a couple with a joint
+   account) is possible later by dropping `unique (group_id, member_id)`; not decided (tbd).
 3. **One link per group, no expiry.** Anyone with the link can join. `create_invite` (renamed in UI to
    "Neuen Link erstellen") revokes every other active invite of the group in the same transaction, so
    creating a new link is the kill switch for a leaked one. Links no longer expire after 7 days; a
@@ -34,9 +33,6 @@ Splitting must not wait for anyone to join.
 
 ## Consequences
 
-- `join_group` claim check changes from "person already claimed" to "this account already
-  connected to another person". Error `member_already_claimed` disappears. `membership_already_linked`
-  stays.
 - New RPCs `remove_membership(membership_id)` (owner only, not self) and `connect_member(gid, member_id)`
   (connect after joining). `revoke_invite` becomes owner only.
 - App UI for join/connect/remove lands with P6-T07+ (after the P5 sync go/no-go). The server part
