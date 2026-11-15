@@ -807,13 +807,13 @@ export type Database = {
       can_bootstrap_group: { Args: { gid: string }; Returns: boolean }
       cleanup_fuel_tables: { Args: never; Returns: undefined }
       cleanup_fx_rates: { Args: never; Returns: undefined }
-      consume_rate_limit: {
-        Args: { p_capacity: number; p_key: string; p_refill_per_sec: number }
-        Returns: boolean
-      }
       connect_member: {
         Args: { gid: string; member_id: string }
         Returns: Json
+      }
+      consume_rate_limit: {
+        Args: { p_capacity: number; p_key: string; p_refill_per_sec: number }
+        Returns: boolean
       }
       create_invite: { Args: { gid: string }; Returns: string }
       delete_my_data: { Args: never; Returns: Json }
