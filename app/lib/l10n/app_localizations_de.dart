@@ -22,6 +22,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get retry => 'Nochmal versuchen';
 
   @override
+  String get keyboardDone => 'Fertig';
+
+  @override
   String get amountInvalid => 'Das ist kein gültiger Betrag';
 
   @override

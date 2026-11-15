@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/money_format.dart';
+import 'package:mitlio/core/widgets/number_pad_done.dart';
 import 'package:mitlio/features/rides/ui/rides_calculator.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 
@@ -85,20 +86,22 @@ class _MilliFieldState extends State<MilliField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      autofocus: widget.autofocus,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.,]'))],
-      onChanged: _onChanged,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        suffixText: widget.suffix,
-        helperText: widget.helper,
-        helperMaxLines: 3,
-        errorText:
-            widget.errorText ??
-            (_invalid ? AppLocalizations.of(context).amountInvalid : null),
+    return NumberPadDone(
+      child: TextField(
+        controller: _controller,
+        autofocus: widget.autofocus,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.,]'))],
+        onChanged: _onChanged,
+        decoration: InputDecoration(
+          labelText: widget.label,
+          suffixText: widget.suffix,
+          helperText: widget.helper,
+          helperMaxLines: 3,
+          errorText:
+              widget.errorText ??
+              (_invalid ? AppLocalizations.of(context).amountInvalid : null),
+        ),
       ),
     );
   }
