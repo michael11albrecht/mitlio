@@ -31,6 +31,9 @@ class FakeFuelPriceService implements FuelPriceService {
   /// Makes every call fail with this reason while set.
   FuelFailure? failWith;
 
+  /// The `Retry-After` that goes with [failWith].
+  Duration? failRetryAfter;
+
   /// Every request in order; `area` is null for the national average.
   final List<({FuelGrade grade, FuelArea? area})> calls = [];
 
@@ -45,7 +48,9 @@ class FakeFuelPriceService implements FuelPriceService {
     calls.add((grade: grade, area: area));
     if (!configured) return const FuelServiceFailure(FuelFailure.unavailable);
     final failure = failWith;
-    if (failure != null) return FuelServiceFailure(failure);
+    if (failure != null) {
+      return FuelServiceFailure(failure, retryAfter: failRetryAfter);
+    }
     final milli = prices[grade];
     if (milli == null) return const FuelServiceFailure(FuelFailure.provider);
     return FuelServiceOk(

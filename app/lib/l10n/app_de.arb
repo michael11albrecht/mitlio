@@ -6,6 +6,23 @@
   },
   "errorTitle": "Das hat nicht geklappt",
   "errorMessage": "Versuch es gleich noch einmal.",
+  "errorNotFound": "Das gibt es nicht mehr. Geh einen Schritt zurück und lad neu.",
+  "errorConflict": "Das geht gerade nicht, weil sich etwas geändert hat. Prüf den Stand und versuch es nochmal.",
+  "errorLocked": "Das ist schon abgerechnet und lässt sich nicht mehr ändern.",
+  "errorInvalidData": "Die Eingabe passt nicht. Prüf sie und versuch es nochmal.",
+  "errorStorage": "Das hat nicht geklappt. Prüf den freien Speicher deines Geräts und versuch es nochmal.",
+  "shareFailed": "Teilen hat nicht geklappt. Versuch es nochmal.",
+  "errorRateLimited": "Zu viele Anfragen. Versuch es in ein paar Minuten nochmal.",
+  "errorRateLimitedIn": "Zu viele Anfragen. Versuch es in {minutes} Min. nochmal.",
+  "@errorRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "errorSettingNotSaved": "Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.",
+  "errorUndoFailed": "Rückgängig machen hat nicht geklappt. Prüf den Stand und versuch es nochmal.",
   "retry": "Nochmal versuchen",
   "keyboardDone": "Fertig",
   "@keyboardDone": {
@@ -1247,6 +1264,27 @@
     }
   },
   "fuelOfflineNote": "offline, zuletzt bekannt",
+  "fuelStaleRateLimited": "zu viele Anfragen, zuletzt bekannt",
+  "fuelStaleRateLimitedIn": "zu viele Anfragen, in {minutes} Min. nochmal, zuletzt bekannt",
+  "@fuelStaleRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "fuelStaleServer": "Preisdienst nicht erreichbar, zuletzt bekannt",
+  "fuelRateLimited": "Zu viele Preisabfragen – versuch es in ein paar Minuten nochmal.",
+  "fuelRateLimitedIn": "Zu viele Preisabfragen – versuch es in {minutes} Min. nochmal.",
+  "@fuelRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "fuelOffline": "Keine Verbindung. Prüf dein Netz oder trag den Preis selbst ein.",
+  "fuelServerDown": "Preisdienst gerade nicht erreichbar. Versuch es später nochmal oder trag den Preis selbst ein.",
   "fuelNoPrice": "Gerade kein aktueller Preis verfügbar. Trag ihn einfach selbst ein.",
   "fuelNearby": "In meiner Nähe",
   "fuelNearbyDenied": "Standort nicht freigegeben, es gilt der Bundesdurchschnitt.",

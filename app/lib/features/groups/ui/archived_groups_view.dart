@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
@@ -21,14 +22,18 @@ class ArchivedGroupsView extends ConsumerWidget {
     final vm = ref.read(archivedGroupsViewModelProvider.notifier);
 
     Future<void> restore(String id, String name) async {
+      final messenger = ScaffoldMessenger.of(context);
       final result = await vm.restore(id);
       if (!context.mounted) return;
-      if (result case Ok(:final value)) {
-        showUndoSnackBar(
-          context,
-          message: l10n.groupRestored(name),
-          undo: value,
-        );
+      switch (result) {
+        case Ok(:final value):
+          showUndoSnackBar(
+            context,
+            message: l10n.groupRestored(name),
+            undo: value,
+          );
+        case Err(:final error):
+          showErrorSnackBar(messenger, l10n, error);
       }
     }
 

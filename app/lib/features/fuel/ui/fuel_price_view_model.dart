@@ -38,6 +38,8 @@ final class FuelPriceState {
     this.stale = false,
     this.age = Duration.zero,
     this.failure,
+    this.staleReason,
+    this.retryAfter,
     this.canLocate = false,
     this.canPlz = true,
     this.fill,
@@ -59,6 +61,12 @@ final class FuelPriceState {
   final Duration age;
   final FuelFailure? failure;
 
+  /// Why the quote is stale (null when it is not, or the cause is unknown).
+  final FuelFailure? staleReason;
+
+  /// The wait the server asked for after a rate limit.
+  final Duration? retryAfter;
+
   /// "In meiner Nähe" can be offered.
   final bool canLocate;
 
@@ -75,6 +83,8 @@ final class FuelPriceState {
     bool? stale,
     Duration? age,
     FuelFailure? failure,
+    FuelFailure? staleReason,
+    Duration? retryAfter,
     bool? canLocate,
     FuelFill? fill,
     bool clearFailure = false,
@@ -87,6 +97,8 @@ final class FuelPriceState {
     stale: stale ?? this.stale,
     age: age ?? this.age,
     failure: clearFailure ? null : failure ?? this.failure,
+    staleReason: clearFailure ? staleReason : staleReason ?? this.staleReason,
+    retryAfter: clearFailure ? retryAfter : retryAfter ?? this.retryAfter,
     canLocate: canLocate ?? this.canLocate,
     canPlz: canPlz,
     fill: fill ?? this.fill,
@@ -157,11 +169,12 @@ class FuelPriceViewModel extends Notifier<FuelPriceState> {
     state = state.copyWith(loading: true, clearFailure: true);
     final outcome = await _repo.nearby(state.grade);
     if (!ref.mounted || generation != _generation) return;
-    if (outcome case FuelMissing(:final reason)) {
+    if (outcome case FuelMissing(:final reason, :final retryAfter)) {
       // Nothing changes but the hint; nearby may also be gone for good.
       state = state.copyWith(
         loading: false,
         failure: reason,
+        retryAfter: retryAfter,
         canLocate: _repo.canLocate,
       );
       return;
@@ -185,12 +198,19 @@ class FuelPriceViewModel extends Notifier<FuelPriceState> {
 
   void _apply(FuelOutcome outcome, {required bool auto}) {
     switch (outcome) {
-      case FuelFound(:final price, :final stale):
+      case FuelFound(
+        :final price,
+        :final stale,
+        :final staleReason,
+        :final retryAfter,
+      ):
         final age = ref.read(clockProvider).now().difference(price.fetchedAt);
         state = state.copyWith(
           loading: false,
           price: price,
           stale: stale,
+          staleReason: staleReason,
+          retryAfter: retryAfter,
           age: age.isNegative ? Duration.zero : age,
           clearFailure: true,
           canLocate: _repo.canLocate,
@@ -200,10 +220,11 @@ class FuelPriceViewModel extends Notifier<FuelPriceState> {
             auto: auto,
           ),
         );
-      case FuelMissing(:final reason):
+      case FuelMissing(:final reason, :final retryAfter):
         state = state.copyWith(
           loading: false,
           failure: reason,
+          retryAfter: retryAfter,
           canLocate: _repo.canLocate,
         );
     }

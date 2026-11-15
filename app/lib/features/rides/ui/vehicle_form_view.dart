@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/money_format.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/core/theme/theme.dart';
@@ -72,9 +73,11 @@ class _VehicleFormViewState extends ConsumerState<VehicleFormView> {
         }
       case Err(error: InvalidData()):
         break; // Explained inline.
-      case Err():
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).errorTitle)),
+      case Err(:final error):
+        showErrorSnackBar(
+          ScaffoldMessenger.of(context),
+          AppLocalizations.of(context),
+          error,
         );
     }
   }

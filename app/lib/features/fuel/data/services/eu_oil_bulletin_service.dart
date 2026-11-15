@@ -78,7 +78,9 @@ class EuOilBulletinService implements FuelPriceService {
         return FuelServiceOk(_price(grade, prices));
       case _Failed(:final reason):
         // Offline or the Commission is down: the last file still tells the
-        // weekly price; the age line shows its date.
+        // weekly price; the age line shows its date, so it is not passed off
+        // as fresh. With no file at all the real cause (offline vs provider)
+        // reaches the chips hint.
         return stored == null
             ? FuelServiceFailure(reason)
             : FuelServiceOk(_price(grade, stored.prices));

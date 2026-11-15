@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
 import 'package:mitlio/features/rides/ui/rides_view_model.dart';
@@ -44,8 +45,8 @@ Future<void> showDriverPromptSheet(
       if (answer == _Answer.manage) {
         unawaited(router.push('/groups/$groupId/rides/settings'));
       }
-    case Err():
-      messenger.showSnackBar(SnackBar(content: Text(l10n.errorTitle)));
+    case Err(:final error):
+      showErrorSnackBar(messenger, l10n, error);
   }
 }
 

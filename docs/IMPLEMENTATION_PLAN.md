@@ -229,6 +229,7 @@ Invariants (enforced in domain + DB constraints + pgTAP):
 6. **Calm, honest UI.** No fake urgency, no badges for engagement's sake, notifications only for things other people did that affect your money.
 7. **Fast.** Cold start < 1.5 s on a mid-range Android, every interaction < 100 ms, no jank (no frames > 16 ms in scroll/animations).
 8. **Accessible by default.** Dynamic type up to 200 %, screen reader labels, contrast AA, works one-handed.
+9. **No silent errors.** When something fails (a rate limit, no connection, a refused link), the user learns what happened and what to do next, in plain du-form copy: "Zu viele Anfragen, versuch es in 5 Min. nochmal." Never swallow a failure (no empty `catch`, no ignored `Err`) unless the reason is documented in a comment; never mislead (no "offline" when the server refused). Every failure path has a test asserting the visible message.
 
 **Mechanical guardrails** (so agents can't erode UX unnoticed)
 
@@ -682,16 +683,16 @@ Backend tasks are all `critical` → human review. Agents still write them; pgTA
 | P6-T04 | RPC `upsert_expense(payload jsonb)`: transactional replace of payers/shares, invariant checks (sums), LWW compare on HLC, returns server row | pgTAP: invariant violation rejected; stale HLC ignored; newer wins | critical |
 | P6-T05 | Invites: `create_invite(group_id)` → token (store hash only, owner only, no expiry, a new link revokes all others; amended by ADR-24); `join_group(token, member_id?)` claims a participant or creates one (people and accounts are separate layers; one account per person, several accounts per person tbd, amended by ADR-24) | pgTAP: expired/revoked/reused tokens; cannot join twice | critical |
 | P6-T06 | Generated TS/Dart types + CI drift check (`supabase gen types` diff) | CI fails on stale types | critical |
-| P6-T07 | App auth: anonymous sign-in on first share action, session persistence, sign-out wipes local server-linked data (with confirmation) | VM tests with fake auth | critical |
+| P6-T07 | App auth: anonymous sign-in on first share action, session persistence, sign-out wipes local server-linked data (with confirmation) | VM tests with fake auth **No silent errors (§2.6 #9):** sign-in failure (network, rate limit) shows cause + next step; sign-out failure keeps data and says so. | critical  |
 | P6-T08 | HLC implementation in domain (`Hlc.now(clock, last)`, `Hlc.receive`, compare) | property tests: monotonic, causality | safe |
 | P6-T09 | Outbox: every repository write in a group marked `shared` enqueues aggregate op in same Drift transaction | repository tests: write + outbox atomic | critical |
-| P6-T10 | `SyncService.push`: drain outbox with backoff, idempotent (op id), handles 4xx (drop + surface) vs 5xx (retry) | fake remote tests incl. network flaps (`fake_async`) | critical |
+| P6-T10 | `SyncService.push`: drain outbox with backoff, idempotent (op id), handles 4xx (drop + surface) vs 5xx (retry) | fake remote tests incl. network flaps (`fake_async`) **No silent errors (§2.6 #9):** a dropped 4xx op and repeated 5xx retries are visible in the sync status with a reason, never only in logs; `rate_limited` shows the wait. | critical  |
 | P6-T11 | `SyncService.pull`: by `server_seq` cursor per group, apply with LWW (HLC), children replaced per aggregate, tombstones respected | merge logic in pure Dart → mutation ≥ 70 % | critical |
 | P6-T12 | Realtime: subscribe to group channels → trigger pull (not apply payload directly) | IT with local supabase | critical |
 | P6-T13 | **Sync E2E harness**: two headless app containers (repositories + SyncService, no UI) against local Supabase; scenarios: offline edit both → LWW; delete vs edit; join via invite; 500 ops convergence | all scenarios converge to identical state (hash compare) | critical |
-| P6-T14 | UI: share group (invite link + QR), join flow (`https://mitlio.web.app/join/<token>` universal/app link, `mitlio://join/<token>` fallback; AASA + assetlinks served by Firebase Hosting per ADR-17), "claim yourself" member picker, sync status indicator | IT with fake backend; drive `ext.mitlio.sync.*` | safe |
-| P6-T15 | Convert local group → shared group (upload existing history) | E2E: local data appears on second device | critical |
-| P6-T16 | `min_supported_version` config table + app gate | test | critical |
+| P6-T14 | UI: share group (invite link + QR), join flow (`https://mitlio.web.app/join/<token>` universal/app link, `mitlio://join/<token>` fallback; AASA + assetlinks served by Firebase Hosting per ADR-17), "claim yourself" member picker, sync status indicator | IT with fake backend; drive `ext.mitlio.sync.*` **No silent errors (§2.6 #9):** join errors each have a specific message and next step: `rate_limited` (with minutes from `Retry-After`), invalid/expired link, revoked link, `member_already_claimed`, network down, server error; share errors likewise; widget tests assert each text (de+en). | safe  |
+| P6-T15 | Convert local group → shared group (upload existing history) | E2E: local data appears on second device **No silent errors (§2.6 #9):** a failed or partial upload says what failed and that local data is untouched. | critical  |
+| P6-T16 | `min_supported_version` config table + app gate | test **No silent errors (§2.6 #9):** a blocked version says why and links to the store update. | critical  |
 
 **Milestone M2: groups shared across devices, offline-first.**
 

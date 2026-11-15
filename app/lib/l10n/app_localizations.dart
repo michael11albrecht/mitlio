@@ -116,6 +116,66 @@ abstract class AppLocalizations {
   /// **'Versuch es gleich noch einmal.'**
   String get errorMessage;
 
+  /// No description provided for @errorNotFound.
+  ///
+  /// In de, this message translates to:
+  /// **'Das gibt es nicht mehr. Geh einen Schritt zurück und lad neu.'**
+  String get errorNotFound;
+
+  /// No description provided for @errorConflict.
+  ///
+  /// In de, this message translates to:
+  /// **'Das geht gerade nicht, weil sich etwas geändert hat. Prüf den Stand und versuch es nochmal.'**
+  String get errorConflict;
+
+  /// No description provided for @errorLocked.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist schon abgerechnet und lässt sich nicht mehr ändern.'**
+  String get errorLocked;
+
+  /// No description provided for @errorInvalidData.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Eingabe passt nicht. Prüf sie und versuch es nochmal.'**
+  String get errorInvalidData;
+
+  /// No description provided for @errorStorage.
+  ///
+  /// In de, this message translates to:
+  /// **'Das hat nicht geklappt. Prüf den freien Speicher deines Geräts und versuch es nochmal.'**
+  String get errorStorage;
+
+  /// No description provided for @shareFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Teilen hat nicht geklappt. Versuch es nochmal.'**
+  String get shareFailed;
+
+  /// No description provided for @errorRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Anfragen. Versuch es in ein paar Minuten nochmal.'**
+  String get errorRateLimited;
+
+  /// No description provided for @errorRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Anfragen. Versuch es in {minutes} Min. nochmal.'**
+  String errorRateLimitedIn(int minutes);
+
+  /// No description provided for @errorSettingNotSaved.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.'**
+  String get errorSettingNotSaved;
+
+  /// No description provided for @errorUndoFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Rückgängig machen hat nicht geklappt. Prüf den Stand und versuch es nochmal.'**
+  String get errorUndoFailed;
+
   /// No description provided for @retry.
   ///
   /// In de, this message translates to:
@@ -2694,6 +2754,48 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'offline, zuletzt bekannt'**
   String get fuelOfflineNote;
+
+  /// No description provided for @fuelStaleRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'zu viele Anfragen, zuletzt bekannt'**
+  String get fuelStaleRateLimited;
+
+  /// No description provided for @fuelStaleRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'zu viele Anfragen, in {minutes} Min. nochmal, zuletzt bekannt'**
+  String fuelStaleRateLimitedIn(int minutes);
+
+  /// No description provided for @fuelStaleServer.
+  ///
+  /// In de, this message translates to:
+  /// **'Preisdienst nicht erreichbar, zuletzt bekannt'**
+  String get fuelStaleServer;
+
+  /// No description provided for @fuelRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Preisabfragen – versuch es in ein paar Minuten nochmal.'**
+  String get fuelRateLimited;
+
+  /// No description provided for @fuelRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Preisabfragen – versuch es in {minutes} Min. nochmal.'**
+  String fuelRateLimitedIn(int minutes);
+
+  /// No description provided for @fuelOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Prüf dein Netz oder trag den Preis selbst ein.'**
+  String get fuelOffline;
+
+  /// No description provided for @fuelServerDown.
+  ///
+  /// In de, this message translates to:
+  /// **'Preisdienst gerade nicht erreichbar. Versuch es später nochmal oder trag den Preis selbst ein.'**
+  String get fuelServerDown;
 
   /// No description provided for @fuelNoPrice.
   ///

@@ -93,7 +93,19 @@ void main() {
     ) async {
       app.fuel.failWith = FuelFailure.offline;
       await open(tester);
-      expect(find.textContaining('Gerade kein aktueller Preis'), findsOne);
+      expect(find.textContaining('Keine Verbindung'), findsOne);
+      expect(priceField(tester), isEmpty);
+    });
+
+    tripTest('rate limited: says so and when to retry, field stays free', (
+      tester,
+    ) async {
+      app.fuel
+        ..failWith = FuelFailure.rateLimited
+        ..failRetryAfter = const Duration(minutes: 5);
+      await open(tester);
+      expect(find.textContaining('Zu viele Preisabfragen'), findsOne);
+      expect(find.textContaining('in 5 Min. nochmal'), findsOne);
       expect(priceField(tester), isEmpty);
     });
 

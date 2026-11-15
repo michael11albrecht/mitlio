@@ -3,6 +3,23 @@
   "appName": "mitlio",
   "errorTitle": "Something went wrong",
   "errorMessage": "Give it another try in a moment.",
+  "errorNotFound": "That no longer exists. Go back a step and reload.",
+  "errorConflict": "That is not possible right now because something changed. Check the current state and try again.",
+  "errorLocked": "That is already settled and can no longer be changed.",
+  "errorInvalidData": "That input does not fit. Check it and try again.",
+  "errorStorage": "That did not work. Check your device's free storage and try again.",
+  "shareFailed": "Sharing did not work. Try again.",
+  "errorRateLimited": "Too many requests. Try again in a few minutes.",
+  "errorRateLimitedIn": "Too many requests. Try again in {minutes} min.",
+  "@errorRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "errorSettingNotSaved": "The setting could not be saved. Try again.",
+  "errorUndoFailed": "Undo did not work. Check the current state and try again.",
   "retry": "Try again",
   "keyboardDone": "Done",
   "amountInvalid": "That is not a valid amount",
@@ -743,6 +760,27 @@
   "fuelAgeDays": "{count} days ago",
   "fuelAgeSince": "as of {date}",
   "fuelOfflineNote": "offline, last known",
+  "fuelStaleRateLimited": "too many requests, last known",
+  "fuelStaleRateLimitedIn": "too many requests, retry in {minutes} min, last known",
+  "@fuelStaleRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "fuelStaleServer": "price service unreachable, last known",
+  "fuelRateLimited": "Too many price requests – try again in a few minutes.",
+  "fuelRateLimitedIn": "Too many price requests – try again in {minutes} min.",
+  "@fuelRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "fuelOffline": "No connection. Check your network or enter the price yourself.",
+  "fuelServerDown": "The price service is unreachable right now. Try again later or enter the price yourself.",
   "fuelNoPrice": "No current price available right now. Just enter it yourself.",
   "fuelNearby": "Near me",
   "fuelNearbyDenied": "Location not shared, the national average applies.",

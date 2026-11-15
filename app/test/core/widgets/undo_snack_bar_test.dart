@@ -92,6 +92,16 @@ void main() {
     expect(undone, 1);
   });
 
+  testWidgets('a refused undo is shown, not swallowed', (tester) async {
+    final failing = Undo(() async => const Err(Locked('ride', 'r1')));
+    await tester.pumpWidget(themedApp(_host(() => message, failing)));
+    await open(tester);
+
+    await tester.tap(find.text('Rückgängig'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('schon abgerechnet'), findsOneWidget);
+  });
+
   testWidgets('a new call replaces the current one', (tester) async {
     await tester.pumpWidget(themedApp(_host(() => message, undo)));
     await open(tester);

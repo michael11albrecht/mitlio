@@ -88,7 +88,7 @@ void main() {
     await pumpMitlio(tester, app);
     await tester.tap(find.text('Fahrgemeinschaft starten'));
     await tester.pumpAndSettle();
-    expect(find.text('Das hat nicht geklappt'), findsOneWidget);
+    expect(find.textContaining('Prüf den freien Speicher'), findsOneWidget);
     expect(find.text('Willkommen bei mitlio'), findsOneWidget);
     expect(
       await tester.runAsync(() => app.groups.watchGroups().first),

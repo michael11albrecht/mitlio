@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
+import 'package:mitlio_domain/mitlio_domain.dart' show Err;
 
 /// Short on purpose: a snack bar that lingers invites accidental taps on
 /// "Undo". Flutter keeps snack bars with an action until dismissed unless
@@ -40,8 +42,20 @@ void showUndoSnackBar(
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
           label: l10n.undo,
-          onPressed: () => unawaited(undo()),
+          onPressed: () => unawaited(_undo(messenger, l10n, undo)),
         ),
       ),
     );
+}
+
+/// Runs [undo]; a refusal is shown, never swallowed.
+Future<void> _undo(
+  ScaffoldMessengerState messenger,
+  AppLocalizations l10n,
+  Undo undo,
+) async {
+  final result = await undo();
+  if (result case Err(:final error)) {
+    showErrorSnackBar(messenger, l10n, error);
+  }
 }

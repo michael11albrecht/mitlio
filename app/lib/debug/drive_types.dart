@@ -13,13 +13,14 @@ DriveResult invalidParams(String message) => {
 };
 
 /// Maps a repository failure to the `{error, message}` convention:
-/// `invalid_params`, `not_found`, `conflict` or `internal`.
+/// `invalid_params`, `not_found`, `conflict`, `rate_limited` or `internal`.
 DriveResult driveError(RepositoryError error) => {
   'error': switch (error) {
     InvalidData() => 'invalid_params',
     NotFound() => 'not_found',
     Conflict() || Locked() => 'conflict',
     Storage() => 'internal',
+    RateLimited() => 'rate_limited',
   },
   'message': error.toString(),
 };
