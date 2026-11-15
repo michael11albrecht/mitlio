@@ -88,6 +88,19 @@ List<Rule> buildRules({required List<String> showDialogAllowlist}) => [
     forbidden: (d) => _forbiddenDomain.hasMatch(d.uri),
   ),
   importRule(
+    id: 'supabase-only-in-remote',
+    description:
+        'package:supabase_flutter/supabase only in app/lib/core/remote or '
+        'features/*/data/services (one place maps backend errors)',
+    appliesTo: (p) =>
+        _inDir(p, 'app/lib/') &&
+        !_inDir(p, 'app/lib/core/remote/') &&
+        !_featureServices.hasMatch(p),
+    forbidden: (d) => RegExp(
+      '^package:(supabase_flutter|supabase|gotrue|postgrest)/',
+    ).hasMatch(d.uri),
+  ),
+  importRule(
     id: 'services-no-ui',
     description: 'data/services must not import ui/',
     appliesTo: _featureServices.hasMatch,

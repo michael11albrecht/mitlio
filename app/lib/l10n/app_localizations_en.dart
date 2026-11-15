@@ -51,6 +51,73 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get remoteErrorOffline =>
+      'No connection. Your changes are saved and will go out as soon as you are online.';
+
+  @override
+  String get remoteErrorRateLimited =>
+      'Too many attempts. Try again in a few minutes.';
+
+  @override
+  String remoteErrorRateLimitedIn(int minutes) {
+    return 'Too many attempts. Try again in $minutes min.';
+  }
+
+  @override
+  String get remoteErrorInviteInvalid =>
+      'This link is no longer valid. Ask for a new link.';
+
+  @override
+  String remoteErrorMemberAlreadyClaimed(String name) {
+    return '$name is already connected to another phone. Pick a different person.';
+  }
+
+  @override
+  String get remoteErrorMemberAlreadyClaimedNoName =>
+      'This person is already connected to another phone. Pick a different person.';
+
+  @override
+  String remoteErrorAlreadyConnected(String name) {
+    return 'You are already connected to this group as $name.';
+  }
+
+  @override
+  String get remoteErrorAlreadyConnectedNoName =>
+      'You are already connected to this group.';
+
+  @override
+  String get remoteErrorMemberGone =>
+      'This person is no longer in the group. Pick a different one.';
+
+  @override
+  String get remoteErrorNotOwner =>
+      'Only the person who created the group can do this.';
+
+  @override
+  String get remoteErrorNotMember =>
+      'You are no longer in this group. Your data stays on this phone.';
+
+  @override
+  String get remoteErrorCannotRemoveSelf => 'You cannot remove yourself here.';
+
+  @override
+  String get remoteErrorVersionTooOld =>
+      'This version can no longer share. Update mitlio.';
+
+  @override
+  String get remoteErrorServerDown =>
+      'The server is not responding right now. We will try again shortly.';
+
+  @override
+  String remoteErrorRejected(String title) {
+    return '“$title” could not be shared. It is only on this phone.';
+  }
+
+  @override
+  String get remoteErrorRejectedNoTitle =>
+      'This could not be shared. It is only on this phone.';
+
+  @override
   String get errorSettingNotSaved =>
       'The setting could not be saved. Try again.';
 
