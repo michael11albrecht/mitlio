@@ -163,6 +163,7 @@ class _FormBody extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return ListView(
       padding: Spacing.screen,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
