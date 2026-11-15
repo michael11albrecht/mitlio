@@ -89,6 +89,8 @@ class HttpFxRateService implements FxRateService {
           .timeout(timeout);
       return response.statusCode == 200 ? parseFxSuggestion(body) : null;
     } on Object {
+      // No suggestion is not a failed user action: the rate field stays
+      // editable and the user can type the rate (plan P5 FX suggestion).
       return null;
     } finally {
       client.close(force: true);

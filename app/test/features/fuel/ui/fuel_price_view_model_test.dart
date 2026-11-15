@@ -89,6 +89,27 @@ void main() {
     },
   );
 
+  test('rate limited: stale price keeps the cause and the wait', () async {
+    await start();
+    app.clock.advance(const Duration(hours: 1));
+    app.fuel
+      ..failWith = FuelFailure.rateLimited
+      ..failRetryAfter = const Duration(minutes: 4);
+    await vm().selectGrade(FuelGrade.e5);
+    expect(state().stale, isTrue);
+    expect(state().staleReason, FuelFailure.rateLimited);
+    expect(state().retryAfter, const Duration(minutes: 4));
+  });
+
+  test('rate limited with nothing known: failure and the wait', () async {
+    app.fuel
+      ..failWith = FuelFailure.rateLimited
+      ..failRetryAfter = const Duration(minutes: 2);
+    await start();
+    expect(state().failure, FuelFailure.rateLimited);
+    expect(state().retryAfter, const Duration(minutes: 2));
+  });
+
   test('offline without anything known: a failure and no fill', () async {
     app.fuel.failWith = FuelFailure.offline;
     await start();

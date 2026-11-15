@@ -19,6 +19,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorMessage => 'Give it another try in a moment.';
 
   @override
+  String get errorNotFound =>
+      'That no longer exists. Go back a step and reload.';
+
+  @override
+  String get errorConflict =>
+      'That is not possible right now because something changed. Check the current state and try again.';
+
+  @override
+  String get errorLocked =>
+      'That is already settled and can no longer be changed.';
+
+  @override
+  String get errorInvalidData =>
+      'That input does not fit. Check it and try again.';
+
+  @override
+  String get errorStorage =>
+      'That did not work. Check your device\'s free storage and try again.';
+
+  @override
+  String get shareFailed => 'Sharing did not work. Try again.';
+
+  @override
+  String get errorRateLimited =>
+      'Too many requests. Try again in a few minutes.';
+
+  @override
+  String errorRateLimitedIn(int minutes) {
+    return 'Too many requests. Try again in $minutes min.';
+  }
+
+  @override
+  String get errorSettingNotSaved =>
+      'The setting could not be saved. Try again.';
+
+  @override
+  String get errorUndoFailed =>
+      'Undo did not work. Check the current state and try again.';
+
+  @override
   String get retry => 'Try again';
 
   @override
@@ -1497,6 +1537,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fuelOfflineNote => 'offline, last known';
+
+  @override
+  String get fuelStaleRateLimited => 'too many requests, last known';
+
+  @override
+  String fuelStaleRateLimitedIn(int minutes) {
+    return 'too many requests, retry in $minutes min, last known';
+  }
+
+  @override
+  String get fuelStaleServer => 'price service unreachable, last known';
+
+  @override
+  String get fuelRateLimited =>
+      'Too many price requests – try again in a few minutes.';
+
+  @override
+  String fuelRateLimitedIn(int minutes) {
+    return 'Too many price requests – try again in $minutes min.';
+  }
+
+  @override
+  String get fuelOffline =>
+      'No connection. Check your network or enter the price yourself.';
+
+  @override
+  String get fuelServerDown =>
+      'The price service is unreachable right now. Try again later or enter the price yourself.';
 
   @override
   String get fuelNoPrice =>

@@ -95,6 +95,24 @@ final class Storage extends RepositoryError {
   String toString() => 'Storage($cause)';
 }
 
+/// A remote service refused the call because too many were made. Say so and
+/// when to retry ([retryAfter] is the server's `Retry-After`, when sent).
+final class RateLimited extends RepositoryError {
+  const RateLimited({this.retryAfter});
+
+  final Duration? retryAfter;
+
+  @override
+  bool operator ==(Object other) =>
+      other is RateLimited && other.retryAfter == retryAfter;
+
+  @override
+  int get hashCode => Object.hash(RateLimited, retryAfter);
+
+  @override
+  String toString() => 'RateLimited($retryAfter)';
+}
+
 typedef RepoResult<T> = Result<T, RepositoryError>;
 
 extension RepoResultX<T> on RepoResult<T> {

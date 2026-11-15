@@ -16,9 +16,12 @@ final class FuelServiceOk extends FuelServiceResult {
 }
 
 final class FuelServiceFailure extends FuelServiceResult {
-  const FuelServiceFailure(this.reason);
+  const FuelServiceFailure(this.reason, {this.retryAfter});
 
   final FuelFailure reason;
+
+  /// The server's `Retry-After`, in whole minutes (at least one).
+  final Duration? retryAfter;
 }
 
 /// The fuel price API (contract: docs/fuel-prices-api.md).
@@ -98,7 +101,11 @@ class HttpFuelPriceService implements FuelPriceService {
           .transform(utf8.decoder)
           .join()
           .timeout(timeout);
-      return _parse(response.statusCode, body);
+      return _parse(
+        response.statusCode,
+        body,
+        response.headers.value(HttpHeaders.retryAfterHeader),
+      );
     } on Object {
       return const FuelServiceFailure(FuelFailure.offline);
     } finally {
@@ -106,21 +113,32 @@ class HttpFuelPriceService implements FuelPriceService {
     }
   }
 
-  static FuelServiceResult _parse(int status, String body) {
+  static FuelServiceResult _parse(int status, String body, String? wait) {
     if (status == 200) {
       final price = parseFuelPrice(body);
       return price == null
           ? const FuelServiceFailure(FuelFailure.provider)
           : FuelServiceOk(price);
     }
-    return FuelServiceFailure(switch (status) {
-      503 when body.contains('provider_unconfigured') =>
-        FuelFailure.providerUnconfigured,
-      429 => FuelFailure.rateLimited,
-      >= 400 && < 500 => FuelFailure.invalidParams,
-      _ => FuelFailure.provider,
-    });
+    return FuelServiceFailure(
+      switch (status) {
+        503 when body.contains('provider_unconfigured') =>
+          FuelFailure.providerUnconfigured,
+        429 => FuelFailure.rateLimited,
+        >= 400 && < 500 => FuelFailure.invalidParams,
+        _ => FuelFailure.provider,
+      },
+      retryAfter: status == 429 ? parseRetryAfter(wait) : null,
+    );
   }
+}
+
+/// A `Retry-After` header given in seconds, rounded up to whole minutes; null
+/// when absent, an HTTP date (not sent by our backend) or not positive.
+Duration? parseRetryAfter(String? header) {
+  final seconds = int.tryParse(header?.trim() ?? '');
+  if (seconds == null || seconds <= 0) return null;
+  return Duration(minutes: (seconds + 59) ~/ 60);
 }
 
 /// Reads a 200 body of the contract; null when it is malformed.

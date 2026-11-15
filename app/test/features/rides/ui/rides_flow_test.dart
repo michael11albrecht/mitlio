@@ -144,7 +144,10 @@ void main() {
       app.rides.failWith = const Storage('disk');
       await tester.tap(find.widgetWithText(FilledButton, 'Speichern'));
       await tester.pumpAndSettle();
-      expect(find.text('Das hat nicht geklappt'), findsOneWidget);
+      expect(
+        find.textContaining('Prüf den freien Speicher'),
+        findsOneWidget,
+      );
       expect(find.widgetWithText(FilledButton, 'Speichern'), findsOneWidget);
     });
 

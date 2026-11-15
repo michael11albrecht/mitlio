@@ -4,6 +4,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/empty_state.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
@@ -98,8 +99,8 @@ class _RidesBody extends StatelessWidget {
           message: l10n.ridesRideDeleted,
           undo: value,
         );
-      case Err():
-        messenger.showSnackBar(SnackBar(content: Text(l10n.errorTitle)));
+      case Err(:final error):
+        showErrorSnackBar(messenger, l10n, error);
     }
   }
 
@@ -328,10 +329,8 @@ class _DaySheet extends ConsumerWidget {
                         message: l10n.ridesRideDeleted,
                         undo: value,
                       );
-                    case Err():
-                      messenger.showSnackBar(
-                        SnackBar(content: Text(l10n.errorTitle)),
-                      );
+                    case Err(:final error):
+                      showErrorSnackBar(messenger, l10n, error);
                   }
                   if (context.mounted) Navigator.of(context).pop();
                 },

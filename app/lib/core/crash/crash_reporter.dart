@@ -136,6 +136,8 @@ class CrashReporter {
   /// Called by `ErrorSink`; a no-op unless reporting is active.
   void report(Object error, StackTrace? stackTrace) {
     if (!_active) return;
+    // Silent on purpose: a failing crash report has no channel to be reported
+    // on, and must never disturb the user.
     gateway.captureException(error, stackTrace).ignore();
   }
 

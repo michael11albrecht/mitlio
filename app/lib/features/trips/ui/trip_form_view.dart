@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/money_format.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/empty_state.dart';
@@ -100,8 +101,8 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
           undo: value.undo,
         );
         context.pop();
-      case Err():
-        messenger.showSnackBar(SnackBar(content: Text(l10n.errorTitle)));
+      case Err(:final error):
+        showErrorSnackBar(messenger, l10n, error);
     }
   }
 
@@ -114,7 +115,7 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
     );
     if (!mounted) return;
     if (result is Err) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.errorTitle)));
+      messenger.showSnackBar(SnackBar(content: Text(l10n.shareFailed)));
     }
   }
 

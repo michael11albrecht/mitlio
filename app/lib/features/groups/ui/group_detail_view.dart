@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/keyboard.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/core/theme/theme.dart';
@@ -90,15 +91,19 @@ class GroupDetailView extends ConsumerWidget {
                         case _MenuAction.export:
                           unawaited(showExportSheet(context, groupId));
                         case _MenuAction.archive:
+                          final messenger = ScaffoldMessenger.of(context);
                           final result = await vm.archive();
                           if (!context.mounted) return;
-                          if (result case Ok(:final value)) {
-                            showUndoSnackBar(
-                              context,
-                              message: l10n.groupArchived(group.name),
-                              undo: value,
-                            );
-                            context.go('/');
+                          switch (result) {
+                            case Ok(:final value):
+                              showUndoSnackBar(
+                                context,
+                                message: l10n.groupArchived(group.name),
+                                undo: value,
+                              );
+                              context.go('/');
+                            case Err(:final error):
+                              showErrorSnackBar(messenger, l10n, error);
                           }
                       }
                     },
@@ -152,9 +157,15 @@ class GroupDetailView extends ConsumerWidget {
                                     ScrollViewKeyboardDismissBehavior.onDrag,
                                 buildDefaultDragHandles: false,
                                 itemCount: members.length,
-                                onReorderItem: (from, to) => unawaited(
-                                  vm.reorder(from, to),
-                                ),
+                                onReorderItem: (from, to) async {
+                                  final messenger = ScaffoldMessenger.of(
+                                    context,
+                                  );
+                                  final result = await vm.reorder(from, to);
+                                  if (result case Err(:final error)) {
+                                    showErrorSnackBar(messenger, l10n, error);
+                                  }
+                                },
                                 header: notice == null
                                     ? null
                                     : Padding(
@@ -190,22 +201,49 @@ class GroupDetailView extends ConsumerWidget {
                                     key: ValueKey(item.member.id),
                                     item: item,
                                     index: index,
-                                    onRename: (name) => unawaited(
-                                      vm.renameMember(item.member.id, name),
-                                    ),
+                                    onRename: (name) async {
+                                      final messenger = ScaffoldMessenger.of(
+                                        context,
+                                      );
+                                      final result = await vm.renameMember(
+                                        item.member.id,
+                                        name,
+                                      );
+                                      if (result case Err(:final error)) {
+                                        showErrorSnackBar(
+                                          messenger,
+                                          l10n,
+                                          error,
+                                        );
+                                      }
+                                    },
                                     onRemove: () async {
+                                      final messenger = ScaffoldMessenger.of(
+                                        context,
+                                      );
                                       final result = await vm.removeMember(
                                         item.member.id,
                                       );
                                       if (!context.mounted) return;
-                                      if (result case Ok(:final value)) {
-                                        showUndoSnackBar(
-                                          context,
-                                          message: l10n.memberRemoved(
-                                            item.member.name,
-                                          ),
-                                          undo: value,
-                                        );
+                                      switch (result) {
+                                        case Ok(:final value):
+                                          showUndoSnackBar(
+                                            context,
+                                            message: l10n.memberRemoved(
+                                              item.member.name,
+                                            ),
+                                            undo: value,
+                                          );
+                                        // "In use" is explained by the inline
+                                        // notice above the list.
+                                        case Err(error: Conflict()):
+                                          break;
+                                        case Err(:final error):
+                                          showErrorSnackBar(
+                                            messenger,
+                                            l10n,
+                                            error,
+                                          );
                                       }
                                     },
                                   );
@@ -416,8 +454,18 @@ class _AddMemberFieldState extends State<_AddMemberField> {
   }
 
   Future<void> _add() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
     final result = await widget.onAdd(_controller.text);
-    if (result is Ok) _controller.clear();
+    switch (result) {
+      case Ok():
+        _controller.clear();
+      // An empty name is a no-op: the field simply stays focused.
+      case Err(error: InvalidData()):
+        break;
+      case Err(:final error):
+        showErrorSnackBar(messenger, l10n, error);
+    }
     if (mounted) _focus.requestFocus();
   }
 

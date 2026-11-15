@@ -147,7 +147,7 @@ void main() {
     await tester.tap(find.text('Speichern'));
     await tester.pumpAndSettle();
     expect(find.byType(BottomSheet), findsOneWidget);
-    expect(find.text('Versuch es gleich noch einmal.'), findsOneWidget);
+    expect(find.textContaining('Prüf den freien Speicher'), findsOneWidget);
     expect(
       find.text('IBAN, BIC und Kontoinhaber bleiben nur auf diesem Gerät.'),
       findsNothing,

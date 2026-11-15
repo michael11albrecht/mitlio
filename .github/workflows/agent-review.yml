@@ -95,6 +95,7 @@ jobs:
             - RLS / security implications for anything under supabase/ or auth/sync; no secrets; no ad/tracking SDKs; new deps justified in PR body.
             - Unnecessary scope: unrelated refactors, unexplained golden updates.
             - Strings via ARB, design tokens only from core/theme.
+            - No silent errors: failures surface to the user with cause + next step.
             UX principles (§2.6): one obvious next action per screen; result first; smart defaults; no modal
             interruptions or confirm dialogs (undo via snackbar instead); calm honest UI, no engagement tricks;
             fast (no jank); accessible (dynamic type 200%, labels, AA contrast, one-handed). Copy: du-form, short.

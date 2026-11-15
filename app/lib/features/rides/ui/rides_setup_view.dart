@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/money_format.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/core/theme/theme.dart';
@@ -71,8 +72,8 @@ class _Lists extends StatelessWidget {
         showUndoSnackBar(context, message: message(l10n), undo: value);
       case Err(error: Conflict()):
         messenger.showSnackBar(SnackBar(content: Text(l10n.ridesVehicleInUse)));
-      case Err():
-        messenger.showSnackBar(SnackBar(content: Text(l10n.errorTitle)));
+      case Err(:final error):
+        showErrorSnackBar(messenger, l10n, error);
     }
   }
 

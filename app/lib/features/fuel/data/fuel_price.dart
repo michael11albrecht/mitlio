@@ -113,16 +113,30 @@ sealed class FuelOutcome {
 }
 
 final class FuelFound extends FuelOutcome {
-  const FuelFound(this.price, {this.stale = false});
+  const FuelFound(
+    this.price, {
+    this.stale = false,
+    this.staleReason,
+    this.retryAfter,
+  });
 
   final FuelPrice price;
 
   /// The last known value, shown because the lookup failed.
   final bool stale;
+
+  /// Why the lookup failed when [stale]; the UI must name it, not guess.
+  final FuelFailure? staleReason;
+
+  /// How long the server asked to wait (`Retry-After`), when it did.
+  final Duration? retryAfter;
 }
 
 final class FuelMissing extends FuelOutcome {
-  const FuelMissing(this.reason);
+  const FuelMissing(this.reason, {this.retryAfter});
 
   final FuelFailure reason;
+
+  /// How long the server asked to wait (`Retry-After`), when it did.
+  final Duration? retryAfter;
 }

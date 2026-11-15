@@ -12,17 +12,21 @@ void main() {
   late List<HttpRequest> seen;
   var status = 200;
   var body = '';
+  String? retryAfter;
 
   setUp(() async {
     seen = [];
     status = 200;
+    retryAfter = null;
     server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     unawaited(
       server.forEach((request) async {
         seen.add(request);
-        request.response
-          ..statusCode = status
-          ..write(body);
+        request.response.statusCode = status;
+        if (retryAfter != null) {
+          request.response.headers.set('retry-after', retryAfter!);
+        }
+        request.response.write(body);
         await request.response.close();
       }),
     );
@@ -101,6 +105,29 @@ void main() {
       body = '{"error":"x"}';
       final r = await service().fetch(FuelGrade.e5) as FuelServiceFailure;
       expect(r.reason, reason, reason: '$code');
+    }
+  });
+
+  test('429 reads Retry-After seconds, rounded up to whole minutes', () async {
+    status = 429;
+    body = '{"error":"rate_limited"}';
+    for (final (header, minutes) in [
+      ('120', 2),
+      ('61', 2),
+      ('5', 1),
+      (null, null),
+      ('soon', null),
+      ('0', null),
+      ('-3', null),
+    ]) {
+      retryAfter = header;
+      final r = await service().fetch(FuelGrade.e5) as FuelServiceFailure;
+      expect(r.reason, FuelFailure.rateLimited);
+      expect(
+        r.retryAfter,
+        minutes == null ? isNull : Duration(minutes: minutes),
+        reason: '$header',
+      );
     }
   });
 

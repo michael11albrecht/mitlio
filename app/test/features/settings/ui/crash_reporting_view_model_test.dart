@@ -49,9 +49,10 @@ void main() {
       gateway: _NoopGateway(),
     );
     final c = _container(r);
-    await c
+    final saved = await c
         .read(crashReportingViewModelProvider.notifier)
         .setEnabled(enabled: true);
+    expect(saved, isFalse, reason: 'the view tells the user it did not save');
     expect(c.read(crashReportingViewModelProvider).enabled, isFalse);
     expect(r.isEnabled, isFalse);
     expect(r.isActive, isFalse);

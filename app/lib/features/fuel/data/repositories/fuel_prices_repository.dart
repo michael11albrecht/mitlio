@@ -102,10 +102,15 @@ class FuelPricesRepository {
       case FuelServiceOk(:final price):
         _cache[key] = (price: price, at: now);
         return FuelFound(price);
-      case FuelServiceFailure(:final reason):
+      case FuelServiceFailure(:final reason, :final retryAfter):
         return hit == null
-            ? FuelMissing(reason)
-            : FuelFound(hit.price, stale: true);
+            ? FuelMissing(reason, retryAfter: retryAfter)
+            : FuelFound(
+                hit.price,
+                stale: true,
+                staleReason: reason,
+                retryAfter: retryAfter,
+              );
     }
   }
 }
