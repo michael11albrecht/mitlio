@@ -1646,6 +1646,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get privacySection => 'Datenschutz';
 
   @override
+  String get privacySummary =>
+      'Deine Daten bleiben auf diesem Gerät. Nur für Spritpreise und Wechselkurse fragt die App unseren Server; Standort nur, wenn du \"In meiner Nähe\" antippst. Absturzberichte sind aus, bis du sie einschaltest.';
+
+  @override
+  String get privacyPolicyEntry => 'Datenschutzerklärung';
+
+  @override
+  String get imprintEntry => 'Impressum';
+
+  @override
   String get crashReportsLabel => 'Absturzberichte senden';
 
   @override
