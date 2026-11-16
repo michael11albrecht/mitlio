@@ -2,7 +2,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-import { failureFromResponse, validateFields } from '../src/lib/contact';
+import { failureFromResponse, networkFailure, validateFields } from '../src/lib/contact';
 
 const pages = [
   { path: '/kontakt/', lang: 'de-DE', h1: 'Kontakt', privacy: '/datenschutz/', other: '/en/contact/' },
@@ -51,5 +51,8 @@ test('API errors map to what the user sees', () => {
   expect(failureFromResponse(400, { error: 'invalid_email' }, null)).toEqual({ kind: 'field', field: 'email', key: 'errorEmail' });
   expect(failureFromResponse(503, { error: 'not_configured' }, null)).toEqual({ kind: 'general', key: 'errorNotConfigured' });
   expect(failureFromResponse(502, { error: 'send_failed' }, null)).toEqual({ kind: 'general', key: 'errorSendFailed' });
+  expect(failureFromResponse(429, { error: 'busy', retryAfter: 1728 }, '1728')).toEqual({ kind: 'general', key: 'errorBusy' });
+  expect(networkFailure(false)).toEqual({ kind: 'general', key: 'errorNetwork' });
+  expect(networkFailure(true)).toEqual({ kind: 'general', key: 'errorNotConfigured' });
   expect(failureFromResponse(500, 'junk', null)).toEqual({ kind: 'general', key: 'errorSendFailed' });
 });

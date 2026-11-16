@@ -5,6 +5,7 @@ import {
   type ContactConfig,
   corsHeaders,
   type Deps,
+  GLOBAL_KEY,
   handleContact,
   isHoneypot,
   mapProviderStatus,
@@ -135,12 +136,14 @@ interface Harness {
   deps: Deps;
   sent: { url: string; init: RequestInit }[];
   keys: { key: string; capacity: number; refill: number }[];
+  logs: string[];
 }
 
 function harness(
   opts: {
     env?: Record<string, string>;
     allowed?: boolean;
+    globalAllowed?: boolean;
     limiterThrows?: boolean;
     provider?: () => Response | Promise<Response>;
   } = {},
@@ -149,8 +152,10 @@ function harness(
   const h: Harness = {
     sent: [],
     keys: [],
+    logs: [],
     deps: {
       env: (n) => env[n] ?? "",
+      log: (line) => h.logs.push(line),
       fetch: (url, init) => {
         h.sent.push({ url, init });
         return Promise.resolve((opts.provider ?? (() => Response.json({ id: "1" })))());
@@ -158,6 +163,7 @@ function harness(
       takeToken: (key, capacity, refill) => {
         h.keys.push({ key, capacity, refill });
         if (opts.limiterThrows) return Promise.reject(new Error("db down"));
+        if (key === GLOBAL_KEY) return Promise.resolve(opts.globalAllowed ?? true);
         return Promise.resolve(opts.allowed ?? true);
       },
     },
@@ -185,10 +191,12 @@ Deno.test("handler: success sends one mail through Resend", async () => {
   const payload = JSON.parse(h.sent[0].init.body as string);
   assertEquals(payload.reply_to, "mia@example.org");
   // The limiter key is a salted hash: neither the IP nor anything from the message is in it.
-  assertEquals(h.keys.length, 1);
+  assertEquals(h.keys.length, 2);
   assertEquals(/^[0-9a-f]{64}$/.test(h.keys[0].key), true);
   assertEquals(h.keys[0].capacity, 5);
   assertEquals(h.keys[0].refill, 5 / 3600);
+  // Global cap: fixed key (no client data), 50 per day.
+  assertEquals(h.keys[1], { key: GLOBAL_KEY, capacity: 50, refill: 50 / 86400 });
 });
 
 Deno.test("handler: honeypot answers 200 and sends and counts nothing", async () => {
@@ -216,6 +224,7 @@ Deno.test("handler: 429 with Retry-After", async () => {
   assertEquals(res.headers.get("retry-after"), "720");
   assertEquals(await res.json(), { error: "rate_limited", retryAfter: 720 });
   assertEquals(h.sent.length, 0);
+  assertEquals(h.keys.length, 1);
 });
 
 Deno.test("handler: custom limit", async () => {
@@ -271,4 +280,77 @@ Deno.test("handler: OPTIONS and wrong method", async () => {
   assertEquals(pre.status, 204);
   assertEquals(pre.headers.get("access-control-allow-origin"), "https://mitlio.test");
   assertEquals((await handleContact(new Request("https://f.test/"), h.deps)).status, 405);
+});
+
+Deno.test("handler: global daily cap answers 429 busy and sends nothing", async () => {
+  const h = harness({ globalAllowed: false });
+  const res = await handleContact(post(valid), h.deps);
+  assertEquals(res.status, 429);
+  assertEquals(res.headers.get("retry-after"), "1728");
+  assertEquals(await res.json(), { error: "busy", retryAfter: 1728 });
+  assertEquals(h.sent.length, 0);
+  const custom = harness({ env: { ...ENV, CONTACT_GLOBAL_PER_DAY: "100" } });
+  await handleContact(post(valid), custom.deps);
+  assertEquals(custom.keys[1].capacity, 100);
+});
+
+Deno.test("handler: broken limiter on the global bucket keeps the endpoint closed", async () => {
+  const h = harness();
+  h.deps.takeToken = (key) =>
+    key === GLOBAL_KEY ? Promise.reject(new Error("db down")) : Promise.resolve(true);
+  const res = await handleContact(post(valid), h.deps);
+  assertEquals(res.status, 503);
+  assertEquals(h.sent.length, 0);
+});
+
+Deno.test("handler: provider failure logs one line with status and type only", async () => {
+  const secret = {
+    name: "Geheim Person",
+    email: "geheim@example.org",
+    message: "Streng vertraulicher Text hier",
+    locale: "de",
+  };
+  const h = harness({
+    provider: () =>
+      Response.json({
+        statusCode: 422,
+        name: "validation_error",
+        message: "geheim@example.org bad",
+      }, {
+        status: 422,
+      }),
+  });
+  const res = await handleContact(post(secret, { "x-forwarded-for": "198.51.100.77" }), h.deps);
+  assertEquals(res.status, 502);
+  assertEquals(h.logs, ["contact send failed: status=422 type=validation_error"]);
+  const all = h.logs.join("\n");
+  for (const bad of ["Geheim", "geheim@", "vertraulich", "198.51.100.77", "re_key"]) {
+    assertEquals(all.includes(bad), false);
+  }
+});
+
+Deno.test("handler: failure log with unparsable body or network error", async () => {
+  const junk = harness({ provider: () => new Response("<html>boom</html>", { status: 500 }) });
+  await handleContact(post(valid), junk.deps);
+  assertEquals(junk.logs, ["contact send failed: status=500 type=unknown"]);
+  const odd = harness({
+    provider: () =>
+      Response.json({ name: "Evil Name With Spaces geheim@example.org" }, { status: 400 }),
+  });
+  await handleContact(post(valid), odd.deps);
+  assertEquals(odd.logs, ["contact send failed: status=400 type=unknown"]);
+  const down = harness({
+    provider: () => Promise.reject(new DOMException("m@x.de", "TimeoutError")),
+  });
+  await handleContact(post(valid), down.deps);
+  assertEquals(down.logs, ["contact send failed: status=0 type=TimeoutError"]);
+  const plain = harness({ provider: () => Promise.reject(new Error("m@x.de")) });
+  await handleContact(post(valid), plain.deps);
+  assertEquals(plain.logs, ["contact send failed: status=0 type=Error"]);
+});
+
+Deno.test("handler: limiter failure logs a fixed line", async () => {
+  const h = harness({ limiterThrows: true });
+  await handleContact(post(valid), h.deps);
+  assertEquals(h.logs, ["contact rate limiter failed"]);
 });

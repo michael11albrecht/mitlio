@@ -1,5 +1,5 @@
 // Edge Function `contact`. Contract: docs/contact-api.md. Logic: _shared/contact.ts.
-// Stores nothing and logs nothing about the request (no message, email, name or IP).
+// Stores nothing. Logs only a status code and error type on failures (never message, email, name or IP).
 import { handleContact } from "../_shared/contact.ts";
 
 const env = (name: string): string => Deno.env.get(name) ?? "";
@@ -20,4 +20,6 @@ async function takeToken(
   return (await res.json()) === true;
 }
 
-Deno.serve((req) => handleContact(req, { env, fetch: (u, i) => fetch(u, i), takeToken }));
+Deno.serve((req) =>
+  handleContact(req, { env, log: console.error, fetch: (u, i) => fetch(u, i), takeToken })
+);

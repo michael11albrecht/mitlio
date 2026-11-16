@@ -21,7 +21,9 @@ export const contactMessages = {
     errorRateLimitedOne: 'Zu viele Nachrichten. Versuch es in 1 Minute wieder.',
     errorRateLimitedMany: 'Zu viele Nachrichten. Versuch es in {minutes} Minuten wieder.',
     errorNetwork:
-      'Keine Verbindung zum Server. Prüf dein Netz und versuch es noch einmal. Deine Nachricht bleibt hier stehen.',
+      'Du bist offline oder dein Netz ist weg. Prüf die Verbindung und versuch es noch einmal. Deine Nachricht bleibt hier stehen.',
+    errorBusy:
+      'Das Formular ist gerade stark ausgelastet. Versuch es später noch einmal oder schreib uns an contact@mitlio.de.',
     errorNotConfigured: 'Das Formular ist gerade nicht erreichbar. Schreib uns an contact@mitlio.de.',
     errorSendFailed:
       'Deine Nachricht ist nicht angekommen. Versuch es in ein paar Minuten noch einmal oder schreib uns an contact@mitlio.de.',
@@ -49,7 +51,9 @@ export const contactMessages = {
     errorNameLong: 'Your name is too long. Please use at most 100 characters.',
     errorRateLimitedOne: 'Too many messages. Try again in 1 minute.',
     errorRateLimitedMany: 'Too many messages. Try again in {minutes} minutes.',
-    errorNetwork: 'No connection to the server. Check your network and try again. Your message stays here.',
+    errorNetwork:
+      'You are offline or your network is down. Check your connection and try again. Your message stays here.',
+    errorBusy: 'The form is very busy right now. Try again later or write to us at contact@mitlio.de.',
     errorNotConfigured: 'The form is not reachable right now. Write to us at contact@mitlio.de.',
     errorSendFailed:
       'Your message did not arrive. Try again in a few minutes or write to us at contact@mitlio.de.',

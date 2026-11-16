@@ -54,8 +54,8 @@ configured backend the page shows only the e-mail address and sends nothing.
 
 Notes for the policy text:
 
-- **Nothing is stored by the function**: no database rows, no logs of message, e-mail, name or IP. The only server-side
-  trace is a salted hash of the IP and a counter in `rate_limits` (5 messages per hour), deleted after a day.
+- **Nothing is stored by the function**: no database rows. Failure log lines hold only a status code and error type, never message, e-mail, name or IP. The only server-side
+  trace is a salted hash of the IP and a counter in `rate_limits` (5 messages per hour) plus one global counter (50 per day), deleted after a day.
 - The message ends up in our mailbox and with the e-mail providers involved; the owner decides retention there.
 - Purpose and legal basis: answering the request (Art. 6(1)(b) or (f) GDPR). The honeypot field is not personal data.
 - No cookies, no identifiers, no third-party scripts on the page. API: `docs/contact-api.md`.

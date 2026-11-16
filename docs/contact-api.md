@@ -27,11 +27,12 @@ costs no rate limit token. Only `POST` (and CORS `OPTIONS`) is accepted.
 | 400 | `invalid_email`, `message_too_short`, `message_too_long`, `name_too_long` | validation, shown at the field |
 | 405 | `method_not_allowed` | not POST |
 | 429 | `rate_limited` (+ `retryAfter` seconds in the body, `Retry-After` header) | "Zu viele Nachrichten. Versuch es in N Minuten wieder." |
+| 429 | `busy` (+ `retryAfter`, `Retry-After`) | the global daily cap is used up: "Formular stark ausgelastet, später versuchen oder an contact@mitlio.de schreiben" |
 | 502 | `send_failed` | the provider refused or was unreachable: "nicht angekommen, versuch es später oder schreib an contact@mitlio.de" |
 | 503 | `not_configured` | `RESEND_API_KEY`, `CONTACT_TO` or `CONTACT_FROM` missing: "Formular gerade nicht erreichbar. Schreib uns an contact@mitlio.de." |
 | 503 | `rate_limit_unavailable` | the limiter (database) failed; the endpoint stays closed rather than unlimited. Shown as `send_failed` |
 
-Validation order: honeypot, config, field validation, rate limit, send. Validation errors cost no token.
+Validation order: honeypot, config, field validation, per-client limit, global cap, send. Validation errors cost no token.
 
 ## Mail
 
@@ -47,10 +48,13 @@ above. Verify this in the Resend docs before go-live; if Resend ever documents a
 
 ## Privacy and abuse protection
 
-- Stores nothing: no database rows, no logging of message, e-mail, name or IP. Failures return a code, no detail is logged.
+- Stores nothing: no database rows. The only log lines are `contact send failed: status=<code> type=<resend error name|error class|unknown>` (provider failures, so they show up in the Supabase function logs) and `contact rate limiter failed`. Never message, e-mail, name, IP or error text.
 - Rate limit: token bucket in `public.rate_limits` via `consume_rate_limit` (same as `fuel-prices`), key
   `sha256(salt|contact|ip)` (IP from `cf-connecting-ip`, else first `x-forwarded-for`), default 5 per hour per client.
   One token returns after `3600 / limit` seconds, which is the `Retry-After` value (720 s by default).
+- Global cap: one more bucket in `rate_limits` under the fixed key `contact:global` (no client data), default 50 mails per
+  day over all clients, so rotating IPs cannot burn the Resend quota or flood the inbox. It is checked after the
+  per-client limit; `Retry-After` is `86400 / limit` (1728 s by default).
 - CORS: origins from `CONTACT_ALLOWED_ORIGINS`, falling back to `FUEL_ALLOWED_ORIGINS`; `Retry-After` is exposed.
 
 ## Server configuration (secrets / env)
@@ -63,6 +67,7 @@ above. Verify this in the Resend docs before go-live; if Resend ever documents a
 | `CONTACT_ALLOWED_ORIGINS` | comma separated CORS allowlist | `FUEL_ALLOWED_ORIGINS` |
 | `CONTACT_RATE_LIMIT_SALT` | salt for the IP hash | `FUEL_RATE_LIMIT_SALT`, then the service role key |
 | `CONTACT_RATE_LIMIT_PER_HOUR` | messages per hour per client | `5` |
+| `CONTACT_GLOBAL_PER_DAY` | messages per day over all clients | `50` |
 
 Set with `supabase secrets set NAME=value --project-ref <ref>` (owner step, never in CI).
 Deployment: `deploy-dev.yml` deploys every `supabase/functions/*/index.ts`, so `contact` needs no list entry.
@@ -72,3 +77,6 @@ Deployment: `deploy-dev.yml` deploys every `supabase/functions/*/index.ts`, so `
 The form posts to `new URL('contact', FUEL_API_URL)`, i.e. the sibling function in the same project, with the same
 anon key (`FUEL_API_ANON_KEY`); the CSP `connect-src` already allows that origin. Without `FUEL_API_URL` the page shows
 the e-mail address instead of the form and makes no request.
+
+Browsers give the same error for "offline" and "blocked" (CORS, wrong origin, server down). The form therefore checks
+`navigator.onLine`: offline says so, otherwise it shows "Formular gerade nicht erreichbar, schreib an contact@mitlio.de".

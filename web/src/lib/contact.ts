@@ -33,10 +33,19 @@ const FIELD_CODES: Record<string, Extract<Failure, { kind: 'field' }>> = {
   name_too_long: { kind: 'field', field: 'name', key: 'errorNameLong' },
 };
 
+/**
+ * A failed fetch looks the same for "offline" and "blocked by the browser" (CORS, wrong origin, server down),
+ * so navigator.onLine decides: offline says so, otherwise it is "form not reachable", never "no connection".
+ */
+export function networkFailure(online: boolean): Failure {
+  return { kind: 'general', key: online ? 'errorNotConfigured' : 'errorNetwork' };
+}
+
 /** Maps a non-2xx API answer to what the user sees. Unknown answers are a failed send, never silence. */
 export function failureFromResponse(status: number, body: unknown, retryAfterHeader: string | null): Failure {
   const code =
     typeof body === 'object' && body !== null ? (body as Record<string, unknown>)['error'] : undefined;
+  if (status === 429 && code === 'busy') return { kind: 'general', key: 'errorBusy' };
   if (status === 429) {
     const fromBody = typeof body === 'object' && body !== null ? (body as Record<string, unknown>)['retryAfter'] : undefined;
     const seconds = Number(typeof fromBody === 'number' ? fromBody : retryAfterHeader);

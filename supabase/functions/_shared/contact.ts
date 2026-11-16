@@ -11,6 +11,9 @@ export const EMAIL_MAX = 254;
 export const SUBJECT_PREFIX = "mitlio Kontakt: ";
 export const SUBJECT_EXCERPT = 60;
 export const DEFAULT_PER_HOUR = 5;
+export const DEFAULT_GLOBAL_PER_DAY = 50;
+/** Fixed bucket key for the all-clients daily cap; holds no client data. */
+export const GLOBAL_KEY = "contact:global";
 const SEND_TIMEOUT_MS = 8000;
 
 export type Locale = "de" | "en";
@@ -31,6 +34,7 @@ export type ErrorCode =
   | "invalid_locale"
   | "method_not_allowed"
   | "rate_limited"
+  | "busy"
   | "rate_limit_unavailable"
   | "not_configured"
   | "send_failed";
@@ -44,6 +48,7 @@ export const STATUS: Record<ErrorCode, number> = {
   invalid_locale: 400,
   method_not_allowed: 405,
   rate_limited: 429,
+  busy: 429,
   rate_limit_unavailable: 503,
   not_configured: 503,
   send_failed: 502,
@@ -119,15 +124,34 @@ export function buildResendPayload(input: ContactInput, config: ContactConfig) {
   };
 }
 
-/** Seconds until one token is back for a bucket of `perHour` tokens per hour. */
-export function retryAfterSeconds(perHour: number): number {
-  return Math.ceil(3600 / perHour);
+/** Seconds until one token is back for a bucket of `perPeriod` tokens per `periodSeconds`. */
+export function retryAfterSeconds(perPeriod: number, periodSeconds = 3600): number {
+  return Math.ceil(periodSeconds / perPeriod);
 }
 
 export type Decision = { status: 200 } | { status: 429; retryAfter: number };
 
-export function rateLimitDecision(allowed: boolean, perHour: number): Decision {
-  return allowed ? { status: 200 } : { status: 429, retryAfter: retryAfterSeconds(perHour) };
+export function rateLimitDecision(
+  allowed: boolean,
+  perPeriod: number,
+  periodSeconds = 3600,
+): Decision {
+  return allowed
+    ? { status: 200 }
+    : { status: 429, retryAfter: retryAfterSeconds(perPeriod, periodSeconds) };
+}
+
+/** Error type from a Resend error body (`name`, e.g. "validation_error"); anything odd is "unknown". */
+export function providerErrorType(body: unknown): string {
+  const name = typeof body === "object" && body !== null
+    ? (body as Record<string, unknown>)["name"]
+    : undefined;
+  return typeof name === "string" && /^[a-z_]{1,50}$/.test(name) ? name : "unknown";
+}
+
+/** The operator log line for a failed send: status code and error type only, never user data. */
+export function sendFailureLine(status: number, type: string): string {
+  return `contact send failed: status=${status} type=${type}`;
 }
 
 /** Any provider answer that is not 2xx (including its own 429) is a failed send. */
@@ -153,6 +177,8 @@ export type Fetch = (input: string, init: RequestInit) => Promise<Response>;
 export interface Deps {
   env: (name: string) => string;
   fetch: Fetch;
+  /** One line to the function logs (Supabase). Never pass user data. */
+  log: (line: string) => void;
   /** Token bucket (public.consume_rate_limit); true when a token was taken. */
   takeToken: (keyHash: string, capacity: number, refillPerSec: number) => Promise<boolean>;
 }
@@ -193,15 +219,22 @@ export async function handleContact(req: Request, deps: Deps): Promise<Response>
 
   const configured = Number(env("CONTACT_RATE_LIMIT_PER_HOUR"));
   const perHour = configured > 0 ? configured : DEFAULT_PER_HOUR;
+  const globalConfigured = Number(env("CONTACT_GLOBAL_PER_DAY"));
+  const perDay = globalConfigured > 0 ? globalConfigured : DEFAULT_GLOBAL_PER_DAY;
   let allowed: boolean;
+  let globalAllowed = true;
   try {
     const salt = env("CONTACT_RATE_LIMIT_SALT") || env("FUEL_RATE_LIMIT_SALT") ||
       env("SUPABASE_SERVICE_ROLE_KEY");
     // A separate prefix keeps this bucket apart from the fuel-prices bucket of the same client.
     const key = await hashClient(`contact|${clientIp(req.headers)}`, salt);
     allowed = await deps.takeToken(key, perHour, perHour / 3600);
+    // Daily cap over all clients, so rotating IPs cannot burn the provider quota or flood the inbox.
+    // Only checked once the client's own limit passed: a refused client does not use up the global cap.
+    if (allowed) globalAllowed = await deps.takeToken(GLOBAL_KEY, perDay, perDay / 86400);
   } catch {
-    // Without a working limiter a mail endpoint must stay closed. No detail is logged.
+    // Without a working limiter a mail endpoint must stay closed. No detail: errors may carry request data.
+    deps.log("contact rate limiter failed");
     return fail("rate_limit_unavailable", cors);
   }
   const decision = rateLimitDecision(allowed, perHour);
@@ -212,6 +245,13 @@ export async function handleContact(req: Request, deps: Deps): Promise<Response>
       "Retry-After": String(decision.retryAfter),
     });
   }
+  if (!globalAllowed) {
+    const retryAfter = retryAfterSeconds(perDay, 86400);
+    return json({ error: "busy", retryAfter }, STATUS.busy, {
+      ...cors,
+      "Retry-After": String(retryAfter),
+    });
+  }
 
   try {
     const res = await deps.fetch(RESEND_URL, {
@@ -220,9 +260,15 @@ export async function handleContact(req: Request, deps: Deps): Promise<Response>
       body: JSON.stringify(buildResendPayload(checked.value, config)),
       signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
     });
+    if (mapProviderStatus(res.status) !== "ok") {
+      const body: unknown = await res.json().catch(() => null);
+      deps.log(sendFailureLine(res.status, providerErrorType(body)));
+      return fail("send_failed", cors);
+    }
     await res.body?.cancel();
-    if (mapProviderStatus(res.status) !== "ok") return fail("send_failed", cors);
-  } catch {
+  } catch (e) {
+    // Only the error class name (e.g. TimeoutError): the message could echo request data.
+    deps.log(sendFailureLine(0, e instanceof Error ? e.name : "unknown"));
     return fail("send_failed", cors);
   }
   return json({ ok: true }, 200, cors);

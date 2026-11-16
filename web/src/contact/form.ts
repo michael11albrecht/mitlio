@@ -2,7 +2,7 @@
 // `contact` Edge Function. Failures are always shown inline (plain language, what happened + what to do).
 import { contactMessages, type ContactMessageKey } from '../i18n/contact';
 import type { Locale } from '../i18n';
-import { failureFromResponse, validateFields, type Failure, type Field } from '../lib/contact';
+import { failureFromResponse, networkFailure, validateFields, type Failure, type Field } from '../lib/contact';
 
 const TIMEOUT_MS = 15000;
 const FIELDS: Field[] = ['name', 'email', 'message'];
@@ -76,7 +76,7 @@ if (form) {
       const body: unknown = await res.json().catch(() => null);
       return failureFromResponse(res.status, body, res.headers.get('Retry-After'));
     } catch {
-      return { kind: 'general', key: 'errorNetwork' };
+      return networkFailure(navigator.onLine);
     } finally {
       window.clearTimeout(timer);
     }

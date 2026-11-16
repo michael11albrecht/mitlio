@@ -127,13 +127,48 @@ test('502 send_failed: says it did not arrive and what to do', async ({ page }) 
   await expect(page.getByRole('alert')).toContainText('contact@mitlio.de');
 });
 
-test('network failure: says so and keeps the message', async ({ page }) => {
+test('offline: says the connection is gone and keeps the message', async ({ page, context }) => {
+  // The mock would still answer while offline, so it aborts like a dead network would.
+  await mockApi(page, 'abort');
+  await page.goto('/kontakt/');
+  await fill(page);
+  await context.setOffline(true);
+  await submit(page);
+  await expect(page.getByRole('alert')).toContainText('offline');
+  await expect(page.getByRole('alert')).not.toContainText('nicht erreichbar');
+  await expect(page.getByLabel('Deine Nachricht')).toHaveValue('Hallo, ich habe eine Frage zur App.');
+});
+
+test('blocked or refused while online (CORS, server down): not reachable, not "no connection"', async ({ page }) => {
   await mockApi(page, 'abort');
   await page.goto('/kontakt/');
   await fill(page);
   await submit(page);
-  await expect(page.getByRole('alert')).toContainText('Keine Verbindung zum Server');
+  await expect(page.getByRole('alert')).toHaveText(
+    'Das Formular ist gerade nicht erreichbar. Schreib uns an contact@mitlio.de.',
+  );
   await expect(page.getByLabel('Deine Nachricht')).toHaveValue('Hallo, ich habe eine Frage zur App.');
+});
+
+test('english: refused while online says the form is not reachable', async ({ page }) => {
+  await mockApi(page, 'abort');
+  await page.goto('/en/contact/');
+  await page.getByLabel('Your email address').fill('mia@example.org');
+  await page.getByLabel('Your message').fill('Hello, I have a question.');
+  await page.getByRole('button', { name: 'Send message' }).click();
+  await expect(page.getByRole('alert')).toHaveText(
+    'The form is not reachable right now. Write to us at contact@mitlio.de.',
+  );
+});
+
+test('global cap (429 busy): says busy and points to the e-mail address', async ({ page }) => {
+  await mockApi(page, { status: 429, body: { error: 'busy', retryAfter: 1728 }, headers: { 'retry-after': '1728' } });
+  await page.goto('/kontakt/');
+  await fill(page);
+  await submit(page);
+  await expect(page.getByRole('alert')).toHaveText(
+    'Das Formular ist gerade stark ausgelastet. Versuch es später noch einmal oder schreib uns an contact@mitlio.de.',
+  );
 });
 
 test('honeypot is out of sight, out of the tab order and out of the accessibility tree', async ({ page }) => {
