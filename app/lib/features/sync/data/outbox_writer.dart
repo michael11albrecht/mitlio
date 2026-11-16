@@ -33,8 +33,11 @@ const outboxOpUpsert = 'upsert';
 /// payload is read back from the row just written, so `updated_at` is the HLC
 /// of that write. A group that is not `shared`/`uploading` queues nothing. A
 /// newer write of the same (entity, id) replaces the pending op (coalescing)
-/// and moves it to the end of the queue with a new `op_id`, so ops stay in
-/// dependency order (a member is queued before the expense that uses it).
+/// and moves it to the end of the queue with a new `op_id`. Queue order is
+/// therefore NOT dependency order (rename a member after adding an expense for
+/// it and the member op lands behind the expense op); the push (P6-T10) must
+/// send ops ordered by entity (group, member, vehicle, ride template, expense,
+/// ride, settlement), then by queue order.
 ///
 /// Payloads use server column names only. Local-only data (`local_*` tables,
 /// the full IBAN) is never read here; `user_id` and `created_by` are
