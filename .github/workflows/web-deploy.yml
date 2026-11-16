@@ -3,6 +3,9 @@
 # (service account JSON with "Firebase Hosting Admin"); without it (or on fork PRs) the job is skipped.
 # Optional repo variables used at build time: SITE_URL, FUEL_API_URL, FUEL_API_ANON_KEY, APP_STORE_URL,
 # PLAY_STORE_URL, APPLE_TEAM_ID, ANDROID_SHA256_CERT_FINGERPRINTS (see web/site.config.mjs).
+# LEGAL_STREET and LEGAL_CITY hold the operator's postal address for the Impressum / Datenschutzerklärung. They
+# are repo variables so the address never enters the (public) repository; if one is unset, the legal text keeps
+# its placeholder and the production build fails (docs/release.md, "Legal texts").
 name: web-deploy
 on:
   pull_request:
@@ -41,6 +44,8 @@ jobs:
       ASTRO_TELEMETRY_DISABLED: "1"
       HAS_FIREBASE_SECRET: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
       SITE_URL: ${{ vars.SITE_URL }}
+      LEGAL_STREET: ${{ vars.LEGAL_STREET }}
+      LEGAL_CITY: ${{ vars.LEGAL_CITY }}
       FUEL_API_URL: ${{ vars.FUEL_API_URL }}
       FUEL_API_ANON_KEY: ${{ vars.FUEL_API_ANON_KEY }}
       APP_STORE_URL: ${{ vars.APP_STORE_URL }}

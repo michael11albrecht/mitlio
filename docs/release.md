@@ -29,9 +29,15 @@ Status: DRAFT ("Entwurf, vor Veröffentlichung prüfen lassen", e.g. a lawyer or
   these pages from Settings > Datenschutz (`app/lib/features/settings/data/repositories/legal_links_repository.dart`)
   and shows only a short summary, so there is one text to maintain. The app's `SITE_URL` define must match
   `web/site.config.mjs`.
-- Placeholders the owner must fill (all `[[...]]` in `legal.ts`): `[[STRASSE HAUSNUMMER]]`, `[[PLZ ORT]]`,
-  `[[E-MAIL]]`, `[[ZUSTÄNDIGE LANDESBEHÖRDE FÜR DEN DATENSCHUTZ]]` (the data protection authority of the owner's
-  state).
+- The postal address is never committed (the repo is public). `legal.ts` keeps the placeholders
+  `[[STRASSE HAUSNUMMER]]` and `[[PLZ ORT]]`; `web/src/lib/legal.ts` (`fillAddress`) replaces them at build time from
+  the env vars `LEGAL_STREET` and `LEGAL_CITY`. In CI these are GitHub repo variables (Settings > Variables), passed
+  in the build env of `.github/workflows/web-deploy.yml`. For a local production-like build:
+  `LEGAL_STREET="..." LEGAL_CITY="..." npm run build`. A missing or blank variable keeps the placeholder, so the
+  production gate below fails the build.
+- Contacts: imprint `contact@mitlio.de`, privacy controller `privacy@mitlio.de` (mailboxes with a 12-month
+  auto-delete rule, see `docs/retention.md`). Supervisory authority: BayLDA, Ansbach.
+- Retention periods in the text are interpolated from `supabase/retention.json` (`docs/retention.md`).
 - Gate: `web/src/lib/legal.ts` fails `npm run build` when a `[[` placeholder remains and `SITE_URL` is not the
   stand-in `https://mitlio.web.app` or a local host. To also gate a release build on the stand-in origin, build
   with `LEGAL_STRICT=1`. Tests: `web/tests/legal.spec.ts`.
@@ -39,7 +45,7 @@ Status: DRAFT ("Entwurf, vor Veröffentlichung prüfen lassen", e.g. a lawyer or
   Messaging and APNs) are in `futurePrivacySections*` in `legal.ts` and are not rendered. TODO(owner): move them
   into the live text when sync/push ships, and re-check every sentence.
 - Re-check the text whenever behaviour changes: new network calls, a DSN in release builds (crash reports),
-  the hosting provider, the retention interval of `cleanup_fuel_tables()` (migration 0005).
+  the hosting provider, the retention intervals (`supabase/retention.json`, `docs/retention.md`).
 
 ## Version and build number
 

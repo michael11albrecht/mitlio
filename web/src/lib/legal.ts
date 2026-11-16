@@ -4,6 +4,31 @@ import type { LegalText } from '../i18n/legal';
 /** The stand-in origin used until the real domain exists (see site.config.mjs). */
 export const STAND_IN_ORIGIN = 'https://mitlio.web.app';
 
+const ADDRESS_PLACEHOLDERS = [
+  ['[[STRASSE HAUSNUMMER]]', 'LEGAL_STREET'],
+  ['[[PLZ ORT]]', 'LEGAL_CITY'],
+] as const;
+
+/**
+ * Replaces the address placeholders with the build env vars LEGAL_STREET and LEGAL_CITY. A missing or blank
+ * variable keeps its placeholder, so `assertNoPlaceholders` still fails a production build. The address is
+ * never stored in the repository (it is public).
+ */
+export function fillAddress(text: LegalText, env: Record<string, string | undefined>): LegalText {
+  const fill = (line: string): string =>
+    ADDRESS_PLACEHOLDERS.reduce((acc, [placeholder, name]) => {
+      const value = env[name]?.trim();
+      return value ? acc.replaceAll(placeholder, value) : acc;
+    }, line);
+  return {
+    sections: text.sections.map((s) => ({
+      heading: fill(s.heading),
+      ...(s.paragraphs && { paragraphs: s.paragraphs.map(fill) }),
+      ...(s.items && { items: s.items.map(fill) }),
+    })),
+  };
+}
+
 /** Every `[[...]]` placeholder left in the text, in order, without duplicates. */
 export function findPlaceholders(text: LegalText): string[] {
   const all = text.sections.flatMap((s) => [s.heading, ...(s.paragraphs ?? []), ...(s.items ?? [])]);

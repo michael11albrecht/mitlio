@@ -3,6 +3,8 @@
 Plain-language list of what leaves the device and where it goes. The owner writes the privacy policy
 (P7-T07); see also `docs/data-deletion.md`. Keep this file current when a flow is added.
 
+How long each kind of data is kept: `docs/retention.md` (periods in `supabase/retention.json`).
+
 ## Fuel prices (chips in the ride and trip form)
 
 | Case | What the device contacts | What is sent | What the recipient can see |

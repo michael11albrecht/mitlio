@@ -2,15 +2,14 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 import { futurePrivacySectionsDe, futurePrivacySectionsEn, legalTexts } from '../src/i18n/legal';
-import { assertNoPlaceholders, findPlaceholders, isProductionSite } from '../src/lib/legal';
+import { assertNoPlaceholders, fillAddress, findPlaceholders, isProductionSite } from '../src/lib/legal';
+import retention from '../../supabase/retention.json';
 
-// Release blockers: the owner fills these in src/i18n/legal.ts (docs/release.md, "Legal texts").
-const EXPECTED_PLACEHOLDERS = [
-  '[[STRASSE HAUSNUMMER]]',
-  '[[PLZ ORT]]',
-  '[[E-MAIL]]',
-  '[[ZUSTÄNDIGE LANDESBEHÖRDE FÜR DEN DATENSCHUTZ]]',
-];
+// Release blockers: filled at build time from LEGAL_STREET / LEGAL_CITY (docs/release.md, "Legal texts").
+const EXPECTED_PLACEHOLDERS = ['[[STRASSE HAUSNUMMER]]', '[[PLZ ORT]]'];
+const ALL_TEXTS = (['de', 'en'] as const).flatMap((l) => (['imprint', 'privacy'] as const).map((k) => legalTexts[l][k]));
+const flat = (t: (typeof ALL_TEXTS)[number]): string =>
+  t.sections.flatMap((s) => [s.heading, ...(s.paragraphs ?? []), ...(s.items ?? [])]).join('\n');
 
 test.describe('placeholder gate', () => {
   test('lists exactly the known placeholders, in every text', () => {
@@ -47,6 +46,77 @@ test.describe('placeholder gate', () => {
   test('passes once every placeholder is filled', () => {
     const filled = { sections: [{ heading: 'A', paragraphs: ['Musterstraße 1'] }] };
     expect(() => assertNoPlaceholders(filled, 'https://mitlio.de')).not.toThrow();
+  });
+});
+
+test.describe('address from the build environment', () => {
+  const env = { LEGAL_STREET: 'Teststraße 1', LEGAL_CITY: '12345 Teststadt' };
+
+  test('fills both placeholders in every text', () => {
+    for (const t of ALL_TEXTS) {
+      const filled = fillAddress(t, env);
+      expect(findPlaceholders(filled)).toEqual([]);
+      expect(() => assertNoPlaceholders(filled, 'https://mitlio.de')).not.toThrow();
+    }
+    expect(flat(fillAddress(legalTexts.de.imprint, env))).toContain('Teststraße 1');
+    expect(flat(fillAddress(legalTexts.en.privacy, env))).toContain('12345 Teststadt');
+  });
+
+  test('a missing or blank variable keeps the placeholder, so the production build still fails', () => {
+    for (const t of ALL_TEXTS) {
+      expect(findPlaceholders(fillAddress(t, {}))).toEqual(findPlaceholders(t));
+      const onlyStreet = fillAddress(t, { LEGAL_STREET: 'Teststraße 1', LEGAL_CITY: '   ' });
+      expect(findPlaceholders(onlyStreet)).toEqual(['[[PLZ ORT]]']);
+      expect(() => assertNoPlaceholders(onlyStreet, 'https://mitlio.de')).toThrow(/PLZ ORT/);
+    }
+    expect(() => assertNoPlaceholders(fillAddress(legalTexts.de.imprint, {}), 'https://mitlio.de')).toThrow();
+  });
+});
+
+test.describe('retention numbers come from supabase/retention.json', () => {
+  const de = flat(legalTexts.de.privacy) + flat({ sections: futurePrivacySectionsDe });
+  const en = flat(legalTexts.en.privacy) + flat({ sections: futurePrivacySectionsEn });
+  const days = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+  test('German text', () => {
+    expect(de).toContain(`älter als ${days(retention.rate_limits_days, 'Tag', 'Tage')}`);
+    expect(de).toContain(`nach ${days(retention.sentry_days, 'Tag', 'Tagen')}`);
+    expect(de).toContain(`höchstens ${days(retention.platform_logs_max_days, 'Tag', 'Tage')}`);
+    expect(de).toContain(`${retention.email_months} Monate nach der letzten Nachricht`);
+    expect(de).toContain(`${retention.privacy_request_years} Jahre`);
+    expect(de).toContain(`nach ${retention.join_audit_days} Tagen`);
+    expect(de).toContain(`${retention.expired_invites_days_after_expiry} Tagen nach Ablauf`);
+  });
+
+  test('English text', () => {
+    expect(en).toContain(`older than ${days(retention.rate_limits_days, 'day', 'days')}`);
+    expect(en).toContain(`after ${days(retention.sentry_days, 'day', 'days')}`);
+    expect(en).toContain(`${days(retention.platform_logs_max_days, 'day', 'days')} at most`);
+    expect(en).toContain(`${retention.email_months} months after the last message`);
+    expect(en).toContain(`${retention.privacy_request_years} years`);
+    expect(en).toContain(`after ${retention.join_audit_days} days`);
+    expect(en).toContain(`${retention.expired_invites_days_after_expiry} days after they expire`);
+  });
+
+  test('join audit and invites only appear in the not-yet-live sections', () => {
+    for (const t of [legalTexts.de.privacy, legalTexts.en.privacy]) {
+      expect(flat(t)).not.toMatch(new RegExp(`${retention.join_audit_days} (Tagen|days)`));
+    }
+  });
+});
+
+test.describe('contacts and authority', () => {
+  test('imprint, controller, contact form and BayLDA', () => {
+    expect(flat(legalTexts.de.imprint)).toContain('contact@mitlio.de');
+    expect(flat(legalTexts.de.imprint)).toContain('mitlio.de/kontakt/');
+    expect(flat(legalTexts.en.imprint)).toContain('contact@mitlio.de');
+    expect(flat(legalTexts.en.imprint)).toContain('mitlio.de/en/contact/');
+    for (const t of [legalTexts.de.privacy, legalTexts.en.privacy]) {
+      expect(flat(t)).toContain('privacy@mitlio.de');
+      expect(flat(t)).toContain('BayLDA');
+      expect(flat(t)).toContain('Promenade 18, 91522 Ansbach');
+      expect(flat(t)).toContain('Resend');
+    }
   });
 });
 

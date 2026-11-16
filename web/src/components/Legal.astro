@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { messages, type Locale, type RouteKey } from '../i18n';
 import { legalTexts } from '../i18n/legal';
-import { assertNoPlaceholders } from '../lib/legal';
+import { assertNoPlaceholders, fillAddress } from '../lib/legal';
 import { SITE_URL } from '../../site.config.mjs';
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 const { locale, route } = Astro.props;
 const t = messages[locale];
 const heading = t[route];
-const text = legalTexts[locale][route];
+const text = fillAddress(legalTexts[locale][route], process.env);
 
 // DRAFT, have it reviewed before publishing. Fails the production build while `[[` placeholders remain.
 assertNoPlaceholders(text, SITE_URL, process.env.LEGAL_STRICT === '1');
