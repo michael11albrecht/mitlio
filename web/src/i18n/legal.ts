@@ -66,7 +66,7 @@ const de = {
       {
         heading: 'Spritpreise',
         paragraphs: [
-          'Der Bundesdurchschnitt kommt aus dem Weekly Oil Bulletin der EU. Unser Server ruft ihn ab. Dabei werden keine Nutzerdaten übertragen.',
+          'Der Bundesdurchschnitt kommt aus dem Weekly Oil Bulletin der EU. Ist kein Server eingerichtet, lädt die App diese öffentliche Datei direkt bei der Europäischen Kommission (energy.ec.europa.eu) herunter, höchstens alle 12 Stunden. Dabei sieht die Kommission wie bei jedem Download deine IP-Adresse. Die App sendet sonst nichts: kein Konto, keinen Standort, keine Gruppendaten. Rechtsgrundlage ist unser berechtigtes Interesse, dir aktuelle Preise anzuzeigen (Art. 6 Abs. 1 lit. f DSGVO). Ruft unser Server die Datei ab, werden dabei keine Nutzerdaten übertragen.',
           '„In meiner Nähe“ ist freiwillig und startet nur, wenn du es antippst. Die App fragt den Standort nur während der Nutzung und nur grob ab (nicht im Hintergrund). Sie rundet ihn auf zwei Nachkommastellen (ca. 1 km) und sendet ihn an unsere Edge Function. Dort wird er auf ein Raster von ca. 1,2 × 0,6 km (Geohash, Stufe 6) gerundet. Nur dieser gerundete Punkt geht an Tankerkönig, ohne IP-Adresse und ohne Nutzerkennung. Der genaue Standort wird nicht gespeichert.',
           'Bei einer Postleitzahl senden wir sie an unseren Server. Wir geben sie nicht an Tankerkönig weiter, sondern ordnen ihr einen festen Ort zu.',
           'Rechtsgrundlage für den Standort ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Du kannst sie jederzeit in den Systemeinstellungen deines Geräts widerrufen. Für die Postleitzahl gilt Art. 6 Abs. 1 lit. b DSGVO.',
@@ -176,7 +176,7 @@ const en = {
       {
         heading: 'Fuel prices',
         paragraphs: [
-          'The national average comes from the EU Weekly Oil Bulletin. Our server fetches it. No user data is sent.',
+          'The national average comes from the EU Weekly Oil Bulletin. Without a configured server, the app downloads this public file directly from the European Commission (energy.ec.europa.eu), at most every 12 hours. As with any download, the Commission sees your IP address. The app sends nothing else: no account, no location, no group data. The legal basis is our legitimate interest in showing you current prices (Art. 6(1)(f) GDPR). When our server fetches the file, no user data is sent.',
           '“Near me” is optional and starts only when you tap it. The app asks for your location only while you use it and only roughly (never in the background). It rounds it to two decimals (about 1 km) and sends it to our Edge Function. There it is rounded to a grid cell of about 1.2 × 0.6 km (geohash, precision 6). Only that rounded point goes to Tankerkönig, without IP address and without any user ID. The exact location is not stored.',
           'If you enter a postcode, we send it to our server. We do not pass it on to Tankerkönig; we map it to a fixed place instead.',
           'Legal basis for the location is your consent (Art. 6(1)(a) GDPR, § 25(1) TDDDG). You can withdraw it at any time in your device settings. For the postcode, Art. 6(1)(b) GDPR applies.',
