@@ -20,7 +20,7 @@ select is_empty(
        'groups', 'members', 'expenses', 'expense_payers', 'expense_shares',
        'settlements', 'vehicles', 'ride_templates', 'rides',
        'group_memberships', 'group_invites', 'fuel_price_cache', 'fx_rates', 'rate_limits',
-       'expense_revisions', 'group_join_audit'
+       'expense_revisions', 'group_join_audit', 'app_config'
      ])$q$,
   'every table in public is in the RLS test registry (add new tables here and in rls_policies.sql)');
 
@@ -29,7 +29,7 @@ select is_empty(
        'groups', 'members', 'expenses', 'expense_payers', 'expense_shares',
        'settlements', 'vehicles', 'ride_templates', 'rides',
        'group_memberships', 'group_invites', 'fuel_price_cache', 'fx_rates', 'rate_limits',
-       'expense_revisions', 'group_join_audit'
+       'expense_revisions', 'group_join_audit', 'app_config'
      ])
      except
      select tablename from pg_tables where schemaname = 'public'$q$,
@@ -39,7 +39,7 @@ select is_empty(
   $q$select c.relname
      from pg_class c join pg_namespace n on n.oid = c.relnamespace
      where n.nspname = 'public' and c.relkind in ('r', 'p')
-       and (case when c.relname in ('fuel_price_cache', 'fx_rates')
+       and (case when c.relname in ('fuel_price_cache', 'fx_rates', 'app_config')
                  then has_table_privilege('anon', c.oid,
                         'insert, update, delete, truncate, references, trigger')
                  else has_table_privilege('anon', c.oid,
@@ -47,17 +47,17 @@ select is_empty(
             end
             or has_table_privilege('authenticated', c.oid,
               'delete, truncate, references, trigger')
-            or (c.relname in ('fuel_price_cache', 'fx_rates', 'expense_revisions',
+            or (c.relname in ('fuel_price_cache', 'fx_rates', 'app_config', 'expense_revisions',
                                     'group_join_audit')
                 and has_table_privilege('authenticated', c.oid, 'insert, update')))$q$,
-  'anon has no table privileges (fuel_price_cache, fx_rates: select only); authenticated has no delete/truncate/references/trigger, and no write on fuel_price_cache / fx_rates / expense_revisions / group_join_audit');
+  'anon has no table privileges (fuel_price_cache, fx_rates, app_config: select only); authenticated has no delete/truncate/references/trigger, and no write on fuel_price_cache / fx_rates / app_config / expense_revisions / group_join_audit');
 
 select is_empty(
   $q$select tablename, policyname from pg_policies
      where schemaname = 'public' and roles <> array['authenticated']::name[]
-       and not (tablename in ('fuel_price_cache', 'fx_rates') and cmd = 'SELECT'
+       and not (tablename in ('fuel_price_cache', 'fx_rates', 'app_config') and cmd = 'SELECT'
                 and roles <@ array['anon', 'authenticated']::name[])$q$,
-  'every policy targets exactly the authenticated role (anon/public never); only fuel_price_cache and fx_rates have a public read');
+  'every policy targets exactly the authenticated role (anon/public never); only fuel_price_cache, fx_rates and app_config have a public read');
 
 select is_empty(
   $q$select tablename, policyname from pg_policies
