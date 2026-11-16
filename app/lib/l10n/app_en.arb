@@ -895,6 +895,7 @@
   },
   "fuelOffline": "No connection. Check your network or enter the price yourself.",
   "fuelServerDown": "The price service is unreachable right now. Try again later or enter the price yourself.",
+  "fuelAreasUnavailable": "Postcode and “Near me” prices are not available on this server. The national average applies, or enter the price yourself.",
   "fuelNoPrice": "No current price available right now. Just enter it yourself.",
   "fuelNearby": "Near me",
   "fuelNearbyDenied": "Location not shared, the national average applies.",
@@ -939,6 +940,7 @@
   },
   "routeNoRoute": "There is no road connection between these places. Check start and destination or enter the kilometres yourself.",
   "routeServerDown": "The route service is unreachable right now. Try again later or enter the kilometres yourself.",
+  "routeUnconfigured": "Route calculation is not available on this server. Just enter the kilometres yourself.",
   "routeInvalid": "Start and destination do not fit together. Pick two different places or enter the kilometres yourself.",
   "routeAttributionFallback": "Map and route data © OpenStreetMap contributors"
 }

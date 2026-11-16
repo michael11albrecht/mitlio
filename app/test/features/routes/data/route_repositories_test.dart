@@ -52,7 +52,9 @@ void main() {
     });
 
     test('every failure of the service is passed on, with the wait', () async {
-      for (final reason in RouteFailure.values) {
+      for (final reason in RouteFailure.values.where(
+        (r) => r != RouteFailure.providerUnconfigured,
+      )) {
         service
           ..failWith = reason
           ..failRetryAfter = const Duration(minutes: 7);
@@ -63,6 +65,23 @@ void main() {
         expect(s.reason, reason);
       }
     });
+
+    test(
+      'provider_unconfigured switches the feature off for the session',
+      () async {
+        service.failWith = RouteFailure.providerUnconfigured;
+        expect(repo.isAvailable, isTrue);
+        final first = await repo.suggest('Karls', lang: 'de') as RouteFail;
+        expect(first.reason, RouteFailure.providerUnconfigured);
+        expect(repo.isAvailable, isFalse);
+        service.calls.clear();
+        expect(
+          (await repo.distance(_ka, _st) as RouteFail).reason,
+          RouteFailure.unavailable,
+        );
+        expect(service.calls, isEmpty);
+      },
+    );
 
     test('no route is a failure, not zero', () async {
       final r = await repo.distance(_ka, _kaOther) as RouteFail<int>;

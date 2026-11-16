@@ -97,7 +97,25 @@ class _RouteDistancePanelState extends ConsumerState<RouteDistancePanel> {
       if (fill != null) widget.onFill(fill.meters);
     });
     final s = ref.watch(routeDistanceViewModelProvider);
-    if (!s.available) return const SizedBox.shrink();
+    if (!s.available) {
+      // The one message when this server turned out to have no routing; the
+      // next form shows nothing (the repository remembers for the session).
+      if (s.failure != RouteFailure.providerUnconfigured) {
+        return const SizedBox.shrink();
+      }
+      return Padding(
+        padding: const EdgeInsets.only(top: Spacing.sm),
+        child: Semantics(
+          liveRegion: true,
+          child: Text(
+            l10n.routeUnconfigured,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -242,6 +260,7 @@ class _RouteDistancePanelState extends ConsumerState<RouteDistancePanel> {
       RouteFailure.noRoute => l10n.routeNoRoute,
       RouteFailure.invalidParams => l10n.routeInvalid,
       RouteFailure.provider || RouteFailure.unavailable => l10n.routeServerDown,
+      RouteFailure.providerUnconfigured => l10n.routeUnconfigured,
     };
   }
 

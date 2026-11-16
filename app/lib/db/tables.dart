@@ -279,7 +279,7 @@ class ExpenseRevisions extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-/// Pending sync operations (P6). Rewritten in v5 (the table was unused, so no
+/// Pending sync operations (P6). Rewritten in v6 (the table was unused, so no
 /// data migration); rows are written by P6-T09.
 @DataClassName('LocalOutboxRow')
 class LocalOutbox extends Table {
@@ -307,7 +307,7 @@ class LocalOutbox extends Table {
   ];
 }
 
-/// Per group: is it shared, and how did the last sync go (schema v5). Client
+/// Per group: is it shared, and how did the last sync go (schema v6). Client
 /// only. No row means the group is local only.
 @DataClassName('LocalGroupSyncRow')
 class LocalGroupSync extends Table {
@@ -329,7 +329,7 @@ class LocalGroupSync extends Table {
   Set<Column<Object>> get primaryKey => {groupId};
 }
 
-/// Last applied `server_seq` per group and synced table (schema v5). Client
+/// Last applied `server_seq` per group and synced table (schema v6). Client
 /// only: the server never sees it.
 @DataClassName('LocalSyncCursorRow')
 class LocalSyncCursor extends Table {
@@ -343,7 +343,7 @@ class LocalSyncCursor extends Table {
   Set<Column<Object>> get primaryKey => {groupId, syncedTable};
 }
 
-/// Key/value install settings (schema v5). Client only. Holds
+/// Key/value install settings (schema v6). Client only. Holds
 /// `hlc_node_id`, created once per install.
 @DataClassName('LocalSettingRow')
 class LocalSettings extends Table {

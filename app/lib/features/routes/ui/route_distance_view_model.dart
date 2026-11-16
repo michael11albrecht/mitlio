@@ -24,7 +24,9 @@ final class RouteFill {
 }
 
 /// State of the "Strecke berechnen" panel. [available] false means: show
-/// nothing, the form has only its manual kilometre field.
+/// nothing, the form has only its manual kilometre field. The one exception:
+/// right after the backend said it has no routing key
+/// ([RouteFailure.providerUnconfigured]) the panel shows that message once.
 final class RouteDistanceState {
   const RouteDistanceState({
     required this.available,
@@ -102,6 +104,7 @@ final class RouteDistanceState {
     PlaceSuggestion? end,
     RouteField? active,
     List<PlaceSuggestion>? suggestions,
+    bool? available,
     bool? searching,
     bool? searched,
     bool? calculating,
@@ -117,7 +120,7 @@ final class RouteDistanceState {
     bool clearEnd = false,
     bool clearFailure = false,
   }) => RouteDistanceState(
-    available: available,
+    available: available ?? this.available,
     start: clearStart ? null : start ?? this.start,
     end: clearEnd ? null : end ?? this.end,
     active: active ?? this.active,
@@ -249,6 +252,7 @@ class RouteDistanceViewModel extends Notifier<RouteDistanceState> {
           searching: false,
           failure: reason,
           retryAfter: retryAfter,
+          available: _routes.isAvailable,
         );
     }
   }
@@ -322,6 +326,7 @@ class RouteDistanceViewModel extends Notifier<RouteDistanceState> {
           calculating: false,
           failure: reason,
           retryAfter: retryAfter,
+          available: _routes.isAvailable,
         );
     }
   }

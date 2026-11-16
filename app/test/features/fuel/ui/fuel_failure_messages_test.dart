@@ -41,6 +41,25 @@ void main() {
     expect(find.textContaining('in 7 Min. nochmal'), findsOneWidget);
   });
 
+  testWidgets('provider not set up: says areas are unavailable here', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      const FuelPriceState(
+        available: true,
+        grade: FuelGrade.e5,
+        canPlz: false,
+        failure: FuelFailure.providerUnconfigured,
+      ),
+    );
+    expect(
+      find.textContaining('gibt es auf diesem Server nicht'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('Postleitzahl'), findsOneWidget);
+  });
+
   testWidgets('offline: connection hint', (tester) async {
     await pump(tester, nothing(FuelFailure.offline));
     expect(find.textContaining('Keine Verbindung'), findsOneWidget);

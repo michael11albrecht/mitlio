@@ -4,6 +4,7 @@ import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_providers.dart';
 import 'package:mitlio/features/settings/data/repositories/data_deletion_repository.dart';
 import 'package:mitlio/features/settings/data/services/server_data_service.dart';
+import 'package:mitlio/features/sync/data/auth_providers.dart';
 
 /// Inert until accounts exist; override with `FakeServerDataService` in tests.
 final serverDataServiceProvider = Provider<ServerDataService>(
@@ -17,5 +18,6 @@ final dataDeletionRepositoryProvider = Provider<DataDeletionRepository>(
     cipher: ref.watch(ibanCipherProvider),
     crashReporter: ref.watch(crashReporterProvider),
     server: ref.watch(serverDataServiceProvider),
+    auth: ref.watch(authRepositoryProvider),
   ),
 );

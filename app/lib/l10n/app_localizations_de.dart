@@ -1800,6 +1800,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Preisdienst gerade nicht erreichbar. Versuch es später nochmal oder trag den Preis selbst ein.';
 
   @override
+  String get fuelAreasUnavailable =>
+      'Postleitzahl und „In meiner Nähe“ gibt es auf diesem Server nicht. Es gilt der Bundesdurchschnitt, den Preis kannst du auch selbst eintragen.';
+
+  @override
   String get fuelNoPrice =>
       'Gerade kein aktueller Preis verfügbar. Trag ihn einfach selbst ein.';
 
@@ -1900,6 +1904,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get routeServerDown =>
       'Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.';
+
+  @override
+  String get routeUnconfigured =>
+      'Die Streckenberechnung gibt es auf diesem Server nicht. Trag die Kilometer einfach selbst ein.';
 
   @override
   String get routeInvalid =>

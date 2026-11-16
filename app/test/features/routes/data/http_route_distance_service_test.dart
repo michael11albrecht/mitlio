@@ -108,7 +108,11 @@ void main() {
       (429, '{"error":"rate_limited"}', RouteFailure.rateLimited),
       (500, '{"error":"x"}', RouteFailure.provider),
       (503, '{"error":"provider_unavailable"}', RouteFailure.provider),
-      (503, '{"error":"provider_unconfigured"}', RouteFailure.provider),
+      (
+        503,
+        '{"error":"provider_unconfigured"}',
+        RouteFailure.providerUnconfigured,
+      ),
     ]) {
       status = code;
       body = text;
