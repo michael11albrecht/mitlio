@@ -136,6 +136,9 @@ class HttpRouteDistanceService implements RouteDistanceService {
           RouteFailure.noRoute,
         ),
         400 => const RouteFail(RouteFailure.invalidParams),
+        503 when body.contains('provider_unconfigured') => const RouteFail(
+          RouteFailure.providerUnconfigured,
+        ),
         _ => const RouteFail(RouteFailure.provider),
       };
 }

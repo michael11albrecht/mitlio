@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/debug/fakes/fake_route_distance_service.dart';
 import 'package:mitlio/features/routes/data/repositories/fake_places_repository.dart';
+import 'package:mitlio/features/routes/data/repositories/route_distance_repository.dart';
 import 'package:mitlio/features/routes/data/repositories/route_providers.dart';
 import 'package:mitlio/features/routes/data/route_models.dart';
 import 'package:mitlio/features/routes/data/services/route_distance_service.dart';
@@ -86,6 +87,27 @@ void main() {
     expect(c.read(routeDistanceViewModelProvider).canRecalculate, isFalse);
   });
 
+  test(
+    'provider_unconfigured: feature off for the session, reason kept',
+    () async {
+      service.failWith = RouteFailure.providerUnconfigured;
+      await vm().search(RouteField.start, 'Karls');
+      expect(state().available, isFalse);
+      expect(state().failure, RouteFailure.providerUnconfigured);
+      // The repository remembers: nothing more is asked this session.
+      expect(
+        container.read(routeDistanceRepositoryProvider).isAvailable,
+        isFalse,
+      );
+      service.calls.clear();
+      final again = await container
+          .read(routeDistanceRepositoryProvider)
+          .distance(_ka, _st);
+      expect((again as RouteFail<int>).reason, RouteFailure.unavailable);
+      expect(service.calls, isEmpty);
+    },
+  );
+
   group('searchPlaces', () {
     test('success: suggestions and the credit line', () async {
       await vm().search(RouteField.start, 'Karls');
@@ -111,7 +133,9 @@ void main() {
     });
 
     test('each failure is kept with its reason and wait', () async {
-      for (final reason in RouteFailure.values) {
+      for (final reason in RouteFailure.values.where(
+        (r) => r != RouteFailure.providerUnconfigured,
+      )) {
         service
           ..failWith = reason
           ..failRetryAfter = const Duration(minutes: 4);
@@ -218,7 +242,9 @@ void main() {
     });
 
     test('each failure of the distance call surfaces', () async {
-      for (final reason in RouteFailure.values) {
+      for (final reason in RouteFailure.values.where(
+        (r) => r != RouteFailure.providerUnconfigured,
+      )) {
         service
           ..failWith = reason
           ..failRetryAfter = reason == RouteFailure.rateLimited

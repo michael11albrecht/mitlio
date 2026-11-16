@@ -1307,6 +1307,9 @@
   "balancesEmptyAction": "Ausgabe eintragen",
   "settingsTitle": "Einstellungen",
   "privacySection": "Datenschutz",
+  "privacySummary": "Deine Daten bleiben auf diesem Gerät. Nur für Spritpreise und Wechselkurse fragt die App unseren Server; Standort nur, wenn du \"In meiner Nähe\" antippst. Absturzberichte sind aus, bis du sie einschaltest.",
+  "privacyPolicyEntry": "Datenschutzerklärung",
+  "imprintEntry": "Impressum",
   "crashReportsLabel": "Absturzberichte senden",
   "crashReportsHint": "Nur bei einem Absturz: technische Fehlerdaten ohne Namen, Beträge, Notizen oder IBAN. Standardmäßig aus.",
   "crashReportsUnavailable": "In dieser Version nicht verfügbar.",
@@ -1399,6 +1402,7 @@
   },
   "fuelOffline": "Keine Verbindung. Prüf dein Netz oder trag den Preis selbst ein.",
   "fuelServerDown": "Preisdienst gerade nicht erreichbar. Versuch es später nochmal oder trag den Preis selbst ein.",
+  "fuelAreasUnavailable": "Postleitzahl und „In meiner Nähe“ gibt es auf diesem Server nicht. Es gilt der Bundesdurchschnitt, den Preis kannst du auch selbst eintragen.",
   "fuelNoPrice": "Gerade kein aktueller Preis verfügbar. Trag ihn einfach selbst ein.",
   "fuelNearby": "In meiner Nähe",
   "fuelNearbyDenied": "Standort nicht freigegeben, es gilt der Bundesdurchschnitt.",
@@ -1443,6 +1447,7 @@
   },
   "routeNoRoute": "Zwischen diesen Orten gibt es keine Straßenverbindung. Prüf Start und Ziel oder trag die Kilometer selbst ein.",
   "routeServerDown": "Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.",
+  "routeUnconfigured": "Die Streckenberechnung gibt es auf diesem Server nicht. Trag die Kilometer einfach selbst ein.",
   "routeInvalid": "Start und Ziel passen nicht zusammen. Wähl zwei verschiedene Orte oder trag die Kilometer selbst ein.",
   "routeAttributionFallback": "Karten- und Routendaten © OpenStreetMap-Mitwirkende"
 }

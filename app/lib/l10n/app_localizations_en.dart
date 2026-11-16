@@ -1638,6 +1638,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacySection => 'Privacy';
 
   @override
+  String get privacySummary =>
+      'Your data stays on this device. The app only asks our server for fuel prices and exchange rates; your location only if you tap \"Near me\". Crash reports are off until you turn them on.';
+
+  @override
+  String get privacyPolicyEntry => 'Privacy policy';
+
+  @override
+  String get imprintEntry => 'Imprint';
+
+  @override
   String get crashReportsLabel => 'Send crash reports';
 
   @override
@@ -1791,6 +1801,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'The price service is unreachable right now. Try again later or enter the price yourself.';
 
   @override
+  String get fuelAreasUnavailable =>
+      'Postcode and “Near me” prices are not available on this server. The national average applies, or enter the price yourself.';
+
+  @override
   String get fuelNoPrice =>
       'No current price available right now. Just enter it yourself.';
 
@@ -1892,6 +1906,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get routeServerDown =>
       'The route service is unreachable right now. Try again later or enter the kilometres yourself.';
+
+  @override
+  String get routeUnconfigured =>
+      'Route calculation is not available on this server. Just enter the kilometres yourself.';
 
   @override
   String get routeInvalid =>

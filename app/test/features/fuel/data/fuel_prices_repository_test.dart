@@ -146,6 +146,29 @@ void main() {
       expect(repo.canLocate, isFalse);
     });
 
+    test('provider_unconfigured on a postcode switches both off', () async {
+      expect(repo.supportsAreas, isTrue);
+      service.failWith = FuelFailure.providerUnconfigured;
+      final r = await repo.forPlz(FuelGrade.e5, '10115') as FuelMissing;
+      expect(r.reason, FuelFailure.providerUnconfigured);
+      expect(repo.supportsAreas, isFalse);
+      expect(repo.canLocate, isFalse);
+      // No further request for a postcode: the server cannot answer it.
+      service.calls.clear();
+      expect(
+        (await repo.forPlz(FuelGrade.e5, '10115') as FuelMissing).reason,
+        FuelFailure.unavailable,
+      );
+      expect(service.calls, isEmpty);
+    });
+
+    test('national keeps working after areas are switched off', () async {
+      service.failWith = FuelFailure.providerUnconfigured;
+      await repo.forPlz(FuelGrade.e5, '10115');
+      service.failWith = null;
+      expect(await repo.national(FuelGrade.e5), isA<FuelFound>());
+    });
+
     test('a provider outage keeps the option', () async {
       service.failWith = FuelFailure.provider;
       await repo.nearby(FuelGrade.e5);

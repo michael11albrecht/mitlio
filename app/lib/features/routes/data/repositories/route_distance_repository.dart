@@ -14,9 +14,20 @@ class RouteDistanceRepository {
 
   final RouteDistanceService _service;
 
-  /// Whether the feature is on (a backend is configured). Off means the forms
-  /// show only the manual kilometre field.
-  bool get isAvailable => _service.isConfigured;
+  /// Whether the feature is on (a backend is configured and has a routing
+  /// key). Off means the forms show only the manual kilometre field. Turns
+  /// false for the rest of the session once the backend answered
+  /// `provider_unconfigured`.
+  bool get isAvailable => _service.isConfigured && !_off;
+
+  bool _off = false;
+
+  RouteResult<T> _note<T>(RouteResult<T> result) {
+    if (result case RouteFail(reason: RouteFailure.providerUnconfigured)) {
+      _off = true;
+    }
+    return result;
+  }
 
   /// Up to five places for [text]; `invalidParams` for less than
   /// [minPlaceTextLength] characters.
@@ -31,7 +42,7 @@ class RouteDistanceRepository {
     if (trimmed.runes.length < minPlaceTextLength) {
       return Future.value(const RouteFail(RouteFailure.invalidParams));
     }
-    return _service.suggest(trimmed, lang: lang);
+    return _service.suggest(trimmed, lang: lang).then(_note);
   }
 
   /// Driving distance in metres; `invalidParams` when both places are the
@@ -43,6 +54,6 @@ class RouteDistanceRepository {
     if (from.lat == to.lat && from.lng == to.lng) {
       return Future.value(const RouteFail(RouteFailure.invalidParams));
     }
-    return _service.distance(from, to);
+    return _service.distance(from, to).then(_note);
   }
 }

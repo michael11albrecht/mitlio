@@ -216,7 +216,7 @@ drive: ## Call ext.mitlio.* on the running app (CMD='ping' or CMD='seed {"scenar
 
 .PHONY: secrets
 secrets: ## Scan for committed secrets
-	@command -v gitleaks >/dev/null && gitleaks git --no-banner --redact . || echo "gitleaks not installed — skipped"
+	@if command -v gitleaks >/dev/null; then gitleaks git --no-banner --redact .; else echo "gitleaks not installed — skipped"; fi
 
 .PHONY: check-fast
 check-fast: fmt-check lint test-domain ## Quick gate (agent Stop hook)

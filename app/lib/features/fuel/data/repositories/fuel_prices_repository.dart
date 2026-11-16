@@ -28,15 +28,17 @@ class FuelPricesRepository {
   bool get isAvailable => _service.isConfigured;
 
   /// Whether postcode and "in meiner Nähe" lookups exist (a backend with a
-  /// provider; not the direct EU source).
-  bool get supportsAreas => isAvailable && _service.supportsAreas;
+  /// provider key; not the direct EU source). Turns false for the rest of the
+  /// session once the backend answered `provider_unconfigured`.
+  bool get supportsAreas => isAvailable && _service.supportsAreas && !_areasOff;
 
   /// Whether "in meiner Nähe" can be offered.
-  bool get canLocate => supportsAreas && _location.isSupported && !_nearbyOff;
+  bool get canLocate => supportsAreas && _location.isSupported;
 
-  /// Set once the backend said `provider_unconfigured` (no provider key): the
-  /// option then disappears for the session instead of failing again.
-  bool _nearbyOff = false;
+  /// Set once the backend said `provider_unconfigured` (no Tankerkönig key)
+  /// for a postcode or nearby lookup: both options then disappear for the
+  /// session instead of failing again on every tap.
+  bool _areasOff = false;
 
   /// Set once the permission is blocked for good: no further plugin calls.
   bool _blocked = false;
@@ -61,7 +63,7 @@ class FuelPricesRepository {
     if (_blocked) return const FuelMissing(FuelFailure.locationBlocked);
     final position = await _location.current();
     return switch (position) {
-      LocationFound(:final lat, :final lng) => _nearbyLookup(
+      LocationFound(:final lat, :final lng) => _lookup(
         grade,
         // Rounded on the device (about 1 km): the exact spot never leaves it.
         NearbyArea(lat: _round2(lat), lng: _round2(lng)),
@@ -79,14 +81,6 @@ class FuelPricesRepository {
   FuelOutcome _block() {
     _blocked = true;
     return const FuelMissing(FuelFailure.locationBlocked);
-  }
-
-  Future<FuelOutcome> _nearbyLookup(FuelGrade grade, NearbyArea area) async {
-    final outcome = await _lookup(grade, area);
-    if (outcome case FuelMissing(reason: FuelFailure.providerUnconfigured)) {
-      _nearbyOff = true;
-    }
-    return outcome;
   }
 
   Future<FuelOutcome> _lookup(FuelGrade grade, FuelArea? area) async {
@@ -111,6 +105,9 @@ class FuelPricesRepository {
         _cache[key] = (price: price, at: now);
         return FuelFound(price);
       case FuelServiceFailure(:final reason, :final retryAfter):
+        if (reason == FuelFailure.providerUnconfigured && area != null) {
+          _areasOff = true;
+        }
         return hit == null
             ? FuelMissing(reason, retryAfter: retryAfter)
             : FuelFound(

@@ -64,8 +64,12 @@ enum RouteFailure {
   /// The service found no drivable route between the two places.
   noRoute,
 
-  /// The routing service is down, not set up or answered garbage.
+  /// The routing service is down or answered garbage.
   provider,
+
+  /// The backend has no routing key (`503 provider_unconfigured`): the
+  /// feature cannot work on this server and is switched off for the session.
+  providerUnconfigured,
 }
 
 /// Outcome of one call: a value plus the credit line, or the reason for none.
