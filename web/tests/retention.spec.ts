@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 
-import retention from '../../supabase/retention.json';
+import retention from '../../supabase/retention.json' with { type: 'json' };
 
 // supabase/retention.json is the single source of truth (docs/retention.md). The cleanup SQL and the pgTAP
 // test hard-code the same numbers; this test fails when any of them drifts.

@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 
 import { futurePrivacySectionsDe, futurePrivacySectionsEn, legalTexts } from '../src/i18n/legal';
 import { assertNoPlaceholders, fillAddress, findPlaceholders, isProductionSite } from '../src/lib/legal';
-import retention from '../../supabase/retention.json';
+import retention from '../../supabase/retention.json' with { type: 'json' };
 
 // Release blockers: filled at build time from LEGAL_STREET / LEGAL_CITY (docs/release.md, "Legal texts").
 const EXPECTED_PLACEHOLDERS = ['[[STRASSE HAUSNUMMER]]', '[[PLZ ORT]]'];

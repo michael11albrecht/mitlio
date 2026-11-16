@@ -11,7 +11,7 @@
 //
 // Every retention period in the text is interpolated from supabase/retention.json (docs/retention.md), so the
 // text cannot drift from the code. Change a period there, not here.
-import retention from '../../../supabase/retention.json';
+import retention from '../../../supabase/retention.json' with { type: 'json' };
 import type { Locale } from './index';
 
 export interface LegalSection {
