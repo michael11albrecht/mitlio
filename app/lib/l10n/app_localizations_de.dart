@@ -51,6 +51,74 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get remoteErrorOffline =>
+      'Keine Verbindung. Deine Änderungen sind gespeichert und gehen raus, sobald du online bist.';
+
+  @override
+  String get remoteErrorRateLimited =>
+      'Zu viele Versuche. Versuch es in ein paar Minuten nochmal.';
+
+  @override
+  String remoteErrorRateLimitedIn(int minutes) {
+    return 'Zu viele Versuche. Versuch es in $minutes Min. nochmal.';
+  }
+
+  @override
+  String get remoteErrorInviteInvalid =>
+      'Dieser Link gilt nicht mehr. Bitte um einen neuen Link.';
+
+  @override
+  String remoteErrorMemberAlreadyClaimed(String name) {
+    return '$name ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.';
+  }
+
+  @override
+  String get remoteErrorMemberAlreadyClaimedNoName =>
+      'Diese Person ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.';
+
+  @override
+  String remoteErrorAlreadyConnected(String name) {
+    return 'Du bist in dieser Gruppe schon als $name verbunden.';
+  }
+
+  @override
+  String get remoteErrorAlreadyConnectedNoName =>
+      'Du bist in dieser Gruppe schon verbunden.';
+
+  @override
+  String get remoteErrorMemberGone =>
+      'Diese Person gibt es in der Gruppe nicht mehr. Wähl eine andere.';
+
+  @override
+  String get remoteErrorNotOwner =>
+      'Das kann nur, wer die Gruppe erstellt hat.';
+
+  @override
+  String get remoteErrorNotMember =>
+      'Du bist nicht mehr in dieser Gruppe. Deine Daten bleiben auf diesem Handy.';
+
+  @override
+  String get remoteErrorCannotRemoveSelf =>
+      'Dich selbst kannst du hier nicht entfernen.';
+
+  @override
+  String get remoteErrorVersionTooOld =>
+      'Diese Version kann nicht mehr teilen. Aktualisiere mitlio.';
+
+  @override
+  String get remoteErrorServerDown =>
+      'Der Server antwortet gerade nicht. Wir versuchen es gleich nochmal.';
+
+  @override
+  String remoteErrorRejected(String title) {
+    return '„$title“ konnte nicht geteilt werden. Sie ist nur auf diesem Handy.';
+  }
+
+  @override
+  String get remoteErrorRejectedNoTitle =>
+      'Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.';
+
+  @override
   String get errorSettingNotSaved =>
       'Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.';
 
@@ -1106,6 +1174,67 @@ class AppLocalizationsDe extends AppLocalizations {
   String get vehicleSave => 'Speichern';
 
   @override
+  String vehicleCatalogEngine(String litres) {
+    return '$litres l';
+  }
+
+  @override
+  String vehicleCatalogPower(int kw) {
+    return '$kw kW';
+  }
+
+  @override
+  String vehicleCatalogHybrid(String fuel) {
+    return '$fuel-Hybrid';
+  }
+
+  @override
+  String vehicleCatalogConsumptionLitre(String value) {
+    return '$value l/100 km';
+  }
+
+  @override
+  String vehicleCatalogConsumptionKwh(String value) {
+    return '$value kWh/100 km';
+  }
+
+  @override
+  String get vehicleCatalogSuggestions => 'Fahrzeugvorschläge';
+
+  @override
+  String get vehicleCatalogSource => 'Daten: EEA, CC BY 4.0';
+
+  @override
+  String get vehicleCatalogNoMatch =>
+      'Nicht dabei? Trag den Verbrauch selbst ein, z. B. aus deinem Bordcomputer.';
+
+  @override
+  String get vehicleCatalogUnavailable =>
+      'Die Fahrzeugliste konnte nicht geladen werden. Trag den Verbrauch selbst ein, z. B. aus deinem Bordcomputer.';
+
+  @override
+  String get vehicleCatalogWltpNote =>
+      'Herstellerangabe (WLTP). Im Alltag verbrauchst du meist etwa 20 % mehr.';
+
+  @override
+  String get vehicleCatalogWltpNoteElectric =>
+      'Herstellerangabe (WLTP). Im Alltag brauchst du meist etwas mehr.';
+
+  @override
+  String get vehicleCatalogRealisticNote =>
+      'Geschätzter Alltagswert: Herstellerangabe (WLTP) plus etwa 20 %. Das ist eine Schätzung, kein offizieller Wert.';
+
+  @override
+  String vehicleCatalogUseRealistic(String value) {
+    return 'Realistischen Wert übernehmen: $value l/100 km';
+  }
+
+  @override
+  String vehicleCatalogPicked(String name) {
+    return '„$name“ übernommen. Dein Verbrauch wurde ersetzt.';
+  }
+
+  @override
   String get templateFormNew => 'Neue Strecke';
 
   @override
@@ -1534,6 +1663,28 @@ class AppLocalizationsDe extends AppLocalizations {
       'Gruppen, Ausgaben und Fahrten von diesem Gerät entfernen';
 
   @override
+  String get licensesEntry => 'Quellen und Lizenzen';
+
+  @override
+  String get licensesEntryHint => 'Daten und Schriften, die mitlio nutzt';
+
+  @override
+  String get licensesTitle => 'Quellen und Lizenzen';
+
+  @override
+  String get licensesEeaTitle => 'Fahrzeugliste';
+
+  @override
+  String get licensesEea =>
+      'Daten: Europäische Umweltagentur (EEA), Überwachung der CO2-Emissionen von neuen Pkw (Verordnung (EU) 2019/631), CC BY 4.0. Die Werte sind Herstellerangaben (WLTP). mitlio hat sie nur zusammengefasst und nicht verändert.';
+
+  @override
+  String get licensesFontTitle => 'Schrift im PDF';
+
+  @override
+  String get licensesFont => 'Roboto, Apache License 2.0.';
+
+  @override
   String get deleteMyDataTitle => 'Alle meine Daten löschen';
 
   @override
@@ -1683,4 +1834,78 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get fuelAttributionFallback => 'Spritpreisdaten';
+
+  @override
+  String get routeToggle => 'Start und Ziel eingeben, Strecke berechnen';
+
+  @override
+  String get routeStartLabel => 'Start';
+
+  @override
+  String get routeEndLabel => 'Ziel';
+
+  @override
+  String routeResult(String km) {
+    return '$km km, Strecke über die Straße';
+  }
+
+  @override
+  String get routeRecalculate => 'Neu berechnen';
+
+  @override
+  String get routeSearching => 'Suche läuft …';
+
+  @override
+  String get routeCalculating => 'Strecke wird berechnet …';
+
+  @override
+  String get routeNoMatches =>
+      'Keine Treffer. Probier einen anderen Ort oder trag die Kilometer selbst ein.';
+
+  @override
+  String get routeSavedHome => 'Zuhause';
+
+  @override
+  String get routeSavedWork => 'Arbeit';
+
+  @override
+  String get routeSaveAsHome => 'Als Zuhause merken';
+
+  @override
+  String get routeSaveAsWork => 'Als Arbeit merken';
+
+  @override
+  String get routeSavedAsHome => 'Als Zuhause gemerkt';
+
+  @override
+  String get routeSavedAsWork => 'Als Arbeit gemerkt';
+
+  @override
+  String get routeOffline =>
+      'Keine Verbindung, trag die Kilometer einfach selbst ein.';
+
+  @override
+  String get routeRateLimited =>
+      'Zu viele Streckenanfragen. Versuch es später nochmal oder trag die Kilometer selbst ein.';
+
+  @override
+  String routeRateLimitedIn(int minutes) {
+    return 'Zu viele Streckenanfragen. Versuch es in $minutes Min. nochmal oder trag die Kilometer selbst ein.';
+  }
+
+  @override
+  String get routeNoRoute =>
+      'Zwischen diesen Orten gibt es keine Straßenverbindung. Prüf Start und Ziel oder trag die Kilometer selbst ein.';
+
+  @override
+  String get routeServerDown =>
+      'Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.';
+
+  @override
+  String get routeInvalid =>
+      'Start und Ziel passen nicht zusammen. Wähl zwei verschiedene Orte oder trag die Kilometer selbst ein.';
+
+  @override
+  String get routeAttributionFallback =>
+      'Karten- und Routendaten © OpenStreetMap-Mitwirkende';
 }

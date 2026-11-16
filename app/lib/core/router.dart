@@ -14,6 +14,7 @@ import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/template_form_view.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view.dart';
 import 'package:mitlio/features/settings/ui/delete_my_data_view.dart';
+import 'package:mitlio/features/settings/ui/licenses_view.dart';
 import 'package:mitlio/features/settings/ui/settings_view.dart';
 import 'package:mitlio/features/settle/ui/settle_view.dart';
 import 'package:mitlio/features/statistics/ui/statistics_view.dart';
@@ -51,6 +52,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'delete-data',
                 builder: (context, state) => const DeleteMyDataView(),
+              ),
+              GoRoute(
+                path: 'licenses',
+                builder: (context, state) => const LicensesView(),
               ),
             ],
           ),

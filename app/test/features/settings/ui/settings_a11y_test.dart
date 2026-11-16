@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/crash/crash_reporter.dart';
 import 'package:mitlio/core/providers.dart';
+import 'package:mitlio/features/settings/ui/licenses_view.dart';
 import 'package:mitlio/features/settings/ui/settings_view.dart';
 
 import '../../../helpers/a11y.dart';
@@ -20,4 +21,10 @@ void main() {
       (tester, _, _) => expectAccessible(tester),
     );
   }
+
+  forEachMode(
+    'licenses',
+    () => const LicensesView(),
+    (tester, _, _) => expectAccessible(tester),
+  );
 }

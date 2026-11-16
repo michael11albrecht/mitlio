@@ -3799,6 +3799,29 @@ class $LocalOutboxTable extends LocalOutbox
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
+  static const VerificationMeta _opIdMeta = const VerificationMeta('opId');
+  @override
+  late final GeneratedColumn<String> opId = GeneratedColumn<String>(
+    'op_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES "groups" (id)',
+    ),
+  );
   static const VerificationMeta _entityMeta = const VerificationMeta('entity');
   @override
   late final GeneratedColumn<String> entity = GeneratedColumn<String>(
@@ -3839,6 +3862,17 @@ class $LocalOutboxTable extends LocalOutbox
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _attemptsMeta = const VerificationMeta(
     'attempts',
   );
@@ -3851,14 +3885,42 @@ class $LocalOutboxTable extends LocalOutbox
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _nextAttemptAtMeta = const VerificationMeta(
+    'nextAttemptAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> nextAttemptAt =
+      GeneratedColumn<DateTime>(
+        'next_attempt_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastErrorCodeMeta = const VerificationMeta(
+    'lastErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastErrorCode = GeneratedColumn<String>(
+    'last_error_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     seq,
+    opId,
+    groupId,
     entity,
     entityId,
     op,
     payload,
+    createdAt,
     attempts,
+    nextAttemptAt,
+    lastErrorCode,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3877,6 +3939,22 @@ class $LocalOutboxTable extends LocalOutbox
         _seqMeta,
         seq.isAcceptableOrUnknown(data['seq']!, _seqMeta),
       );
+    }
+    if (data.containsKey('op_id')) {
+      context.handle(
+        _opIdMeta,
+        opId.isAcceptableOrUnknown(data['op_id']!, _opIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_opIdMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
     }
     if (data.containsKey('entity')) {
       context.handle(
@@ -3907,10 +3985,36 @@ class $LocalOutboxTable extends LocalOutbox
     } else if (isInserting) {
       context.missing(_payloadMeta);
     }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
     if (data.containsKey('attempts')) {
       context.handle(
         _attemptsMeta,
         attempts.isAcceptableOrUnknown(data['attempts']!, _attemptsMeta),
+      );
+    }
+    if (data.containsKey('next_attempt_at')) {
+      context.handle(
+        _nextAttemptAtMeta,
+        nextAttemptAt.isAcceptableOrUnknown(
+          data['next_attempt_at']!,
+          _nextAttemptAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error_code')) {
+      context.handle(
+        _lastErrorCodeMeta,
+        lastErrorCode.isAcceptableOrUnknown(
+          data['last_error_code']!,
+          _lastErrorCodeMeta,
+        ),
       );
     }
     return context;
@@ -3919,12 +4023,24 @@ class $LocalOutboxTable extends LocalOutbox
   @override
   Set<GeneratedColumn> get $primaryKey => {seq};
   @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {opId},
+  ];
+  @override
   LocalOutboxRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return LocalOutboxRow(
       seq: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}seq'],
+      )!,
+      opId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}op_id'],
+      )!,
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
       )!,
       entity: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -3942,10 +4058,22 @@ class $LocalOutboxTable extends LocalOutbox
         DriftSqlType.string,
         data['${effectivePrefix}payload'],
       )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
       attempts: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}attempts'],
       )!,
+      nextAttemptAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}next_attempt_at'],
+      ),
+      lastErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error_code'],
+      ),
     );
   }
 
@@ -3957,39 +4085,73 @@ class $LocalOutboxTable extends LocalOutbox
 
 class LocalOutboxRow extends DataClass implements Insertable<LocalOutboxRow> {
   final int seq;
+
+  /// UUIDv7, the idempotency key of the push (server ignores a replay).
+  final String opId;
+  final String groupId;
   final String entity;
   final String entityId;
   final String op;
   final String payload;
+  final DateTime createdAt;
   final int attempts;
+
+  /// Backoff: not before this time. Null: due now.
+  final DateTime? nextAttemptAt;
+
+  /// Stable error case name of the last failed push (ADR-27 §3).
+  final String? lastErrorCode;
   const LocalOutboxRow({
     required this.seq,
+    required this.opId,
+    required this.groupId,
     required this.entity,
     required this.entityId,
     required this.op,
     required this.payload,
+    required this.createdAt,
     required this.attempts,
+    this.nextAttemptAt,
+    this.lastErrorCode,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['seq'] = Variable<int>(seq);
+    map['op_id'] = Variable<String>(opId);
+    map['group_id'] = Variable<String>(groupId);
     map['entity'] = Variable<String>(entity);
     map['entity_id'] = Variable<String>(entityId);
     map['op'] = Variable<String>(op);
     map['payload'] = Variable<String>(payload);
+    map['created_at'] = Variable<DateTime>(createdAt);
     map['attempts'] = Variable<int>(attempts);
+    if (!nullToAbsent || nextAttemptAt != null) {
+      map['next_attempt_at'] = Variable<DateTime>(nextAttemptAt);
+    }
+    if (!nullToAbsent || lastErrorCode != null) {
+      map['last_error_code'] = Variable<String>(lastErrorCode);
+    }
     return map;
   }
 
   LocalOutboxCompanion toCompanion(bool nullToAbsent) {
     return LocalOutboxCompanion(
       seq: Value(seq),
+      opId: Value(opId),
+      groupId: Value(groupId),
       entity: Value(entity),
       entityId: Value(entityId),
       op: Value(op),
       payload: Value(payload),
+      createdAt: Value(createdAt),
       attempts: Value(attempts),
+      nextAttemptAt: nextAttemptAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nextAttemptAt),
+      lastErrorCode: lastErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastErrorCode),
     );
   }
 
@@ -4000,11 +4162,16 @@ class LocalOutboxRow extends DataClass implements Insertable<LocalOutboxRow> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return LocalOutboxRow(
       seq: serializer.fromJson<int>(json['seq']),
+      opId: serializer.fromJson<String>(json['opId']),
+      groupId: serializer.fromJson<String>(json['groupId']),
       entity: serializer.fromJson<String>(json['entity']),
       entityId: serializer.fromJson<String>(json['entityId']),
       op: serializer.fromJson<String>(json['op']),
       payload: serializer.fromJson<String>(json['payload']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       attempts: serializer.fromJson<int>(json['attempts']),
+      nextAttemptAt: serializer.fromJson<DateTime?>(json['nextAttemptAt']),
+      lastErrorCode: serializer.fromJson<String?>(json['lastErrorCode']),
     );
   }
   @override
@@ -4012,37 +4179,65 @@ class LocalOutboxRow extends DataClass implements Insertable<LocalOutboxRow> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'seq': serializer.toJson<int>(seq),
+      'opId': serializer.toJson<String>(opId),
+      'groupId': serializer.toJson<String>(groupId),
       'entity': serializer.toJson<String>(entity),
       'entityId': serializer.toJson<String>(entityId),
       'op': serializer.toJson<String>(op),
       'payload': serializer.toJson<String>(payload),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
       'attempts': serializer.toJson<int>(attempts),
+      'nextAttemptAt': serializer.toJson<DateTime?>(nextAttemptAt),
+      'lastErrorCode': serializer.toJson<String?>(lastErrorCode),
     };
   }
 
   LocalOutboxRow copyWith({
     int? seq,
+    String? opId,
+    String? groupId,
     String? entity,
     String? entityId,
     String? op,
     String? payload,
+    DateTime? createdAt,
     int? attempts,
+    Value<DateTime?> nextAttemptAt = const Value.absent(),
+    Value<String?> lastErrorCode = const Value.absent(),
   }) => LocalOutboxRow(
     seq: seq ?? this.seq,
+    opId: opId ?? this.opId,
+    groupId: groupId ?? this.groupId,
     entity: entity ?? this.entity,
     entityId: entityId ?? this.entityId,
     op: op ?? this.op,
     payload: payload ?? this.payload,
+    createdAt: createdAt ?? this.createdAt,
     attempts: attempts ?? this.attempts,
+    nextAttemptAt: nextAttemptAt.present
+        ? nextAttemptAt.value
+        : this.nextAttemptAt,
+    lastErrorCode: lastErrorCode.present
+        ? lastErrorCode.value
+        : this.lastErrorCode,
   );
   LocalOutboxRow copyWithCompanion(LocalOutboxCompanion data) {
     return LocalOutboxRow(
       seq: data.seq.present ? data.seq.value : this.seq,
+      opId: data.opId.present ? data.opId.value : this.opId,
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
       entity: data.entity.present ? data.entity.value : this.entity,
       entityId: data.entityId.present ? data.entityId.value : this.entityId,
       op: data.op.present ? data.op.value : this.op,
       payload: data.payload.present ? data.payload.value : this.payload,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       attempts: data.attempts.present ? data.attempts.value : this.attempts,
+      nextAttemptAt: data.nextAttemptAt.present
+          ? data.nextAttemptAt.value
+          : this.nextAttemptAt,
+      lastErrorCode: data.lastErrorCode.present
+          ? data.lastErrorCode.value
+          : this.lastErrorCode,
     );
   }
 
@@ -4050,88 +4245,148 @@ class LocalOutboxRow extends DataClass implements Insertable<LocalOutboxRow> {
   String toString() {
     return (StringBuffer('LocalOutboxRow(')
           ..write('seq: $seq, ')
+          ..write('opId: $opId, ')
+          ..write('groupId: $groupId, ')
           ..write('entity: $entity, ')
           ..write('entityId: $entityId, ')
           ..write('op: $op, ')
           ..write('payload: $payload, ')
-          ..write('attempts: $attempts')
+          ..write('createdAt: $createdAt, ')
+          ..write('attempts: $attempts, ')
+          ..write('nextAttemptAt: $nextAttemptAt, ')
+          ..write('lastErrorCode: $lastErrorCode')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(seq, entity, entityId, op, payload, attempts);
+  int get hashCode => Object.hash(
+    seq,
+    opId,
+    groupId,
+    entity,
+    entityId,
+    op,
+    payload,
+    createdAt,
+    attempts,
+    nextAttemptAt,
+    lastErrorCode,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is LocalOutboxRow &&
           other.seq == this.seq &&
+          other.opId == this.opId &&
+          other.groupId == this.groupId &&
           other.entity == this.entity &&
           other.entityId == this.entityId &&
           other.op == this.op &&
           other.payload == this.payload &&
-          other.attempts == this.attempts);
+          other.createdAt == this.createdAt &&
+          other.attempts == this.attempts &&
+          other.nextAttemptAt == this.nextAttemptAt &&
+          other.lastErrorCode == this.lastErrorCode);
 }
 
 class LocalOutboxCompanion extends UpdateCompanion<LocalOutboxRow> {
   final Value<int> seq;
+  final Value<String> opId;
+  final Value<String> groupId;
   final Value<String> entity;
   final Value<String> entityId;
   final Value<String> op;
   final Value<String> payload;
+  final Value<DateTime> createdAt;
   final Value<int> attempts;
+  final Value<DateTime?> nextAttemptAt;
+  final Value<String?> lastErrorCode;
   const LocalOutboxCompanion({
     this.seq = const Value.absent(),
+    this.opId = const Value.absent(),
+    this.groupId = const Value.absent(),
     this.entity = const Value.absent(),
     this.entityId = const Value.absent(),
     this.op = const Value.absent(),
     this.payload = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.attempts = const Value.absent(),
+    this.nextAttemptAt = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
   });
   LocalOutboxCompanion.insert({
     this.seq = const Value.absent(),
+    required String opId,
+    required String groupId,
     required String entity,
     required String entityId,
     required String op,
     required String payload,
+    required DateTime createdAt,
     this.attempts = const Value.absent(),
-  }) : entity = Value(entity),
+    this.nextAttemptAt = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+  }) : opId = Value(opId),
+       groupId = Value(groupId),
+       entity = Value(entity),
        entityId = Value(entityId),
        op = Value(op),
-       payload = Value(payload);
+       payload = Value(payload),
+       createdAt = Value(createdAt);
   static Insertable<LocalOutboxRow> custom({
     Expression<int>? seq,
+    Expression<String>? opId,
+    Expression<String>? groupId,
     Expression<String>? entity,
     Expression<String>? entityId,
     Expression<String>? op,
     Expression<String>? payload,
+    Expression<DateTime>? createdAt,
     Expression<int>? attempts,
+    Expression<DateTime>? nextAttemptAt,
+    Expression<String>? lastErrorCode,
   }) {
     return RawValuesInsertable({
       if (seq != null) 'seq': seq,
+      if (opId != null) 'op_id': opId,
+      if (groupId != null) 'group_id': groupId,
       if (entity != null) 'entity': entity,
       if (entityId != null) 'entity_id': entityId,
       if (op != null) 'op': op,
       if (payload != null) 'payload': payload,
+      if (createdAt != null) 'created_at': createdAt,
       if (attempts != null) 'attempts': attempts,
+      if (nextAttemptAt != null) 'next_attempt_at': nextAttemptAt,
+      if (lastErrorCode != null) 'last_error_code': lastErrorCode,
     });
   }
 
   LocalOutboxCompanion copyWith({
     Value<int>? seq,
+    Value<String>? opId,
+    Value<String>? groupId,
     Value<String>? entity,
     Value<String>? entityId,
     Value<String>? op,
     Value<String>? payload,
+    Value<DateTime>? createdAt,
     Value<int>? attempts,
+    Value<DateTime?>? nextAttemptAt,
+    Value<String?>? lastErrorCode,
   }) {
     return LocalOutboxCompanion(
       seq: seq ?? this.seq,
+      opId: opId ?? this.opId,
+      groupId: groupId ?? this.groupId,
       entity: entity ?? this.entity,
       entityId: entityId ?? this.entityId,
       op: op ?? this.op,
       payload: payload ?? this.payload,
+      createdAt: createdAt ?? this.createdAt,
       attempts: attempts ?? this.attempts,
+      nextAttemptAt: nextAttemptAt ?? this.nextAttemptAt,
+      lastErrorCode: lastErrorCode ?? this.lastErrorCode,
     );
   }
 
@@ -4140,6 +4395,12 @@ class LocalOutboxCompanion extends UpdateCompanion<LocalOutboxRow> {
     final map = <String, Expression>{};
     if (seq.present) {
       map['seq'] = Variable<int>(seq.value);
+    }
+    if (opId.present) {
+      map['op_id'] = Variable<String>(opId.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
     }
     if (entity.present) {
       map['entity'] = Variable<String>(entity.value);
@@ -4153,8 +4414,17 @@ class LocalOutboxCompanion extends UpdateCompanion<LocalOutboxRow> {
     if (payload.present) {
       map['payload'] = Variable<String>(payload.value);
     }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
     if (attempts.present) {
       map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (nextAttemptAt.present) {
+      map['next_attempt_at'] = Variable<DateTime>(nextAttemptAt.value);
+    }
+    if (lastErrorCode.present) {
+      map['last_error_code'] = Variable<String>(lastErrorCode.value);
     }
     return map;
   }
@@ -4163,11 +4433,16 @@ class LocalOutboxCompanion extends UpdateCompanion<LocalOutboxRow> {
   String toString() {
     return (StringBuffer('LocalOutboxCompanion(')
           ..write('seq: $seq, ')
+          ..write('opId: $opId, ')
+          ..write('groupId: $groupId, ')
           ..write('entity: $entity, ')
           ..write('entityId: $entityId, ')
           ..write('op: $op, ')
           ..write('payload: $payload, ')
-          ..write('attempts: $attempts')
+          ..write('createdAt: $createdAt, ')
+          ..write('attempts: $attempts, ')
+          ..write('nextAttemptAt: $nextAttemptAt, ')
+          ..write('lastErrorCode: $lastErrorCode')
           ..write(')'))
         .toString();
   }
@@ -4390,6 +4665,360 @@ class LocalDriverPromptsCompanion
     return (StringBuffer('LocalDriverPromptsCompanion(')
           ..write('memberId: $memberId, ')
           ..write('askedAt: $askedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LocalPlacesTable extends LocalPlaces
+    with TableInfo<$LocalPlacesTable, LocalPlaceRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalPlacesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _latMeta = const VerificationMeta('lat');
+  @override
+  late final GeneratedColumn<double> lat = GeneratedColumn<double>(
+    'lat',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lngMeta = const VerificationMeta('lng');
+  @override
+  late final GeneratedColumn<double> lng = GeneratedColumn<double>(
+    'lng',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _savedAtMeta = const VerificationMeta(
+    'savedAt',
+  );
+  @override
+  late final GeneratedColumn<String> savedAt = GeneratedColumn<String>(
+    'saved_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [kind, label, lat, lng, savedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_places';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalPlaceRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('lat')) {
+      context.handle(
+        _latMeta,
+        lat.isAcceptableOrUnknown(data['lat']!, _latMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_latMeta);
+    }
+    if (data.containsKey('lng')) {
+      context.handle(
+        _lngMeta,
+        lng.isAcceptableOrUnknown(data['lng']!, _lngMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_lngMeta);
+    }
+    if (data.containsKey('saved_at')) {
+      context.handle(
+        _savedAtMeta,
+        savedAt.isAcceptableOrUnknown(data['saved_at']!, _savedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_savedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {kind};
+  @override
+  LocalPlaceRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalPlaceRow(
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      lat: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}lat'],
+      )!,
+      lng: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}lng'],
+      )!,
+      savedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}saved_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalPlacesTable createAlias(String alias) {
+    return $LocalPlacesTable(attachedDatabase, alias);
+  }
+}
+
+class LocalPlaceRow extends DataClass implements Insertable<LocalPlaceRow> {
+  /// `home` or `work`: one place per kind.
+  final String kind;
+  final String label;
+  final double lat;
+  final double lng;
+  final String savedAt;
+  const LocalPlaceRow({
+    required this.kind,
+    required this.label,
+    required this.lat,
+    required this.lng,
+    required this.savedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['kind'] = Variable<String>(kind);
+    map['label'] = Variable<String>(label);
+    map['lat'] = Variable<double>(lat);
+    map['lng'] = Variable<double>(lng);
+    map['saved_at'] = Variable<String>(savedAt);
+    return map;
+  }
+
+  LocalPlacesCompanion toCompanion(bool nullToAbsent) {
+    return LocalPlacesCompanion(
+      kind: Value(kind),
+      label: Value(label),
+      lat: Value(lat),
+      lng: Value(lng),
+      savedAt: Value(savedAt),
+    );
+  }
+
+  factory LocalPlaceRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalPlaceRow(
+      kind: serializer.fromJson<String>(json['kind']),
+      label: serializer.fromJson<String>(json['label']),
+      lat: serializer.fromJson<double>(json['lat']),
+      lng: serializer.fromJson<double>(json['lng']),
+      savedAt: serializer.fromJson<String>(json['savedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'kind': serializer.toJson<String>(kind),
+      'label': serializer.toJson<String>(label),
+      'lat': serializer.toJson<double>(lat),
+      'lng': serializer.toJson<double>(lng),
+      'savedAt': serializer.toJson<String>(savedAt),
+    };
+  }
+
+  LocalPlaceRow copyWith({
+    String? kind,
+    String? label,
+    double? lat,
+    double? lng,
+    String? savedAt,
+  }) => LocalPlaceRow(
+    kind: kind ?? this.kind,
+    label: label ?? this.label,
+    lat: lat ?? this.lat,
+    lng: lng ?? this.lng,
+    savedAt: savedAt ?? this.savedAt,
+  );
+  LocalPlaceRow copyWithCompanion(LocalPlacesCompanion data) {
+    return LocalPlaceRow(
+      kind: data.kind.present ? data.kind.value : this.kind,
+      label: data.label.present ? data.label.value : this.label,
+      lat: data.lat.present ? data.lat.value : this.lat,
+      lng: data.lng.present ? data.lng.value : this.lng,
+      savedAt: data.savedAt.present ? data.savedAt.value : this.savedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalPlaceRow(')
+          ..write('kind: $kind, ')
+          ..write('label: $label, ')
+          ..write('lat: $lat, ')
+          ..write('lng: $lng, ')
+          ..write('savedAt: $savedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(kind, label, lat, lng, savedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalPlaceRow &&
+          other.kind == this.kind &&
+          other.label == this.label &&
+          other.lat == this.lat &&
+          other.lng == this.lng &&
+          other.savedAt == this.savedAt);
+}
+
+class LocalPlacesCompanion extends UpdateCompanion<LocalPlaceRow> {
+  final Value<String> kind;
+  final Value<String> label;
+  final Value<double> lat;
+  final Value<double> lng;
+  final Value<String> savedAt;
+  final Value<int> rowid;
+  const LocalPlacesCompanion({
+    this.kind = const Value.absent(),
+    this.label = const Value.absent(),
+    this.lat = const Value.absent(),
+    this.lng = const Value.absent(),
+    this.savedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalPlacesCompanion.insert({
+    required String kind,
+    required String label,
+    required double lat,
+    required double lng,
+    required String savedAt,
+    this.rowid = const Value.absent(),
+  }) : kind = Value(kind),
+       label = Value(label),
+       lat = Value(lat),
+       lng = Value(lng),
+       savedAt = Value(savedAt);
+  static Insertable<LocalPlaceRow> custom({
+    Expression<String>? kind,
+    Expression<String>? label,
+    Expression<double>? lat,
+    Expression<double>? lng,
+    Expression<String>? savedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (kind != null) 'kind': kind,
+      if (label != null) 'label': label,
+      if (lat != null) 'lat': lat,
+      if (lng != null) 'lng': lng,
+      if (savedAt != null) 'saved_at': savedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalPlacesCompanion copyWith({
+    Value<String>? kind,
+    Value<String>? label,
+    Value<double>? lat,
+    Value<double>? lng,
+    Value<String>? savedAt,
+    Value<int>? rowid,
+  }) {
+    return LocalPlacesCompanion(
+      kind: kind ?? this.kind,
+      label: label ?? this.label,
+      lat: lat ?? this.lat,
+      lng: lng ?? this.lng,
+      savedAt: savedAt ?? this.savedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (lat.present) {
+      map['lat'] = Variable<double>(lat.value);
+    }
+    if (lng.present) {
+      map['lng'] = Variable<double>(lng.value);
+    }
+    if (savedAt.present) {
+      map['saved_at'] = Variable<String>(savedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalPlacesCompanion(')
+          ..write('kind: $kind, ')
+          ..write('label: $label, ')
+          ..write('lat: $lat, ')
+          ..write('lng: $lng, ')
+          ..write('savedAt: $savedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -7237,6 +7866,990 @@ class ExpenseRevisionsCompanion extends UpdateCompanion<ExpenseRevisionRow> {
   }
 }
 
+class $LocalGroupSyncTable extends LocalGroupSync
+    with TableInfo<$LocalGroupSyncTable, LocalGroupSyncRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalGroupSyncTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES "groups" (id)',
+    ),
+  );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+    'role',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastPushAtMeta = const VerificationMeta(
+    'lastPushAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastPushAt = GeneratedColumn<DateTime>(
+    'last_push_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastPullAtMeta = const VerificationMeta(
+    'lastPullAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastPullAt = GeneratedColumn<DateTime>(
+    'last_pull_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastErrorCodeMeta = const VerificationMeta(
+    'lastErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastErrorCode = GeneratedColumn<String>(
+    'last_error_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastErrorAtMeta = const VerificationMeta(
+    'lastErrorAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastErrorAt = GeneratedColumn<DateTime>(
+    'last_error_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    groupId,
+    state,
+    role,
+    lastPushAt,
+    lastPullAt,
+    lastErrorCode,
+    lastErrorAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_group_sync';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalGroupSyncRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
+    if (data.containsKey('role')) {
+      context.handle(
+        _roleMeta,
+        role.isAcceptableOrUnknown(data['role']!, _roleMeta),
+      );
+    }
+    if (data.containsKey('last_push_at')) {
+      context.handle(
+        _lastPushAtMeta,
+        lastPushAt.isAcceptableOrUnknown(
+          data['last_push_at']!,
+          _lastPushAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_pull_at')) {
+      context.handle(
+        _lastPullAtMeta,
+        lastPullAt.isAcceptableOrUnknown(
+          data['last_pull_at']!,
+          _lastPullAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error_code')) {
+      context.handle(
+        _lastErrorCodeMeta,
+        lastErrorCode.isAcceptableOrUnknown(
+          data['last_error_code']!,
+          _lastErrorCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error_at')) {
+      context.handle(
+        _lastErrorAtMeta,
+        lastErrorAt.isAcceptableOrUnknown(
+          data['last_error_at']!,
+          _lastErrorAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {groupId};
+  @override
+  LocalGroupSyncRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalGroupSyncRow(
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
+      )!,
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      )!,
+      role: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role'],
+      ),
+      lastPushAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_push_at'],
+      ),
+      lastPullAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_pull_at'],
+      ),
+      lastErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error_code'],
+      ),
+      lastErrorAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_error_at'],
+      ),
+    );
+  }
+
+  @override
+  $LocalGroupSyncTable createAlias(String alias) {
+    return $LocalGroupSyncTable(attachedDatabase, alias);
+  }
+}
+
+class LocalGroupSyncRow extends DataClass
+    implements Insertable<LocalGroupSyncRow> {
+  final String groupId;
+
+  /// `shared` / `uploading` / `removed` (`SyncState` in `sync_state_dao.dart`).
+  final String state;
+
+  /// `owner` / `member`; null until known.
+  final String? role;
+  final DateTime? lastPushAt;
+  final DateTime? lastPullAt;
+
+  /// Stable error case name of the last failure (ADR-27 §3).
+  final String? lastErrorCode;
+  final DateTime? lastErrorAt;
+  const LocalGroupSyncRow({
+    required this.groupId,
+    required this.state,
+    this.role,
+    this.lastPushAt,
+    this.lastPullAt,
+    this.lastErrorCode,
+    this.lastErrorAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['group_id'] = Variable<String>(groupId);
+    map['state'] = Variable<String>(state);
+    if (!nullToAbsent || role != null) {
+      map['role'] = Variable<String>(role);
+    }
+    if (!nullToAbsent || lastPushAt != null) {
+      map['last_push_at'] = Variable<DateTime>(lastPushAt);
+    }
+    if (!nullToAbsent || lastPullAt != null) {
+      map['last_pull_at'] = Variable<DateTime>(lastPullAt);
+    }
+    if (!nullToAbsent || lastErrorCode != null) {
+      map['last_error_code'] = Variable<String>(lastErrorCode);
+    }
+    if (!nullToAbsent || lastErrorAt != null) {
+      map['last_error_at'] = Variable<DateTime>(lastErrorAt);
+    }
+    return map;
+  }
+
+  LocalGroupSyncCompanion toCompanion(bool nullToAbsent) {
+    return LocalGroupSyncCompanion(
+      groupId: Value(groupId),
+      state: Value(state),
+      role: role == null && nullToAbsent ? const Value.absent() : Value(role),
+      lastPushAt: lastPushAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastPushAt),
+      lastPullAt: lastPullAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastPullAt),
+      lastErrorCode: lastErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastErrorCode),
+      lastErrorAt: lastErrorAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastErrorAt),
+    );
+  }
+
+  factory LocalGroupSyncRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalGroupSyncRow(
+      groupId: serializer.fromJson<String>(json['groupId']),
+      state: serializer.fromJson<String>(json['state']),
+      role: serializer.fromJson<String?>(json['role']),
+      lastPushAt: serializer.fromJson<DateTime?>(json['lastPushAt']),
+      lastPullAt: serializer.fromJson<DateTime?>(json['lastPullAt']),
+      lastErrorCode: serializer.fromJson<String?>(json['lastErrorCode']),
+      lastErrorAt: serializer.fromJson<DateTime?>(json['lastErrorAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'groupId': serializer.toJson<String>(groupId),
+      'state': serializer.toJson<String>(state),
+      'role': serializer.toJson<String?>(role),
+      'lastPushAt': serializer.toJson<DateTime?>(lastPushAt),
+      'lastPullAt': serializer.toJson<DateTime?>(lastPullAt),
+      'lastErrorCode': serializer.toJson<String?>(lastErrorCode),
+      'lastErrorAt': serializer.toJson<DateTime?>(lastErrorAt),
+    };
+  }
+
+  LocalGroupSyncRow copyWith({
+    String? groupId,
+    String? state,
+    Value<String?> role = const Value.absent(),
+    Value<DateTime?> lastPushAt = const Value.absent(),
+    Value<DateTime?> lastPullAt = const Value.absent(),
+    Value<String?> lastErrorCode = const Value.absent(),
+    Value<DateTime?> lastErrorAt = const Value.absent(),
+  }) => LocalGroupSyncRow(
+    groupId: groupId ?? this.groupId,
+    state: state ?? this.state,
+    role: role.present ? role.value : this.role,
+    lastPushAt: lastPushAt.present ? lastPushAt.value : this.lastPushAt,
+    lastPullAt: lastPullAt.present ? lastPullAt.value : this.lastPullAt,
+    lastErrorCode: lastErrorCode.present
+        ? lastErrorCode.value
+        : this.lastErrorCode,
+    lastErrorAt: lastErrorAt.present ? lastErrorAt.value : this.lastErrorAt,
+  );
+  LocalGroupSyncRow copyWithCompanion(LocalGroupSyncCompanion data) {
+    return LocalGroupSyncRow(
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      state: data.state.present ? data.state.value : this.state,
+      role: data.role.present ? data.role.value : this.role,
+      lastPushAt: data.lastPushAt.present
+          ? data.lastPushAt.value
+          : this.lastPushAt,
+      lastPullAt: data.lastPullAt.present
+          ? data.lastPullAt.value
+          : this.lastPullAt,
+      lastErrorCode: data.lastErrorCode.present
+          ? data.lastErrorCode.value
+          : this.lastErrorCode,
+      lastErrorAt: data.lastErrorAt.present
+          ? data.lastErrorAt.value
+          : this.lastErrorAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalGroupSyncRow(')
+          ..write('groupId: $groupId, ')
+          ..write('state: $state, ')
+          ..write('role: $role, ')
+          ..write('lastPushAt: $lastPushAt, ')
+          ..write('lastPullAt: $lastPullAt, ')
+          ..write('lastErrorCode: $lastErrorCode, ')
+          ..write('lastErrorAt: $lastErrorAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    groupId,
+    state,
+    role,
+    lastPushAt,
+    lastPullAt,
+    lastErrorCode,
+    lastErrorAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalGroupSyncRow &&
+          other.groupId == this.groupId &&
+          other.state == this.state &&
+          other.role == this.role &&
+          other.lastPushAt == this.lastPushAt &&
+          other.lastPullAt == this.lastPullAt &&
+          other.lastErrorCode == this.lastErrorCode &&
+          other.lastErrorAt == this.lastErrorAt);
+}
+
+class LocalGroupSyncCompanion extends UpdateCompanion<LocalGroupSyncRow> {
+  final Value<String> groupId;
+  final Value<String> state;
+  final Value<String?> role;
+  final Value<DateTime?> lastPushAt;
+  final Value<DateTime?> lastPullAt;
+  final Value<String?> lastErrorCode;
+  final Value<DateTime?> lastErrorAt;
+  final Value<int> rowid;
+  const LocalGroupSyncCompanion({
+    this.groupId = const Value.absent(),
+    this.state = const Value.absent(),
+    this.role = const Value.absent(),
+    this.lastPushAt = const Value.absent(),
+    this.lastPullAt = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+    this.lastErrorAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalGroupSyncCompanion.insert({
+    required String groupId,
+    required String state,
+    this.role = const Value.absent(),
+    this.lastPushAt = const Value.absent(),
+    this.lastPullAt = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+    this.lastErrorAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : groupId = Value(groupId),
+       state = Value(state);
+  static Insertable<LocalGroupSyncRow> custom({
+    Expression<String>? groupId,
+    Expression<String>? state,
+    Expression<String>? role,
+    Expression<DateTime>? lastPushAt,
+    Expression<DateTime>? lastPullAt,
+    Expression<String>? lastErrorCode,
+    Expression<DateTime>? lastErrorAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (groupId != null) 'group_id': groupId,
+      if (state != null) 'state': state,
+      if (role != null) 'role': role,
+      if (lastPushAt != null) 'last_push_at': lastPushAt,
+      if (lastPullAt != null) 'last_pull_at': lastPullAt,
+      if (lastErrorCode != null) 'last_error_code': lastErrorCode,
+      if (lastErrorAt != null) 'last_error_at': lastErrorAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalGroupSyncCompanion copyWith({
+    Value<String>? groupId,
+    Value<String>? state,
+    Value<String?>? role,
+    Value<DateTime?>? lastPushAt,
+    Value<DateTime?>? lastPullAt,
+    Value<String?>? lastErrorCode,
+    Value<DateTime?>? lastErrorAt,
+    Value<int>? rowid,
+  }) {
+    return LocalGroupSyncCompanion(
+      groupId: groupId ?? this.groupId,
+      state: state ?? this.state,
+      role: role ?? this.role,
+      lastPushAt: lastPushAt ?? this.lastPushAt,
+      lastPullAt: lastPullAt ?? this.lastPullAt,
+      lastErrorCode: lastErrorCode ?? this.lastErrorCode,
+      lastErrorAt: lastErrorAt ?? this.lastErrorAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (role.present) {
+      map['role'] = Variable<String>(role.value);
+    }
+    if (lastPushAt.present) {
+      map['last_push_at'] = Variable<DateTime>(lastPushAt.value);
+    }
+    if (lastPullAt.present) {
+      map['last_pull_at'] = Variable<DateTime>(lastPullAt.value);
+    }
+    if (lastErrorCode.present) {
+      map['last_error_code'] = Variable<String>(lastErrorCode.value);
+    }
+    if (lastErrorAt.present) {
+      map['last_error_at'] = Variable<DateTime>(lastErrorAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalGroupSyncCompanion(')
+          ..write('groupId: $groupId, ')
+          ..write('state: $state, ')
+          ..write('role: $role, ')
+          ..write('lastPushAt: $lastPushAt, ')
+          ..write('lastPullAt: $lastPullAt, ')
+          ..write('lastErrorCode: $lastErrorCode, ')
+          ..write('lastErrorAt: $lastErrorAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LocalSyncCursorTable extends LocalSyncCursor
+    with TableInfo<$LocalSyncCursorTable, LocalSyncCursorRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalSyncCursorTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES "groups" (id)',
+    ),
+  );
+  static const VerificationMeta _syncedTableMeta = const VerificationMeta(
+    'syncedTable',
+  );
+  @override
+  late final GeneratedColumn<String> syncedTable = GeneratedColumn<String>(
+    'table_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cursorMeta = const VerificationMeta('cursor');
+  @override
+  late final GeneratedColumn<int> cursor = GeneratedColumn<int>(
+    'cursor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [groupId, syncedTable, cursor];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_sync_cursor';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalSyncCursorRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    if (data.containsKey('table_name')) {
+      context.handle(
+        _syncedTableMeta,
+        syncedTable.isAcceptableOrUnknown(
+          data['table_name']!,
+          _syncedTableMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_syncedTableMeta);
+    }
+    if (data.containsKey('cursor')) {
+      context.handle(
+        _cursorMeta,
+        cursor.isAcceptableOrUnknown(data['cursor']!, _cursorMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {groupId, syncedTable};
+  @override
+  LocalSyncCursorRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalSyncCursorRow(
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
+      )!,
+      syncedTable: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}table_name'],
+      )!,
+      cursor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}cursor'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalSyncCursorTable createAlias(String alias) {
+    return $LocalSyncCursorTable(attachedDatabase, alias);
+  }
+}
+
+class LocalSyncCursorRow extends DataClass
+    implements Insertable<LocalSyncCursorRow> {
+  final String groupId;
+
+  /// SQL column `table_name` (`tableName` clashes with `Table.tableName`).
+  final String syncedTable;
+  final int cursor;
+  const LocalSyncCursorRow({
+    required this.groupId,
+    required this.syncedTable,
+    required this.cursor,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['group_id'] = Variable<String>(groupId);
+    map['table_name'] = Variable<String>(syncedTable);
+    map['cursor'] = Variable<int>(cursor);
+    return map;
+  }
+
+  LocalSyncCursorCompanion toCompanion(bool nullToAbsent) {
+    return LocalSyncCursorCompanion(
+      groupId: Value(groupId),
+      syncedTable: Value(syncedTable),
+      cursor: Value(cursor),
+    );
+  }
+
+  factory LocalSyncCursorRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalSyncCursorRow(
+      groupId: serializer.fromJson<String>(json['groupId']),
+      syncedTable: serializer.fromJson<String>(json['syncedTable']),
+      cursor: serializer.fromJson<int>(json['cursor']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'groupId': serializer.toJson<String>(groupId),
+      'syncedTable': serializer.toJson<String>(syncedTable),
+      'cursor': serializer.toJson<int>(cursor),
+    };
+  }
+
+  LocalSyncCursorRow copyWith({
+    String? groupId,
+    String? syncedTable,
+    int? cursor,
+  }) => LocalSyncCursorRow(
+    groupId: groupId ?? this.groupId,
+    syncedTable: syncedTable ?? this.syncedTable,
+    cursor: cursor ?? this.cursor,
+  );
+  LocalSyncCursorRow copyWithCompanion(LocalSyncCursorCompanion data) {
+    return LocalSyncCursorRow(
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      syncedTable: data.syncedTable.present
+          ? data.syncedTable.value
+          : this.syncedTable,
+      cursor: data.cursor.present ? data.cursor.value : this.cursor,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalSyncCursorRow(')
+          ..write('groupId: $groupId, ')
+          ..write('syncedTable: $syncedTable, ')
+          ..write('cursor: $cursor')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(groupId, syncedTable, cursor);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalSyncCursorRow &&
+          other.groupId == this.groupId &&
+          other.syncedTable == this.syncedTable &&
+          other.cursor == this.cursor);
+}
+
+class LocalSyncCursorCompanion extends UpdateCompanion<LocalSyncCursorRow> {
+  final Value<String> groupId;
+  final Value<String> syncedTable;
+  final Value<int> cursor;
+  final Value<int> rowid;
+  const LocalSyncCursorCompanion({
+    this.groupId = const Value.absent(),
+    this.syncedTable = const Value.absent(),
+    this.cursor = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalSyncCursorCompanion.insert({
+    required String groupId,
+    required String syncedTable,
+    this.cursor = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : groupId = Value(groupId),
+       syncedTable = Value(syncedTable);
+  static Insertable<LocalSyncCursorRow> custom({
+    Expression<String>? groupId,
+    Expression<String>? syncedTable,
+    Expression<int>? cursor,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (groupId != null) 'group_id': groupId,
+      if (syncedTable != null) 'table_name': syncedTable,
+      if (cursor != null) 'cursor': cursor,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalSyncCursorCompanion copyWith({
+    Value<String>? groupId,
+    Value<String>? syncedTable,
+    Value<int>? cursor,
+    Value<int>? rowid,
+  }) {
+    return LocalSyncCursorCompanion(
+      groupId: groupId ?? this.groupId,
+      syncedTable: syncedTable ?? this.syncedTable,
+      cursor: cursor ?? this.cursor,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    if (syncedTable.present) {
+      map['table_name'] = Variable<String>(syncedTable.value);
+    }
+    if (cursor.present) {
+      map['cursor'] = Variable<int>(cursor.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalSyncCursorCompanion(')
+          ..write('groupId: $groupId, ')
+          ..write('syncedTable: $syncedTable, ')
+          ..write('cursor: $cursor, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LocalSettingsTable extends LocalSettings
+    with TableInfo<$LocalSettingsTable, LocalSettingRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalSettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [key, value];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalSettingRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(
+        _keyMeta,
+        key.isAcceptableOrUnknown(data['key']!, _keyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {key};
+  @override
+  LocalSettingRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalSettingRow(
+      key: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalSettingsTable createAlias(String alias) {
+    return $LocalSettingsTable(attachedDatabase, alias);
+  }
+}
+
+class LocalSettingRow extends DataClass implements Insertable<LocalSettingRow> {
+  final String key;
+  final String value;
+  const LocalSettingRow({required this.key, required this.value});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['value'] = Variable<String>(value);
+    return map;
+  }
+
+  LocalSettingsCompanion toCompanion(bool nullToAbsent) {
+    return LocalSettingsCompanion(key: Value(key), value: Value(value));
+  }
+
+  factory LocalSettingRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalSettingRow(
+      key: serializer.fromJson<String>(json['key']),
+      value: serializer.fromJson<String>(json['value']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'value': serializer.toJson<String>(value),
+    };
+  }
+
+  LocalSettingRow copyWith({String? key, String? value}) =>
+      LocalSettingRow(key: key ?? this.key, value: value ?? this.value);
+  LocalSettingRow copyWithCompanion(LocalSettingsCompanion data) {
+    return LocalSettingRow(
+      key: data.key.present ? data.key.value : this.key,
+      value: data.value.present ? data.value.value : this.value,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalSettingRow(')
+          ..write('key: $key, ')
+          ..write('value: $value')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, value);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalSettingRow &&
+          other.key == this.key &&
+          other.value == this.value);
+}
+
+class LocalSettingsCompanion extends UpdateCompanion<LocalSettingRow> {
+  final Value<String> key;
+  final Value<String> value;
+  final Value<int> rowid;
+  const LocalSettingsCompanion({
+    this.key = const Value.absent(),
+    this.value = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalSettingsCompanion.insert({
+    required String key,
+    required String value,
+    this.rowid = const Value.absent(),
+  }) : key = Value(key),
+       value = Value(value);
+  static Insertable<LocalSettingRow> custom({
+    Expression<String>? key,
+    Expression<String>? value,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (value != null) 'value': value,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalSettingsCompanion copyWith({
+    Value<String>? key,
+    Value<String>? value,
+    Value<int>? rowid,
+  }) {
+    return LocalSettingsCompanion(
+      key: key ?? this.key,
+      value: value ?? this.value,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalSettingsCompanion(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -7252,12 +8865,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $LocalOutboxTable localOutbox = $LocalOutboxTable(this);
   late final $LocalDriverPromptsTable localDriverPrompts =
       $LocalDriverPromptsTable(this);
+  late final $LocalPlacesTable localPlaces = $LocalPlacesTable(this);
   late final $VehiclesTable vehicles = $VehiclesTable(this);
   late final $RideTemplatesTable rideTemplates = $RideTemplatesTable(this);
   late final $RidesTable rides = $RidesTable(this);
   late final $ExpenseRevisionsTable expenseRevisions = $ExpenseRevisionsTable(
     this,
   );
+  late final $LocalGroupSyncTable localGroupSync = $LocalGroupSyncTable(this);
+  late final $LocalSyncCursorTable localSyncCursor = $LocalSyncCursorTable(
+    this,
+  );
+  late final $LocalSettingsTable localSettings = $LocalSettingsTable(this);
   late final Index membersGroupId = Index(
     'members_group_id',
     'CREATE INDEX members_group_id ON members (group_id)',
@@ -7323,7 +8942,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final LocalMemberBankDao localMemberBankDao = LocalMemberBankDao(
     this as AppDatabase,
   );
+  late final LocalPlacesDao localPlacesDao = LocalPlacesDao(
+    this as AppDatabase,
+  );
   late final RidesDao ridesDao = RidesDao(this as AppDatabase);
+  late final SyncStateDao syncStateDao = SyncStateDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7338,10 +8961,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     localMemberBank,
     localOutbox,
     localDriverPrompts,
+    localPlaces,
     vehicles,
     rideTemplates,
     rides,
     expenseRevisions,
+    localGroupSync,
+    localSyncCursor,
+    localSettings,
     membersGroupId,
     expensesGroupId,
     expensePayersExpenseId,
@@ -7478,6 +9105,24 @@ final class $$GroupsTableReferences
     );
   }
 
+  static MultiTypedResultKey<$LocalOutboxTable, List<LocalOutboxRow>>
+  _localOutboxRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.localOutbox,
+    aliasName: 'groups__id__local_outbox__group_id',
+  );
+
+  $$LocalOutboxTableProcessedTableManager get localOutboxRefs {
+    final manager = $$LocalOutboxTableTableManager(
+      $_db,
+      $_db.localOutbox,
+    ).filter((f) => f.groupId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_localOutboxRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$VehiclesTable, List<VehicleRow>>
   _vehiclesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.vehicles,
@@ -7547,6 +9192,44 @@ final class $$GroupsTableReferences
 
     final cache = $_typedResult.readTableOrNull(
       _expenseRevisionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$LocalGroupSyncTable, List<LocalGroupSyncRow>>
+  _localGroupSyncRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.localGroupSync,
+    aliasName: 'groups__id__local_group_sync__group_id',
+  );
+
+  $$LocalGroupSyncTableProcessedTableManager get localGroupSyncRefs {
+    final manager = $$LocalGroupSyncTableTableManager(
+      $_db,
+      $_db.localGroupSync,
+    ).filter((f) => f.groupId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_localGroupSyncRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$LocalSyncCursorTable, List<LocalSyncCursorRow>>
+  _localSyncCursorRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.localSyncCursor,
+    aliasName: 'groups__id__local_sync_cursor__group_id',
+  );
+
+  $$LocalSyncCursorTableProcessedTableManager get localSyncCursorRefs {
+    final manager = $$LocalSyncCursorTableTableManager(
+      $_db,
+      $_db.localSyncCursor,
+    ).filter((f) => f.groupId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _localSyncCursorRefsTable($_db),
     );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
@@ -7723,6 +9406,31 @@ class $$GroupsTableFilterComposer
     return f(composer);
   }
 
+  Expression<bool> localOutboxRefs(
+    Expression<bool> Function($$LocalOutboxTableFilterComposer f) f,
+  ) {
+    final $$LocalOutboxTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.localOutbox,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalOutboxTableFilterComposer(
+            $db: $db,
+            $table: $db.localOutbox,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<bool> vehiclesRefs(
     Expression<bool> Function($$VehiclesTableFilterComposer f) f,
   ) {
@@ -7814,6 +9522,56 @@ class $$GroupsTableFilterComposer
           }) => $$ExpenseRevisionsTableFilterComposer(
             $db: $db,
             $table: $db.expenseRevisions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> localGroupSyncRefs(
+    Expression<bool> Function($$LocalGroupSyncTableFilterComposer f) f,
+  ) {
+    final $$LocalGroupSyncTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.localGroupSync,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalGroupSyncTableFilterComposer(
+            $db: $db,
+            $table: $db.localGroupSync,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> localSyncCursorRefs(
+    Expression<bool> Function($$LocalSyncCursorTableFilterComposer f) f,
+  ) {
+    final $$LocalSyncCursorTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.localSyncCursor,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalSyncCursorTableFilterComposer(
+            $db: $db,
+            $table: $db.localSyncCursor,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -8024,6 +9782,31 @@ class $$GroupsTableAnnotationComposer
     return f(composer);
   }
 
+  Expression<T> localOutboxRefs<T extends Object>(
+    Expression<T> Function($$LocalOutboxTableAnnotationComposer a) f,
+  ) {
+    final $$LocalOutboxTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.localOutbox,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalOutboxTableAnnotationComposer(
+            $db: $db,
+            $table: $db.localOutbox,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> vehiclesRefs<T extends Object>(
     Expression<T> Function($$VehiclesTableAnnotationComposer a) f,
   ) {
@@ -8123,6 +9906,56 @@ class $$GroupsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> localGroupSyncRefs<T extends Object>(
+    Expression<T> Function($$LocalGroupSyncTableAnnotationComposer a) f,
+  ) {
+    final $$LocalGroupSyncTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.localGroupSync,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalGroupSyncTableAnnotationComposer(
+            $db: $db,
+            $table: $db.localGroupSync,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> localSyncCursorRefs<T extends Object>(
+    Expression<T> Function($$LocalSyncCursorTableAnnotationComposer a) f,
+  ) {
+    final $$LocalSyncCursorTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.localSyncCursor,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalSyncCursorTableAnnotationComposer(
+            $db: $db,
+            $table: $db.localSyncCursor,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$GroupsTableTableManager
@@ -8144,10 +9977,13 @@ class $$GroupsTableTableManager
             bool expensePayersRefs,
             bool expenseSharesRefs,
             bool settlementsRefs,
+            bool localOutboxRefs,
             bool vehiclesRefs,
             bool rideTemplatesRefs,
             bool ridesRefs,
             bool expenseRevisionsRefs,
+            bool localGroupSyncRefs,
+            bool localSyncCursorRefs,
           })
         > {
   $$GroupsTableTableManager(_$AppDatabase db, $GroupsTable table)
@@ -8216,10 +10052,13 @@ class $$GroupsTableTableManager
                 expensePayersRefs = false,
                 expenseSharesRefs = false,
                 settlementsRefs = false,
+                localOutboxRefs = false,
                 vehiclesRefs = false,
                 rideTemplatesRefs = false,
                 ridesRefs = false,
                 expenseRevisionsRefs = false,
+                localGroupSyncRefs = false,
+                localSyncCursorRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -8229,10 +10068,13 @@ class $$GroupsTableTableManager
                     if (expensePayersRefs) db.expensePayers,
                     if (expenseSharesRefs) db.expenseShares,
                     if (settlementsRefs) db.settlements,
+                    if (localOutboxRefs) db.localOutbox,
                     if (vehiclesRefs) db.vehicles,
                     if (rideTemplatesRefs) db.rideTemplates,
                     if (ridesRefs) db.rides,
                     if (expenseRevisionsRefs) db.expenseRevisions,
+                    if (localGroupSyncRefs) db.localGroupSync,
+                    if (localSyncCursorRefs) db.localSyncCursor,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -8337,6 +10179,26 @@ class $$GroupsTableTableManager
                           referencedColumn: 'group_id',
                           typedResults: items,
                         ),
+                      if (localOutboxRefs)
+                        await $_getPrefetchedDataByColumns<
+                          GroupRow,
+                          $GroupsTable,
+                          LocalOutboxRow,
+                          $LocalOutboxTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GroupsTableReferences
+                              ._localOutboxRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GroupsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).localOutboxRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'group_id',
+                          typedResults: items,
+                        ),
                       if (vehiclesRefs)
                         await $_getPrefetchedDataByColumns<
                           GroupRow,
@@ -8413,6 +10275,46 @@ class $$GroupsTableTableManager
                           referencedColumn: 'group_id',
                           typedResults: items,
                         ),
+                      if (localGroupSyncRefs)
+                        await $_getPrefetchedDataByColumns<
+                          GroupRow,
+                          $GroupsTable,
+                          LocalGroupSyncRow,
+                          $LocalGroupSyncTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GroupsTableReferences
+                              ._localGroupSyncRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GroupsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).localGroupSyncRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'group_id',
+                          typedResults: items,
+                        ),
+                      if (localSyncCursorRefs)
+                        await $_getPrefetchedDataByColumns<
+                          GroupRow,
+                          $GroupsTable,
+                          LocalSyncCursorRow,
+                          $LocalSyncCursorTable
+                        >(
+                          currentTable: table,
+                          referencedTable: $$GroupsTableReferences
+                              ._localSyncCursorRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$GroupsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).localSyncCursorRefs,
+                          currentColumn: 'id',
+                          referencedColumn: 'group_id',
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -8439,10 +10341,13 @@ typedef $$GroupsTableProcessedTableManager =
         bool expensePayersRefs,
         bool expenseSharesRefs,
         bool settlementsRefs,
+        bool localOutboxRefs,
         bool vehiclesRefs,
         bool rideTemplatesRefs,
         bool ridesRefs,
         bool expenseRevisionsRefs,
+        bool localGroupSyncRefs,
+        bool localSyncCursorRefs,
       })
     >;
 typedef $$MembersTableCreateCompanionBuilder = MembersCompanion Function({
@@ -12403,21 +14308,53 @@ typedef $$LocalMemberBankTableProcessedTableManager =
 typedef $$LocalOutboxTableCreateCompanionBuilder =
     LocalOutboxCompanion Function({
       Value<int> seq,
+      required String opId,
+      required String groupId,
       required String entity,
       required String entityId,
       required String op,
       required String payload,
+      required DateTime createdAt,
       Value<int> attempts,
+      Value<DateTime?> nextAttemptAt,
+      Value<String?> lastErrorCode,
     });
 typedef $$LocalOutboxTableUpdateCompanionBuilder =
     LocalOutboxCompanion Function({
       Value<int> seq,
+      Value<String> opId,
+      Value<String> groupId,
       Value<String> entity,
       Value<String> entityId,
       Value<String> op,
       Value<String> payload,
+      Value<DateTime> createdAt,
       Value<int> attempts,
+      Value<DateTime?> nextAttemptAt,
+      Value<String?> lastErrorCode,
     });
+
+final class $$LocalOutboxTableReferences
+    extends BaseReferences<_$AppDatabase, $LocalOutboxTable, LocalOutboxRow> {
+  $$LocalOutboxTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $GroupsTable _groupIdTable(_$AppDatabase db) =>
+      db.groups.createAlias('local_outbox__group_id__groups__id');
+
+  $$GroupsTableProcessedTableManager get groupId {
+    final $_column = $_itemColumn<String>('group_id')!;
+
+    final manager = $$GroupsTableTableManager(
+      $_db,
+      $_db.groups,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_groupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
 
 class $$LocalOutboxTableFilterComposer
     extends Composer<_$AppDatabase, $LocalOutboxTable> {
@@ -12430,6 +14367,11 @@ class $$LocalOutboxTableFilterComposer
   });
   ColumnFilters<int> get seq => $composableBuilder(
     column: $table.seq,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get opId => $composableBuilder(
+    column: $table.opId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12453,10 +14395,48 @@ class $$LocalOutboxTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get attempts => $composableBuilder(
     column: $table.attempts,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<DateTime> get nextAttemptAt => $composableBuilder(
+    column: $table.nextAttemptAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GroupsTableFilterComposer get groupId {
+    final $$GroupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableFilterComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$LocalOutboxTableOrderingComposer
@@ -12470,6 +14450,11 @@ class $$LocalOutboxTableOrderingComposer
   });
   ColumnOrderings<int> get seq => $composableBuilder(
     column: $table.seq,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get opId => $composableBuilder(
+    column: $table.opId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -12493,10 +14478,48 @@ class $$LocalOutboxTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get attempts => $composableBuilder(
     column: $table.attempts,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get nextAttemptAt => $composableBuilder(
+    column: $table.nextAttemptAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GroupsTableOrderingComposer get groupId {
+    final $$GroupsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableOrderingComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$LocalOutboxTableAnnotationComposer
@@ -12511,6 +14534,9 @@ class $$LocalOutboxTableAnnotationComposer
   GeneratedColumn<int> get seq =>
       $composableBuilder(column: $table.seq, builder: (column) => column);
 
+  GeneratedColumn<String> get opId =>
+      $composableBuilder(column: $table.opId, builder: (column) => column);
+
   GeneratedColumn<String> get entity =>
       $composableBuilder(column: $table.entity, builder: (column) => column);
 
@@ -12523,8 +14549,44 @@ class $$LocalOutboxTableAnnotationComposer
   GeneratedColumn<String> get payload =>
       $composableBuilder(column: $table.payload, builder: (column) => column);
 
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
   GeneratedColumn<int> get attempts =>
       $composableBuilder(column: $table.attempts, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get nextAttemptAt => $composableBuilder(
+    column: $table.nextAttemptAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => column,
+  );
+
+  $$GroupsTableAnnotationComposer get groupId {
+    final $$GroupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$LocalOutboxTableTableManager
@@ -12538,12 +14600,9 @@ class $$LocalOutboxTableTableManager
           $$LocalOutboxTableAnnotationComposer,
           $$LocalOutboxTableCreateCompanionBuilder,
           $$LocalOutboxTableUpdateCompanionBuilder,
-          (
-            LocalOutboxRow,
-            BaseReferences<_$AppDatabase, $LocalOutboxTable, LocalOutboxRow>,
-          ),
+          (LocalOutboxRow, $$LocalOutboxTableReferences),
           LocalOutboxRow,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool groupId})
         > {
   $$LocalOutboxTableTableManager(_$AppDatabase db, $LocalOutboxTable table)
     : super(
@@ -12559,48 +14618,102 @@ class $$LocalOutboxTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> seq = const Value.absent(),
+                Value<String> opId = const Value.absent(),
+                Value<String> groupId = const Value.absent(),
                 Value<String> entity = const Value.absent(),
                 Value<String> entityId = const Value.absent(),
                 Value<String> op = const Value.absent(),
                 Value<String> payload = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> attempts = const Value.absent(),
+                Value<DateTime?> nextAttemptAt = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
               }) => LocalOutboxCompanion(
                 seq: seq,
+                opId: opId,
+                groupId: groupId,
                 entity: entity,
                 entityId: entityId,
                 op: op,
                 payload: payload,
+                createdAt: createdAt,
                 attempts: attempts,
+                nextAttemptAt: nextAttemptAt,
+                lastErrorCode: lastErrorCode,
               ),
           createCompanionCallback:
               ({
                 Value<int> seq = const Value.absent(),
+                required String opId,
+                required String groupId,
                 required String entity,
                 required String entityId,
                 required String op,
                 required String payload,
+                required DateTime createdAt,
                 Value<int> attempts = const Value.absent(),
+                Value<DateTime?> nextAttemptAt = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
               }) => LocalOutboxCompanion.insert(
                 seq: seq,
+                opId: opId,
+                groupId: groupId,
                 entity: entity,
                 entityId: entityId,
                 op: op,
                 payload: payload,
+                createdAt: createdAt,
                 attempts: attempts,
+                nextAttemptAt: nextAttemptAt,
+                lastErrorCode: lastErrorCode,
               ),
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
                   e.readTable<$LocalOutboxTable, LocalOutboxRow>(table),
-                  BaseReferences<
-                    _$AppDatabase,
-                    $LocalOutboxTable,
-                    LocalOutboxRow
-                  >(db, table, e),
+                  $$LocalOutboxTableReferences(db, table, e),
                 ),
               )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({groupId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (groupId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.groupId,
+                        referencedTable: $$LocalOutboxTableReferences
+                            ._groupIdTable(db),
+                        referencedColumn: $$LocalOutboxTableReferences
+                            ._groupIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ),
       );
 }
@@ -12615,12 +14728,9 @@ typedef $$LocalOutboxTableProcessedTableManager =
       $$LocalOutboxTableAnnotationComposer,
       $$LocalOutboxTableCreateCompanionBuilder,
       $$LocalOutboxTableUpdateCompanionBuilder,
-      (
-        LocalOutboxRow,
-        BaseReferences<_$AppDatabase, $LocalOutboxTable, LocalOutboxRow>,
-      ),
+      (LocalOutboxRow, $$LocalOutboxTableReferences),
       LocalOutboxRow,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool groupId})
     >;
 typedef $$LocalDriverPromptsTableCreateCompanionBuilder =
     LocalDriverPromptsCompanion Function({
@@ -12895,6 +15005,215 @@ typedef $$LocalDriverPromptsTableProcessedTableManager =
       (LocalDriverPromptRow, $$LocalDriverPromptsTableReferences),
       LocalDriverPromptRow,
       PrefetchHooks Function({bool memberId})
+    >;
+typedef $$LocalPlacesTableCreateCompanionBuilder =
+    LocalPlacesCompanion Function({
+      required String kind,
+      required String label,
+      required double lat,
+      required double lng,
+      required String savedAt,
+      Value<int> rowid,
+    });
+typedef $$LocalPlacesTableUpdateCompanionBuilder =
+    LocalPlacesCompanion Function({
+      Value<String> kind,
+      Value<String> label,
+      Value<double> lat,
+      Value<double> lng,
+      Value<String> savedAt,
+      Value<int> rowid,
+    });
+
+class $$LocalPlacesTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalPlacesTable> {
+  $$LocalPlacesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lat => $composableBuilder(
+    column: $table.lat,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lng => $composableBuilder(
+    column: $table.lng,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get savedAt => $composableBuilder(
+    column: $table.savedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalPlacesTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalPlacesTable> {
+  $$LocalPlacesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lat => $composableBuilder(
+    column: $table.lat,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lng => $composableBuilder(
+    column: $table.lng,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get savedAt => $composableBuilder(
+    column: $table.savedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalPlacesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalPlacesTable> {
+  $$LocalPlacesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<double> get lat =>
+      $composableBuilder(column: $table.lat, builder: (column) => column);
+
+  GeneratedColumn<double> get lng =>
+      $composableBuilder(column: $table.lng, builder: (column) => column);
+
+  GeneratedColumn<String> get savedAt =>
+      $composableBuilder(column: $table.savedAt, builder: (column) => column);
+}
+
+class $$LocalPlacesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalPlacesTable,
+          LocalPlaceRow,
+          $$LocalPlacesTableFilterComposer,
+          $$LocalPlacesTableOrderingComposer,
+          $$LocalPlacesTableAnnotationComposer,
+          $$LocalPlacesTableCreateCompanionBuilder,
+          $$LocalPlacesTableUpdateCompanionBuilder,
+          (
+            LocalPlaceRow,
+            BaseReferences<_$AppDatabase, $LocalPlacesTable, LocalPlaceRow>,
+          ),
+          LocalPlaceRow,
+          PrefetchHooks Function()
+        > {
+  $$LocalPlacesTableTableManager(_$AppDatabase db, $LocalPlacesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalPlacesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalPlacesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalPlacesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> kind = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<double> lat = const Value.absent(),
+                Value<double> lng = const Value.absent(),
+                Value<String> savedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalPlacesCompanion(
+                kind: kind,
+                label: label,
+                lat: lat,
+                lng: lng,
+                savedAt: savedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String kind,
+                required String label,
+                required double lat,
+                required double lng,
+                required String savedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => LocalPlacesCompanion.insert(
+                kind: kind,
+                label: label,
+                lat: lat,
+                lng: lng,
+                savedAt: savedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$LocalPlacesTable, LocalPlaceRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $LocalPlacesTable,
+                    LocalPlaceRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalPlacesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalPlacesTable,
+      LocalPlaceRow,
+      $$LocalPlacesTableFilterComposer,
+      $$LocalPlacesTableOrderingComposer,
+      $$LocalPlacesTableAnnotationComposer,
+      $$LocalPlacesTableCreateCompanionBuilder,
+      $$LocalPlacesTableUpdateCompanionBuilder,
+      (
+        LocalPlaceRow,
+        BaseReferences<_$AppDatabase, $LocalPlacesTable, LocalPlaceRow>,
+      ),
+      LocalPlaceRow,
+      PrefetchHooks Function()
     >;
 typedef $$VehiclesTableCreateCompanionBuilder = VehiclesCompanion Function({
   required String id,
@@ -15391,6 +17710,811 @@ typedef $$ExpenseRevisionsTableProcessedTableManager =
       ExpenseRevisionRow,
       PrefetchHooks Function({bool expenseId, bool groupId})
     >;
+typedef $$LocalGroupSyncTableCreateCompanionBuilder =
+    LocalGroupSyncCompanion Function({
+      required String groupId,
+      required String state,
+      Value<String?> role,
+      Value<DateTime?> lastPushAt,
+      Value<DateTime?> lastPullAt,
+      Value<String?> lastErrorCode,
+      Value<DateTime?> lastErrorAt,
+      Value<int> rowid,
+    });
+typedef $$LocalGroupSyncTableUpdateCompanionBuilder =
+    LocalGroupSyncCompanion Function({
+      Value<String> groupId,
+      Value<String> state,
+      Value<String?> role,
+      Value<DateTime?> lastPushAt,
+      Value<DateTime?> lastPullAt,
+      Value<String?> lastErrorCode,
+      Value<DateTime?> lastErrorAt,
+      Value<int> rowid,
+    });
+
+final class $$LocalGroupSyncTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $LocalGroupSyncTable, LocalGroupSyncRow> {
+  $$LocalGroupSyncTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $GroupsTable _groupIdTable(_$AppDatabase db) =>
+      db.groups.createAlias('local_group_sync__group_id__groups__id');
+
+  $$GroupsTableProcessedTableManager get groupId {
+    final $_column = $_itemColumn<String>('group_id')!;
+
+    final manager = $$GroupsTableTableManager(
+      $_db,
+      $_db.groups,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_groupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$LocalGroupSyncTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalGroupSyncTable> {
+  $$LocalGroupSyncTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastPushAt => $composableBuilder(
+    column: $table.lastPushAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastPullAt => $composableBuilder(
+    column: $table.lastPullAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastErrorAt => $composableBuilder(
+    column: $table.lastErrorAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GroupsTableFilterComposer get groupId {
+    final $$GroupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableFilterComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LocalGroupSyncTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalGroupSyncTable> {
+  $$LocalGroupSyncTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastPushAt => $composableBuilder(
+    column: $table.lastPushAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastPullAt => $composableBuilder(
+    column: $table.lastPullAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastErrorAt => $composableBuilder(
+    column: $table.lastErrorAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GroupsTableOrderingComposer get groupId {
+    final $$GroupsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableOrderingComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LocalGroupSyncTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalGroupSyncTable> {
+  $$LocalGroupSyncTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+
+  GeneratedColumn<String> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastPushAt => $composableBuilder(
+    column: $table.lastPushAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastPullAt => $composableBuilder(
+    column: $table.lastPullAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastErrorAt => $composableBuilder(
+    column: $table.lastErrorAt,
+    builder: (column) => column,
+  );
+
+  $$GroupsTableAnnotationComposer get groupId {
+    final $$GroupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LocalGroupSyncTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalGroupSyncTable,
+          LocalGroupSyncRow,
+          $$LocalGroupSyncTableFilterComposer,
+          $$LocalGroupSyncTableOrderingComposer,
+          $$LocalGroupSyncTableAnnotationComposer,
+          $$LocalGroupSyncTableCreateCompanionBuilder,
+          $$LocalGroupSyncTableUpdateCompanionBuilder,
+          (LocalGroupSyncRow, $$LocalGroupSyncTableReferences),
+          LocalGroupSyncRow,
+          PrefetchHooks Function({bool groupId})
+        > {
+  $$LocalGroupSyncTableTableManager(
+    _$AppDatabase db,
+    $LocalGroupSyncTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalGroupSyncTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalGroupSyncTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalGroupSyncTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> groupId = const Value.absent(),
+                Value<String> state = const Value.absent(),
+                Value<String?> role = const Value.absent(),
+                Value<DateTime?> lastPushAt = const Value.absent(),
+                Value<DateTime?> lastPullAt = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
+                Value<DateTime?> lastErrorAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalGroupSyncCompanion(
+                groupId: groupId,
+                state: state,
+                role: role,
+                lastPushAt: lastPushAt,
+                lastPullAt: lastPullAt,
+                lastErrorCode: lastErrorCode,
+                lastErrorAt: lastErrorAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String groupId,
+                required String state,
+                Value<String?> role = const Value.absent(),
+                Value<DateTime?> lastPushAt = const Value.absent(),
+                Value<DateTime?> lastPullAt = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
+                Value<DateTime?> lastErrorAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalGroupSyncCompanion.insert(
+                groupId: groupId,
+                state: state,
+                role: role,
+                lastPushAt: lastPushAt,
+                lastPullAt: lastPullAt,
+                lastErrorCode: lastErrorCode,
+                lastErrorAt: lastErrorAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$LocalGroupSyncTable, LocalGroupSyncRow>(table),
+                  $$LocalGroupSyncTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({groupId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (groupId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.groupId,
+                        referencedTable: $$LocalGroupSyncTableReferences
+                            ._groupIdTable(db),
+                        referencedColumn: $$LocalGroupSyncTableReferences
+                            ._groupIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$LocalGroupSyncTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalGroupSyncTable,
+      LocalGroupSyncRow,
+      $$LocalGroupSyncTableFilterComposer,
+      $$LocalGroupSyncTableOrderingComposer,
+      $$LocalGroupSyncTableAnnotationComposer,
+      $$LocalGroupSyncTableCreateCompanionBuilder,
+      $$LocalGroupSyncTableUpdateCompanionBuilder,
+      (LocalGroupSyncRow, $$LocalGroupSyncTableReferences),
+      LocalGroupSyncRow,
+      PrefetchHooks Function({bool groupId})
+    >;
+typedef $$LocalSyncCursorTableCreateCompanionBuilder =
+    LocalSyncCursorCompanion Function({
+      required String groupId,
+      required String syncedTable,
+      Value<int> cursor,
+      Value<int> rowid,
+    });
+typedef $$LocalSyncCursorTableUpdateCompanionBuilder =
+    LocalSyncCursorCompanion Function({
+      Value<String> groupId,
+      Value<String> syncedTable,
+      Value<int> cursor,
+      Value<int> rowid,
+    });
+
+final class $$LocalSyncCursorTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $LocalSyncCursorTable,
+          LocalSyncCursorRow
+        > {
+  $$LocalSyncCursorTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $GroupsTable _groupIdTable(_$AppDatabase db) =>
+      db.groups.createAlias('local_sync_cursor__group_id__groups__id');
+
+  $$GroupsTableProcessedTableManager get groupId {
+    final $_column = $_itemColumn<String>('group_id')!;
+
+    final manager = $$GroupsTableTableManager(
+      $_db,
+      $_db.groups,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_groupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$LocalSyncCursorTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalSyncCursorTable> {
+  $$LocalSyncCursorTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get syncedTable => $composableBuilder(
+    column: $table.syncedTable,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get cursor => $composableBuilder(
+    column: $table.cursor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$GroupsTableFilterComposer get groupId {
+    final $$GroupsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableFilterComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LocalSyncCursorTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalSyncCursorTable> {
+  $$LocalSyncCursorTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get syncedTable => $composableBuilder(
+    column: $table.syncedTable,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get cursor => $composableBuilder(
+    column: $table.cursor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$GroupsTableOrderingComposer get groupId {
+    final $$GroupsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableOrderingComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LocalSyncCursorTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalSyncCursorTable> {
+  $$LocalSyncCursorTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get syncedTable => $composableBuilder(
+    column: $table.syncedTable,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get cursor =>
+      $composableBuilder(column: $table.cursor, builder: (column) => column);
+
+  $$GroupsTableAnnotationComposer get groupId {
+    final $$GroupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groups,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.groups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LocalSyncCursorTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalSyncCursorTable,
+          LocalSyncCursorRow,
+          $$LocalSyncCursorTableFilterComposer,
+          $$LocalSyncCursorTableOrderingComposer,
+          $$LocalSyncCursorTableAnnotationComposer,
+          $$LocalSyncCursorTableCreateCompanionBuilder,
+          $$LocalSyncCursorTableUpdateCompanionBuilder,
+          (LocalSyncCursorRow, $$LocalSyncCursorTableReferences),
+          LocalSyncCursorRow,
+          PrefetchHooks Function({bool groupId})
+        > {
+  $$LocalSyncCursorTableTableManager(
+    _$AppDatabase db,
+    $LocalSyncCursorTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalSyncCursorTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalSyncCursorTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalSyncCursorTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> groupId = const Value.absent(),
+                Value<String> syncedTable = const Value.absent(),
+                Value<int> cursor = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalSyncCursorCompanion(
+                groupId: groupId,
+                syncedTable: syncedTable,
+                cursor: cursor,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String groupId,
+                required String syncedTable,
+                Value<int> cursor = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalSyncCursorCompanion.insert(
+                groupId: groupId,
+                syncedTable: syncedTable,
+                cursor: cursor,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$LocalSyncCursorTable, LocalSyncCursorRow>(table),
+                  $$LocalSyncCursorTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({groupId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (groupId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.groupId,
+                        referencedTable: $$LocalSyncCursorTableReferences
+                            ._groupIdTable(db),
+                        referencedColumn: $$LocalSyncCursorTableReferences
+                            ._groupIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$LocalSyncCursorTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalSyncCursorTable,
+      LocalSyncCursorRow,
+      $$LocalSyncCursorTableFilterComposer,
+      $$LocalSyncCursorTableOrderingComposer,
+      $$LocalSyncCursorTableAnnotationComposer,
+      $$LocalSyncCursorTableCreateCompanionBuilder,
+      $$LocalSyncCursorTableUpdateCompanionBuilder,
+      (LocalSyncCursorRow, $$LocalSyncCursorTableReferences),
+      LocalSyncCursorRow,
+      PrefetchHooks Function({bool groupId})
+    >;
+typedef $$LocalSettingsTableCreateCompanionBuilder =
+    LocalSettingsCompanion Function({
+      required String key,
+      required String value,
+      Value<int> rowid,
+    });
+typedef $$LocalSettingsTableUpdateCompanionBuilder =
+    LocalSettingsCompanion Function({
+      Value<String> key,
+      Value<String> value,
+      Value<int> rowid,
+    });
+
+class $$LocalSettingsTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalSettingsTable> {
+  $$LocalSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalSettingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalSettingsTable> {
+  $$LocalSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalSettingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalSettingsTable> {
+  $$LocalSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+}
+
+class $$LocalSettingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalSettingsTable,
+          LocalSettingRow,
+          $$LocalSettingsTableFilterComposer,
+          $$LocalSettingsTableOrderingComposer,
+          $$LocalSettingsTableAnnotationComposer,
+          $$LocalSettingsTableCreateCompanionBuilder,
+          $$LocalSettingsTableUpdateCompanionBuilder,
+          (
+            LocalSettingRow,
+            BaseReferences<_$AppDatabase, $LocalSettingsTable, LocalSettingRow>,
+          ),
+          LocalSettingRow,
+          PrefetchHooks Function()
+        > {
+  $$LocalSettingsTableTableManager(_$AppDatabase db, $LocalSettingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalSettingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalSettingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalSettingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> key = const Value.absent(),
+            Value<String> value = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) => LocalSettingsCompanion(key: key, value: value, rowid: rowid),
+          createCompanionCallback:
+              ({
+                required String key,
+                required String value,
+                Value<int> rowid = const Value.absent(),
+              }) => LocalSettingsCompanion.insert(
+                key: key,
+                value: value,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$LocalSettingsTable, LocalSettingRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $LocalSettingsTable,
+                    LocalSettingRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalSettingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalSettingsTable,
+      LocalSettingRow,
+      $$LocalSettingsTableFilterComposer,
+      $$LocalSettingsTableOrderingComposer,
+      $$LocalSettingsTableAnnotationComposer,
+      $$LocalSettingsTableCreateCompanionBuilder,
+      $$LocalSettingsTableUpdateCompanionBuilder,
+      (
+        LocalSettingRow,
+        BaseReferences<_$AppDatabase, $LocalSettingsTable, LocalSettingRow>,
+      ),
+      LocalSettingRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -15413,6 +18537,8 @@ class $AppDatabaseManager {
       $$LocalOutboxTableTableManager(_db, _db.localOutbox);
   $$LocalDriverPromptsTableTableManager get localDriverPrompts =>
       $$LocalDriverPromptsTableTableManager(_db, _db.localDriverPrompts);
+  $$LocalPlacesTableTableManager get localPlaces =>
+      $$LocalPlacesTableTableManager(_db, _db.localPlaces);
   $$VehiclesTableTableManager get vehicles =>
       $$VehiclesTableTableManager(_db, _db.vehicles);
   $$RideTemplatesTableTableManager get rideTemplates =>
@@ -15421,4 +18547,10 @@ class $AppDatabaseManager {
       $$RidesTableTableManager(_db, _db.rides);
   $$ExpenseRevisionsTableTableManager get expenseRevisions =>
       $$ExpenseRevisionsTableTableManager(_db, _db.expenseRevisions);
+  $$LocalGroupSyncTableTableManager get localGroupSync =>
+      $$LocalGroupSyncTableTableManager(_db, _db.localGroupSync);
+  $$LocalSyncCursorTableTableManager get localSyncCursor =>
+      $$LocalSyncCursorTableTableManager(_db, _db.localSyncCursor);
+  $$LocalSettingsTableTableManager get localSettings =>
+      $$LocalSettingsTableTableManager(_db, _db.localSettings);
 }

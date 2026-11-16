@@ -187,6 +187,10 @@ db-types: ## Regenerate supabase/types/database.ts (needs Docker + db-up) and th
 	$(SUPABASE) gen types typescript --local > supabase/types/database.ts
 	$(DART) tool/gen_db_contract.dart
 
+.PHONY: car-catalog
+car-catalog: ## Rebuild the bundled car list from the EEA CO2 data (needs network, developer-run, docs/car-catalog.md)
+	$(DART) run packages/tooling/bin/build_car_catalog.dart --output app/assets/car_catalog/catalog_v1.json.gz
+
 DRIVE_DEVICE ?= linux
 DRIVE_WAIT   ?= 300
 ifeq ($(shell uname -s),Linux)

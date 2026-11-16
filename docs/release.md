@@ -20,3 +20,12 @@ TODO (owner, needs a `.github/workflows/**` change, therefore not part of P7-T08
 Note: `configureSentryOptions` removes the SDK's global error integrations by class name. With `--obfuscate`
 these names may be mangled and the integrations then stay installed. Events still pass the scrubber and the
 opt-in gate; verify this in the staging crash test above.
+
+## Version and build number
+
+- `app/pubspec.yaml` holds only the version name (`0.2.0`), bumped by release-please on the
+  `# x-release-please-version` line. Merging the release PR tags `mitlio-vX.Y.Z` and creates a
+  GitHub release.
+- The build number is not in the repo. Store builds must pass a strictly increasing one, e.g.
+  `flutter build ipa --build-number=${{ github.run_number }}` (Android `versionCode` and iOS
+  `CFBundleVersion` both come from it). Local builds without it are fine for development.

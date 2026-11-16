@@ -18,6 +18,7 @@ const _expected = {
   'epc',
   'rides',
   'hlc',
+  'sync_merge',
 };
 
 void main() {

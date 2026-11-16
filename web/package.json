@@ -10,6 +10,7 @@
     "prebuild": "node scripts/prepare-domain-js.mjs",
     "dev": "npm run prebuild && astro dev",
     "build": "astro build",
+    "postbuild": "node scripts/write-hosting-files.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "seo": "node ../tool/seo_check.mjs dist",

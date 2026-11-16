@@ -21,6 +21,50 @@
       }
     }
   },
+  "remoteErrorOffline": "Keine Verbindung. Deine Änderungen sind gespeichert und gehen raus, sobald du online bist.",
+  "remoteErrorRateLimited": "Zu viele Versuche. Versuch es in ein paar Minuten nochmal.",
+  "remoteErrorRateLimitedIn": "Zu viele Versuche. Versuch es in {minutes} Min. nochmal.",
+  "@remoteErrorRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "remoteErrorInviteInvalid": "Dieser Link gilt nicht mehr. Bitte um einen neuen Link.",
+  "remoteErrorMemberAlreadyClaimed": "{name} ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.",
+  "@remoteErrorMemberAlreadyClaimed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteErrorMemberAlreadyClaimedNoName": "Diese Person ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.",
+  "remoteErrorAlreadyConnected": "Du bist in dieser Gruppe schon als {name} verbunden.",
+  "@remoteErrorAlreadyConnected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteErrorAlreadyConnectedNoName": "Du bist in dieser Gruppe schon verbunden.",
+  "remoteErrorMemberGone": "Diese Person gibt es in der Gruppe nicht mehr. Wähl eine andere.",
+  "remoteErrorNotOwner": "Das kann nur, wer die Gruppe erstellt hat.",
+  "remoteErrorNotMember": "Du bist nicht mehr in dieser Gruppe. Deine Daten bleiben auf diesem Handy.",
+  "remoteErrorCannotRemoveSelf": "Dich selbst kannst du hier nicht entfernen.",
+  "remoteErrorVersionTooOld": "Diese Version kann nicht mehr teilen. Aktualisiere mitlio.",
+  "remoteErrorServerDown": "Der Server antwortet gerade nicht. Wir versuchen es gleich nochmal.",
+  "remoteErrorRejected": "„{title}“ konnte nicht geteilt werden. Sie ist nur auf diesem Handy.",
+  "@remoteErrorRejected": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "remoteErrorRejectedNoTitle": "Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.",
   "errorSettingNotSaved": "Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.",
   "errorUndoFailed": "Rückgängig machen hat nicht geklappt. Prüf den Stand und versuch es nochmal.",
   "retry": "Nochmal versuchen",
@@ -902,6 +946,69 @@
   "vehicleErrorName": "Gib einen Namen ein",
   "vehicleErrorConsumption": "Gib den Verbrauch ein",
   "vehicleSave": "Speichern",
+  "vehicleCatalogEngine": "{litres} l",
+  "@vehicleCatalogEngine": {
+    "placeholders": {
+      "litres": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogPower": "{kw} kW",
+  "@vehicleCatalogPower": {
+    "placeholders": {
+      "kw": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicleCatalogHybrid": "{fuel}-Hybrid",
+  "@vehicleCatalogHybrid": {
+    "placeholders": {
+      "fuel": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogConsumptionLitre": "{value} l/100 km",
+  "@vehicleCatalogConsumptionLitre": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogConsumptionKwh": "{value} kWh/100 km",
+  "@vehicleCatalogConsumptionKwh": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogSuggestions": "Fahrzeugvorschläge",
+  "vehicleCatalogSource": "Daten: EEA, CC BY 4.0",
+  "vehicleCatalogNoMatch": "Nicht dabei? Trag den Verbrauch selbst ein, z. B. aus deinem Bordcomputer.",
+  "vehicleCatalogUnavailable": "Die Fahrzeugliste konnte nicht geladen werden. Trag den Verbrauch selbst ein, z. B. aus deinem Bordcomputer.",
+  "vehicleCatalogWltpNote": "Herstellerangabe (WLTP). Im Alltag verbrauchst du meist etwa 20 % mehr.",
+  "vehicleCatalogWltpNoteElectric": "Herstellerangabe (WLTP). Im Alltag brauchst du meist etwas mehr.",
+  "vehicleCatalogRealisticNote": "Geschätzter Alltagswert: Herstellerangabe (WLTP) plus etwa 20 %. Das ist eine Schätzung, kein offizieller Wert.",
+  "vehicleCatalogUseRealistic": "Realistischen Wert übernehmen: {value} l/100 km",
+  "@vehicleCatalogUseRealistic": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "vehicleCatalogPicked": "„{name}“ übernommen. Dein Verbrauch wurde ersetzt.",
+  "@vehicleCatalogPicked": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "templateFormNew": "Neue Strecke",
   "templateFormEdit": "Strecke bearbeiten",
   "templateNameLabel": "Name",
@@ -1205,6 +1312,13 @@
   "crashReportsUnavailable": "In dieser Version nicht verfügbar.",
   "deleteMyDataEntry": "Alle meine Daten löschen",
   "deleteMyDataEntryHint": "Gruppen, Ausgaben und Fahrten von diesem Gerät entfernen",
+  "licensesEntry": "Quellen und Lizenzen",
+  "licensesEntryHint": "Daten und Schriften, die mitlio nutzt",
+  "licensesTitle": "Quellen und Lizenzen",
+  "licensesEeaTitle": "Fahrzeugliste",
+  "licensesEea": "Daten: Europäische Umweltagentur (EEA), Überwachung der CO2-Emissionen von neuen Pkw (Verordnung (EU) 2019/631), CC BY 4.0. Die Werte sind Herstellerangaben (WLTP). mitlio hat sie nur zusammengefasst und nicht verändert.",
+  "licensesFontTitle": "Schrift im PDF",
+  "licensesFont": "Roboto, Apache License 2.0.",
   "deleteMyDataTitle": "Alle meine Daten löschen",
   "deleteMyDataWhatTitle": "Das wird gelöscht",
   "deleteMyDataWhat": "Auf diesem Gerät: alle Gruppen, Mitglieder, Ausgaben, Fahrten, Ausgleiche, Zahlungsdaten (auch IBAN und der zugehörige Schlüssel) und deine Einstellungen. Danach startet die App wie neu.",
@@ -1295,5 +1409,40 @@
   "fuelPlzInvalid": "Bitte fünf Ziffern",
   "fuelPlzApply": "Übernehmen",
   "fuelNationalAction": "Bundesweit",
-  "fuelAttributionFallback": "Spritpreisdaten"
+  "fuelAttributionFallback": "Spritpreisdaten",
+  "routeToggle": "Start und Ziel eingeben, Strecke berechnen",
+  "routeStartLabel": "Start",
+  "routeEndLabel": "Ziel",
+  "routeResult": "{km} km, Strecke über die Straße",
+  "@routeResult": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "routeRecalculate": "Neu berechnen",
+  "routeSearching": "Suche läuft …",
+  "routeCalculating": "Strecke wird berechnet …",
+  "routeNoMatches": "Keine Treffer. Probier einen anderen Ort oder trag die Kilometer selbst ein.",
+  "routeSavedHome": "Zuhause",
+  "routeSavedWork": "Arbeit",
+  "routeSaveAsHome": "Als Zuhause merken",
+  "routeSaveAsWork": "Als Arbeit merken",
+  "routeSavedAsHome": "Als Zuhause gemerkt",
+  "routeSavedAsWork": "Als Arbeit gemerkt",
+  "routeOffline": "Keine Verbindung, trag die Kilometer einfach selbst ein.",
+  "routeRateLimited": "Zu viele Streckenanfragen. Versuch es später nochmal oder trag die Kilometer selbst ein.",
+  "routeRateLimitedIn": "Zu viele Streckenanfragen. Versuch es in {minutes} Min. nochmal oder trag die Kilometer selbst ein.",
+  "@routeRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "routeNoRoute": "Zwischen diesen Orten gibt es keine Straßenverbindung. Prüf Start und Ziel oder trag die Kilometer selbst ein.",
+  "routeServerDown": "Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.",
+  "routeInvalid": "Start und Ziel passen nicht zusammen. Wähl zwei verschiedene Orte oder trag die Kilometer selbst ein.",
+  "routeAttributionFallback": "Karten- und Routendaten © OpenStreetMap-Mitwirkende"
 }
