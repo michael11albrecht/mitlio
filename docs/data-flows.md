@@ -42,3 +42,20 @@ Notes for the policy text:
 - Provider data credit shown in the app: "Karten- und Routendaten © OpenStreetMap-Mitwirkende, via openrouteservice"
   (or "via Geoapify").
 - No cookies, no identifiers, no tracking SDKs involved. API: `docs/route-distance-api.md`.
+
+## Contact form (website, `/kontakt/` and `/en/contact/`)
+
+Second contact channel next to `contact@mitlio.de` (Impressum). Web only; the app has no contact form. Without a
+configured backend the page shows only the e-mail address and sends nothing.
+
+| What the browser contacts | What is sent | What the recipient can see |
+|---|---|---|
+| our Supabase `contact` Edge Function (POST, JSON body) | the text the user typed: optional name, e-mail address, message, page language | the function forwards it as one e-mail through Resend (EU region, sending domain mitlio.de) to our mailbox; Resend sees the mail and processes it as our processor (DPA to sign); the browser's IP address is seen by Supabase as for any request |
+
+Notes for the policy text:
+
+- **Nothing is stored by the function**: no database rows, no logs of message, e-mail, name or IP. The only server-side
+  trace is a salted hash of the IP and a counter in `rate_limits` (5 messages per hour), deleted after a day.
+- The message ends up in our mailbox and with the e-mail providers involved; the owner decides retention there.
+- Purpose and legal basis: answering the request (Art. 6(1)(b) or (f) GDPR). The honeypot field is not personal data.
+- No cookies, no identifiers, no third-party scripts on the page. API: `docs/contact-api.md`.
