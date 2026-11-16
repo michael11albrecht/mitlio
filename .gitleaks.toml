@@ -1,0 +1,10 @@
+# Default gitleaks rules plus allowlist entries for values that are public by design.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Public-by-design values"
+regexes = [
+  # Supabase publishable (anon) keys ship to every client; RLS protects the data (docs/fuel-prices-api.md).
+  '''sb_publishable_[A-Za-z0-9_-]+''',
+]
