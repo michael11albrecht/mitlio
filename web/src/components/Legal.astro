@@ -1,6 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { messages, type Locale, type RouteKey } from '../i18n';
+import { legalTexts } from '../i18n/legal';
+import { assertNoPlaceholders } from '../lib/legal';
+import { SITE_URL } from '../../site.config.mjs';
 
 interface Props {
   locale: Locale;
@@ -10,9 +13,23 @@ interface Props {
 const { locale, route } = Astro.props;
 const t = messages[locale];
 const heading = t[route];
+const text = legalTexts[locale][route];
+
+// DRAFT, have it reviewed before publishing. Fails the production build while `[[` placeholders remain.
+assertNoPlaceholders(text, SITE_URL, process.env.LEGAL_STRICT === '1');
 ---
 
 <Layout locale={locale} route={route} title={`${heading} | mitlio`} description={heading} noindex>
   <h1>{heading}</h1>
-  <p>{t.legalPlaceholder}</p>
+  <div class="prose legal">
+    {
+      text.sections.map((s) => (
+        <section>
+          <h2>{s.heading}</h2>
+          {s.paragraphs?.map((p) => <p>{p}</p>)}
+          {s.items && <ul>{s.items.map((i) => <li>{i}</li>)}</ul>}
+        </section>
+      ))
+    }
+  </div>
 </Layout>
