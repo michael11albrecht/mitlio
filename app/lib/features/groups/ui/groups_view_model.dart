@@ -24,9 +24,12 @@ final class GroupsFailure extends GroupsState {
 }
 
 final class GroupsLoaded extends GroupsState {
-  const GroupsLoaded(this.groups);
+  const GroupsLoaded(this.groups, {this.archivedCount = 0});
 
   final List<Group> groups;
+
+  /// How many archived groups exist; the list shows an entry when above 0.
+  final int archivedCount;
 
   bool get isEmpty => groups.isEmpty;
 }
@@ -38,15 +41,30 @@ const localOwnerId = 'local';
 class GroupsViewModel extends Notifier<GroupsState> {
   @override
   GroupsState build() {
-    final sub = ref
-        .watch(groupsRepositoryProvider)
-        .watchGroups()
-        .listen(
-          (groups) => _set(GroupsLoaded(groups)),
-          onError: (Object e) =>
-              _set(GroupsFailure(e is RepositoryError ? e : Storage(e))),
-        );
-    ref.onDispose(() => unawaited(sub.cancel()));
+    final repo = ref.watch(groupsRepositoryProvider);
+    List<Group>? live;
+    var archived = 0;
+    void emit() {
+      if (live != null) _set(GroupsLoaded(live!, archivedCount: archived));
+    }
+
+    void fail(Object e) =>
+        _set(GroupsFailure(e is RepositoryError ? e : Storage(e)));
+    final subs = [
+      repo.watchGroups().listen((groups) {
+        live = groups;
+        emit();
+      }, onError: fail),
+      repo.watchArchivedGroups().listen((groups) {
+        archived = groups.length;
+        emit();
+      }, onError: fail),
+    ];
+    ref.onDispose(() {
+      for (final sub in subs) {
+        unawaited(sub.cancel());
+      }
+    });
     return const GroupsLoading();
   }
 
@@ -117,3 +135,80 @@ class GroupsViewModel extends Notifier<GroupsState> {
 final groupsViewModelProvider = NotifierProvider<GroupsViewModel, GroupsState>(
   GroupsViewModel.new,
 );
+
+/// The archived groups, with "restore" (no confirm; the screen offers undo).
+class ArchivedGroupsViewModel extends Notifier<GroupsState> {
+  @override
+  GroupsState build() {
+    final sub = ref
+        .watch(groupsRepositoryProvider)
+        .watchArchivedGroups()
+        .listen(
+          (groups) => _set(GroupsLoaded(groups)),
+          onError: (Object e) =>
+              _set(GroupsFailure(e is RepositoryError ? e : Storage(e))),
+        );
+    ref.onDispose(() => unawaited(sub.cancel()));
+    return const GroupsLoading();
+  }
+
+  void _set(GroupsState next) {
+    if (ref.mounted) state = next;
+  }
+
+  /// Starts over after a failure.
+  void retry() {
+    state = const GroupsLoading();
+    ref.invalidateSelf();
+  }
+
+  /// The archived groups as of now (for DebugDrive).
+  Future<RepoResult<List<Group>>> list() async {
+    try {
+      return Ok(
+        await ref.read(groupsRepositoryProvider).watchArchivedGroups().first,
+      );
+    } on Object catch (e) {
+      return Err(e is RepositoryError ? e : Storage(e));
+    }
+  }
+
+  /// Brings the group back to the list; the returned [Undo] archives it
+  /// again.
+  Future<RepoResult<Undo>> restore(String id) async {
+    final repo = ref.read(groupsRepositoryProvider);
+    final restored = await repo.restore(id);
+    return switch (restored) {
+      Ok() => Ok(
+        Undo(() async {
+          final r = await repo.softDelete(id);
+          return switch (r) {
+            Ok() => const Ok(null),
+            Err(:final error) => Err(error),
+          };
+        }),
+      ),
+      Err(:final error) => Err(error),
+    };
+  }
+
+  JsonMap debugSnapshot() => switch (state) {
+    GroupsLoading() => {'status': 'loading'},
+    GroupsFailure(:final error) => {
+      'status': 'error',
+      'error': error.toString(),
+    },
+    GroupsLoaded(:final groups) => {
+      'status': groups.isEmpty ? 'empty' : 'data',
+      'groups': [
+        for (final g in groups)
+          {'id': g.id, 'name': g.name, 'currency': g.currency.code},
+      ],
+    },
+  };
+}
+
+final archivedGroupsViewModelProvider =
+    NotifierProvider<ArchivedGroupsViewModel, GroupsState>(
+      ArchivedGroupsViewModel.new,
+    );

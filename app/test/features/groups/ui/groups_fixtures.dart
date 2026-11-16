@@ -18,6 +18,21 @@ class StubGroupsViewModel extends GroupsViewModel {
   GroupsState build() => fixed;
 }
 
+class StubArchivedGroupsViewModel extends ArchivedGroupsViewModel {
+  StubArchivedGroupsViewModel(this.fixed);
+
+  final GroupsState fixed;
+
+  @override
+  GroupsState build() => fixed;
+}
+
+List<Override> archivedStateOverride(GroupsState state) => [
+  archivedGroupsViewModelProvider.overrideWith(
+    () => StubArchivedGroupsViewModel(state),
+  ),
+];
+
 class StubGroupDetailViewModel extends GroupDetailViewModel {
   StubGroupDetailViewModel(super.groupId, this.fixed);
 

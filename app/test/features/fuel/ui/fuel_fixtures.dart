@@ -75,6 +75,27 @@ final fuelStale = FuelPriceState(
   age: const Duration(hours: 5),
 );
 
+/// Last known value because the server refused (rate limit).
+final fuelStaleRateLimited = FuelPriceState(
+  available: true,
+  grade: FuelGrade.e5,
+  price: _price(),
+  stale: true,
+  staleReason: FuelFailure.rateLimited,
+  retryAfter: const Duration(minutes: 5),
+  age: const Duration(hours: 5),
+);
+
+/// Last known value because the price service is down.
+final fuelStaleServer = FuelPriceState(
+  available: true,
+  grade: FuelGrade.e5,
+  price: _price(),
+  stale: true,
+  staleReason: FuelFailure.provider,
+  age: const Duration(hours: 5),
+);
+
 /// EU Weekly Oil Bulletin: days old, E10 shown as an E5 approximation.
 final fuelBulletin = FuelPriceState(
   available: true,

@@ -174,6 +174,9 @@ void main() {
         .into(db.localOutbox)
         .insert(
           LocalOutboxCompanion.insert(
+            opId: 'o1',
+            groupId: 'g1',
+            createdAt: DateTime.utc(2026),
             entity: 'expense',
             entityId: 'e1',
             op: 'upsert',

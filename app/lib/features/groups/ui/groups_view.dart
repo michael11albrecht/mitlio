@@ -45,12 +45,30 @@ class GroupsView extends ConsumerWidget {
           onRetry: ref.read(groupsViewModelProvider.notifier).retry,
         ),
         // First run: no groups yet.
-        GroupsLoaded(isEmpty: true) => const OnboardingBody(),
-        GroupsLoaded(:final groups) => ListView.separated(
+        GroupsLoaded(isEmpty: true, :final archivedCount) =>
+          archivedCount == 0
+              ? const OnboardingBody()
+              : Column(
+                  children: [
+                    const Expanded(child: OnboardingBody()),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: Spacing.md),
+                      child: _ArchivedEntry(archivedCount),
+                    ),
+                  ],
+                ),
+        GroupsLoaded(:final groups, :final archivedCount) => ListView.separated(
           padding: Spacing.screen.copyWith(bottom: Sizes.fabClearance),
-          itemCount: groups.length,
+          itemCount: groups.length + (archivedCount > 0 ? 1 : 0),
           separatorBuilder: (_, _) => const SizedBox(height: Spacing.sm),
           itemBuilder: (context, i) {
+            if (i == groups.length) {
+              // Quiet entry, only when something is archived.
+              return Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: _ArchivedEntry(archivedCount),
+              );
+            }
             final group = groups[i];
             return Card(
               clipBehavior: Clip.antiAlias,
@@ -71,4 +89,17 @@ class GroupsView extends ConsumerWidget {
       },
     );
   }
+}
+
+/// Quiet link to the archived groups; shown only when there are some.
+class _ArchivedEntry extends StatelessWidget {
+  const _ArchivedEntry(this.count);
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) => TextButton(
+    onPressed: () => unawaited(context.push('/groups/archived')),
+    child: Text(AppLocalizations.of(context).groupsArchivedEntry(count)),
+  );
 }

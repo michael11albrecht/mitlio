@@ -19,7 +19,117 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorMessage => 'Give it another try in a moment.';
 
   @override
+  String get errorNotFound =>
+      'That no longer exists. Go back a step and reload.';
+
+  @override
+  String get errorConflict =>
+      'That is not possible right now because something changed. Check the current state and try again.';
+
+  @override
+  String get errorLocked =>
+      'That is already settled and can no longer be changed.';
+
+  @override
+  String get errorInvalidData =>
+      'That input does not fit. Check it and try again.';
+
+  @override
+  String get errorStorage =>
+      'That did not work. Check your device\'s free storage and try again.';
+
+  @override
+  String get shareFailed => 'Sharing did not work. Try again.';
+
+  @override
+  String get errorRateLimited =>
+      'Too many requests. Try again in a few minutes.';
+
+  @override
+  String errorRateLimitedIn(int minutes) {
+    return 'Too many requests. Try again in $minutes min.';
+  }
+
+  @override
+  String get remoteErrorOffline =>
+      'No connection. Your changes are saved and will go out as soon as you are online.';
+
+  @override
+  String get remoteErrorRateLimited =>
+      'Too many attempts. Try again in a few minutes.';
+
+  @override
+  String remoteErrorRateLimitedIn(int minutes) {
+    return 'Too many attempts. Try again in $minutes min.';
+  }
+
+  @override
+  String get remoteErrorInviteInvalid =>
+      'This link is no longer valid. Ask for a new link.';
+
+  @override
+  String remoteErrorMemberAlreadyClaimed(String name) {
+    return '$name is already connected to another phone. Pick a different person.';
+  }
+
+  @override
+  String get remoteErrorMemberAlreadyClaimedNoName =>
+      'This person is already connected to another phone. Pick a different person.';
+
+  @override
+  String remoteErrorAlreadyConnected(String name) {
+    return 'You are already connected to this group as $name.';
+  }
+
+  @override
+  String get remoteErrorAlreadyConnectedNoName =>
+      'You are already connected to this group.';
+
+  @override
+  String get remoteErrorMemberGone =>
+      'This person is no longer in the group. Pick a different one.';
+
+  @override
+  String get remoteErrorNotOwner =>
+      'Only the person who created the group can do this.';
+
+  @override
+  String get remoteErrorNotMember =>
+      'You are no longer in this group. Your data stays on this phone.';
+
+  @override
+  String get remoteErrorCannotRemoveSelf => 'You cannot remove yourself here.';
+
+  @override
+  String get remoteErrorVersionTooOld =>
+      'This version can no longer share. Update mitlio.';
+
+  @override
+  String get remoteErrorServerDown =>
+      'The server is not responding right now. We will try again shortly.';
+
+  @override
+  String remoteErrorRejected(String title) {
+    return '“$title” could not be shared. It is only on this phone.';
+  }
+
+  @override
+  String get remoteErrorRejectedNoTitle =>
+      'This could not be shared. It is only on this phone.';
+
+  @override
+  String get errorSettingNotSaved =>
+      'The setting could not be saved. Try again.';
+
+  @override
+  String get errorUndoFailed =>
+      'Undo did not work. Check the current state and try again.';
+
+  @override
   String get retry => 'Try again';
+
+  @override
+  String get keyboardDone => 'Done';
 
   @override
   String get amountInvalid => 'That is not a valid amount';
@@ -69,6 +179,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dismiss => 'Dismiss';
 
   @override
+  String get hideSnackBar => 'Dismiss';
+
+  @override
   String get groupNew => 'New group';
 
   @override
@@ -105,6 +218,27 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String groupArchived(String name) {
     return '“$name” archived';
+  }
+
+  @override
+  String groupsArchivedEntry(int count) {
+    return 'Archived ($count)';
+  }
+
+  @override
+  String get groupsArchivedTitle => 'Archived groups';
+
+  @override
+  String get groupRestore => 'Restore';
+
+  @override
+  String groupRestoreLabel(String name) {
+    return 'Restore $name';
+  }
+
+  @override
+  String groupRestored(String name) {
+    return '“$name” restored';
   }
 
   @override
@@ -220,6 +354,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get balancesSettledMessage => 'Nobody owes anybody anything.';
+
+  @override
+  String balancesOpenRides(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count open rides',
+      one: '1 open ride',
+    );
+    return 'incl. $_temp0 ($amount)';
+  }
 
   @override
   String get balancesEmptyTitle => 'Nothing to settle yet';
@@ -1024,6 +1169,67 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vehicleSave => 'Save';
 
   @override
+  String vehicleCatalogEngine(String litres) {
+    return '$litres l';
+  }
+
+  @override
+  String vehicleCatalogPower(int kw) {
+    return '$kw kW';
+  }
+
+  @override
+  String vehicleCatalogHybrid(String fuel) {
+    return '$fuel hybrid';
+  }
+
+  @override
+  String vehicleCatalogConsumptionLitre(String value) {
+    return '$value l/100 km';
+  }
+
+  @override
+  String vehicleCatalogConsumptionKwh(String value) {
+    return '$value kWh/100 km';
+  }
+
+  @override
+  String get vehicleCatalogSuggestions => 'Vehicle suggestions';
+
+  @override
+  String get vehicleCatalogSource => 'Data: EEA, CC BY 4.0';
+
+  @override
+  String get vehicleCatalogNoMatch =>
+      'Not listed? Enter the consumption yourself, e.g. from your trip computer.';
+
+  @override
+  String get vehicleCatalogUnavailable =>
+      'The vehicle list could not be loaded. Enter the consumption yourself, e.g. from your trip computer.';
+
+  @override
+  String get vehicleCatalogWltpNote =>
+      'Manufacturer figure (WLTP). In daily use you usually consume about 20 % more.';
+
+  @override
+  String get vehicleCatalogWltpNoteElectric =>
+      'Manufacturer figure (WLTP). In daily use you usually need somewhat more.';
+
+  @override
+  String get vehicleCatalogRealisticNote =>
+      'Estimated everyday value: manufacturer figure (WLTP) plus about 20 %. This is an estimate, not an official value.';
+
+  @override
+  String vehicleCatalogUseRealistic(String value) {
+    return 'Use the realistic value: $value l/100 km';
+  }
+
+  @override
+  String vehicleCatalogPicked(String name) {
+    return '\"$name\" applied. Your consumption was replaced.';
+  }
+
+  @override
   String get templateFormNew => 'New route';
 
   @override
@@ -1113,7 +1319,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ridesSettleNote =>
-      'One expense per driver. You can undo it right away.';
+      'The rides already count in the balances. Settling locks them and creates one expense per driver. You can undo it right away.';
 
   @override
   String get ridesSettleAction => 'Settle';
@@ -1140,6 +1346,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String ridesFairnessKm(String driven, String ridden) {
     return '$driven km driven · $ridden km ridden';
   }
+
+  @override
+  String get ridesDriversTitle => 'Who drives?';
+
+  @override
+  String get ridesDriversHelp => 'Only drivers are suggested as next.';
+
+  @override
+  String get ridesDriverSwitch => 'Drives';
+
+  @override
+  String ridesDriverNowDrives(String name) {
+    return '$name is suggested again';
+  }
+
+  @override
+  String ridesDriverNotSuggested(String name) {
+    return '$name is no longer suggested';
+  }
+
+  @override
+  String get ridesFairnessNotDriving => 'Doesn\'t drive · not suggested';
+
+  @override
+  String get ridesFairnessChangeDrivers => 'Change drivers';
+
+  @override
+  String get ridesFairnessHow => 'How is this calculated?';
+
+  @override
+  String get ridesFairnessHowText =>
+      'The person who has driven the least is suggested: km driven minus km ridden since the last settlement. On a tie, whoever drove longest ago is next. Only members marked as drivers are suggested.';
+
+  @override
+  String ridesDriverPromptTitle(String name) {
+    return 'Doesn\'t $name drive?';
+  }
+
+  @override
+  String ridesDriverPromptBody(String name, int n) {
+    return '$name rode along on $n rides but has never driven. As a non-driver, $name is no longer suggested as next.';
+  }
+
+  @override
+  String get ridesDriverPromptMark => 'Mark as non-driver';
+
+  @override
+  String ridesDriverPromptKeep(String name) {
+    return '$name drives too';
+  }
+
+  @override
+  String get ridesDriverPromptManage => 'Manage drivers';
 
   @override
   String get settleOpen => 'Settle up';
@@ -1406,6 +1665,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'Remove groups, expenses and rides from this device';
 
   @override
+  String get licensesEntry => 'Sources and licences';
+
+  @override
+  String get licensesEntryHint => 'Data and fonts mitlio uses';
+
+  @override
+  String get licensesTitle => 'Sources and licences';
+
+  @override
+  String get licensesEeaTitle => 'Vehicle list';
+
+  @override
+  String get licensesEea =>
+      'Data: European Environment Agency (EEA), monitoring of CO2 emissions from new passenger cars (Regulation (EU) 2019/631), CC BY 4.0. The values are manufacturer figures (WLTP). mitlio only summarised them and did not change them.';
+
+  @override
+  String get licensesFontTitle => 'PDF font';
+
+  @override
+  String get licensesFont => 'Roboto, Apache License 2.0.';
+
+  @override
   String get deleteMyDataTitle => 'Delete all my data';
 
   @override
@@ -1492,6 +1773,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fuelOfflineNote => 'offline, last known';
 
   @override
+  String get fuelStaleRateLimited => 'too many requests, last known';
+
+  @override
+  String fuelStaleRateLimitedIn(int minutes) {
+    return 'too many requests, retry in $minutes min, last known';
+  }
+
+  @override
+  String get fuelStaleServer => 'price service unreachable, last known';
+
+  @override
+  String get fuelRateLimited =>
+      'Too many price requests – try again in a few minutes.';
+
+  @override
+  String fuelRateLimitedIn(int minutes) {
+    return 'Too many price requests – try again in $minutes min.';
+  }
+
+  @override
+  String get fuelOffline =>
+      'No connection. Check your network or enter the price yourself.';
+
+  @override
+  String get fuelServerDown =>
+      'The price service is unreachable right now. Try again later or enter the price yourself.';
+
+  @override
   String get fuelNoPrice =>
       'No current price available right now. Just enter it yourself.';
 
@@ -1526,4 +1835,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fuelAttributionFallback => 'Fuel price data';
+
+  @override
+  String get routeToggle =>
+      'Enter start and destination to calculate the distance';
+
+  @override
+  String get routeStartLabel => 'Start';
+
+  @override
+  String get routeEndLabel => 'Destination';
+
+  @override
+  String routeResult(String km) {
+    return '$km km by road';
+  }
+
+  @override
+  String get routeRecalculate => 'Recalculate';
+
+  @override
+  String get routeSearching => 'Searching …';
+
+  @override
+  String get routeCalculating => 'Calculating the distance …';
+
+  @override
+  String get routeNoMatches =>
+      'No matches. Try another place or enter the kilometres yourself.';
+
+  @override
+  String get routeSavedHome => 'Home';
+
+  @override
+  String get routeSavedWork => 'Work';
+
+  @override
+  String get routeSaveAsHome => 'Save as home';
+
+  @override
+  String get routeSaveAsWork => 'Save as work';
+
+  @override
+  String get routeSavedAsHome => 'Saved as home';
+
+  @override
+  String get routeSavedAsWork => 'Saved as work';
+
+  @override
+  String get routeOffline =>
+      'No connection. Just enter the kilometres yourself.';
+
+  @override
+  String get routeRateLimited =>
+      'Too many route requests. Try again later or enter the kilometres yourself.';
+
+  @override
+  String routeRateLimitedIn(int minutes) {
+    return 'Too many route requests. Try again in $minutes min or enter the kilometres yourself.';
+  }
+
+  @override
+  String get routeNoRoute =>
+      'There is no road connection between these places. Check start and destination or enter the kilometres yourself.';
+
+  @override
+  String get routeServerDown =>
+      'The route service is unreachable right now. Try again later or enter the kilometres yourself.';
+
+  @override
+  String get routeInvalid =>
+      'Start and destination do not fit together. Pick two different places or enter the kilometres yourself.';
+
+  @override
+  String get routeAttributionFallback =>
+      'Map and route data © OpenStreetMap contributors';
 }

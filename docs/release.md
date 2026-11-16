@@ -40,3 +40,12 @@ Status: DRAFT ("Entwurf, vor Veröffentlichung prüfen lassen", e.g. a lawyer or
   into the live text when sync/push ships, and re-check every sentence.
 - Re-check the text whenever behaviour changes: new network calls, a DSN in release builds (crash reports),
   the hosting provider, the retention interval of `cleanup_fuel_tables()` (migration 0005).
+
+## Version and build number
+
+- `app/pubspec.yaml` holds only the version name (`0.2.0`), bumped by release-please on the
+  `# x-release-please-version` line. Merging the release PR tags `mitlio-vX.Y.Z` and creates a
+  GitHub release.
+- The build number is not in the repo. Store builds must pass a strictly increasing one, e.g.
+  `flutter build ipa --build-number=${{ github.run_number }}` (Android `versionCode` and iOS
+  `CFBundleVersion` both come from it). Local builds without it are fine for development.

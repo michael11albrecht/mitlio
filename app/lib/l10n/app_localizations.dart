@@ -116,11 +116,173 @@ abstract class AppLocalizations {
   /// **'Versuch es gleich noch einmal.'**
   String get errorMessage;
 
+  /// No description provided for @errorNotFound.
+  ///
+  /// In de, this message translates to:
+  /// **'Das gibt es nicht mehr. Geh einen Schritt zurück und lad neu.'**
+  String get errorNotFound;
+
+  /// No description provided for @errorConflict.
+  ///
+  /// In de, this message translates to:
+  /// **'Das geht gerade nicht, weil sich etwas geändert hat. Prüf den Stand und versuch es nochmal.'**
+  String get errorConflict;
+
+  /// No description provided for @errorLocked.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist schon abgerechnet und lässt sich nicht mehr ändern.'**
+  String get errorLocked;
+
+  /// No description provided for @errorInvalidData.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Eingabe passt nicht. Prüf sie und versuch es nochmal.'**
+  String get errorInvalidData;
+
+  /// No description provided for @errorStorage.
+  ///
+  /// In de, this message translates to:
+  /// **'Das hat nicht geklappt. Prüf den freien Speicher deines Geräts und versuch es nochmal.'**
+  String get errorStorage;
+
+  /// No description provided for @shareFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Teilen hat nicht geklappt. Versuch es nochmal.'**
+  String get shareFailed;
+
+  /// No description provided for @errorRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Anfragen. Versuch es in ein paar Minuten nochmal.'**
+  String get errorRateLimited;
+
+  /// No description provided for @errorRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Anfragen. Versuch es in {minutes} Min. nochmal.'**
+  String errorRateLimitedIn(int minutes);
+
+  /// No description provided for @remoteErrorOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Deine Änderungen sind gespeichert und gehen raus, sobald du online bist.'**
+  String get remoteErrorOffline;
+
+  /// No description provided for @remoteErrorRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Versuche. Versuch es in ein paar Minuten nochmal.'**
+  String get remoteErrorRateLimited;
+
+  /// No description provided for @remoteErrorRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Versuche. Versuch es in {minutes} Min. nochmal.'**
+  String remoteErrorRateLimitedIn(int minutes);
+
+  /// No description provided for @remoteErrorInviteInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Dieser Link gilt nicht mehr. Bitte um einen neuen Link.'**
+  String get remoteErrorInviteInvalid;
+
+  /// No description provided for @remoteErrorMemberAlreadyClaimed.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.'**
+  String remoteErrorMemberAlreadyClaimed(String name);
+
+  /// No description provided for @remoteErrorMemberAlreadyClaimedNoName.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Person ist schon mit einem anderen Handy verbunden. Wähl eine andere Person.'**
+  String get remoteErrorMemberAlreadyClaimedNoName;
+
+  /// No description provided for @remoteErrorAlreadyConnected.
+  ///
+  /// In de, this message translates to:
+  /// **'Du bist in dieser Gruppe schon als {name} verbunden.'**
+  String remoteErrorAlreadyConnected(String name);
+
+  /// No description provided for @remoteErrorAlreadyConnectedNoName.
+  ///
+  /// In de, this message translates to:
+  /// **'Du bist in dieser Gruppe schon verbunden.'**
+  String get remoteErrorAlreadyConnectedNoName;
+
+  /// No description provided for @remoteErrorMemberGone.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Person gibt es in der Gruppe nicht mehr. Wähl eine andere.'**
+  String get remoteErrorMemberGone;
+
+  /// No description provided for @remoteErrorNotOwner.
+  ///
+  /// In de, this message translates to:
+  /// **'Das kann nur, wer die Gruppe erstellt hat.'**
+  String get remoteErrorNotOwner;
+
+  /// No description provided for @remoteErrorNotMember.
+  ///
+  /// In de, this message translates to:
+  /// **'Du bist nicht mehr in dieser Gruppe. Deine Daten bleiben auf diesem Handy.'**
+  String get remoteErrorNotMember;
+
+  /// No description provided for @remoteErrorCannotRemoveSelf.
+  ///
+  /// In de, this message translates to:
+  /// **'Dich selbst kannst du hier nicht entfernen.'**
+  String get remoteErrorCannotRemoveSelf;
+
+  /// No description provided for @remoteErrorVersionTooOld.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Version kann nicht mehr teilen. Aktualisiere mitlio.'**
+  String get remoteErrorVersionTooOld;
+
+  /// No description provided for @remoteErrorServerDown.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Server antwortet gerade nicht. Wir versuchen es gleich nochmal.'**
+  String get remoteErrorServerDown;
+
+  /// No description provided for @remoteErrorRejected.
+  ///
+  /// In de, this message translates to:
+  /// **'„{title}“ konnte nicht geteilt werden. Sie ist nur auf diesem Handy.'**
+  String remoteErrorRejected(String title);
+
+  /// No description provided for @remoteErrorRejectedNoTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.'**
+  String get remoteErrorRejectedNoTitle;
+
+  /// No description provided for @errorSettingNotSaved.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.'**
+  String get errorSettingNotSaved;
+
+  /// No description provided for @errorUndoFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Rückgängig machen hat nicht geklappt. Prüf den Stand und versuch es nochmal.'**
+  String get errorUndoFailed;
+
   /// No description provided for @retry.
   ///
   /// In de, this message translates to:
   /// **'Nochmal versuchen'**
   String get retry;
+
+  /// Button above the iOS number pad that closes the keyboard.
+  ///
+  /// In de, this message translates to:
+  /// **'Fertig'**
+  String get keyboardDone;
 
   /// No description provided for @amountInvalid.
   ///
@@ -163,6 +325,12 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Schließen'**
   String get dismiss;
+
+  /// No description provided for @hideSnackBar.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausblenden'**
+  String get hideSnackBar;
 
   /// No description provided for @groupNew.
   ///
@@ -235,6 +403,36 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'„{name}“ archiviert'**
   String groupArchived(String name);
+
+  /// No description provided for @groupsArchivedEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Archiviert ({count})'**
+  String groupsArchivedEntry(int count);
+
+  /// No description provided for @groupsArchivedTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Archivierte Gruppen'**
+  String get groupsArchivedTitle;
+
+  /// No description provided for @groupRestore.
+  ///
+  /// In de, this message translates to:
+  /// **'Wiederherstellen'**
+  String get groupRestore;
+
+  /// No description provided for @groupRestoreLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} wiederherstellen'**
+  String groupRestoreLabel(String name);
+
+  /// No description provided for @groupRestored.
+  ///
+  /// In de, this message translates to:
+  /// **'„{name}“ wiederhergestellt'**
+  String groupRestored(String name);
 
   /// No description provided for @membersEmptyTitle.
   ///
@@ -427,6 +625,12 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Niemand schuldet jemandem etwas.'**
   String get balancesSettledMessage;
+
+  /// No description provided for @balancesOpenRides.
+  ///
+  /// In de, this message translates to:
+  /// **'inkl. {count, plural, =1{1 offene Fahrt} other{{count} offene Fahrten}} ({amount})'**
+  String balancesOpenRides(int count, String amount);
 
   /// No description provided for @balancesEmptyTitle.
   ///
@@ -1783,6 +1987,90 @@ abstract class AppLocalizations {
   /// **'Speichern'**
   String get vehicleSave;
 
+  /// No description provided for @vehicleCatalogEngine.
+  ///
+  /// In de, this message translates to:
+  /// **'{litres} l'**
+  String vehicleCatalogEngine(String litres);
+
+  /// No description provided for @vehicleCatalogPower.
+  ///
+  /// In de, this message translates to:
+  /// **'{kw} kW'**
+  String vehicleCatalogPower(int kw);
+
+  /// No description provided for @vehicleCatalogHybrid.
+  ///
+  /// In de, this message translates to:
+  /// **'{fuel}-Hybrid'**
+  String vehicleCatalogHybrid(String fuel);
+
+  /// No description provided for @vehicleCatalogConsumptionLitre.
+  ///
+  /// In de, this message translates to:
+  /// **'{value} l/100 km'**
+  String vehicleCatalogConsumptionLitre(String value);
+
+  /// No description provided for @vehicleCatalogConsumptionKwh.
+  ///
+  /// In de, this message translates to:
+  /// **'{value} kWh/100 km'**
+  String vehicleCatalogConsumptionKwh(String value);
+
+  /// No description provided for @vehicleCatalogSuggestions.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrzeugvorschläge'**
+  String get vehicleCatalogSuggestions;
+
+  /// No description provided for @vehicleCatalogSource.
+  ///
+  /// In de, this message translates to:
+  /// **'Daten: EEA, CC BY 4.0'**
+  String get vehicleCatalogSource;
+
+  /// No description provided for @vehicleCatalogNoMatch.
+  ///
+  /// In de, this message translates to:
+  /// **'Nicht dabei? Trag den Verbrauch selbst ein, z. B. aus deinem Bordcomputer.'**
+  String get vehicleCatalogNoMatch;
+
+  /// No description provided for @vehicleCatalogUnavailable.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Fahrzeugliste konnte nicht geladen werden. Trag den Verbrauch selbst ein, z. B. aus deinem Bordcomputer.'**
+  String get vehicleCatalogUnavailable;
+
+  /// No description provided for @vehicleCatalogWltpNote.
+  ///
+  /// In de, this message translates to:
+  /// **'Herstellerangabe (WLTP). Im Alltag verbrauchst du meist etwa 20 % mehr.'**
+  String get vehicleCatalogWltpNote;
+
+  /// No description provided for @vehicleCatalogWltpNoteElectric.
+  ///
+  /// In de, this message translates to:
+  /// **'Herstellerangabe (WLTP). Im Alltag brauchst du meist etwas mehr.'**
+  String get vehicleCatalogWltpNoteElectric;
+
+  /// No description provided for @vehicleCatalogRealisticNote.
+  ///
+  /// In de, this message translates to:
+  /// **'Geschätzter Alltagswert: Herstellerangabe (WLTP) plus etwa 20 %. Das ist eine Schätzung, kein offizieller Wert.'**
+  String get vehicleCatalogRealisticNote;
+
+  /// No description provided for @vehicleCatalogUseRealistic.
+  ///
+  /// In de, this message translates to:
+  /// **'Realistischen Wert übernehmen: {value} l/100 km'**
+  String vehicleCatalogUseRealistic(String value);
+
+  /// No description provided for @vehicleCatalogPicked.
+  ///
+  /// In de, this message translates to:
+  /// **'„{name}“ übernommen. Dein Verbrauch wurde ersetzt.'**
+  String vehicleCatalogPicked(String name);
+
   /// No description provided for @templateFormNew.
   ///
   /// In de, this message translates to:
@@ -1924,7 +2212,7 @@ abstract class AppLocalizations {
   /// No description provided for @ridesSettleNote.
   ///
   /// In de, this message translates to:
-  /// **'Pro Fahrer entsteht eine Ausgabe. Du kannst das gleich rückgängig machen.'**
+  /// **'Die Fahrten zählen schon im Saldo. Beim Abrechnen werden sie gesperrt und pro Fahrer zu einer Ausgabe. Du kannst das gleich rückgängig machen.'**
   String get ridesSettleNote;
 
   /// No description provided for @ridesSettleAction.
@@ -1962,6 +2250,90 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'{driven} km gefahren · {ridden} km mitgefahren'**
   String ridesFairnessKm(String driven, String ridden);
+
+  /// No description provided for @ridesDriversTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer fährt?'**
+  String get ridesDriversTitle;
+
+  /// No description provided for @ridesDriversHelp.
+  ///
+  /// In de, this message translates to:
+  /// **'Nur Fahrer werden als Nächstes vorgeschlagen.'**
+  String get ridesDriversHelp;
+
+  /// No description provided for @ridesDriverSwitch.
+  ///
+  /// In de, this message translates to:
+  /// **'Fährt selbst'**
+  String get ridesDriverSwitch;
+
+  /// No description provided for @ridesDriverNowDrives.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} wird wieder vorgeschlagen'**
+  String ridesDriverNowDrives(String name);
+
+  /// No description provided for @ridesDriverNotSuggested.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} wird nicht mehr vorgeschlagen'**
+  String ridesDriverNotSuggested(String name);
+
+  /// No description provided for @ridesFairnessNotDriving.
+  ///
+  /// In de, this message translates to:
+  /// **'Fährt nicht · wird nicht vorgeschlagen'**
+  String get ridesFairnessNotDriving;
+
+  /// No description provided for @ridesFairnessChangeDrivers.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrer ändern'**
+  String get ridesFairnessChangeDrivers;
+
+  /// No description provided for @ridesFairnessHow.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie wird das berechnet?'**
+  String get ridesFairnessHow;
+
+  /// No description provided for @ridesFairnessHowText.
+  ///
+  /// In de, this message translates to:
+  /// **'Vorgeschlagen wird, wer bisher am wenigsten gefahren ist – km gefahren minus km mitgefahren seit der letzten Abrechnung. Bei Gleichstand ist dran, wer am längsten nicht gefahren ist. Nur Mitglieder, die als Fahrer markiert sind, werden vorgeschlagen.'**
+  String get ridesFairnessHowText;
+
+  /// No description provided for @ridesDriverPromptTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Fährt {name} nicht selbst?'**
+  String ridesDriverPromptTitle(String name);
+
+  /// No description provided for @ridesDriverPromptBody.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} ist bei {n} Fahrten mitgefahren, aber noch nie gefahren. Als Nichtfahrer wird {name} nicht mehr als Nächstes vorgeschlagen.'**
+  String ridesDriverPromptBody(String name, int n);
+
+  /// No description provided for @ridesDriverPromptMark.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Nichtfahrer markieren'**
+  String get ridesDriverPromptMark;
+
+  /// No description provided for @ridesDriverPromptKeep.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} fährt auch'**
+  String ridesDriverPromptKeep(String name);
+
+  /// No description provided for @ridesDriverPromptManage.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrer verwalten'**
+  String get ridesDriverPromptManage;
 
   /// No description provided for @settleOpen.
   ///
@@ -2437,6 +2809,48 @@ abstract class AppLocalizations {
   /// **'Gruppen, Ausgaben und Fahrten von diesem Gerät entfernen'**
   String get deleteMyDataEntryHint;
 
+  /// No description provided for @licensesEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Quellen und Lizenzen'**
+  String get licensesEntry;
+
+  /// No description provided for @licensesEntryHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Daten und Schriften, die mitlio nutzt'**
+  String get licensesEntryHint;
+
+  /// No description provided for @licensesTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Quellen und Lizenzen'**
+  String get licensesTitle;
+
+  /// No description provided for @licensesEeaTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Fahrzeugliste'**
+  String get licensesEeaTitle;
+
+  /// No description provided for @licensesEea.
+  ///
+  /// In de, this message translates to:
+  /// **'Daten: Europäische Umweltagentur (EEA), Überwachung der CO2-Emissionen von neuen Pkw (Verordnung (EU) 2019/631), CC BY 4.0. Die Werte sind Herstellerangaben (WLTP). mitlio hat sie nur zusammengefasst und nicht verändert.'**
+  String get licensesEea;
+
+  /// No description provided for @licensesFontTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Schrift im PDF'**
+  String get licensesFontTitle;
+
+  /// No description provided for @licensesFont.
+  ///
+  /// In de, this message translates to:
+  /// **'Roboto, Apache License 2.0.'**
+  String get licensesFont;
+
   /// No description provided for @deleteMyDataTitle.
   ///
   /// In de, this message translates to:
@@ -2581,6 +2995,48 @@ abstract class AppLocalizations {
   /// **'offline, zuletzt bekannt'**
   String get fuelOfflineNote;
 
+  /// No description provided for @fuelStaleRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'zu viele Anfragen, zuletzt bekannt'**
+  String get fuelStaleRateLimited;
+
+  /// No description provided for @fuelStaleRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'zu viele Anfragen, in {minutes} Min. nochmal, zuletzt bekannt'**
+  String fuelStaleRateLimitedIn(int minutes);
+
+  /// No description provided for @fuelStaleServer.
+  ///
+  /// In de, this message translates to:
+  /// **'Preisdienst nicht erreichbar, zuletzt bekannt'**
+  String get fuelStaleServer;
+
+  /// No description provided for @fuelRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Preisabfragen – versuch es in ein paar Minuten nochmal.'**
+  String get fuelRateLimited;
+
+  /// No description provided for @fuelRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Preisabfragen – versuch es in {minutes} Min. nochmal.'**
+  String fuelRateLimitedIn(int minutes);
+
+  /// No description provided for @fuelOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Prüf dein Netz oder trag den Preis selbst ein.'**
+  String get fuelOffline;
+
+  /// No description provided for @fuelServerDown.
+  ///
+  /// In de, this message translates to:
+  /// **'Preisdienst gerade nicht erreichbar. Versuch es später nochmal oder trag den Preis selbst ein.'**
+  String get fuelServerDown;
+
   /// No description provided for @fuelNoPrice.
   ///
   /// In de, this message translates to:
@@ -2646,6 +3102,132 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Spritpreisdaten'**
   String get fuelAttributionFallback;
+
+  /// No description provided for @routeToggle.
+  ///
+  /// In de, this message translates to:
+  /// **'Start und Ziel eingeben, Strecke berechnen'**
+  String get routeToggle;
+
+  /// No description provided for @routeStartLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Start'**
+  String get routeStartLabel;
+
+  /// No description provided for @routeEndLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Ziel'**
+  String get routeEndLabel;
+
+  /// No description provided for @routeResult.
+  ///
+  /// In de, this message translates to:
+  /// **'{km} km, Strecke über die Straße'**
+  String routeResult(String km);
+
+  /// No description provided for @routeRecalculate.
+  ///
+  /// In de, this message translates to:
+  /// **'Neu berechnen'**
+  String get routeRecalculate;
+
+  /// No description provided for @routeSearching.
+  ///
+  /// In de, this message translates to:
+  /// **'Suche läuft …'**
+  String get routeSearching;
+
+  /// No description provided for @routeCalculating.
+  ///
+  /// In de, this message translates to:
+  /// **'Strecke wird berechnet …'**
+  String get routeCalculating;
+
+  /// No description provided for @routeNoMatches.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Treffer. Probier einen anderen Ort oder trag die Kilometer selbst ein.'**
+  String get routeNoMatches;
+
+  /// No description provided for @routeSavedHome.
+  ///
+  /// In de, this message translates to:
+  /// **'Zuhause'**
+  String get routeSavedHome;
+
+  /// No description provided for @routeSavedWork.
+  ///
+  /// In de, this message translates to:
+  /// **'Arbeit'**
+  String get routeSavedWork;
+
+  /// No description provided for @routeSaveAsHome.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Zuhause merken'**
+  String get routeSaveAsHome;
+
+  /// No description provided for @routeSaveAsWork.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Arbeit merken'**
+  String get routeSaveAsWork;
+
+  /// No description provided for @routeSavedAsHome.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Zuhause gemerkt'**
+  String get routeSavedAsHome;
+
+  /// No description provided for @routeSavedAsWork.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Arbeit gemerkt'**
+  String get routeSavedAsWork;
+
+  /// No description provided for @routeOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung, trag die Kilometer einfach selbst ein.'**
+  String get routeOffline;
+
+  /// No description provided for @routeRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Streckenanfragen. Versuch es später nochmal oder trag die Kilometer selbst ein.'**
+  String get routeRateLimited;
+
+  /// No description provided for @routeRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu viele Streckenanfragen. Versuch es in {minutes} Min. nochmal oder trag die Kilometer selbst ein.'**
+  String routeRateLimitedIn(int minutes);
+
+  /// No description provided for @routeNoRoute.
+  ///
+  /// In de, this message translates to:
+  /// **'Zwischen diesen Orten gibt es keine Straßenverbindung. Prüf Start und Ziel oder trag die Kilometer selbst ein.'**
+  String get routeNoRoute;
+
+  /// No description provided for @routeServerDown.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.'**
+  String get routeServerDown;
+
+  /// No description provided for @routeInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Start und Ziel passen nicht zusammen. Wähl zwei verschiedene Orte oder trag die Kilometer selbst ein.'**
+  String get routeInvalid;
+
+  /// No description provided for @routeAttributionFallback.
+  ///
+  /// In de, this message translates to:
+  /// **'Karten- und Routendaten © OpenStreetMap-Mitwirkende'**
+  String get routeAttributionFallback;
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,7 @@ import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/debug/fakes/fake_route_distance_service.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_providers.dart';
 import 'package:mitlio/features/expenses/data/repositories/fake_expenses_repository.dart';
 import 'package:mitlio/features/fuel/data/repositories/fuel_providers.dart';
@@ -23,6 +24,10 @@ import 'package:mitlio/features/members/data/repositories/payment_details_reposi
 import 'package:mitlio/features/rides/data/repositories/fake_rides_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_vehicles_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
+import 'package:mitlio/features/routes/data/repositories/fake_places_repository.dart';
+import 'package:mitlio/features/routes/data/repositories/route_providers.dart';
+import 'package:mitlio/features/routes/ui/route_distance_view_model.dart'
+    show routeSearchDebounceProvider;
 import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/fake_settlements_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
@@ -35,7 +40,7 @@ import 'fake_platform.dart';
 class FlakyGroups extends FakeGroupsRepository {
   FlakyGroups({required super.clock, required super.ids});
 
-  /// Fails `create`, `update` and `softDelete` while set.
+  /// Fails `create`, `update`, `softDelete` and `restore` while set.
   RepositoryError? failWith;
 
   /// Makes `watchGroups` emit this error while set.
@@ -44,6 +49,14 @@ class FlakyGroups extends FakeGroupsRepository {
   @override
   Stream<List<Group>> watchGroups() =>
       watchError != null ? Stream.error(watchError!) : super.watchGroups();
+
+  /// Makes `watchArchivedGroups` emit this error while set.
+  Object? archivedWatchError;
+
+  @override
+  Stream<List<Group>> watchArchivedGroups() => archivedWatchError != null
+      ? Stream.error(archivedWatchError!)
+      : super.watchArchivedGroups();
 
   @override
   Future<RepoResult<Group>> create({
@@ -66,6 +79,10 @@ class FlakyGroups extends FakeGroupsRepository {
   @override
   Future<RepoResult<Undo>> softDelete(String id) async =>
       failWith != null ? Err(failWith!) : super.softDelete(id);
+
+  @override
+  Future<RepoResult<void>> restore(String id) async =>
+      failWith != null ? Err(failWith!) : super.restore(id);
 }
 
 /// Members fake whose commands and stream can be made to fail.
@@ -92,6 +109,18 @@ class FlakyMembers extends FakeMembersRepository {
   }) async => failWith != null
       ? Err(failWith!)
       : super.add(groupId, name: name, paypalMe: paypalMe, ibanHint: ibanHint);
+
+  @override
+  Future<RepoResult<GroupMember>> setCanDrive(
+    String id, {
+    required bool canDrive,
+  }) async => failWith != null
+      ? Err(failWith!)
+      : super.setCanDrive(id, canDrive: canDrive);
+
+  @override
+  Future<RepoResult<void>> markDriverPromptAsked(String id) async =>
+      failWith != null ? Err(failWith!) : super.markDriverPromptAsked(id);
 
   @override
   Future<RepoResult<GroupMember>> update(
@@ -258,6 +287,18 @@ class FakeApp {
   List<Override> get fuelOverrides => [
     clockProvider.overrideWithValue(clock),
     ...fuelBackendOverrides,
+  ];
+
+  /// The route distance backend and the saved places, off by default (no
+  /// "Strecke berechnen" row): pass [routeOverrides] as `extra` to switch
+  /// them on. The debounce is zero so tests need no timers.
+  final route = FakeRouteDistanceService();
+  final places = FakePlacesRepository();
+
+  List<Override> get routeOverrides => [
+    routeDistanceServiceProvider.overrideWithValue(route),
+    placesRepositoryProvider.overrideWithValue(places),
+    routeSearchDebounceProvider.overrideWithValue(Duration.zero),
   ];
 
   /// The ECB rate backend, off by default (no suggestion): pass

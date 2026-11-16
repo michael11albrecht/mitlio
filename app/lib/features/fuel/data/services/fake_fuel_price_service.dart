@@ -12,6 +12,7 @@ class FakeFuelPriceService implements FuelPriceService {
       FuelGrade.diesel: 1659,
     },
     this.configured = true,
+    this.areas = true,
     this.age = const Duration(minutes: 12),
   });
 
@@ -23,8 +24,15 @@ class FakeFuelPriceService implements FuelPriceService {
   /// Whether a backend "is configured".
   bool configured;
 
+  /// Whether postcode / nearby lookups work (false mimics the direct EU
+  /// source).
+  bool areas;
+
   /// Makes every call fail with this reason while set.
   FuelFailure? failWith;
+
+  /// The `Retry-After` that goes with [failWith].
+  Duration? failRetryAfter;
 
   /// Every request in order; `area` is null for the national average.
   final List<({FuelGrade grade, FuelArea? area})> calls = [];
@@ -33,11 +41,16 @@ class FakeFuelPriceService implements FuelPriceService {
   bool get isConfigured => configured;
 
   @override
+  bool get supportsAreas => areas;
+
+  @override
   Future<FuelServiceResult> fetch(FuelGrade grade, {FuelArea? area}) async {
     calls.add((grade: grade, area: area));
     if (!configured) return const FuelServiceFailure(FuelFailure.unavailable);
     final failure = failWith;
-    if (failure != null) return FuelServiceFailure(failure);
+    if (failure != null) {
+      return FuelServiceFailure(failure, retryAfter: failRetryAfter);
+    }
     final milli = prices[grade];
     if (milli == null) return const FuelServiceFailure(FuelFailure.provider);
     return FuelServiceOk(

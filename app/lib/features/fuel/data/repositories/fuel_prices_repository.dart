@@ -27,8 +27,12 @@ class FuelPricesRepository {
   /// Whether the price feature is on (a backend is configured).
   bool get isAvailable => _service.isConfigured;
 
+  /// Whether postcode and "in meiner Nähe" lookups exist (a backend with a
+  /// provider; not the direct EU source).
+  bool get supportsAreas => isAvailable && _service.supportsAreas;
+
   /// Whether "in meiner Nähe" can be offered.
-  bool get canLocate => isAvailable && _location.isSupported && !_nearbyOff;
+  bool get canLocate => supportsAreas && _location.isSupported && !_nearbyOff;
 
   /// Set once the backend said `provider_unconfigured` (no provider key): the
   /// option then disappears for the session instead of failing again.
@@ -41,10 +45,14 @@ class FuelPricesRepository {
   Future<FuelOutcome> national(FuelGrade grade) => _lookup(grade, null);
 
   /// The average for a typed postcode; `invalidParams` for a malformed one.
-  Future<FuelOutcome> forPlz(FuelGrade grade, String plz) =>
-      PlzArea.isValid(plz)
-      ? _lookup(grade, PlzArea(plz))
-      : Future.value(const FuelMissing(FuelFailure.invalidParams));
+  Future<FuelOutcome> forPlz(FuelGrade grade, String plz) {
+    if (!supportsAreas) {
+      return Future.value(const FuelMissing(FuelFailure.unavailable));
+    }
+    return PlzArea.isValid(plz)
+        ? _lookup(grade, PlzArea(plz))
+        : Future.value(const FuelMissing(FuelFailure.invalidParams));
+  }
 
   /// Asks for the position (this is where the permission prompt happens),
   /// then looks around it. Only call after an explicit user tap.
@@ -102,10 +110,15 @@ class FuelPricesRepository {
       case FuelServiceOk(:final price):
         _cache[key] = (price: price, at: now);
         return FuelFound(price);
-      case FuelServiceFailure(:final reason):
+      case FuelServiceFailure(:final reason, :final retryAfter):
         return hit == null
-            ? FuelMissing(reason)
-            : FuelFound(hit.price, stale: true);
+            ? FuelMissing(reason, retryAfter: retryAfter)
+            : FuelFound(
+                hit.price,
+                stale: true,
+                staleReason: reason,
+                retryAfter: retryAfter,
+              );
     }
   }
 }

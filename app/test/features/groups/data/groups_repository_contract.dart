@@ -101,6 +101,22 @@ void runGroupsRepositoryContract(
       expect(await probe.next(), [renamed]);
     });
 
+    test('watchArchivedGroups lists archived groups until restored', () async {
+      final a = await newGroup('A');
+      final b = await newGroup('B');
+      final probe = StreamProbe(repo.watchArchivedGroups());
+      expect(await probe.next(), isEmpty);
+
+      ok(await repo.softDelete(b.id));
+      expect(await probe.next(), [b]);
+      ok(await repo.softDelete(a.id));
+      expect((await probe.next()).map((g) => g.id), [a.id, b.id]);
+
+      ok(await repo.restore(b.id));
+      expect(await probe.next(), [a]);
+      expect(ok(await repo.get(b.id)), b);
+    });
+
     test('emitted lists are immutable', () async {
       final g = await newGroup();
       final probe = StreamProbe(repo.watchGroups());

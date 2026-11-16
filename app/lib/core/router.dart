@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mitlio/core/crash/route_breadcrumbs.dart';
+import 'package:mitlio/core/keyboard.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/features/balances/ui/balances_view.dart';
 import 'package:mitlio/features/expenses/ui/expense_form_view.dart';
+import 'package:mitlio/features/groups/ui/archived_groups_view.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view.dart';
 import 'package:mitlio/features/groups/ui/group_form_view.dart';
 import 'package:mitlio/features/groups/ui/groups_view.dart';
@@ -12,6 +14,7 @@ import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/template_form_view.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view.dart';
 import 'package:mitlio/features/settings/ui/delete_my_data_view.dart';
+import 'package:mitlio/features/settings/ui/licenses_view.dart';
 import 'package:mitlio/features/settings/ui/settings_view.dart';
 import 'package:mitlio/features/settle/ui/settle_view.dart';
 import 'package:mitlio/features/statistics/ui/statistics_view.dart';
@@ -23,7 +26,10 @@ import 'package:mitlio/features/trips/ui/trip_form_view_model.dart'
 /// back always returns to the list.
 final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
-    observers: [RouteBreadcrumbObserver(ref.watch(crashReporterProvider))],
+    observers: [
+      RouteBreadcrumbObserver(ref.watch(crashReporterProvider)),
+      KeyboardDismissObserver(),
+    ],
     routes: [
       GoRoute(
         path: '/',
@@ -47,11 +53,19 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'delete-data',
                 builder: (context, state) => const DeleteMyDataView(),
               ),
+              GoRoute(
+                path: 'licenses',
+                builder: (context, state) => const LicensesView(),
+              ),
             ],
           ),
           GoRoute(
             path: 'groups/new',
             builder: (context, state) => const GroupFormView(),
+          ),
+          GoRoute(
+            path: 'groups/archived',
+            builder: (context, state) => const ArchivedGroupsView(),
           ),
           GoRoute(
             path: 'groups/:id',

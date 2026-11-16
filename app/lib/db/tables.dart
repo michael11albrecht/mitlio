@@ -52,6 +52,9 @@ class Members extends Table with SyncColumns {
 
   /// Masked hint only; the full IBAN lives in [LocalMemberBank].
   TextColumn get ibanHint => text().nullable()();
+
+  /// Whether this member drives; only drivers are suggested as next driver.
+  BoolColumn get canDrive => boolean().withDefault(const Constant(true))();
 }
 
 @DataClassName('ExpenseRow')
@@ -219,6 +222,33 @@ class LocalMemberBank extends Table {
   Set<Column<Object>> get primaryKey => {memberId};
 }
 
+/// Members already asked "does X not drive?" (rides nudge, schema v4). Local
+/// only, never synced: it is per device and not worth a server column.
+@DataClassName('LocalDriverPromptRow')
+class LocalDriverPrompts extends Table {
+  TextColumn get memberId => text().references(Members, #id)();
+  TextColumn get askedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {memberId};
+}
+
+/// Saved start/destination places "home" and "work" for the ride distance
+/// lookup (P9-T08, schema v5). Local only, never synced, covered by "delete
+/// my data": addresses are personal data and stay on this device.
+@DataClassName('LocalPlaceRow')
+class LocalPlaces extends Table {
+  /// `home` or `work`: one place per kind.
+  TextColumn get kind => text()();
+  TextColumn get label => text()();
+  RealColumn get lat => real()();
+  RealColumn get lng => real()();
+  TextColumn get savedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {kind};
+}
+
 /// Edit history of an expense (P7-T03, schema v3): one row per update or
 /// soft delete, holding the aggregate as it was *before* the change.
 /// Local-only for now: the server writes its own revisions from a trigger and
@@ -249,13 +279,77 @@ class ExpenseRevisions extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-/// Pending sync operations (P6). Present from v1, unused until then.
+/// Pending sync operations (P6). Rewritten in v5 (the table was unused, so no
+/// data migration); rows are written by P6-T09.
 @DataClassName('LocalOutboxRow')
 class LocalOutbox extends Table {
   IntColumn get seq => integer().autoIncrement()();
+
+  /// UUIDv7, the idempotency key of the push (server ignores a replay).
+  TextColumn get opId => text()();
+  TextColumn get groupId => text().references(Groups, #id)();
   TextColumn get entity => text()();
   TextColumn get entityId => text()();
   TextColumn get op => text()();
   TextColumn get payload => text()();
+  DateTimeColumn get createdAt => dateTime()();
   IntColumn get attempts => integer().withDefault(const Constant(0))();
+
+  /// Backoff: not before this time. Null: due now.
+  DateTimeColumn get nextAttemptAt => dateTime().nullable()();
+
+  /// Stable error case name of the last failed push (ADR-27 §3).
+  TextColumn get lastErrorCode => text().nullable()();
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {opId},
+  ];
+}
+
+/// Per group: is it shared, and how did the last sync go (schema v5). Client
+/// only. No row means the group is local only.
+@DataClassName('LocalGroupSyncRow')
+class LocalGroupSync extends Table {
+  TextColumn get groupId => text().references(Groups, #id)();
+
+  /// `shared` / `uploading` / `removed` (`SyncState` in `sync_state_dao.dart`).
+  TextColumn get state => text()();
+
+  /// `owner` / `member`; null until known.
+  TextColumn get role => text().nullable()();
+  DateTimeColumn get lastPushAt => dateTime().nullable()();
+  DateTimeColumn get lastPullAt => dateTime().nullable()();
+
+  /// Stable error case name of the last failure (ADR-27 §3).
+  TextColumn get lastErrorCode => text().nullable()();
+  DateTimeColumn get lastErrorAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {groupId};
+}
+
+/// Last applied `server_seq` per group and synced table (schema v5). Client
+/// only: the server never sees it.
+@DataClassName('LocalSyncCursorRow')
+class LocalSyncCursor extends Table {
+  TextColumn get groupId => text().references(Groups, #id)();
+
+  /// SQL column `table_name` (`tableName` clashes with `Table.tableName`).
+  TextColumn get syncedTable => text().named('table_name')();
+  IntColumn get cursor => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {groupId, syncedTable};
+}
+
+/// Key/value install settings (schema v5). Client only. Holds
+/// `hlc_node_id`, created once per install.
+@DataClassName('LocalSettingRow')
+class LocalSettings extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {key};
 }

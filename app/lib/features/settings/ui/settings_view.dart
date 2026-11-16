@@ -50,8 +50,13 @@ class SettingsView extends ConsumerWidget {
             ),
             value: state.enabled,
             onChanged: state.available
-                ? (v) => unawaited(vm.setEnabled(enabled: v))
+                ? (v) => unawaited(_setCrashReports(context, vm, enabled: v))
                 : null,
+          ),
+          ListTile(
+            title: Text(l10n.licensesEntry),
+            subtitle: Text(l10n.licensesEntryHint),
+            onTap: () => unawaited(context.push('/settings/licenses')),
           ),
           ListTile(
             title: Text(
@@ -85,5 +90,20 @@ class SettingsView extends ConsumerWidget {
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text(copied)));
     }
+  }
+}
+
+Future<void> _setCrashReports(
+  BuildContext context,
+  CrashReportingViewModel vm, {
+  required bool enabled,
+}) async {
+  final messenger = ScaffoldMessenger.of(context);
+  final l10n = AppLocalizations.of(context);
+  final saved = await vm.setEnabled(enabled: enabled);
+  if (!saved) {
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(l10n.errorSettingNotSaved)));
   }
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
@@ -77,9 +78,11 @@ class _GroupFormViewState extends ConsumerState<GroupFormView> {
         setState(
           () => _nameError = AppLocalizations.of(context).groupNameRequired,
         );
-      case Err():
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).errorTitle)),
+      case Err(:final error):
+        showErrorSnackBar(
+          ScaffoldMessenger.of(context),
+          AppLocalizations.of(context),
+          error,
         );
     }
   }
@@ -104,6 +107,7 @@ class _GroupFormViewState extends ConsumerState<GroupFormView> {
           Expanded(
             child: ListView(
               padding: Spacing.screen,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: [
                 TextField(
                   controller: _name,

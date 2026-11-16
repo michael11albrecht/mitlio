@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/amount_field.dart';
@@ -10,6 +11,8 @@ import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/features/rides/ui/milli_field.dart';
 import 'package:mitlio/features/rides/ui/template_form_view_model.dart';
+import 'package:mitlio/features/routes/ui/route_distance_panel.dart';
+import 'package:mitlio/features/routes/ui/route_distance_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -60,9 +63,11 @@ class _TemplateFormViewState extends ConsumerState<TemplateFormView> {
         context.pop();
       case Err(error: InvalidData()):
         break; // Explained inline.
-      case Err():
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).errorTitle)),
+      case Err(:final error):
+        showErrorSnackBar(
+          ScaffoldMessenger.of(context),
+          AppLocalizations.of(context),
+          error,
         );
     }
   }
@@ -113,7 +118,7 @@ class _TemplateFormViewState extends ConsumerState<TemplateFormView> {
   }
 }
 
-class _FormBody extends StatelessWidget {
+class _FormBody extends ConsumerWidget {
   const _FormBody({
     required this.groupId,
     required this.form,
@@ -127,10 +132,11 @@ class _FormBody extends StatelessWidget {
   final TextEditingController name;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     return ListView(
       padding: Spacing.screen,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       children: [
         TextField(
           controller: name,
@@ -151,11 +157,16 @@ class _FormBody extends StatelessWidget {
           label: l10n.templateDistanceLabel,
           suffix: 'km',
           milli: form.distanceMeters,
-          onChanged: vm.setDistance,
+          onChanged: (meters) {
+            // Typing is the user's: the route lookup stops overwriting it.
+            ref.read(routeDistanceViewModelProvider.notifier).noteManualEdit();
+            vm.setDistance(meters);
+          },
           errorText: form.showErrors && form.distanceMissing
               ? l10n.templateErrorDistance
               : null,
         ),
+        RouteDistancePanel(onFill: vm.setDistance),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(l10n.templateRoundTrip),

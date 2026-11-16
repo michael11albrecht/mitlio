@@ -50,6 +50,18 @@ class DriftGroupsRepository implements GroupsRepository {
   );
 
   @override
+  Stream<List<Group>> watchArchivedGroups() => _dao.watchArchivedGroups().map(
+    (rows) => List.unmodifiable(
+      rows.map((r) => _map(r).orThrow()).toList()..sort(
+        (a, b) {
+          final byTime = a.createdAt.compareTo(b.createdAt);
+          return byTime != 0 ? byTime : a.id.compareTo(b.id);
+        },
+      ),
+    ),
+  );
+
+  @override
   Future<RepoResult<Group>> get(String id) => guardStorage(() async {
     final row = await _dao.findById(id);
     return row == null ? Err(NotFound('group', id)) : _map(row);

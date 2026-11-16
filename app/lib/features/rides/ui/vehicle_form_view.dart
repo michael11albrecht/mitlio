@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/money_format.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
+import 'package:mitlio/core/widgets/undo_snack_bar.dart';
 import 'package:mitlio/features/rides/ui/milli_field.dart';
+import 'package:mitlio/features/rides/ui/rides_calculator.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
@@ -46,6 +49,14 @@ class _VehicleFormViewState extends ConsumerState<VehicleFormView> {
     ref.listenManual(vehicleFormViewModelProvider(_key), (prev, next) {
       if (prev is! VehicleFormReady && next is VehicleFormReady) {
         _name.text = next.name;
+      } else if (prev is VehicleFormReady &&
+          next is VehicleFormReady &&
+          prev.nameRevision != next.nameRevision) {
+        // A catalog pick or its undo changed the name, not the user's typing.
+        _name.value = TextEditingValue(
+          text: next.name,
+          selection: TextSelection.collapsed(offset: next.name.length),
+        );
       }
     }, fireImmediately: true);
   }
@@ -54,6 +65,19 @@ class _VehicleFormViewState extends ConsumerState<VehicleFormView> {
   void dispose() {
     _name.dispose();
     super.dispose();
+  }
+
+  void _pick(CarCatalogEntry entry) {
+    final undo = ref
+        .read(vehicleFormViewModelProvider(_key).notifier)
+        .applyCatalogEntry(entry);
+    if (undo != null) {
+      showUndoSnackBar(
+        context,
+        message: AppLocalizations.of(context).vehicleCatalogPicked(entry.name),
+        undo: undo,
+      );
+    }
   }
 
   Future<void> _save() async {
@@ -72,9 +96,11 @@ class _VehicleFormViewState extends ConsumerState<VehicleFormView> {
         }
       case Err(error: InvalidData()):
         break; // Explained inline.
-      case Err():
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).errorTitle)),
+      case Err(:final error):
+        showErrorSnackBar(
+          ScaffoldMessenger.of(context),
+          AppLocalizations.of(context),
+          error,
         );
     }
   }
@@ -97,7 +123,12 @@ class _VehicleFormViewState extends ConsumerState<VehicleFormView> {
         final VehicleFormReady form => Column(
           children: [
             Expanded(
-              child: _FormBody(form: form, vm: vm, name: _name),
+              child: _FormBody(
+                form: form,
+                vm: vm,
+                name: _name,
+                onPick: _pick,
+              ),
             ),
             SafeArea(
               child: Padding(
@@ -119,11 +150,17 @@ class _VehicleFormViewState extends ConsumerState<VehicleFormView> {
 }
 
 class _FormBody extends StatelessWidget {
-  const _FormBody({required this.form, required this.vm, required this.name});
+  const _FormBody({
+    required this.form,
+    required this.vm,
+    required this.name,
+    required this.onPick,
+  });
 
   final VehicleFormReady form;
   final VehicleFormViewModel vm;
   final TextEditingController name;
+  final ValueChanged<CarCatalogEntry> onPick;
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +169,7 @@ class _FormBody extends StatelessWidget {
     final symbol = MoneyFormat.of(context).currencySymbol(form.currency);
     return ListView(
       padding: Spacing.screen,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       children: [
         TextField(
           controller: name,
@@ -147,6 +185,7 @@ class _FormBody extends StatelessWidget {
                 : null,
           ),
         ),
+        _CatalogSuggestions(form: form, onPick: onPick),
         Padding(
           padding: const EdgeInsets.only(top: Spacing.md, bottom: Spacing.sm),
           child: Text(
@@ -178,6 +217,7 @@ class _FormBody extends StatelessWidget {
               ? l10n.vehicleErrorConsumption
               : null,
         ),
+        if (form.fromCatalog != null) _WltpNote(form: form, vm: vm),
         const SizedBox(height: Spacing.md),
         MilliField(
           label: l10n.vehicleWearLabel,
@@ -195,6 +235,144 @@ class _FormBody extends StatelessWidget {
         ),
         const SizedBox(height: Spacing.md),
       ],
+    );
+  }
+}
+
+/// "Golf" -> up to five cars; or why there are none: nothing matches, or the
+/// list could not be loaded (never silent, the form works by hand either way).
+class _CatalogSuggestions extends StatelessWidget {
+  const _CatalogSuggestions({required this.form, required this.onPick});
+
+  final VehicleFormReady form;
+  final ValueChanged<CarCatalogEntry> onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final hint = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    if (form.catalogUnavailable) {
+      return Padding(
+        padding: const EdgeInsets.only(top: Spacing.sm),
+        child: Text(
+          l10n.vehicleCatalogUnavailable,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.error,
+          ),
+        ),
+      );
+    }
+    if (form.noMatch) {
+      return Padding(
+        padding: const EdgeInsets.only(top: Spacing.sm),
+        child: Text(l10n.vehicleCatalogNoMatch, style: hint),
+      );
+    }
+    if (form.suggestions.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: Spacing.sm),
+      child: Semantics(
+        container: true,
+        label: l10n.vehicleCatalogSuggestions,
+        child: Card(
+          margin: EdgeInsets.zero,
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final entry in form.suggestions)
+                ListTile(
+                  key: ValueKey(
+                    'suggestion-${entry.name}-${entry.engineCc}'
+                    '-${entry.powerKw}-${entry.fuelType.name}-${entry.hybrid}',
+                  ),
+                  title: Text(entry.name),
+                  subtitle: Text(_describe(context, entry)),
+                  onTap: () => onPick(entry),
+                ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  Spacing.md,
+                  Spacing.xs,
+                  Spacing.md,
+                  Spacing.sm,
+                ),
+                child: Text(l10n.vehicleCatalogSource, style: hint),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "1,5 l, 96 kW, Benzin, 5,6 l/100 km".
+String _describe(BuildContext context, CarCatalogEntry e) {
+  final l10n = AppLocalizations.of(context);
+  final sep = MoneyFormat.of(context).decimalSeparator;
+  final electric = e.fuelType == FuelType.electric;
+  final value = formatMilli(e.consumptionMilliPer100km, separator: sep);
+  return [
+    if (e.engineCc > 0)
+      l10n.vehicleCatalogEngine(formatMilli(e.engineCc, separator: sep)),
+    if (e.powerKw > 0) l10n.vehicleCatalogPower(e.powerKw),
+    if (e.hybrid)
+      l10n.vehicleCatalogHybrid(fuelLabel(l10n, e.fuelType))
+    else
+      fuelLabel(l10n, e.fuelType),
+    if (electric)
+      l10n.vehicleCatalogConsumptionKwh(value)
+    else
+      l10n.vehicleCatalogConsumptionLitre(value),
+  ].join(', ');
+}
+
+/// The honest line under the consumption field after a catalog pick, with
+/// the one-tap realistic estimate.
+class _WltpNote extends StatelessWidget {
+  const _WltpNote({required this.form, required this.vm});
+
+  final VehicleFormReady form;
+  final VehicleFormViewModel vm;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final real = form.realisticMilli;
+    final text = form.realisticApplied
+        ? l10n.vehicleCatalogRealisticNote
+        : real == null
+        ? l10n.vehicleCatalogWltpNoteElectric
+        : l10n.vehicleCatalogWltpNote;
+    final style = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    return Padding(
+      padding: const EdgeInsets.only(top: Spacing.sm),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(text, style: style),
+          if (real != null && !form.realisticApplied)
+            TextButton(
+              onPressed: vm.useRealisticConsumption,
+              child: Text(
+                l10n.vehicleCatalogUseRealistic(
+                  formatMilli(
+                    real,
+                    separator: MoneyFormat.of(context).decimalSeparator,
+                  ),
+                ),
+              ),
+            ),
+          Text(l10n.vehicleCatalogSource, style: style),
+        ],
+      ),
     );
   }
 }

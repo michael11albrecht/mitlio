@@ -78,6 +78,8 @@ mitlio web calculator (free, no ads, no popups, no signup, instant result)
 | ADR-19 | Web calculator stack | **Astro** static site (prerendered HTML per landing page, zero JS by default) + one small calculator island. Calculation logic = **the Dart domain compiled to JS** (`packages/domain_web`, `dart compile js`, exported via `dart:js_interop`) so web and app compute identical cents; parity additionally guarded by shared fixture tests | Flutter Web renders to canvas → poor SEO and heavy first load; a TS re-implementation would drift from the app | If dart2js bundle > 150 kB gz → TS port with fixture parity tests |
 | ADR-20 | Fuel prices | Germany: **Tankerkönig API** (MTS-K data, CC BY 4.0, free API key) proxied + cached by a Supabase Edge Function; Austria: E-Control Spritpreisrechner API; elsewhere: EU Weekly Oil Bulletin national averages; EV: manual kWh price with a sensible default. Client never sees API keys; attribution shown | Live clickable prices are the core differentiator; caching keeps us inside provider rate limits and terms | Verify terms + limits in P1-T01 spike before building |
 | ADR-18 | Cost policy | Lean budget with hard caps, see §6.8 | Owner wants minimum sensible spend | Monthly review of `docs/agent-metrics.md` |
+| ADR-25 | Personal profile, personal vehicles, guided setup flows | Profile (name, avatar, PayPal.Me; IBAN local-only) and cars are set up **once per user** and reused in every group (linked copies); optional real-cost calculator → personal ct/km; rare multi-input flows use one-question-per-screen step flows with progress + finish celebration, daily flows stay one screen | Same data typed into every group; wear rate is a guess; long forms overwhelm | If people keep different payment details per group (P5) |
+| ADR-26 | Receipt photo to expense | Platform document scanner + **on-device OCR** (ML Kit / Apple Vision) behind `ReceiptOcrService`; parsing total/merchant/date/category is pure Dart in the domain; result prefills the normal one-screen expense form | No server cost per receipt, photos stay on the device | If fixture accuracy stays below the gate |
 
 Each ADR becomes a file in `docs/adr/NNNN-title.md` in P0.
 
@@ -192,7 +194,11 @@ Common columns on every synced table: `id uuid pk`, `group_id uuid`, `created_at
 | `expense_payers` | `expense_id`, `member_id`, `paid_cents` | Child of aggregate |
 | `expense_shares` | `expense_id`, `member_id`, `share_cents`, `weight` (for share/percent modes, for re-editing) | Child of aggregate |
 | `settlements` | `from_member`, `to_member`, `amount_cents`, `currency`, `date`, `method` (`paypal`/`sepa`/`cash`/`other`) | |
-| `vehicles` | `owner_member_id`, `name`, `fuel_type` (`e5`/`e10`/`diesel`/`lpg`/`electric`), `consumption_milli` (l or kWh per 100 km × 1000), `wear_rate_cents_per_km`, `default_pricing` (`consumption`/`km_rate`) | Per group; reused by rides |
+| `vehicles` | `owner_member_id`, `name`, `fuel_type` (`e5`/`e10`/`diesel`/`lpg`/`electric`), `consumption_milli` (l or kWh per 100 km × 1000), `wear_rate_cents_per_km`, `default_pricing` (`consumption`/`km_rate`), `source_user_vehicle_id?` (PU) | Per group; reused by rides; linked copy of a personal car if `source_user_vehicle_id` is set (ADR-25) |
+| `profile` | `display_name`, `avatar_kind` (`initials`/`emoji`/`photo`), `avatar_value`, `avatar_color`, `paypal_me`, `setup_state jsonb` (finished/dismissed flows, resume step) | Client only, one row (PU); tied to the account and copied to connected persons after P6-T07 |
+| `local_profile_bank` | `iban`, `bic?`, `account_holder` | Client only, **never synced** (like `local_member_bank`, §8) |
+| `user_vehicles` | `name`, `kind_icon`, `fuel_type`, `consumption_milli`, `wear_milli_per_km` (flat or calculated), `km_rate_milli?`, `cost_basis` (`flat`/`running`/`full`) | Client only (PU), later synced to the own account only |
+| `user_vehicle_costs` | `user_vehicle_id`, `category` (`insurance`/`tax`/`maintenance`/`tyres`/`repairs`/`loan`/`depreciation`/`parking`/`other`), `amount_cents`, `period` (`month`/`year`), `kind` (`running`/`fixed`), plus vehicle-level `annual_km`, `purchase_price_cents?`, `resale_cents?`, `keep_years?` | Input for `vehicleExtraCostPerKm` (PU) |
 | `ride_templates` | `name` ("Arbeit"), `vehicle_id`, `distance_m`, `default_driver`, `default_passengers[]`, `return_trip bool` | Commute presets |
 | `rides` | `template_id?`, `vehicle_id`, `driver_member_id`, `passenger_ids[]`, `date`, `distance_m`, `fuel_price_milli` (per l/kWh, frozen), `price_source` (`manual`/`tankerkoenig`/…), `extras_cents`, `expense_id?` | One logged ride; aggregated into an `expense` per settlement period (or immediately for one-offs) |
 | `fuel_price_cache` | `region_key`, `fuel_type`, `price_milli`, `source`, `fetched_at` | Server only, public read (P6c) |
@@ -229,6 +235,7 @@ Invariants (enforced in domain + DB constraints + pgTAP):
 6. **Calm, honest UI.** No fake urgency, no badges for engagement's sake, notifications only for things other people did that affect your money.
 7. **Fast.** Cold start < 1.5 s on a mid-range Android, every interaction < 100 ms, no jank (no frames > 16 ms in scroll/animations).
 8. **Accessible by default.** Dynamic type up to 200 %, screen reader labels, contrast AA, works one-handed.
+9. **No silent errors.** When something fails (a rate limit, no connection, a refused link), the user learns what happened and what to do next, in plain du-form copy: "Zu viele Anfragen, versuch es in 5 Min. nochmal." Never swallow a failure (no empty `catch`, no ignored `Err`) unless the reason is documented in a comment; never mislead (no "offline" when the server refused). Every failure path has a test asserting the visible message.
 
 **Mechanical guardrails** (so agents can't erode UX unnoticed)
 
@@ -243,6 +250,8 @@ Invariants (enforced in domain + DB constraints + pgTAP):
 | **Accessibility** | `meetsGuideline(textContrastGuideline / androidTapTargetGuideline / iOSTapTargetGuideline / labeledTapTargetGuideline)` in widget tests of every screen; axe on web |
 | **Empty/error/loading states** | every screen VM exposes them; golden per state |
 | **Human UX gate** | PRs that add a new screen or change navigation get label `ux-review` (path-based: `app/lib/**/ui/*_view.dart` new files, router changes) → `critical`, owner looks at the golden diff images attached by CI |
+
+**Choosing the flow pattern** (ADR-25, owner rule 2026-11-15): *rare* flows (one-time or a few times a year) with more than ~3 inputs use the **step flow** (`core/ui/setup_flow/`): one question per screen (max two related values), a visual on every step, yes/no cards and "Überspringen" for optional data, segmented progress, autosave per step, result shown live. Only one-time setups and long rare flows end with a celebration. *Frequent* flows (log ride, add expense, mark paid) stay **one compact screen** with smart defaults and tap budgets: no progress bar, no extra screens, no celebration. Editing existing data always uses a compact list that opens a single field/step. The pattern per flow is listed in ADR-25 §4; a new flow states its pattern in the issue.
 
 **Design process for agents:** each UI task issue contains a small wireframe (ASCII or image) and the tap budget; the agent attaches before/after goldens to the PR; the reviewer agent checks against §2.6 principles.
 
@@ -594,7 +603,7 @@ Shared infrastructure first, then vertical slices. Each slice = repository + Vie
 | P3-T03 | Repository interfaces + Drift impls + in-memory fakes + **shared contract test suite** for Groups, Members, Expenses, Settlements | contract tests pass for both impls | safe |
 | P3-T04 | DebugDrive skeleton: `ext.mitlio.ping/reset/seed/state/navigate/errors`, `packages/drive_client` CLI, `tool/drive.sh`, `make drive-up` | `make drive-up && tool/drive.sh ext.mitlio.ping` returns JSON in CI (desktop-it) | critical (debug/) |
 | P3-T05 | Design system: theme, spacing, `MoneyText`, `MemberAvatar`, `AmountField` (cents-safe input), empty/error states + goldens | goldens green | safe |
-| P3-T06 | Slice **Groups**: list, create, edit name/currency, archive; members add/rename/reorder/remove (blocked if member has entries) | VM tests, widget tests, goldens, `ext.mitlio.groups.create`, IT: create group with 4 members | safe |
+| P3-T06 | Slice **Groups**: list, create, edit name/currency, archive and restore (home shows a quiet "Archived (N)" entry, only when N > 0, to `/groups/archived`; restore bumps `updated_at` like an edit); members add/rename/reorder/remove (blocked if member has entries) | VM tests, widget tests, goldens, `ext.mitlio.groups.create`, IT: create group with 4 members | safe |
 | P3-T07 | Slice **Expense form**: title, amount, currency (= group currency in MVP), date, category, payers (single/multi), split modes incl. exclusion, live per-person preview | VM covers all modes + validation; IT: add each split mode | safe |
 | P3-T08 | Slice **Expense list**: per group, grouped by date, filter by member/category, swipe to delete (soft) | IT: add → delete → balances update | safe |
 | P3-T09 | Slice **Trip cost form**: km, consumption, fuel price, tolls/ferry, wear, km-rate toggle, driver, passengers, driverCounts; shows breakdown | IT via `ext.mitlio.trips.add` and via UI | safe |
@@ -615,7 +624,7 @@ The ride log is the app's headline feature for commuters.
 | P3r-T03 | Drift tables `vehicles`, `ride_templates`, `rides` + repositories + contract tests | contract tests green | critical (schema) |
 | P3r-T04 | Vehicles UI: add/edit vehicle with consumption, fuel type, wear rate | VM + widget + goldens | safe |
 | P3r-T05 | **Quick log**: home-screen "Heute gefahren" — pick template, driver, toggle passengers, 2 taps to save; calendar view of who drove when | IT: log 10 commute days via UI and via `ext.mitlio.rides.log`; perf: open → saved < 3 taps | safe |
-| P3r-T06 | Period settlement: "Abrechnen für Oktober" turns rides into expenses (locked rides, undo possible) → flows into balances/settle | IT: month of rides → expected transfers fixture | safe |
+| P3r-T06 | Period settlement: "Abrechnen für Oktober" turns rides into expenses (locked rides, undo possible). **Amended 2026-11-15: rides count live.** Unsettled rides are in balances/settle immediately (same domain path: `planSettlement` → `rideAggregateToExpense`, so numbers before and after "Abrechnen" are identical, never double counted); Abrechnen = close the period (lock rides, expenses for the history). Balances show "inkl. n offene Fahrten (€)" | IT: month of rides → expected transfers fixture | safe |
 | P3r-T07 | Fairness view: per person km driven vs ridden, "wer ist als Nächstes dran" suggestion | VM tests | safe |
 | P3r-T08 | Deep link import `mitlio://ride?km=…&l100=…&price=…&n=…` (from web calculator) → prefilled ride form | IT via `ext.mitlio.navigate` with link | safe |
 
@@ -628,6 +637,30 @@ The ride log is the app's headline feature for commuters.
 | P4-T03 | Settle screen: list simplified transfers, per transfer actions: PayPal link, EPC QR (`qr_flutter`, error correction M), copy IBAN, "mark as paid" (amount editable for partial payments) | IT: mark paid → balance zero; golden of QR sheet | safe |
 | P4-T04 | Settlement history + undo (soft delete) | VM + IT | safe |
 | P4-T05 | Share summary as text (share sheet) | widget test | safe |
+
+### PU — Personal profile, personal cars & guided setup (agent + human UX review, ~1.5–2 weeks; after P4/P3r, before P6-T07 app sync)
+
+ADR-25. Data set up once per user, reused in every group. Entry points are inline, just-in-time cards (settle screen without own payment details, vehicle picker in a group, second group created) plus "Mein Profil" / "Meine Autos" in settings — never a forced setup at first launch. All new screens get `ux-review`.
+
+| ID | Task | Accept | Risk |
+|---|---|---|---|
+| PU-T01 | ADR-25 + this plan section | owner approved 2026-11-15 | critical (plan) |
+| PU-T02 | Domain: `PaypalMeHandle.parse` (accepts `paypal.me/x`, full URL, `@x`, `x`; normalises, rejects invalid chars/length) and link builder with optional amount | examples + property (parse ∘ format = id) + edge cases | safe |
+| PU-T03 | Domain: `VehicleCostProfile` + `vehicleExtraCostPerKm(profile, basis)` → `wear_milli_per_km`; month/year normalisation, depreciation = (purchase − resale) / keep_years, basis `running`/`full`; breakdown per category for charts | property: Σ category milli = total (largest remainder); monotonic in each cost; annual_km = 0 rejected | safe |
+| PU-T04 | Drift: `profile`, `local_profile_bank`, `user_vehicles`, `user_vehicle_costs`, `vehicles.source_user_vehicle_id`; repositories + fakes + contract tests; arch test: sync code never reads `local_profile_bank` | schema + migration test; contract tests | critical (schema, PII) |
+| PU-T05 | Step-flow framework `core/ui/setup_flow/`: `SetupFlowViewModel` (steps, skip, back, autosave/resume via `setup_state`), `StepScaffold` (visual slot, ≤ 2 inputs, primary "Weiter", "Überspringen"), `YesNoStep`, segmented progress, live result slot, `FinishStep` with celebration (respects reduce-motion, light haptic); DebugDrive `ext.mitlio.setup.{state,next,skip,back}`; `docs/ux-budgets.md`: per-step tap budget (answer ≤ 2 taps) | VM tests incl. resume after kill; goldens light/dark × 1.0/2.0 of each step type; a11y guidelines | safe |
+| PU-T06 | Illustration set (vector art in `CustomPainter`, §12 #11; owner judges goldens, too ugly → new experiment): profile/avatar, PayPal step mockups (neutral phone frame, highlighted tap, no PayPal logo), IBAN + QR preview, car types/fuel icons, cost categories, finish celebration | goldens; no raw colours outside `core/theme` | safe |
+| PU-T07 | **Profile flow:** name → avatar (initials/colour default, emoji; photo later PU-T13) → "Möchtest du per PayPal Geld bekommen?" yes/no → PayPal.Me step with "So findest du deinen Link" (3–4 illustrated sub-steps, texts in ARB, "Link testen", "Noch kein PayPal.Me? Jetzt erstellen") → "Lieber per Überweisung (QR-Code)?" yes/no → IBAN step (live 4-group formatting, checksum, paste button, holder prefilled from name, "bleibt nur auf deinem Gerät", preview of the QR a friend scans) → finish with profile card preview | IT via UI and via `ext.mitlio.setup.*`; each step skippable; tap budget `profile_setup` | safe |
+| PU-T08 | **Car flow:** "Hast du ein Auto?" → name + type icon → fuel type (icon grid) → consumption (slider + number, "weiß ich nicht" → typical value per type, later car catalog #131) → extra cost: "Pauschale (≈ X ct/km)" or "Genau ausrechnen (2 min)" → finish with result "Dein Auto kostet ≈ 23 ct/km" + "Noch ein Auto?" (family car) | IT; tap budget `car_setup`; result equals `rideCost` fixtures | safe |
+| PU-T09 | **Cost calculator flow** (sub-flow of PU-T08): annual km (slider + presets 5/10/15/20 Tkm) → one category per screen as yes/no + amount with month/year toggle (insurance, tax, inspection, tyres, repairs, loan/leasing, depreciation as 3 small questions, parking, other) → basis choice running-only (default) vs. full, both with live ct/km → result: ct/km + stacked bar/donut per category, live while typing | VM tests for every step + skip path; goldens of result chart | safe |
+| PU-T10 | Group integration: "Mein Auto" in group vehicle picker creates linked copy; personal edits propagate to linked copies with undo snackbar; unlink; new group prefills the "Ich" member (name, avatar, PayPal); settle screen uses own profile PayPal/IBAN for the own member | IT: edit personal car → 2 groups updated → undo restores; closed periods unchanged | safe |
+| PU-T11 | Entry points + edit: inline just-in-time cards (dismiss = permanent, stored in `setup_state`), settings "Mein Profil" / "Meine Autos" as compact lists (row → single step), completeness shown only there (no badges elsewhere) | widget tests: card shown once, gone after dismiss/finish | safe |
+| PU-T12 | Move existing rare multi-input flows onto the step flow per ADR-25 §4: first-group onboarding (P7-T06, max 3 steps), commute template form, month settlement review → confirm. Daily flows (ride, expense, mark paid) explicitly unchanged | tap budgets of daily flows unchanged; goldens updated with reasons | safe |
+| PU-T13 | *Nice to have:* profile photo (camera/gallery, square crop, compress ≤ 100 kB, local only); sync after P9-T01 Storage | widget test; no photo leaves device before P9-T01 | safe |
+| PU-T15 | Domain + VM: `operatingCostCheck(trip)` → inline PBefG hint when passengers together pay more than fuel + running costs; plausibility hint for likely typos; shown in car flow, ride/trip result, web calculator | examples + property (never fires when share basis = running and no extras); hint never blocks save | safe |
+| PU-T16 | "Mein QR-Code teilen": EPC QR as image via share sheet (pre-P6, zero server) | widget test; golden | safe |
+| PU-T17 | After P6b: IBAN request/release — "Nach IBAN fragen" → push → "Freigeben"; proactive "IBAN für X freigeben"; per-device key pair, sealed box to recipient, server stores ciphertext only, revocable, deleted on paid | pgTAP: server never holds plaintext column; RLS recipient-only; IT on staging | critical (PII, crypto) |
+| PU-T14 | After P6-T07: profile tied to account; connecting to a person (ADR-24) copies name, avatar, PayPal.Me; profile edit updates all connected persons | pgTAP/IT on staging | critical (sync) |
 
 ### PW — SEO web calculator (agent + human content review, ~5–7 days; start right after P2-T07)
 
@@ -643,7 +676,7 @@ Go live **early** (before the app ships) — SEO needs months to compound. Until
 | PW-T06 | App CTA: sticky "Regelmäßig fahren? Fahrten speichern & monatlich abrechnen" → smart app banner (`apple-itunes-app` meta), Play badge, deep link carrying the trip (P3r-T08) | link format test | safe |
 | PW-T07 | Landing pages per search intent (each with calculator embedded + unique explanatory content + FAQ): `/fahrtkostenrechner`, `/spritkosten-teilen`, `/fahrgemeinschaft-kosten-aufteilen`, `/pendler-fahrgemeinschaft`, `/mitfahrer-kosten-berechnen`, `/kilometerpauschale-rechner`, `/elektroauto-ladekosten-teilen`; EN equivalents later | human reviews copy; each page unique title/description/H1 | safe |
 | PW-T08 | Structured data: `WebApplication`/`SoftwareApplication`, `FAQPage`, `HowTo`, `Organization`; OG/Twitter images generated at build | `tool/seo_check` validates JSON-LD; Rich Results Test manual once | safe |
-| PW-T09 | Privacy-friendly analytics without cookies (e.g. GoatCounter/Plausible/Cloudflare Web Analytics) — no consent banner needed; events: calculation done, share, app CTA click | no cookies set (Playwright asserts `document.cookie` empty) | critical (privacy) |
+| PW-T09 | **Decided 2026-11-15: no analytics script.** Google Search Console only (verified via DNS TXT, no code on the page), covered by PW-T11. Revisit with GoatCounter/Pirsch if on-site numbers are needed | no cookies set (Playwright asserts `document.cookie` empty) | critical (privacy) |
 | PW-T10 | Hosting: Firebase Hosting on own domain, preview channels per PR, cache headers, security headers (CSP), `/.well-known/*` for app links | headers test; preview URL commented on PR | critical |
 | PW-T11 | Google Search Console + Bing Webmaster verification, sitemap submission; monthly SEO report (impressions, CTR, top queries) into `docs/seo-metrics.md` | Search Console shows indexed pages | critical (human) |
 
@@ -657,6 +690,7 @@ Go live **early** (before the app ships) — SEO needs months to compound. Until
 | P6c-T04 | `pg_cron` job refreshing national/state averages periodically (computed from station data within provider limits) | pgTAP + function test | critical |
 | P6c-T05 | App `FuelPriceService` (+ fake): chips in ride/trip form, auto-fill per vehicle fuel type, price frozen on the ride; offline → last known value with age label | VM tests; IT via fake | safe |
 | P6c-T06 | Abuse protection: per-IP rate limit on the function, CORS restricted to own domain + app | test | critical |
+| P6c-T07 | **Decided 2026-11-15: direct EU source in the app.** Without a configured backend the app fetches the German national average (E5, Diesel; E10 as E5 with "≈") itself from the EU Weekly Oil Bulletin XLSX (`EuOilBulletinService`, port of `_shared/oil_bulletin.ts`), cached on the device (12 h, weekly file, offline = last file). "In meiner Nähe" and postcode stay server-only (Tankerkönig) and are hidden without a backend; with a backend configured the Edge Function stays the source. Privacy: the device contacts `energy.ec.europa.eu` (IP visible to the European Commission, no personal data, no location sent), see `docs/data-flows.md` | parser + service tests with the real bulletin file, VM/widget tests: chips without backend, no postcode/nearby | safe |
 
 ### P5 — Real-world validation (human, 1 weekend + 1–2 days fixes)
 
@@ -679,18 +713,18 @@ Backend tasks are all `critical` → human review. Agents still write them; pgTA
 | P6-T02 | Migration 001: tables (§2.4) with constraints, `server_seq` sequence + trigger, `updated_at` validation, soft delete | `supabase db reset` green; squawk clean | critical |
 | P6-T03 | RLS: `is_group_member(group_id)` `security definer` function; policies select/insert/update per table; no hard delete | pgTAP: member allow, non-member deny, anon deny for every table; `rls_coverage.sql` asserts every table has RLS enabled + tests | critical |
 | P6-T04 | RPC `upsert_expense(payload jsonb)`: transactional replace of payers/shares, invariant checks (sums), LWW compare on HLC, returns server row | pgTAP: invariant violation rejected; stale HLC ignored; newer wins | critical |
-| P6-T05 | Invites: `create_invite(group_id)` → token (store hash only, 7-day expiry, revocable); `join_group(token, member_id?)` claims a participant or creates one | pgTAP: expired/revoked/reused tokens; cannot join twice | critical |
+| P6-T05 | Invites: `create_invite(group_id)` → token (store hash only, owner only, no expiry, a new link revokes all others; amended by ADR-24); `join_group(token, member_id?)` claims a participant or creates one (people and accounts are separate layers; one account per person, several accounts per person tbd, amended by ADR-24) | pgTAP: expired/revoked/reused tokens; cannot join twice | critical |
 | P6-T06 | Generated TS/Dart types + CI drift check (`supabase gen types` diff) | CI fails on stale types | critical |
-| P6-T07 | App auth: anonymous sign-in on first share action, session persistence, sign-out wipes local server-linked data (with confirmation) | VM tests with fake auth | critical |
+| P6-T07 | App auth: anonymous sign-in on first share action, session persistence, sign-out wipes local server-linked data (with confirmation) | VM tests with fake auth **No silent errors (§2.6 #9):** sign-in failure (network, rate limit) shows cause + next step; sign-out failure keeps data and says so. | critical  |
 | P6-T08 | HLC implementation in domain (`Hlc.now(clock, last)`, `Hlc.receive`, compare) | property tests: monotonic, causality | safe |
 | P6-T09 | Outbox: every repository write in a group marked `shared` enqueues aggregate op in same Drift transaction | repository tests: write + outbox atomic | critical |
-| P6-T10 | `SyncService.push`: drain outbox with backoff, idempotent (op id), handles 4xx (drop + surface) vs 5xx (retry) | fake remote tests incl. network flaps (`fake_async`) | critical |
+| P6-T10 | `SyncService.push`: drain outbox with backoff, idempotent (op id), handles 4xx (drop + surface) vs 5xx (retry) | fake remote tests incl. network flaps (`fake_async`) **No silent errors (§2.6 #9):** a dropped 4xx op and repeated 5xx retries are visible in the sync status with a reason, never only in logs; `rate_limited` shows the wait. | critical  |
 | P6-T11 | `SyncService.pull`: by `server_seq` cursor per group, apply with LWW (HLC), children replaced per aggregate, tombstones respected | merge logic in pure Dart → mutation ≥ 70 % | critical |
 | P6-T12 | Realtime: subscribe to group channels → trigger pull (not apply payload directly) | IT with local supabase | critical |
 | P6-T13 | **Sync E2E harness**: two headless app containers (repositories + SyncService, no UI) against local Supabase; scenarios: offline edit both → LWW; delete vs edit; join via invite; 500 ops convergence | all scenarios converge to identical state (hash compare) | critical |
-| P6-T14 | UI: share group (invite link + QR), join flow (`https://mitlio.web.app/join/<token>` universal/app link, `mitlio://join/<token>` fallback; AASA + assetlinks served by Firebase Hosting per ADR-17), "claim yourself" member picker, sync status indicator | IT with fake backend; drive `ext.mitlio.sync.*` | safe |
-| P6-T15 | Convert local group → shared group (upload existing history) | E2E: local data appears on second device | critical |
-| P6-T16 | `min_supported_version` config table + app gate | test | critical |
+| P6-T14 | UI: share group (invite link + QR), join flow (`https://mitlio.web.app/join/<token>` universal/app link, `mitlio://join/<token>` fallback; AASA + assetlinks served by Firebase Hosting per ADR-17), "claim yourself" member picker, sync status indicator | IT with fake backend; drive `ext.mitlio.sync.*` **No silent errors (§2.6 #9):** join errors each have a specific message and next step: `rate_limited` (with minutes from `Retry-After`), invalid/expired link, revoked link, `member_already_claimed`, network down, server error; share errors likewise; widget tests assert each text (de+en). | safe  |
+| P6-T15 | Convert local group → shared group (upload existing history) | E2E: local data appears on second device **No silent errors (§2.6 #9):** a failed or partial upload says what failed and that local data is untouched. | critical  |
+| P6-T16 | `min_supported_version` config table + app gate | test **No silent errors (§2.6 #9):** a blocked version says why and links to the store update. | critical  |
 
 **Milestone M2: groups shared across devices, offline-first.**
 
@@ -765,7 +799,7 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 |---|---|---|---|
 | P8-T01 | Flavors `dev`/`prod` (bundle ids, app names, Supabase URLs via `--dart-define-from-file`) | both build locally | critical |
 | P8-T02 | fastlane match (or Codemagic) for iOS signing; Android keystore in secrets; Play service account | signed builds in CI | critical |
-| P8-T03 | `deploy-dev.yml`: merge → staging migrations; nightly-if-changed → TestFlight + Play internal | build appears in TestFlight | critical |
+| P8-T03 | `deploy-dev.yml`: merge → staging migrations; nightly-if-changed → TestFlight + Play internal. **2026-11-15: backend half done** (merge with `supabase/**` deploys migrations + Edge Functions to staging); app builds to TestFlight + Play later | build appears in TestFlight | critical |
 | P8-T04 | `release.yml`: tag → `production` environment approval → prod migrations → smoke drive scenario vs staging → store submission (phased) | dry run on a `v0.0.1-rc` tag | critical |
 | P8-T05 | `release-please` for changelog + version bump from conventional commits | release PR generated | critical |
 | P8-T06 | `check_release_strip.sh`: build release, assert no `ext.mitlio` strings / debug symbols in binary | fails if `kDebugMode` guard removed | critical |
@@ -777,18 +811,34 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 | ID | Task | Notes |
 |---|---|---|
 | P9-T01 | Receipt photo attach (Supabase Storage, RLS by group, image compression) | storage policies need pgTAP-equivalent tests |
-| P9-T02 | OCR of receipts (on-device ML Kit) prefilling amount/date | behind feature flag |
+| P9-T02 | OCR of receipts → see **P9r** below | ADR-26 |
 | P9-T03 | Recurring expenses (rule engine in domain) | domain-first |
 | P9-T04 | Payment reminders ("you owe Anna 23 €" after N days, opt-in) | builds on P6b outbox + cron |
 | P9-T05 | Weekly group digest notification | builds on P6b |
 | P9-T06 | Web app target (read-only share link) | |
 | P9-T07 | Per-field merge instead of aggregate LWW, if field data shows lost edits | ADR first |
+| P9-T08 | Ride distance from start and destination: autocomplete + routing via Edge Function proxy (ORS primary, Geoapify fallback), distance stays editable, saved places local-only (#130) | spike for quotas/ToS + ADR first; `needs-decision` |
+| P9-T09 | Car model suggestions: bundled static catalog from EEA CO2 monitoring data (CC BY 4.0) prefills fuel type and consumption, honest WLTP note (#131) | offline, no network. **2026-11-15: implemented** (PR for #131): `tool` script `packages/tooling/bin/build_car_catalog.dart`, asset `app/assets/car_catalog/catalog_v1.json.gz` (EEA 2021-2025, WLTP only, no cost-per-km prefill, realistic value +20 % one tap), see `docs/car-catalog.md` |
+
+#### P9r — Receipt photo to expense (agent, ~1–1.5 weeks; after M3, ADR-26)
+
+Goal: photo → title, total, date, category prefilled → user only picks the people. Daily flow, so one screen and tap budget, no step flow.
+
+| ID | Task | Accept | Risk |
+|---|---|---|---|
+| P9r-T01 | Spike: document scanner + OCR on Android (ML Kit) and iOS (Apple Vision): accuracy on 10 receipts, app size delta, fully offline, no usage data sent | spike note in `docs/`; deps pass `deps_policy` | safe |
+| P9r-T02 | Fixture set: ~30 anonymised receipts as OCR JSON (lines + boxes) with expected `ReceiptDraft` in `tool/fixtures/receipts/` (owner collects receipts) | fixtures + README; no photos in repo | safe |
+| P9r-T03 | Domain `parseReceipt(lines) → ReceiptDraft` (total, merchant, date, currency, category guess, confidence per field) | examples + property (never returns amount ≤ 0, total ≥ any line item) + fixture gate: total correct ≥ 90 %, merchant ≥ 80 % | safe |
+| P9r-T04 | `ReceiptOcrService` interface + platform impls + fake; scanner wrapper | service tests with fake; IT on Android emulator with a fixture image | critical (new deps) |
+| P9r-T05 | UX: "Foto" on add-expense → scanner → prefilled form, "erkannt" markers, receipt crop next to total, focus on people picker; low confidence = empty field; failure = plain message | IT; tap budget `add_expense_from_receipt` ≤ 4 taps (+ scanner shutter) | safe |
+| P9r-T06 | Petrol-station receipt → offer to log as ride fuel price (litres + price/l detected) | VM tests | safe |
+| P9r-T07 | *Later:* split by line items ("wer hatte was") from the parsed lines | builds on T03 | safe |
 
 ---
 
 ## 8. Security & privacy guardrails
 
-- **IBANs:** stored only locally (`local_member_bank`), never synced; architecture test asserts sync code never imports it. Only a masked hint (`DE89 …3000`) may be synced if the user opts in.
+- **IBANs:** stored only locally (`local_member_bank`, `local_profile_bank`), never synced; architecture test asserts sync code never imports them. Only a masked hint (`DE89 …3000`) may be synced if the user opts in. Person-to-person release (PU-T17, ADR-25) is end-to-end encrypted; the server only relays ciphertext.
 - **RLS on every table**, enforced by a CI check (`rls_coverage.sql` fails if a table lacks RLS or tests).
 - **Invite tokens:** 128-bit random, stored as SHA-256 hash, expiring, revocable, single member claim.
 - **Secrets:** none in repo (`gitleaks`), Supabase anon key only in app; service role key only in Edge Functions env.
@@ -856,6 +906,7 @@ tool/drive.sh ext.mitlio.balances.get '{"groupId":"<id>"}'
 | M1 Local MVP | P2–P5 incl. P3r | ~3–4 weeks | usable single-device app incl. ride log, field-tested |
 | MW Web live | PW + P6c (parallel to M1) | ~1.5 weeks | SEO calculator with live fuel prices indexed, waitlist/app CTA |
 | M2 Shared groups | P6 + P6b (+P8 in parallel) | ~3–4 weeks | multi-device offline-first sync, push notifications, TestFlight/Play internal |
+| MU Personal setup | PU (before P6-T07, can run parallel to P7) | ~1.5–2 weeks | profile + cars once per user, guided setup flows |
 | M3 Store release | P7 + P8-T04 | ~2 weeks | v1.0 in stores |
 | M4 Autonomy | P8-T07/T08 | ongoing | safe PRs auto-merge, nightly mutation loop self-heals |
 
@@ -872,5 +923,10 @@ tool/drive.sh ext.mitlio.balances.get '{"groupId":"<id>"}'
 | 6 | Domain | don't care → **revised: own domain recommended** because of the SEO funnel | ADR-17: e.g. `mitlio.de` (~€10–20/year) on Firebase Hosting; needs owner purchase before PW-T10 |
 | 8 | Positioning | private taxometer + SEO web calculator funnel, live clickable fuel prices | Product positioning section, P3r, PW, P6c, ADR-19/20 |
 | 7 | Monthly budget | as low as sensible | ADR-18 / §6.8: ~€45–80 dev, ~€30 maintenance; Claude via existing subscription (no extra LLM spend), GitHub spend limit $0 |
+
+| 9 | Share IBAN with the group? (ADR-25) | **yes, as proposed** (2026-11-15): never readable on the server; QR image via share sheet now; after P6b ask → push → approve, per person, end-to-end encrypted, deleted when paid | §8 amended by PU-T17 |
+| 10 | Car cost basis (ADR-25) | **user's choice** (2026-11-15); default running costs only; inline non-blocking PBefG hint when passengers pay more than operating costs, plus plausibility hint | PU-T03/T09/T15; owner reviews hint wording |
+| 11 | Illustrations | **agent draws vector art in code** (2026-11-15); too ugly → new experiment | PU-T06 |
+| 12 | Order | **PU after P4/P3r, before P6-T07** (2026-11-15); PU-T13 photo in backlog; PU-T14/T17 after P6-T07/P6b | §11 |
 
 No open owner questions remain for P0–P1.

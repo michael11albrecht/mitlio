@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_providers.dart';
+import 'package:mitlio/features/rides/data/repositories/car_catalog_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/drift_ride_templates_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/drift_rides_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/drift_vehicles_repository.dart';
@@ -25,6 +26,11 @@ final rideTemplatesRepositoryProvider = Provider<RideTemplatesRepository>(
     clock: ref.watch(clockProvider),
     ids: ref.watch(idGeneratorProvider),
   ),
+);
+
+/// The bundled car list; override with a fake in tests.
+final carCatalogRepositoryProvider = Provider<CarCatalogRepository>(
+  (ref) => AssetCarCatalogRepository(),
 );
 
 /// Drift by default; override with `FakeRidesRepository` in tests.

@@ -13,6 +13,7 @@ import 'package:mitlio/features/expenses/data/repositories/fake_expenses_reposit
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
+import 'package:mitlio/features/rides/data/repositories/car_catalog_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_ride_templates_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_rides_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_vehicles_repository.dart';
@@ -28,6 +29,59 @@ import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../../../helpers/fake_app.dart';
 import '../../repo_test_support.dart';
+
+/// A few cars with realistic WLTP values, enough for search tests.
+final sampleCatalogEntries = [
+  const CarCatalogEntry(
+    make: 'VW',
+    model: 'Golf',
+    fuelType: FuelType.petrol,
+    engineCc: 1500,
+    powerKw: 85,
+    consumptionMilliPer100km: 5600,
+  ),
+  const CarCatalogEntry(
+    make: 'VW',
+    model: 'Golf',
+    fuelType: FuelType.diesel,
+    engineCc: 2000,
+    powerKw: 85,
+    consumptionMilliPer100km: 4500,
+  ),
+  const CarCatalogEntry(
+    make: 'VW',
+    model: 'Polo',
+    fuelType: FuelType.petrol,
+    engineCc: 1000,
+    powerKw: 70,
+    consumptionMilliPer100km: 5000,
+  ),
+  const CarCatalogEntry(
+    make: 'Tesla',
+    model: 'Model 3',
+    fuelType: FuelType.electric,
+    powerKw: 190,
+    consumptionMilliPer100km: 14900,
+  ),
+];
+
+/// In-memory car catalog; set [failure] to make `load` fail like a missing
+/// or corrupt asset.
+class FakeCarCatalogRepository implements CarCatalogRepository {
+  FakeCarCatalogRepository([List<CarCatalogEntry>? entries])
+    : catalog = CarCatalog(entries ?? sampleCatalogEntries);
+
+  final CarCatalog catalog;
+  RepositoryError? failure;
+  int loads = 0;
+
+  @override
+  Future<RepoResult<CarCatalog>> load() async {
+    loads++;
+    final error = failure;
+    return error == null ? Ok(catalog) : Err(error);
+  }
+}
 
 /// Rides fake whose commands and stream can be made to fail.
 class FlakyRides extends FakeRidesRepository {
@@ -181,6 +235,7 @@ class RidesApp {
   final FlakyTemplates templates;
   final FlakyRides rides;
   final FakeExpensesRepository expenses;
+  final catalog = FakeCarCatalogRepository();
   late Group group;
   late List<GroupMember> people;
 
@@ -207,6 +262,7 @@ class RidesApp {
     vehiclesRepositoryProvider.overrideWithValue(vehicles),
     rideTemplatesRepositoryProvider.overrideWithValue(templates),
     ridesRepositoryProvider.overrideWithValue(rides),
+    carCatalogRepositoryProvider.overrideWithValue(catalog),
   ];
 
   ProviderContainer container({List<Override> extra = const []}) =>
@@ -366,6 +422,11 @@ class StubRidesViewModel extends RidesViewModel {
 
   @override
   RidesState build() => fixed;
+
+  // The fixed state already is the one the screen shows; the real command
+  // would recompute from repositories the stub does not have.
+  @override
+  void setDate(DateTime? day) {}
 }
 
 class StubRidesSetupViewModel extends RidesSetupViewModel {
@@ -435,6 +496,18 @@ final sampleGroup = Group(
 final List<GroupMember> sampleMembers = [
   for (var i = 0; i < _names.length; i++)
     GroupMember(id: 'm-$i', groupId: 'g-1', name: _names[i], position: i),
+];
+
+/// Like [sampleMembers], but Chiara does not drive.
+final List<GroupMember> membersWithNonDriver = [
+  for (final m in sampleMembers)
+    GroupMember(
+      id: m.id,
+      groupId: m.groupId,
+      name: m.name,
+      position: m.position,
+      canDrive: m.position != 2,
+    ),
 ];
 
 final sampleVehicle = Vehicle(
@@ -535,11 +608,13 @@ RidesLoaded loadedRides({
   List<RideEntry>? entries,
   QuickLog? quick,
   DateTime? today,
+  List<GroupMember>? members,
+  DriverPrompt? driverPrompt,
 }) {
   final ts = templates ?? [sampleTemplate];
   return RidesLoaded(
     group: sampleGroup,
-    members: sampleMembers,
+    members: members ?? sampleMembers,
     vehicles: [sampleVehicle],
     templates: ts,
     entries:
@@ -552,6 +627,7 @@ RidesLoaded loadedRides({
     month: const Month(2026, 3),
     today: today ?? DateTime.utc(2026, 3),
     quick: ts.isEmpty ? null : (quick ?? sampleQuick(template: ts.first)),
+    driverPrompt: driverPrompt,
   );
 }
 
@@ -579,6 +655,18 @@ final RidesLoaded doneTodayRides = loadedRides(
 
 /// March is over: the settlement card is offered.
 final RidesLoaded settleDueRides = loadedRides(today: DateTime.utc(2026, 4, 2));
+
+/// Chiara is marked as a non-driver: the fairness card says so.
+final RidesLoaded nonDriverRides = loadedRides(
+  today: DateTime.utc(2026, 4, 2),
+  members: membersWithNonDriver,
+);
+
+/// A ride was just logged and Chiara only ever rides along.
+final RidesLoaded driverPromptRides = loadedRides(
+  members: sampleMembers,
+  driverPrompt: const DriverPrompt(memberId: 'm-2', rides: 5),
+);
 
 /// March is over and already settled: no card, the sheet has nothing to do.
 final RidesLoaded settledMonthRides = loadedRides(
@@ -619,6 +707,13 @@ final RidesSetupLoaded setupData = RidesSetupLoaded(
   templates: [sampleTemplate, sampleTemplate2],
 );
 
+final RidesSetupLoaded setupNonDriver = RidesSetupLoaded(
+  group: sampleGroup,
+  members: membersWithNonDriver,
+  vehicles: [sampleVehicle],
+  templates: [sampleTemplate],
+);
+
 final RidesSetupLoaded setupEmpty = RidesSetupLoaded(
   group: sampleGroup,
   members: sampleMembers,
@@ -634,7 +729,17 @@ VehicleFormReady vehicleFormReady({
   int? kmRate,
   bool showErrors = false,
   bool editing = false,
+  List<CarCatalogEntry> suggestions = const [],
+  bool noMatch = false,
+  bool catalogUnavailable = false,
+  CarCatalogEntry? fromCatalog,
+  bool realisticApplied = false,
 }) => VehicleFormReady(
+  suggestions: suggestions,
+  noMatch: noMatch,
+  catalogUnavailable: catalogUnavailable,
+  fromCatalog: fromCatalog,
+  realisticApplied: realisticApplied,
   currency: Currency.eur,
   editing: editing,
   name: name,

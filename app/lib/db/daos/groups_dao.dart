@@ -21,6 +21,10 @@ class GroupsDao extends DatabaseAccessor<AppDatabase> with _$GroupsDaoMixin {
   Stream<List<GroupRow>> watchGroups() =>
       (select(groups)..where((g) => g.deletedAt.isNull())).watch();
 
+  /// Soft-deleted (archived) groups.
+  Stream<List<GroupRow>> watchArchivedGroups() =>
+      (select(groups)..where((g) => g.deletedAt.isNotNull())).watch();
+
   /// Returns true if a live row was updated. A null [currency] keeps it.
   Future<bool> updateGroup({
     required String id,

@@ -1,5 +1,7 @@
 import 'package:alchemist/alchemist.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
+import 'package:mitlio/features/rides/ui/driver_prompt_sheet.dart';
 import 'package:mitlio/features/rides/ui/ride_calendar.dart';
 import 'package:mitlio/features/rides/ui/ride_settle_widgets.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
@@ -10,6 +12,7 @@ import 'package:mitlio/features/rides/ui/template_form_view.dart';
 import 'package:mitlio/features/rides/ui/template_form_view_model.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
+import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../features/rides/ui/rides_fixtures.dart';
 import 'golden_matrix.dart';
@@ -24,15 +27,21 @@ Future<void> main() async {
     RidesState state, {
     double height = _tabHeight,
     PumpAction pump = onlyPumpAndSettle,
+    bool scopeOutside = false,
   }) => matrixGolden(
     name,
-    () => scopedRides(
-      ridesStateOverride(state),
-      const RidesView(groupId: 'g-1'),
-    ),
+    () => scopeOutside
+        ? const RidesView(groupId: 'g-1')
+        : scopedRides(
+            ridesStateOverride(state),
+            const RidesView(groupId: 'g-1'),
+          ),
     width: _width,
     height: height,
     pumpBeforeTest: pump,
+    wrapApp: scopeOutside
+        ? (app) => scopedRides(ridesStateOverride(state), app)
+        : (app) => app,
   );
 
   Future<void> setup(String name, RidesSetupState state) => matrixGolden(
@@ -42,7 +51,7 @@ Future<void> main() async {
       const RidesSetupView(groupId: 'g-1'),
     ),
     width: _width,
-    height: 640,
+    height: 1000,
   );
 
   Future<void> vehicleForm(String name, VehicleFormState state) => matrixGolden(
@@ -79,8 +88,32 @@ Future<void> main() async {
   await tab('rides_pick_route', pickRouteRides);
   await tab('rides_done_today', doneTodayRides);
   // Period settlement (P3r-T06) and the fairness view (P3r-T07).
+  // The day sheet, with the quick log form for a day without rides.
+  await tab(
+    'rides_day_sheet_form',
+    loadedRides(quick: sampleQuick(template: sampleTemplate, isToday: false)),
+    // Sheets live in the navigator, above the screen's own scope.
+    scopeOutside: true,
+    height: 1500,
+    pump: (tester) async {
+      await tester.pumpAndSettle();
+      // One app per text scale: open the day in each.
+      final day = find.descendant(
+        of: find.byType(RideCalendar),
+        matching: find.text('10'),
+      );
+      for (var i = 0; i < 2; i++) {
+        await tester.tap(day.at(i));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Fahrt für diesen Tag erfassen'));
+        await tester.pumpAndSettle();
+      }
+    },
+  );
   await tab('rides_settle_due', settleDueRides, height: 1500);
   await tab('rides_settled_month', settledMonthRides);
+  // Somebody who does not drive: the hint in the fairness card.
+  await tab('rides_non_driver', nonDriverRides, height: 1500);
   for (final (name, state) in [
     ('ride_settle_sheet', settleDueRides),
     ('ride_settle_sheet_nothing', settledMonthRides),
@@ -110,7 +143,55 @@ Future<void> main() async {
 
   await setup('rides_setup_data', setupData);
   await setup('rides_setup_empty', setupEmpty);
+  await setup('rides_setup_non_driver', setupNonDriver);
+  await matrixGolden(
+    'driver_prompt_sheet',
+    () => const DriverPromptSheet(name: 'Chiara Rossi', rides: 5),
+    width: _width,
+    height: 760,
+  );
 
+  // The car catalog typeahead and its honest WLTP line (P9-T09).
+  await vehicleForm(
+    'vehicle_form_suggestions',
+    vehicleFormReady(
+      name: 'Golf',
+      suggestions: [
+        ...sampleCatalogEntries.take(3),
+        const CarCatalogEntry(
+          make: 'VW',
+          model: 'Golf',
+          fuelType: FuelType.petrol,
+          hybrid: true,
+          engineCc: 1400,
+          powerKw: 110,
+          consumptionMilliPer100km: 5200,
+        ),
+        sampleCatalogEntries.last,
+      ],
+    ),
+  );
+  await vehicleForm(
+    'vehicle_form_catalog_pick',
+    vehicleFormReady(
+      name: 'VW Golf',
+      consumption: 5600,
+      fromCatalog: sampleCatalogEntries.first,
+    ),
+  );
+  await vehicleForm(
+    'vehicle_form_catalog_realistic',
+    vehicleFormReady(
+      name: 'VW Golf',
+      consumption: 6720,
+      fromCatalog: sampleCatalogEntries.first,
+      realisticApplied: true,
+    ),
+  );
+  await vehicleForm(
+    'vehicle_form_catalog_unavailable',
+    vehicleFormReady(name: 'Golf', catalogUnavailable: true),
+  );
   await vehicleForm('vehicle_form_empty', vehicleFormReady());
   await vehicleForm(
     'vehicle_form_filled',

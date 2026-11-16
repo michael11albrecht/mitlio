@@ -239,7 +239,7 @@ void main() {
     ok(await app.groups.softDelete(group.id));
     await tester.tap(find.text('Fahrt speichern'));
     await tester.pumpAndSettle();
-    expect(find.text('Das hat nicht geklappt'), findsOneWidget);
+    expect(find.textContaining('Das gibt es nicht mehr'), findsOneWidget);
     expect(find.text('Fahrt speichern'), findsOneWidget);
   });
 

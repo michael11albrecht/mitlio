@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/features/members/ui/member_payment_view_model.dart';
@@ -124,6 +125,7 @@ class _MemberPaymentSheetState extends ConsumerState<MemberPaymentSheet> {
       MemberPaymentFailure() => ErrorState(onRetry: vm.retry),
       MemberPaymentLoaded(:final fieldErrors, :final saveError) => SafeArea(
         child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           padding: EdgeInsets.only(
             left: Spacing.md,
             right: Spacing.md,
@@ -189,7 +191,9 @@ class _MemberPaymentSheetState extends ConsumerState<MemberPaymentSheet> {
               ),
               const SizedBox(height: Spacing.sm),
               Text(
-                saveError == null ? l10n.paymentPrivacyHint : l10n.errorMessage,
+                saveError == null
+                    ? l10n.paymentPrivacyHint
+                    : repositoryErrorMessage(l10n, saveError),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: saveError == null
                       ? theme.colorScheme.onSurfaceVariant

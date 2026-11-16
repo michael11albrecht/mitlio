@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 /// Pure helpers behind the rides screens: number parsing, the fuel price
@@ -85,34 +87,36 @@ Map<String, int> meterBalances(
   return balance;
 }
 
+/// Who can be suggested as the next driver: the live [members] who are not in
+/// [nonDrivers]. If that leaves nobody, everyone is a candidate.
+Set<String> driverCandidates({
+  required List<String> members,
+  Set<String> nonDrivers = const {},
+}) {
+  final drivers = {
+    for (final m in members)
+      if (!nonDrivers.contains(m)) m,
+  };
+  return drivers.isEmpty ? members.toSet() : drivers;
+}
+
 /// Who should drive next ("alternate fairly").
 ///
-/// Candidates are the members who can drive this vehicle: the template's
-/// default driver plus everyone who has driven that vehicle before. If there
-/// are none (a template without a default driver on a fresh vehicle), the
-/// carpool is the candidate set: the template's passengers, else everyone.
-///
-/// Among the candidates the one with the lowest [meterBalances] (metres
-/// driven minus ridden over [unsettled] rides) is suggested. Ties go to the
-/// one who drove longest ago (never = longest), then to the earlier member
-/// in [members]. Returns null only for an empty group.
+/// Among the [driverCandidates] the one with the lowest [meterBalances]
+/// (metres driven minus ridden over [unsettled] rides) is suggested. Ties go
+/// to the one who drove longest ago (never = longest), then to the earlier
+/// member in [members]. Returns null only for an empty group.
 String? suggestDriver({
   required List<String> members,
-  required RideTemplate template,
   required Iterable<Ride> history,
   required Iterable<Ride> unsettled,
+  Set<String> nonDrivers = const {},
 }) {
   if (members.isEmpty) return null;
-  final live = members.toSet();
-  var candidates = <String>{
-    if (template.defaultDriverId != null) template.defaultDriverId!,
-    for (final r in history)
-      if (r.vehicleId == template.vehicleId) r.driverId,
-  }..retainAll(live);
-  if (candidates.isEmpty) {
-    candidates = {...template.defaultPassengerIds}..retainAll(live);
-  }
-  if (candidates.isEmpty) candidates = live;
+  final candidates = driverCandidates(
+    members: members,
+    nonDrivers: nonDrivers,
+  );
 
   final balance = meterBalances(unsettled, members);
   final lastDrove = <String, DateTime>{};
@@ -181,4 +185,30 @@ RideSummary? summarizeRide(
           RideShare(memberId: m.id, cents: shares[m.id] ?? 0),
     ],
   );
+}
+
+/// Whether to ask "does [memberId] not drive?" now: the member is marked as a
+/// driver, was never asked, never drove, and rode along in at least
+/// `max(4, 2 x carpool size)` of [rides], where the carpool is everyone who
+/// took part in those rides. Returns the number of rides, or null for "do
+/// not ask".
+int? shouldAskNonDriver({
+  required String memberId,
+  required bool canDrive,
+  required bool alreadyAsked,
+  required Iterable<Ride> rides,
+}) {
+  if (!canDrive || alreadyAsked) return null;
+  var ridden = 0;
+  final carpool = <String>{};
+  for (final r in rides) {
+    if (r.driverId == memberId) return null;
+    if (r.passengerIds.contains(memberId)) {
+      ridden++;
+      carpool
+        ..add(r.driverId)
+        ..addAll(r.passengerIds);
+    }
+  }
+  return ridden >= max(4, 2 * carpool.length) ? ridden : null;
 }

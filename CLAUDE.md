@@ -51,6 +51,7 @@ View → ViewModel → Repository → Service. Views contain no logic. Every use
 - Inject `Clock`, `IdGenerator`, `Random`. No `DateTime.now()`, `Random()` or UUID creation outside `app/lib/core/`.
 - Tests first. Bug fix = failing test first. Every domain function: examples + property test + edge cases. Every ViewModel command: success, validation error, repository failure.
 - Coverage: ≥ 80 % overall, ≥ 90 % domain/data/ViewModels/sync. Mutation score enforced on domain.
+- **No silent errors.** Every failure a user action can hit is shown in plain du-form German/English: what happened + what to do (wait N minutes, check the connection). No swallowed errors: no empty `catch`, no `catch (_) {}`, no ignored `Err` without surfacing it or a documented reason. Rate limits say so and when to retry. Never misleading (not "offline" when the server refused). Use `showErrorSnackBar` / `repositoryErrorMessage` (`app/lib/core/error_snack_bar.dart`).
 - All UI strings via ARB (l10n). Design tokens only from `core/theme`.
 
 ## Known toolchain issues

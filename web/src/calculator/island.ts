@@ -256,6 +256,9 @@ if (root) {
     history.replaceState(null, '', `${location.pathname}?${stateToParams(state).toString()}${location.hash}`);
   };
 
+  // Enter must not submit (no inline onsubmit handler: the CSP forbids it, PW-T10).
+  root.querySelector('form')?.addEventListener('submit', (e) => e.preventDefault());
+
   for (const k of fields) {
     input[k].addEventListener('input', () => {
       state = { ...state, [k]: input[k].value };

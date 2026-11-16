@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/debug/debug_drive.dart';
 import 'package:mitlio/debug/handlers/rides.dart';
+import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
 
 import '../features/rides/ui/rides_fixtures.dart';
 
@@ -207,6 +209,70 @@ void main() {
     });
   });
 
+  group('rides.setCanDrive and rides.answerDriverPrompt', () {
+    test('marks a member as non-driver and back', () async {
+      final params = {
+        'groupId': app.group.id,
+        'memberId': id(1),
+        'canDrive': 'false',
+      };
+      expect(await h['rides.setCanDrive']!(params), {
+        'memberId': id(1),
+        'canDrive': false,
+      });
+      expect(
+        (await h['rides.setCanDrive']!({
+          ...params,
+          'canDrive': 'true',
+        }))['canDrive'],
+        isTrue,
+      );
+    });
+
+    test('rejects bad params and unknown members', () async {
+      expect((await h['rides.setCanDrive']!({}))['error'], 'invalid_params');
+      expect(
+        (await h['rides.setCanDrive']!({
+          'groupId': app.group.id,
+          'memberId': id(1),
+          'canDrive': 'maybe',
+        }))['error'],
+        'invalid_params',
+      );
+      expect(
+        (await h['rides.setCanDrive']!({
+          'groupId': app.group.id,
+          'memberId': 'nope',
+          'canDrive': 'false',
+        }))['error'],
+        'not_found',
+      );
+    });
+
+    test('answers the driver question', () async {
+      expect(
+        await h['rides.answerDriverPrompt']!({
+          'groupId': app.group.id,
+          'memberId': id(1),
+          'canDrive': 'false',
+        }),
+        {'memberId': id(1), 'canDrive': false, 'undoable': true},
+      );
+      expect(
+        (await h['rides.answerDriverPrompt']!({
+          'groupId': app.group.id,
+          'memberId': id(2),
+          'canDrive': 'true',
+        }))['undoable'],
+        isFalse,
+      );
+      expect(
+        (await h['rides.answerDriverPrompt']!({}))['error'],
+        'invalid_params',
+      );
+    });
+  });
+
   group('rides.list and rides.delete', () {
     test('lists the rides of a month', () async {
       final work = await createWork();
@@ -335,6 +401,104 @@ void main() {
           'invalid_params',
         );
       }
+    });
+  });
+  group('vehicles.catalogSearch and catalogPick', () {
+    Future<DriveResult> search(String query, [Map<String, String>? extra]) =>
+        h['vehicles.catalogSearch']!({
+          'groupId': app.group.id,
+          'query': query,
+          ...?extra,
+        });
+    Future<DriveResult> pick(String index, [Map<String, String>? extra]) =>
+        h['vehicles.catalogPick']!({
+          'groupId': app.group.id,
+          'index': index,
+          ...?extra,
+        });
+
+    test('search lists suggestions from the form view model', () async {
+      final r = await search('golf');
+      expect(r['query'], 'golf');
+      expect(r['noMatch'], isFalse);
+      expect(r['catalogUnavailable'], isFalse);
+      final hits = r['suggestions']! as List;
+      expect(hits, hasLength(2));
+      expect((hits.first as Map)['name'], 'VW Golf');
+      expect((hits.first as Map)['consumptionMilliPer100km'], 5600);
+    });
+
+    test('pick fills the form the screen would show', () async {
+      await search('golf');
+      final r = await pick('1');
+      expect(r, {
+        'name': 'VW Golf',
+        'fuelType': 'diesel',
+        'consumptionMilliPer100km': 4500,
+        'fromCatalog': 'VW Golf',
+        'undoable': false,
+      });
+      final form = container.read(
+        vehicleFormViewModelProvider((
+          groupId: app.group.id,
+          vehicleId: null,
+        )),
+      ) as VehicleFormReady;
+      expect(form.name, 'VW Golf');
+      expect(form.fromCatalog, isNotNull);
+    });
+
+    test('a second pick that replaces the consumption is undoable', () async {
+      await search('golf');
+      await pick('0');
+      await search('polo');
+      expect((await pick('0'))['undoable'], isTrue);
+    });
+
+    test('no match and a catalog that cannot load are reported', () async {
+      expect((await search('trabant'))['noMatch'], isTrue);
+      app.catalog.failure = const Storage('asset missing');
+      final r = await search('golf');
+      expect(r['catalogUnavailable'], isTrue);
+      expect(r['suggestions'], isEmpty);
+    });
+
+    test('works for a stored vehicle too', () async {
+      final golf = await createGolf();
+      final r = await search('tesla', {'vehicleId': golf['id']! as String});
+      expect(
+        (r['suggestions']! as List).single,
+        containsPair('name', 'Tesla Model 3'),
+      );
+      final picked = await pick('0', {'vehicleId': golf['id']! as String});
+      expect(picked['undoable'], isTrue);
+      expect(picked['fuelType'], 'electric');
+    });
+
+    test('reports missing params, unknown groups and bad indexes', () async {
+      expect(
+        (await h['vehicles.catalogSearch']!({}))['error'],
+        'invalid_params',
+      );
+      expect((await h['vehicles.catalogPick']!({}))['error'], 'invalid_params');
+      expect(
+        (await h['vehicles.catalogSearch']!({
+          'groupId': 'nope',
+          'query': 'golf',
+        }))['error'],
+        'not_found',
+      );
+      expect(
+        (await h['vehicles.catalogPick']!({
+          'groupId': 'nope',
+          'index': '0',
+        }))['error'],
+        'not_found',
+      );
+      await search('golf');
+      expect((await pick('9'))['error'], 'invalid_params');
+      expect((await pick('-1'))['error'], 'invalid_params');
+      expect((await pick('x'))['error'], 'invalid_params');
     });
   });
 }

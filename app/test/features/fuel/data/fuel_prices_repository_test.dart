@@ -65,6 +65,30 @@ void main() {
     expect(outcome.price.priceMilli, 1659);
   });
 
+  test(
+    'rate limit keeps the stale price and says why, with the wait',
+    () async {
+      await repo.national(FuelGrade.diesel);
+      clock.advance(const Duration(minutes: 5));
+      service
+        ..failWith = FuelFailure.rateLimited
+        ..failRetryAfter = const Duration(minutes: 7);
+      final outcome = await repo.national(FuelGrade.diesel) as FuelFound;
+      expect(outcome.stale, isTrue);
+      expect(outcome.staleReason, FuelFailure.rateLimited);
+      expect(outcome.retryAfter, const Duration(minutes: 7));
+    },
+  );
+
+  test('rate limit without a last known value reports it', () async {
+    service
+      ..failWith = FuelFailure.rateLimited
+      ..failRetryAfter = const Duration(minutes: 3);
+    final outcome = await repo.national(FuelGrade.e10) as FuelMissing;
+    expect(outcome.reason, FuelFailure.rateLimited);
+    expect(outcome.retryAfter, const Duration(minutes: 3));
+  });
+
   test('offline without a last known value reports why', () async {
     service.failWith = FuelFailure.offline;
     final outcome = await repo.national(FuelGrade.e10) as FuelMissing;
@@ -163,4 +187,25 @@ void main() {
       },
     );
   });
+
+  test(
+    'national-only service: no postcode, no nearby, no area request',
+    () async {
+      service.areas = false;
+      expect(repo.supportsAreas, isFalse);
+      expect(repo.canLocate, isFalse);
+      expect(
+        await repo.forPlz(FuelGrade.e5, '10115'),
+        isA<FuelMissing>().having(
+          (m) => m.reason,
+          'reason',
+          FuelFailure.unavailable,
+        ),
+      );
+      expect(await repo.nearby(FuelGrade.e5), isA<FuelMissing>());
+      expect(service.calls, isEmpty);
+      expect(location.asked, 0);
+      expect(await repo.national(FuelGrade.e5), isA<FuelFound>());
+    },
+  );
 }

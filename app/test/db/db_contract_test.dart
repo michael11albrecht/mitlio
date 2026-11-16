@@ -10,6 +10,11 @@ import 'test_support.dart';
 const _localOnlyTables = {
   'local_member_bank',
   'local_outbox',
+  'local_driver_prompts',
+  'local_group_sync',
+  'local_sync_cursor',
+  'local_settings',
+  'local_places',
   'expense_revisions',
 };
 

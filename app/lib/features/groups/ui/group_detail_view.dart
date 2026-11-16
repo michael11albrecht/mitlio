@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/error_snack_bar.dart';
+import 'package:mitlio/core/keyboard.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/empty_state.dart';
@@ -59,159 +61,205 @@ class GroupDetailView extends ConsumerWidget {
             'rides' => 2,
             _ => 0,
           },
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text(group.name),
-              actions: [
-                IconButton(
-                  tooltip: l10n.tripAdd,
-                  icon: const Icon(Icons.directions_car_outlined),
-                  onPressed: () =>
-                      unawaited(context.push('/groups/$groupId/trip')),
-                ),
-                IconButton(
-                  tooltip: l10n.balancesOpen,
-                  icon: const Icon(Icons.balance_outlined),
-                  onPressed: () =>
-                      unawaited(context.push('/groups/$groupId/balances')),
-                ),
-                PopupMenuButton<_MenuAction>(
-                  tooltip: l10n.groupMenu,
-                  onSelected: (action) async {
-                    switch (action) {
-                      case _MenuAction.edit:
-                        unawaited(context.push('/groups/$groupId/edit'));
-                      case _MenuAction.statistics:
-                        unawaited(context.push('/groups/$groupId/statistics'));
-                      case _MenuAction.export:
-                        unawaited(showExportSheet(context, groupId));
-                      case _MenuAction.archive:
-                        final result = await vm.archive();
-                        if (!context.mounted) return;
-                        if (result case Ok(:final value)) {
-                          showUndoSnackBar(
-                            context,
-                            message: l10n.groupArchived(group.name),
-                            undo: value,
+          child: DismissKeyboardOnTabChange(
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text(group.name),
+                actions: [
+                  IconButton(
+                    tooltip: l10n.tripAdd,
+                    icon: const Icon(Icons.directions_car_outlined),
+                    onPressed: () =>
+                        unawaited(context.push('/groups/$groupId/trip')),
+                  ),
+                  IconButton(
+                    tooltip: l10n.balancesOpen,
+                    icon: const Icon(Icons.balance_outlined),
+                    onPressed: () =>
+                        unawaited(context.push('/groups/$groupId/balances')),
+                  ),
+                  PopupMenuButton<_MenuAction>(
+                    tooltip: l10n.groupMenu,
+                    onSelected: (action) async {
+                      switch (action) {
+                        case _MenuAction.edit:
+                          unawaited(context.push('/groups/$groupId/edit'));
+                        case _MenuAction.statistics:
+                          unawaited(
+                            context.push('/groups/$groupId/statistics'),
                           );
-                          context.go('/');
-                        }
-                    }
-                  },
-                  itemBuilder: (_) => [
-                    PopupMenuItem(
-                      value: _MenuAction.edit,
-                      child: Text(l10n.groupEditTitle),
-                    ),
-                    PopupMenuItem(
-                      value: _MenuAction.statistics,
-                      child: Text(l10n.statsMenu),
-                    ),
-                    PopupMenuItem(
-                      value: _MenuAction.export,
-                      child: Text(l10n.exportMenu),
-                    ),
-                    PopupMenuItem(
-                      value: _MenuAction.archive,
-                      child: Text(l10n.groupArchive),
-                    ),
+                        case _MenuAction.export:
+                          unawaited(showExportSheet(context, groupId));
+                        case _MenuAction.archive:
+                          final messenger = ScaffoldMessenger.of(context);
+                          final result = await vm.archive();
+                          if (!context.mounted) return;
+                          switch (result) {
+                            case Ok(:final value):
+                              showUndoSnackBar(
+                                context,
+                                message: l10n.groupArchived(group.name),
+                                undo: value,
+                              );
+                              context.go('/');
+                            case Err(:final error):
+                              showErrorSnackBar(messenger, l10n, error);
+                          }
+                      }
+                    },
+                    itemBuilder: (_) => [
+                      PopupMenuItem(
+                        value: _MenuAction.edit,
+                        child: Text(l10n.groupEditTitle),
+                      ),
+                      PopupMenuItem(
+                        value: _MenuAction.statistics,
+                        child: Text(l10n.statsMenu),
+                      ),
+                      PopupMenuItem(
+                        value: _MenuAction.export,
+                        child: Text(l10n.exportMenu),
+                      ),
+                      PopupMenuItem(
+                        value: _MenuAction.archive,
+                        child: Text(l10n.groupArchive),
+                      ),
+                    ],
+                  ),
+                ],
+                // One entry per tab; keep in step with `groupTabCount` and the
+                // children of the TabBarView below.
+                bottom: TabBar(
+                  tabs: [
+                    Tab(text: l10n.tabMembers),
+                    Tab(text: l10n.tabExpenses),
+                    Tab(text: l10n.tabRides),
                   ],
                 ),
-              ],
-              // One entry per tab; keep in step with `groupTabCount` and the
-              // children of the TabBarView below.
-              bottom: TabBar(
-                tabs: [
-                  Tab(text: l10n.tabMembers),
-                  Tab(text: l10n.tabExpenses),
-                  Tab(text: l10n.tabRides),
+              ),
+              // Swipes belong to the rows (swipe to delete); tabs switch by
+              // tap.
+              body: TabBarView(
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  Column(
+                    children: [
+                      Expanded(
+                        child: members.isEmpty
+                            ? EmptyState(
+                                icon: Icons.person_add_alt_outlined,
+                                title: l10n.membersEmptyTitle,
+                                message: l10n.membersEmptyMessage,
+                              )
+                            : ReorderableListView.builder(
+                                padding: Spacing.screen,
+                                keyboardDismissBehavior:
+                                    ScrollViewKeyboardDismissBehavior.onDrag,
+                                buildDefaultDragHandles: false,
+                                itemCount: members.length,
+                                onReorderItem: (from, to) async {
+                                  final messenger = ScaffoldMessenger.of(
+                                    context,
+                                  );
+                                  final result = await vm.reorder(from, to);
+                                  if (result case Err(:final error)) {
+                                    showErrorSnackBar(messenger, l10n, error);
+                                  }
+                                },
+                                header: notice == null
+                                    ? null
+                                    : Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: Spacing.sm,
+                                        ),
+                                        child: _InlineNotice(
+                                          message: l10n.memberInUse(
+                                            notice.name,
+                                          ),
+                                          onDismiss: vm.dismissNotice,
+                                        ),
+                                      ),
+                                footer: members.length < 2
+                                    ? null
+                                    : Padding(
+                                        padding: Spacing.allSm,
+                                        child: Text(
+                                          l10n.memberOrderHint,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall
+                                              ?.copyWith(
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
+                                              ),
+                                        ),
+                                      ),
+                                itemBuilder: (context, index) {
+                                  final item = members[index];
+                                  return _MemberTile(
+                                    key: ValueKey(item.member.id),
+                                    item: item,
+                                    index: index,
+                                    onRename: (name) async {
+                                      final messenger = ScaffoldMessenger.of(
+                                        context,
+                                      );
+                                      final result = await vm.renameMember(
+                                        item.member.id,
+                                        name,
+                                      );
+                                      if (result case Err(:final error)) {
+                                        showErrorSnackBar(
+                                          messenger,
+                                          l10n,
+                                          error,
+                                        );
+                                      }
+                                    },
+                                    onRemove: () async {
+                                      final messenger = ScaffoldMessenger.of(
+                                        context,
+                                      );
+                                      final result = await vm.removeMember(
+                                        item.member.id,
+                                      );
+                                      if (!context.mounted) return;
+                                      switch (result) {
+                                        case Ok(:final value):
+                                          showUndoSnackBar(
+                                            context,
+                                            message: l10n.memberRemoved(
+                                              item.member.name,
+                                            ),
+                                            undo: value,
+                                          );
+                                        // "In use" is explained by the inline
+                                        // notice above the list.
+                                        case Err(error: Conflict()):
+                                          break;
+                                        case Err(:final error):
+                                          showErrorSnackBar(
+                                            messenger,
+                                            l10n,
+                                            error,
+                                          );
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
+                      ),
+                      _AddMemberField(
+                        autofocus: members.isEmpty,
+                        onAdd: vm.addMember,
+                      ),
+                    ],
+                  ),
+                  ExpensesView(groupId: groupId),
+                  RidesView(groupId: groupId),
                 ],
               ),
-            ),
-            // Swipes belong to the rows (swipe to delete); tabs switch by tap.
-            body: TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                Column(
-                  children: [
-                    Expanded(
-                      child: members.isEmpty
-                          ? EmptyState(
-                              icon: Icons.person_add_alt_outlined,
-                              title: l10n.membersEmptyTitle,
-                              message: l10n.membersEmptyMessage,
-                            )
-                          : ReorderableListView.builder(
-                              padding: Spacing.screen,
-                              buildDefaultDragHandles: false,
-                              itemCount: members.length,
-                              onReorderItem: (from, to) => unawaited(
-                                vm.reorder(from, to),
-                              ),
-                              header: notice == null
-                                  ? null
-                                  : Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: Spacing.sm,
-                                      ),
-                                      child: _InlineNotice(
-                                        message: l10n.memberInUse(notice.name),
-                                        onDismiss: vm.dismissNotice,
-                                      ),
-                                    ),
-                              footer: members.length < 2
-                                  ? null
-                                  : Padding(
-                                      padding: Spacing.allSm,
-                                      child: Text(
-                                        l10n.memberOrderHint,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall
-                                            ?.copyWith(
-                                              color: Theme.of(
-                                                context,
-                                              ).colorScheme.onSurfaceVariant,
-                                            ),
-                                      ),
-                                    ),
-                              itemBuilder: (context, index) {
-                                final item = members[index];
-                                return _MemberTile(
-                                  key: ValueKey(item.member.id),
-                                  item: item,
-                                  index: index,
-                                  onRename: (name) => unawaited(
-                                    vm.renameMember(item.member.id, name),
-                                  ),
-                                  onRemove: () async {
-                                    final result = await vm.removeMember(
-                                      item.member.id,
-                                    );
-                                    if (!context.mounted) return;
-                                    if (result case Ok(:final value)) {
-                                      showUndoSnackBar(
-                                        context,
-                                        message: l10n.memberRemoved(
-                                          item.member.name,
-                                        ),
-                                        undo: value,
-                                      );
-                                    }
-                                  },
-                                );
-                              },
-                            ),
-                    ),
-                    _AddMemberField(
-                      autofocus: members.isEmpty,
-                      onAdd: vm.addMember,
-                    ),
-                  ],
-                ),
-                ExpensesView(groupId: groupId),
-                RidesView(groupId: groupId),
-              ],
             ),
           ),
         ),
@@ -406,8 +454,18 @@ class _AddMemberFieldState extends State<_AddMemberField> {
   }
 
   Future<void> _add() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
     final result = await widget.onAdd(_controller.text);
-    if (result is Ok) _controller.clear();
+    switch (result) {
+      case Ok():
+        _controller.clear();
+      // An empty name is a no-op: the field simply stays focused.
+      case Err(error: InvalidData()):
+        break;
+      case Err(:final error):
+        showErrorSnackBar(messenger, l10n, error);
+    }
     if (mounted) _focus.requestFocus();
   }
 

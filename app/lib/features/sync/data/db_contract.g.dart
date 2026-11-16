@@ -129,6 +129,7 @@ abstract final class DbGroupMembershipsCols {
   static const groupId = 'group_id';
   static const id = 'id';
   static const memberId = 'member_id';
+  static const role = 'role';
   static const userId = 'user_id';
 }
 
@@ -146,6 +147,7 @@ abstract final class DbGroupsCols {
 
 /// Column names of `members`.
 abstract final class DbMembersCols {
+  static const canDrive = 'can_drive';
   static const createdAt = 'created_at';
   static const deletedAt = 'deleted_at';
   static const groupId = 'group_id';
@@ -317,6 +319,7 @@ const dbContract = <String, Map<String, DbColumn>>{
     'group_id': DbColumn(DbColumnType.string, nullable: false),
     'id': DbColumn(DbColumnType.string, nullable: false),
     'member_id': DbColumn(DbColumnType.string, nullable: true),
+    'role': DbColumn(DbColumnType.string, nullable: false),
     'user_id': DbColumn(DbColumnType.string, nullable: false),
   },
   'groups': {
@@ -330,6 +333,7 @@ const dbContract = <String, Map<String, DbColumn>>{
     'updated_at': DbColumn(DbColumnType.string, nullable: false),
   },
   'members': {
+    'can_drive': DbColumn(DbColumnType.boolean, nullable: false),
     'created_at': DbColumn(DbColumnType.string, nullable: false),
     'deleted_at': DbColumn(DbColumnType.string, nullable: true),
     'group_id': DbColumn(DbColumnType.string, nullable: false),

@@ -8,6 +8,7 @@ import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
 import 'package:mitlio/features/rides/ui/ride_settle_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_view_model.dart';
+import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -30,6 +31,12 @@ Set<String>? _ids(String? raw) {
     return null;
   }
 }
+
+bool? _bool(String? raw) => switch (raw) {
+  'true' => true,
+  'false' => false,
+  _ => null,
+};
 
 DateTime? _day(String? raw) {
   final m = RegExp(r'^(\d{4})-(\d{2})-(\d{2})$').firstMatch(raw ?? '');
@@ -56,7 +63,32 @@ const _logUsage =
     'date (YYYY-MM-DD, default today), priceMilli (default: last price of the '
     'vehicle), roundTrip, tollsCents';
 
-/// `ext.mitlio.rides.*`, `vehicles.create` and `templates.create`: thin
+/// The vehicle form of ([groupId], [vehicleId]) once it has loaded; the same
+/// instance the screen uses. [VehicleFormFailure] answers its error.
+Future<({VehicleFormViewModel vm, DriveResult? error})> _openVehicleForm(
+  ProviderContainer c,
+  String groupId,
+  String? vehicleId,
+) async {
+  final key = (groupId: groupId, vehicleId: vehicleId);
+  final provider = vehicleFormViewModelProvider(key);
+  final subscription = c.listen(provider, (_, _) {});
+  try {
+    for (var i = 0; i < 500 && c.read(provider) is VehicleFormLoading; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    final error = switch (c.read(provider)) {
+      VehicleFormFailure(:final error) => driveError(error),
+      VehicleFormLoading() => driveError(const Storage('form did not load')),
+      VehicleFormReady() => null,
+    };
+    return (vm: c.read(provider.notifier), error: error);
+  } finally {
+    subscription.close();
+  }
+}
+
+/// `ext.mitlio.rides.*`, `vehicles.*` and `templates.create`: thin
 /// wrappers over the same ViewModel commands the UI calls (keys without the
 /// `ext.mitlio.` prefix).
 Map<String, DriveHandler> ridesDriveHandlers(ProviderContainer c) {
@@ -161,6 +193,38 @@ Map<String, DriveHandler> ridesDriveHandlers(ProviderContainer c) {
       final groupId = (entry as Ok<RideEntry, RepositoryError>).value.groupId;
       return _result(await rides(groupId).deleteRide(id), (_) => {'id': id});
     },
+    'rides.setCanDrive': (p) async {
+      final groupId = p['groupId'];
+      final memberId = p['memberId'];
+      final canDrive = _bool(p['canDrive']);
+      if (groupId == null || memberId == null || canDrive == null) {
+        return invalidParams(
+          'need groupId, memberId and canDrive (true|false)',
+        );
+      }
+      return _result(
+        await rides(groupId).setCanDrive(memberId, canDrive: canDrive),
+        (_) => {'memberId': memberId, 'canDrive': canDrive},
+      );
+    },
+    'rides.answerDriverPrompt': (p) async {
+      final groupId = p['groupId'];
+      final memberId = p['memberId'];
+      final canDrive = _bool(p['canDrive']);
+      if (groupId == null || memberId == null || canDrive == null) {
+        return invalidParams(
+          'need groupId, memberId and canDrive (true|false)',
+        );
+      }
+      return _result(
+        await rides(groupId).answerDriverPrompt(memberId, canDrive: canDrive),
+        (undo) => {
+          'memberId': memberId,
+          'canDrive': canDrive,
+          'undoable': undo != null,
+        },
+      );
+    },
     'vehicles.create': (p) async {
       final groupId = p['groupId'];
       final name = p['name'];
@@ -187,6 +251,59 @@ Map<String, DriveHandler> ridesDriveHandlers(ProviderContainer c) {
         ),
         vehicleJson,
       );
+    },
+    // The typeahead of the vehicle form (P9-T09), same VM as the screen.
+    'vehicles.catalogSearch': (p) async {
+      final groupId = p['groupId'];
+      final query = p['query'];
+      if (groupId == null || query == null) {
+        return invalidParams('need groupId and query; optional vehicleId');
+      }
+      final form = await _openVehicleForm(c, groupId, p['vehicleId']);
+      if (form.error != null) return form.error!;
+      await form.vm.searchCatalog(query);
+      final snap = form.vm.debugSnapshot();
+      return {
+        'query': query,
+        'suggestions': snap['suggestions'],
+        'noMatch': snap['noMatch'],
+        'catalogUnavailable': snap['catalogUnavailable'],
+      };
+    },
+    'vehicles.catalogPick': (p) async {
+      final groupId = p['groupId'];
+      final index = int.tryParse(p['index'] ?? '');
+      if (groupId == null || index == null) {
+        return invalidParams(
+          'need groupId and index into the last catalogSearch result; '
+          'optional vehicleId',
+        );
+      }
+      final form = await _openVehicleForm(c, groupId, p['vehicleId']);
+      if (form.error != null) return form.error!;
+      final state = c.read(
+        vehicleFormViewModelProvider((
+          groupId: groupId,
+          vehicleId: p['vehicleId'],
+        )),
+      );
+      final suggestions = state is VehicleFormReady
+          ? state.suggestions
+          : const <CarCatalogEntry>[];
+      if (index < 0 || index >= suggestions.length) {
+        return invalidParams(
+          'index $index outside the ${suggestions.length} suggestions',
+        );
+      }
+      final undo = form.vm.applyCatalogEntry(suggestions[index]);
+      final snap = form.vm.debugSnapshot();
+      return {
+        'name': snap['name'],
+        'fuelType': snap['fuelType'],
+        'consumptionMilliPer100km': snap['consumptionMilliPer100km'],
+        'fromCatalog': snap['fromCatalog'],
+        'undoable': undo != null,
+      };
     },
     'templates.create': (p) async {
       final groupId = p['groupId'];

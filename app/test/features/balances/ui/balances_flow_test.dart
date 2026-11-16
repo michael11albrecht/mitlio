@@ -5,6 +5,7 @@ import 'package:mitlio/features/balances/ui/balances_view.dart';
 import '../../../helpers/fake_app.dart';
 import '../../../helpers/pump_app.dart';
 import '../balances_support.dart';
+import 'balances_fixtures.dart';
 
 /// The balances screen on the real app, router and in-memory repositories
 /// (German, the default locale).
@@ -103,6 +104,17 @@ void main() {
     expect(find.text('Anna gets'), findsOneWidget);
     expect(find.text('Ben owes'), findsOneWidget);
     expect(find.text('Ben pays Anna'), findsOneWidget);
+  });
+
+  testWidgets('open rides are named in one honest line', (tester) async {
+    await pumpMitlio(
+      tester,
+      app,
+      location: '/groups/${s.group.id}/balances',
+      extra: balancesStateOverride(openRidesBalances),
+    );
+    expect(find.textContaining('inkl. 3 offene Fahrten'), findsOneWidget);
+    expect(find.textContaining('13,20'), findsWidgets);
   });
 
   testWidgets('a failing repository offers a retry', (tester) async {
