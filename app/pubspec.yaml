@@ -1,7 +1,8 @@
 name: mitlio
 description: mitlio — the private taxometer. Share car rides and group expenses fairly.
 publish_to: none
-version: 0.1.0+1
+# Build number comes from CI (--build-number); release-please bumps this line.
+version: 0.2.0 # x-release-please-version
 resolution: workspace
 
 environment:
@@ -26,6 +27,7 @@ dependencies:
   qr_flutter: ^4.1.0
   sentry: ^10.4.0
   share_plus: ^13.3.1
+  supabase_flutter: ^2.18.3
   url_launcher: ^6.3.3
   uuid: ^4.6.0
 
@@ -48,5 +50,7 @@ flutter:
   assets:
     # Symlink to tool/fixtures/scenarios (single source of seed scenarios).
     - assets/scenarios/
+    # EEA car list for the vehicle form (CC BY 4.0), see docs/car-catalog.md.
+    - assets/car_catalog/
     # Roboto (Apache 2.0, see assets/fonts/Roboto_LICENSE.txt) for the PDF.
     - assets/fonts/

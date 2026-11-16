@@ -5,9 +5,8 @@
       "release-type": "simple",
       "package-name": "mitlio",
       "changelog-path": "CHANGELOG.md",
-      "skip-github-release": true,
       "extra-files": [
-        { "type": "yaml", "path": "app/pubspec.yaml", "jsonpath": "$.version" }
+        { "type": "generic", "path": "app/pubspec.yaml" }
       ]
     }
   }

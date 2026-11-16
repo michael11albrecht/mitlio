@@ -55,6 +55,19 @@ void main() {
     // (ruleId, bad fixture, good fixture). Bad must yield >= 1 violation.
     final cases = <(String, Map<String, String>, Map<String, String>)>[
       (
+        'supabase-only-in-remote',
+        {
+          'app/lib/features/a/ui/a_view_model.dart':
+              "import 'package:supabase_flutter/supabase_flutter.dart';",
+        },
+        {
+          'app/lib/core/remote/x.dart':
+              "import 'package:supabase_flutter/supabase_flutter.dart';",
+          'app/lib/features/a/data/services/s.dart':
+              "import 'package:supabase_flutter/supabase_flutter.dart';",
+        },
+      ),
+      (
         'domain-purity',
         {
           'packages/domain/lib/a.dart':

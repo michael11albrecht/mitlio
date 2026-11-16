@@ -474,6 +474,27 @@ Check: 40 km × 6.5 l/100 km = 2.6 l. At 1.799 € that is 4.6774 € → 468 ct
 - So A gets 234 + 156 = 390 for the driver-A aggregate.
 - r2 (B, A, C in tie order A, B, C): 153/152/152.
 
+## Car catalog (P9-T09)
+
+The vehicle form suggests cars from a bundled catalog built offline from the EEA CO2 monitoring data
+(`docs/car-catalog.md`). Pure functions in `packages/domain/lib/src/rides/car_catalog.dart`.
+
+- A `CarCatalogEntry` is one (make, model, fuel, engine in 100 cm3, power in 5 kW) variant with the
+  **manufacturer (WLTP) consumption** in thousandths of l or kWh per 100 km. Fuel is petrol, diesel or electric;
+  mild/full hybrids are petrol/diesel with `hybrid: true`. Plug-in hybrids are not catalogued (WLTP values far too
+  optimistic).
+- Search: query folded (case, umlauts, accents, punctuation to spaces: `Citroen` = `Citroën`, `id3` = `ID.3`), at least
+  2 characters. Every typed word must be a prefix of a word of make, model or a make alias (`volkswagen` for VW,
+  `mercedes` for Mercedes-Benz), or of the model/"make model" with spaces removed. Ranking: model or "make model"
+  starts with the whole query first, then shorter model names, then name, fuel (petrol, petrol hybrid, diesel, diesel
+  hybrid, electric), engine, power. At most `limit` (5) hits, one per (name, fuel) before a second variant.
+- **Realistic value** (`realisticConsumptionMilli`): `wltp x 1.20`, rounded half up, only for petrol and diesel
+  (also hybrids). `realWorldGapPercent = 20` is the ICCT/EU Commission real-world gap estimate (SWD(2024) 59: 23.7 %
+  petrol, 18.1 % diesel in 2021; ICCT 2025: about 20 %). Electric and other fuels: no sourced factor, `null`.
+  It is always shown as an estimate, never as an official value.
+
+Examples: petrol 5600 -> 6720; diesel 4500 -> 5400; 3 -> 4 (3.6); 2 -> 2 (2.4); 5 -> 6 (6.0).
+
 ## HLC
 
 Hybrid logical clock for sync `updated_at` (`Hlc`, `packages/domain/lib/src/sync/hlc.dart`).
@@ -519,5 +540,58 @@ Hybrid logical clock for sync `updated_at` (`Hlc`, `packages/domain/lib/src/sync
   {"op": "parse", "input": "2026-01-01T00:00:00.000Z-0000-", "error": "HlcInvalidFormat"},
   {"op": "parse", "input": "2026-01-01T00:00:00Z-0000-a", "error": "HlcInvalidFormat"},
   {"op": "parse", "input": "garbage", "error": "HlcInvalidFormat"}
+]
+```
+
+## Sync merge
+
+Which version of an aggregate wins on pull (`decide`, `mergeAggregate`, `packages/domain/lib/src/sync/merge.dart`).
+Pure last-write-wins on the root's `updated_at` HLC (ADR-07).
+
+- `SyncVersion {updatedAt: Hlc, deletedAt: DateTime?}`; `deletedAt != null` is a tombstone. A tombstone is a version
+  like any other: a newer restore beats an older delete and vice versa.
+- `decide(local?, remote, pendingLocal?)`:
+  - `pendingLocal` (unpushed outbox op) set: `pendingLocal > remote` -> `keepLocal` (the push will win); otherwise
+    `applyRemoteDropPending`.
+  - no pending, no local row -> `applyRemote`; `remote > local` -> `applyRemote`; `remote < local` -> `keepLocal`;
+    equal HLC -> `same` (replay is a no-op).
+- An expense aggregate is `{expense, payers, shares}`: children follow the root decision and are replaced as a unit
+  (`mergeAggregate`); no per-child merge.
+- Convergence: applying any permutation of versions yields the max HLC; applying a version twice changes nothing.
+
+Rows: `local`/`remote`/`pending` are HLC strings (`null` = absent); `localDeleted`/`remoteDeleted` mark tombstones.
+
+<!-- examples:sync_merge -->
+```json
+[
+  {"name": "no local row", "local": null, "remote": "2026-01-01T00:00:00.001Z-0000-a", "decision": "applyRemote"},
+  {"name": "remote newer wall", "local": "2026-01-01T00:00:00.000Z-0000-a", "remote": "2026-01-01T00:00:00.001Z-0000-b",
+   "decision": "applyRemote"},
+  {"name": "remote newer counter", "local": "2026-01-01T00:00:00.000Z-0001-a", "remote": "2026-01-01T00:00:00.000Z-0002-a",
+   "decision": "applyRemote"},
+  {"name": "remote newer node id tiebreak", "local": "2026-01-01T00:00:00.000Z-0001-a", "remote": "2026-01-01T00:00:00.000Z-0001-b",
+   "decision": "applyRemote"},
+  {"name": "local newer", "local": "2026-01-01T00:00:00.002Z-0000-a", "remote": "2026-01-01T00:00:00.001Z-0000-b",
+   "decision": "keepLocal"},
+  {"name": "equal HLC is a replay", "local": "2026-01-01T00:00:00.000Z-0000-a", "remote": "2026-01-01T00:00:00.000Z-0000-a",
+   "decision": "same"},
+  {"name": "newer restore beats older delete", "local": "2026-01-01T00:00:00.000Z-0000-a", "localDeleted": true,
+   "remote": "2026-01-01T00:00:00.001Z-0000-b", "decision": "applyRemote"},
+  {"name": "newer delete beats older edit", "local": "2026-01-01T00:00:00.000Z-0000-a",
+   "remote": "2026-01-01T00:00:00.001Z-0000-b", "remoteDeleted": true, "decision": "applyRemote"},
+  {"name": "older delete loses to local edit", "local": "2026-01-01T00:00:00.002Z-0000-a",
+   "remote": "2026-01-01T00:00:00.001Z-0000-b", "remoteDeleted": true, "decision": "keepLocal"},
+  {"name": "equal HLC tombstones", "local": "2026-01-01T00:00:00.000Z-0000-a", "localDeleted": true,
+   "remote": "2026-01-01T00:00:00.000Z-0000-a", "remoteDeleted": true, "decision": "same"},
+  {"name": "pending newer than remote", "local": "2026-01-01T00:00:00.003Z-0000-a",
+   "remote": "2026-01-01T00:00:00.001Z-0000-b", "pending": "2026-01-01T00:00:00.003Z-0000-a", "decision": "keepLocal"},
+  {"name": "pending older than remote", "local": "2026-01-01T00:00:00.000Z-0000-a",
+   "remote": "2026-01-01T00:00:00.002Z-0000-b", "pending": "2026-01-01T00:00:00.001Z-0000-a",
+   "decision": "applyRemoteDropPending"},
+  {"name": "pending equal to remote (own echo)", "local": "2026-01-01T00:00:00.001Z-0000-a",
+   "remote": "2026-01-01T00:00:00.001Z-0000-a", "pending": "2026-01-01T00:00:00.001Z-0000-a",
+   "decision": "applyRemoteDropPending"},
+  {"name": "pending without local row, newer", "local": null,
+   "remote": "2026-01-01T00:00:00.001Z-0000-b", "pending": "2026-01-01T00:00:00.002Z-0000-a", "decision": "keepLocal"}
 ]
 ```

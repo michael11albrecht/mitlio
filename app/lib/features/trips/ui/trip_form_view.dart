@@ -16,6 +16,10 @@ import 'package:mitlio/core/widgets/result_card.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
 import 'package:mitlio/features/fuel/ui/fuel_price_chips.dart';
 import 'package:mitlio/features/fuel/ui/fuel_price_view_model.dart';
+import 'package:mitlio/features/rides/ui/rides_calculator.dart'
+    show formatMilli;
+import 'package:mitlio/features/routes/ui/route_distance_panel.dart';
+import 'package:mitlio/features/routes/ui/route_distance_view_model.dart';
 import 'package:mitlio/features/trips/ui/trip_form_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -86,6 +90,13 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
   }) {
     final text = _vm.applyFuelPrice(milli, onlyIfEmpty: onlyIfEmpty);
     if (text != null) _price.text = text.replaceAll('.', decimalSeparator);
+  }
+
+  /// A route distance from the panel (metres, one way): into the field and
+  /// the ViewModel.
+  void _fillDistance(int meters, String decimalSeparator) {
+    _distance.text = formatMilli(meters, separator: decimalSeparator);
+    _vm.setDistance(formatMilli(meters, separator: '.'));
   }
 
   Future<void> _save() async {
@@ -186,9 +197,22 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                   label: l10n.tripDistanceLabel,
                   suffix: l10n.tripUnitKm,
                   error: invalid.contains(TripField.distance),
-                  onChanged: vm.setDistance,
+                  onChanged: (text) {
+                    // Typing is the user's: the route lookup stops
+                    // overwriting it.
+                    ref
+                        .read(routeDistanceViewModelProvider.notifier)
+                        .noteManualEdit();
+                    vm.setDistance(text);
+                  },
                   autofocus: true,
                   large: true,
+                ),
+                RouteDistancePanel(
+                  onFill: (meters) => _fillDistance(
+                    meters,
+                    MoneyFormat.of(context).decimalSeparator,
+                  ),
                 ),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,

@@ -3,14 +3,16 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/features/members/data/services/iban_cipher.dart';
 import 'package:mitlio/features/settings/data/services/server_data_service.dart';
+import 'package:mitlio/features/sync/data/repositories/auth_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 /// "Alle meine Daten löschen" (P7-T07, `docs/data-deletion.md`).
 // ignore: one_member_abstracts, injection seam with fakes
 abstract interface class DataDeletionRepository {
-  /// Deletes the server data first (if signed in), then everything on this
-  /// device. If the server call fails nothing local is touched, so the user
-  /// can simply try again.
+  /// Deletes the server data first (if signed in), then drops the local
+  /// session, then everything on this device. If the server call or the
+  /// session cleanup fails nothing local is touched, so the user can simply
+  /// try again.
   Future<RepoResult<void>> deleteEverything();
 }
 
@@ -22,16 +24,22 @@ class DriftDataDeletionRepository implements DataDeletionRepository {
     required this._cipher,
     required this._crashReporter,
     required this._server,
+    required this._auth,
   });
 
   final AppDatabase _db;
   final IbanCipher _cipher;
   final CrashReporter _crashReporter;
   final ServerDataService _server;
+  final AuthRepository _auth;
 
   @override
   Future<RepoResult<void>> deleteEverything() => guardStorage(() async {
     if (_server.isSignedIn) await _server.deleteMyData();
+    // The anonymous account is gone on the server; forget it here too. A
+    // failure surfaces as the deletion error (nothing local is wiped yet).
+    // The wipe below drops `local_group_sync` and the cursors with the rest.
+    await _auth.clearLocalSession();
     // Tables are declared parents first, so reverse order never violates a
     // foreign key.
     await _db.transaction(() async {

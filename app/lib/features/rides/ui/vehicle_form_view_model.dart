@@ -39,6 +39,12 @@ final class VehicleFormReady extends VehicleFormState {
     required this.kmRateMilli,
     required this.showErrors,
     required this.saving,
+    this.suggestions = const [],
+    this.noMatch = false,
+    this.catalogUnavailable = false,
+    this.fromCatalog,
+    this.realisticApplied = false,
+    this.nameRevision = 0,
   });
 
   final Currency currency;
@@ -56,6 +62,37 @@ final class VehicleFormReady extends VehicleFormState {
   final int? kmRateMilli;
   final bool showErrors;
   final bool saving;
+
+  /// Car catalog hits for the typed name, best first (at most 5).
+  final List<CarCatalogEntry> suggestions;
+
+  /// The typed name is long enough but nothing in the catalog matches.
+  final bool noMatch;
+
+  /// The catalog could not be loaded; the form works as before, by hand.
+  final bool catalogUnavailable;
+
+  /// The picked catalog car while fuel and consumption still come from it;
+  /// a manual edit of either clears it.
+  final CarCatalogEntry? fromCatalog;
+
+  /// Consumption is the "realistic" estimate of [fromCatalog], not WLTP.
+  final bool realisticApplied;
+
+  /// Counts name changes the form made itself (pick, undo), so the text
+  /// field knows to adopt [name].
+  final int nameRevision;
+
+  /// The realistic estimate for [fromCatalog], null when it has none.
+  int? get realisticMilli {
+    final car = fromCatalog;
+    return car == null
+        ? null
+        : realisticConsumptionMilli(
+            car.fuelType,
+            car.consumptionMilliPer100km,
+          );
+  }
 
   bool get nameMissing => name.trim().isEmpty;
   bool get consumptionMissing =>
@@ -80,10 +117,23 @@ class VehicleFormViewModel extends Notifier<VehicleFormState> {
   var _showErrors = false;
   var _saving = false;
   var _loaded = false;
+  var _suggestions = const <CarCatalogEntry>[];
+  var _noMatch = false;
+  var _catalogFailed = false;
+  CarCatalogEntry? _picked;
+  var _realistic = false;
+  var _nameRevision = 0;
+  var _searchSeq = 0;
 
   @override
   VehicleFormState build() {
     _loaded = false;
+    _suggestions = const [];
+    _noMatch = false;
+    _catalogFailed = false;
+    _picked = null;
+    _realistic = false;
+    _searchSeq++;
     unawaited(_load());
     return const VehicleFormLoading();
   }
@@ -132,6 +182,12 @@ class VehicleFormViewModel extends Notifier<VehicleFormState> {
         kmRateMilli: _kmRate,
         showErrors: _showErrors,
         saving: _saving,
+        suggestions: _suggestions,
+        noMatch: _noMatch,
+        catalogUnavailable: _catalogFailed,
+        fromCatalog: _picked,
+        realisticApplied: _realistic,
+        nameRevision: _nameRevision,
       ),
     );
   }
@@ -141,18 +197,111 @@ class VehicleFormViewModel extends Notifier<VehicleFormState> {
     ref.invalidateSelf();
   }
 
+  /// The user typed [value]: also looks it up in the car catalog.
   void setName(String value) {
     _name = value;
     _emit();
+    unawaited(searchCatalog(value));
   }
 
   void setFuelType(FuelType value) {
+    if (value != _fuel) _forgetCatalog();
     _fuel = value;
     _emit();
   }
 
   void setConsumption(int? milli) {
+    if (milli != _consumption) _forgetCatalog();
     _consumption = milli;
+    _emit();
+  }
+
+  /// The values no longer come from the catalog: drop the WLTP note.
+  void _forgetCatalog() {
+    _picked = null;
+    _realistic = false;
+  }
+
+  /// Fills [VehicleFormReady.suggestions] with up to five catalog cars for
+  /// [query] (offline, from the bundled EEA list). Fewer than two letters
+  /// clears them. A catalog that cannot be loaded is reported through
+  /// [VehicleFormReady.catalogUnavailable]; the next call tries again.
+  Future<void> searchCatalog(String query) async {
+    final seq = ++_searchSeq;
+    if (query.trim().length < 2) {
+      _suggestions = const [];
+      _noMatch = false;
+      _emit();
+      return;
+    }
+    final loaded = await ref.read(carCatalogRepositoryProvider).load();
+    if (!ref.mounted || seq != _searchSeq) return; // A newer search won.
+    switch (loaded) {
+      case Err():
+        _catalogFailed = true;
+        _suggestions = const [];
+        _noMatch = false;
+      case Ok(:final value):
+        _catalogFailed = false;
+        _suggestions = value.search(query);
+        _noMatch = _suggestions.isEmpty;
+    }
+    _emit();
+  }
+
+  /// Takes name, fuel and consumption (manufacturer value, WLTP) from the
+  /// catalog car [entry]; everything stays editable. Returns an [Undo] only
+  /// when a consumption the user had entered was replaced; null otherwise.
+  Undo? applyCatalogEntry(CarCatalogEntry entry) {
+    if (!_loaded) return null;
+    final before = (
+      name: _name,
+      fuel: _fuel,
+      consumption: _consumption,
+      picked: _picked,
+      realistic: _realistic,
+    );
+    final overwrote =
+        before.consumption != null &&
+        before.consumption != entry.consumptionMilliPer100km;
+    _searchSeq++; // Drop a lookup that is still running.
+    _name = entry.name;
+    _fuel = entry.fuelType;
+    _consumption = entry.consumptionMilliPer100km;
+    _picked = entry;
+    _realistic = false;
+    _suggestions = const [];
+    _noMatch = false;
+    _nameRevision++;
+    _emit();
+    if (!overwrote) return null;
+    return Undo(() async {
+      if (ref.mounted) {
+        _name = before.name;
+        _fuel = before.fuel;
+        _consumption = before.consumption;
+        _picked = before.picked;
+        _realistic = before.realistic;
+        _nameRevision++;
+        _emit();
+      }
+      return const Ok(null);
+    });
+  }
+
+  /// Replaces the catalog value with the realistic estimate (WLTP plus the
+  /// documented real-world gap). Does nothing without a picked car or when
+  /// the fuel has no sourced estimate.
+  void useRealisticConsumption() {
+    final car = _picked;
+    if (car == null) return;
+    final real = realisticConsumptionMilli(
+      car.fuelType,
+      car.consumptionMilliPer100km,
+    );
+    if (real == null) return;
+    _consumption = real;
+    _realistic = true;
     _emit();
   }
 
@@ -220,6 +369,21 @@ class VehicleFormViewModel extends Notifier<VehicleFormState> {
       'wearMilliPerKm': f.wearMilli,
       'kmRateMilliPerKm': f.kmRateMilli,
       'valid': !f.hasIssues,
+      'fromCatalog': f.fromCatalog?.name,
+      'realisticApplied': f.realisticApplied,
+      'catalogUnavailable': f.catalogUnavailable,
+      'noMatch': f.noMatch,
+      'suggestions': [
+        for (final e in f.suggestions)
+          {
+            'name': e.name,
+            'fuelType': e.fuelType.name,
+            'hybrid': e.hybrid,
+            'engineCc': e.engineCc,
+            'powerKw': e.powerKw,
+            'consumptionMilliPer100km': e.consumptionMilliPer100km,
+          },
+      ],
     },
   };
 }
