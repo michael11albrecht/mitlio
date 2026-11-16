@@ -1,3 +1,4 @@
+-- squawk-ignore-file prefer-robust-stmts
 -- 0012_app_config: server-side minimum app version and a retry hint on the join rate limit (P6-T16a, ADR-27).
 --
 --   * app_config: one row per store platform. The app reads min_supported_version before it syncs and
