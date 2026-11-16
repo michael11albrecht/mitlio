@@ -198,6 +198,38 @@ void main() {
     });
   });
 
+  group('provider_unconfigured (no Tankerkönig key on the server)', () {
+    test('postcode tap: chips go, scope stays national, reason kept', () async {
+      await start();
+      expect(state().canPlz, isTrue);
+      app.fuel.failWith = FuelFailure.providerUnconfigured;
+      await vm().usePlz('10115');
+      expect(state().canPlz, isFalse);
+      expect(state().canLocate, isFalse);
+      expect(state().scope, FuelScope.national);
+      expect(state().failure, FuelFailure.providerUnconfigured);
+    });
+
+    test('nearby tap: postcode option goes too', () async {
+      await start();
+      app.fuel.failWith = FuelFailure.providerUnconfigured;
+      await vm().useNearby();
+      expect(state().canLocate, isFalse);
+      expect(state().canPlz, isFalse);
+      expect(state().failure, FuelFailure.providerUnconfigured);
+    });
+
+    test('later taps are ignored without another request', () async {
+      await start();
+      app.fuel.failWith = FuelFailure.providerUnconfigured;
+      await vm().usePlz('10115');
+      final asked = app.fuel.calls.length;
+      await vm().usePlz('10115');
+      await vm().useNearby();
+      expect(app.fuel.calls, hasLength(asked));
+    });
+  });
+
   test('debugSnapshot', () async {
     await start();
     expect(vm().debugSnapshot(), {

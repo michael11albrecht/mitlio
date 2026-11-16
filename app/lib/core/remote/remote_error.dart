@@ -181,3 +181,23 @@ final class Rejected extends RemoteError {
   @override
   String toString() => 'Rejected($code)';
 }
+
+/// Stable, machine-readable name of the case (ADR-27 §3): what DebugDrive
+/// reports and what `local_group_sync.last_error_code` stores. Never shown
+/// to users; their text is `remoteErrorText`.
+extension RemoteErrorName on RemoteError {
+  String get caseName => switch (this) {
+    Offline() => 'offline',
+    RateLimitedRemote() => 'rateLimited',
+    InviteInvalid() => 'inviteInvalid',
+    MemberAlreadyClaimed() => 'memberAlreadyClaimed',
+    AlreadyConnected() => 'alreadyConnected',
+    MemberGone() => 'memberGone',
+    NotOwner() => 'notOwner',
+    NotMember() => 'notMember',
+    CannotRemoveSelf() => 'cannotRemoveSelf',
+    VersionTooOld() => 'versionTooOld',
+    ServerDown() => 'serverDown',
+    Rejected() => 'rejected',
+  };
+}

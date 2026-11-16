@@ -3037,6 +3037,12 @@ abstract class AppLocalizations {
   /// **'Preisdienst gerade nicht erreichbar. Versuch es später nochmal oder trag den Preis selbst ein.'**
   String get fuelServerDown;
 
+  /// No description provided for @fuelAreasUnavailable.
+  ///
+  /// In de, this message translates to:
+  /// **'Postleitzahl und „In meiner Nähe“ gibt es auf diesem Server nicht. Es gilt der Bundesdurchschnitt, den Preis kannst du auch selbst eintragen.'**
+  String get fuelAreasUnavailable;
+
   /// No description provided for @fuelNoPrice.
   ///
   /// In de, this message translates to:
@@ -3216,6 +3222,12 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.'**
   String get routeServerDown;
+
+  /// No description provided for @routeUnconfigured.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Streckenberechnung gibt es auf diesem Server nicht. Trag die Kilometer einfach selbst ein.'**
+  String get routeUnconfigured;
 
   /// No description provided for @routeInvalid.
   ///

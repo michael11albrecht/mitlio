@@ -103,6 +103,23 @@ void main() {
       expect(app.route.calls, isEmpty);
     });
 
+    formTest('server without routing key: one message, then no row', (
+      tester,
+    ) async {
+      app.route.failWith = RouteFailure.providerUnconfigured;
+      await openTemplateForm(tester);
+      await open(tester);
+      await tester.enterText(field('Start'), 'Karls');
+      await tester.pumpAndSettle();
+      const message =
+          'Die Streckenberechnung gibt es auf diesem Server nicht. '
+          'Trag die Kilometer einfach selbst ein.';
+      expect(find.text(message), findsOneWidget);
+      expect(find.text(_toggle), findsNothing);
+      expect(field('Entfernung einfach (km)'), findsOneWidget);
+      expect(app.route.calls, hasLength(1));
+    });
+
     formTest('collapsed row first, nothing asked until the user types', (
       tester,
     ) async {

@@ -86,6 +86,7 @@ final class FuelPriceState {
     FuelFailure? staleReason,
     Duration? retryAfter,
     bool? canLocate,
+    bool? canPlz,
     FuelFill? fill,
     bool clearFailure = false,
   }) => FuelPriceState(
@@ -100,7 +101,7 @@ final class FuelPriceState {
     staleReason: clearFailure ? staleReason : staleReason ?? this.staleReason,
     retryAfter: clearFailure ? retryAfter : retryAfter ?? this.retryAfter,
     canLocate: canLocate ?? this.canLocate,
-    canPlz: canPlz,
+    canPlz: canPlz ?? this.canPlz,
     fill: fill ?? this.fill,
   );
 }
@@ -159,6 +160,12 @@ class FuelPriceViewModel extends Notifier<FuelPriceState> {
     _plz = text;
     state = state.copyWith(scope: FuelScope.plz);
     await _run(auto: false);
+    if (ref.mounted && state.failure == FuelFailure.providerUnconfigured) {
+      // This server has no area prices: back to the national average, the
+      // postcode option is gone and the hint says why.
+      _plz = null;
+      state = state.copyWith(scope: FuelScope.national);
+    }
   }
 
   /// The average around the device position. Asks for the permission now;
@@ -176,6 +183,7 @@ class FuelPriceViewModel extends Notifier<FuelPriceState> {
         failure: reason,
         retryAfter: retryAfter,
         canLocate: _repo.canLocate,
+        canPlz: _repo.supportsAreas,
       );
       return;
     }
@@ -226,6 +234,7 @@ class FuelPriceViewModel extends Notifier<FuelPriceState> {
           failure: reason,
           retryAfter: retryAfter,
           canLocate: _repo.canLocate,
+          canPlz: _repo.supportsAreas,
         );
     }
   }

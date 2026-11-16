@@ -9,6 +9,7 @@ import 'package:mitlio/core/router.dart';
 import 'package:mitlio/debug/debug_data_control.dart';
 import 'package:mitlio/debug/debug_snapshots.dart';
 import 'package:mitlio/debug/drive_types.dart';
+import 'package:mitlio/debug/handlers/auth.dart';
 import 'package:mitlio/debug/handlers/balances.dart';
 import 'package:mitlio/debug/handlers/expense_history.dart';
 import 'package:mitlio/debug/handlers/expenses.dart';
@@ -124,6 +125,7 @@ void registerDebugDrive(ProviderContainer container) {
     ...statisticsDriveHandlers(container),
     ...fuelDriveHandlers(container),
     ...syncDriveHandlers(container),
+    ...authDriveHandlers(container),
     ...routeDriveHandlers(container),
   };
   for (final entry in handlers.entries) {

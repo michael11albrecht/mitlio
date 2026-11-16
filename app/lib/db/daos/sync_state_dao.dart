@@ -15,7 +15,7 @@ enum SyncRole { owner, member }
 /// `local_settings` key of the per-install HLC node id.
 const hlcNodeIdKey = 'hlc_node_id';
 
-/// Typed access to the client-only sync tables (schema v5): group sync state,
+/// Typed access to the client-only sync tables (schema v6): group sync state,
 /// pull cursors and install settings. Never joins synced data.
 @DriftAccessor(
   tables: [LocalGroupSync, LocalSyncCursor, LocalSettings, LocalOutbox],

@@ -120,6 +120,8 @@ class _FuelPriceChipsState extends ConsumerState<FuelPriceChips> {
       FuelFailure.locationDenied => l10n.fuelNearbyDenied,
       FuelFailure.locationBlocked => l10n.fuelNearbyBlocked,
       FuelFailure.locationUnavailable => l10n.fuelNearbyUnavailable,
+      // Shown once, right after the tap; the options are gone afterwards.
+      FuelFailure.providerUnconfigured => l10n.fuelAreasUnavailable,
       FuelFailure.rateLimited when s.price == null =>
         _minutes(s) == null
             ? l10n.fuelRateLimited
