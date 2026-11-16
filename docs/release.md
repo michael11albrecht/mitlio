@@ -40,7 +40,9 @@ Status: DRAFT ("Entwurf, vor Veröffentlichung prüfen lassen", e.g. a lawyer or
 - Retention periods in the text are interpolated from `supabase/retention.json` (`docs/retention.md`).
 - Gate: `web/src/lib/legal.ts` fails `npm run build` when a `[[` placeholder remains and `SITE_URL` is not the
   stand-in `https://mitlio.web.app` or a local host. To also gate a release build on the stand-in origin, build
-  with `LEGAL_STRICT=1`. Tests: `web/tests/legal.spec.ts`.
+  with `LEGAL_STRICT=1`. `.github/workflows/web-deploy.yml` (live deploy and preview channels) always sets
+  `LEGAL_STRICT=1`, because it deploys the stand-in origin live while `SITE_URL` is unset; a missing `LEGAL_STREET` or
+  `LEGAL_CITY` therefore fails that build. Normal CI (`ci.yml`) builds without it. Tests: `web/tests/legal.spec.ts`.
 - Sections for features that are not live (anonymous sign-in, group sync, invite links, push via Firebase Cloud
   Messaging and APNs) are in `futurePrivacySections*` in `legal.ts` and are not rendered. TODO(owner): move them
   into the live text when sync/push ships, and re-check every sentence.

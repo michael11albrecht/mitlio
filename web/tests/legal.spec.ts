@@ -37,7 +37,9 @@ test.describe('placeholder gate', () => {
       for (const key of ['imprint', 'privacy'] as const) {
         const text = legalTexts[locale][key];
         expect(() => assertNoPlaceholders(text, 'https://mitlio.de')).toThrow(/placeholders/);
+        // Strict mode (set by web-deploy.yml) arms the gate on the stand-in origin that deploy publishes live.
         expect(() => assertNoPlaceholders(text, 'https://mitlio.web.app', true)).toThrow(/placeholders/);
+        expect(() => assertNoPlaceholders(fillAddress(text, {}), 'https://mitlio.web.app', true)).toThrow(/placeholders/);
         expect(() => assertNoPlaceholders(text, 'https://mitlio.web.app')).not.toThrow();
       }
     }
@@ -79,6 +81,7 @@ test.describe('retention numbers come from supabase/retention.json', () => {
   const days = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
   test('German text', () => {
+    expect(de).toContain(`höchstens etwa ${days(retention.rate_limits_days + 1, 'Tag', 'Tage')}`);
     expect(de).toContain(`älter als ${days(retention.rate_limits_days, 'Tag', 'Tage')}`);
     expect(de).toContain(`nach ${days(retention.sentry_days, 'Tag', 'Tagen')}`);
     expect(de).toContain(`höchstens ${days(retention.platform_logs_max_days, 'Tag', 'Tage')}`);
@@ -89,6 +92,7 @@ test.describe('retention numbers come from supabase/retention.json', () => {
   });
 
   test('English text', () => {
+    expect(en).toContain(`about ${days(retention.rate_limits_days + 1, 'day', 'days')} at most`);
     expect(en).toContain(`older than ${days(retention.rate_limits_days, 'day', 'days')}`);
     expect(en).toContain(`after ${days(retention.sentry_days, 'day', 'days')}`);
     expect(en).toContain(`${days(retention.platform_logs_max_days, 'day', 'days')} at most`);

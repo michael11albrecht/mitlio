@@ -6,6 +6,8 @@
 # LEGAL_STREET and LEGAL_CITY hold the operator's postal address for the Impressum / Datenschutzerklärung. They
 # are repo variables so the address never enters the (public) repository; if one is unset, the legal text keeps
 # its placeholder and the production build fails (docs/release.md, "Legal texts").
+# LEGAL_STRICT=1 arms that gate even while SITE_URL is unset (stand-in origin https://mitlio.web.app, which this
+# workflow deploys live): a missing LEGAL_STREET / LEGAL_CITY then fails the build instead of publishing placeholders.
 name: web-deploy
 on:
   pull_request:
@@ -44,6 +46,7 @@ jobs:
       ASTRO_TELEMETRY_DISABLED: "1"
       HAS_FIREBASE_SECRET: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
       SITE_URL: ${{ vars.SITE_URL }}
+      LEGAL_STRICT: "1"
       LEGAL_STREET: ${{ vars.LEGAL_STREET }}
       LEGAL_CITY: ${{ vars.LEGAL_CITY }}
       FUEL_API_URL: ${{ vars.FUEL_API_URL }}
