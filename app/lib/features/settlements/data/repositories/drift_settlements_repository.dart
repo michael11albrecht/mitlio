@@ -4,6 +4,7 @@ import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
+import 'package:mitlio/features/sync/data/outbox_writer.dart';
 import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [SettlementsRepository] backed by Drift. Values are rebuilt through
@@ -18,6 +19,11 @@ class DriftSettlementsRepository implements SettlementsRepository {
   final AppDatabase _db;
   final Clock _clock;
   final IdGenerator _ids;
+  late final OutboxWriter _outbox = OutboxWriter(
+    db: _db,
+    clock: _clock,
+    ids: _ids,
+  );
 
   Future<List<Member>> _members(String groupId) async => [
     for (final m in await _db.membersDao.listAllByGroup(groupId))
@@ -109,20 +115,23 @@ class DriftSettlementsRepository implements SettlementsRepository {
     if (built case Err<Settlement, RepositoryError>(:final error)) {
       return Err(error);
     }
-    await _db.settlementsDao.insertSettlement(
-      SettlementsCompanion.insert(
-        id: id,
-        groupId: groupId,
-        createdAt: _clock.now().toUtc(),
-        updatedAt: Hlc.now(_clock),
-        fromMember: draft.fromId,
-        toMember: draft.toId,
-        amountCents: draft.amountCents,
-        currency: draft.currency.code,
-        date: draft.date.toUtc(),
-        method: draft.method.name,
-      ),
-    );
+    await _db.transaction(() async {
+      await _db.settlementsDao.insertSettlement(
+        SettlementsCompanion.insert(
+          id: id,
+          groupId: groupId,
+          createdAt: _clock.now().toUtc(),
+          updatedAt: Hlc.now(_clock),
+          fromMember: draft.fromId,
+          toMember: draft.toId,
+          amountCents: draft.amountCents,
+          currency: draft.currency.code,
+          date: draft.date.toUtc(),
+          method: draft.method.name,
+        ),
+      );
+      await _outbox.enqueue(OutboxEntity.settlement, id);
+    });
     return _load(id);
   });
 
@@ -155,32 +164,43 @@ class DriftSettlementsRepository implements SettlementsRepository {
     if (built case Err<Settlement, RepositoryError>(:final error)) {
       return Err(error);
     }
-    await _db.settlementsDao.updateSettlement(
-      id: id,
-      amountCents: amountCents,
-      method: method.name,
-      date: date.toUtc(),
-      updatedAt: Hlc.now(_clock),
-    );
+    await _db.transaction(() async {
+      final ok = await _db.settlementsDao.updateSettlement(
+        id: id,
+        amountCents: amountCents,
+        method: method.name,
+        date: date.toUtc(),
+        updatedAt: Hlc.now(_clock),
+      );
+      if (ok) await _outbox.enqueue(OutboxEntity.settlement, id);
+    });
     return _load(id);
   });
 
   @override
   Future<RepoResult<Undo>> softDelete(String id) => guardStorage(() async {
-    final ok = await _db.settlementsDao.softDelete(
-      id: id,
-      deletedAt: _clock.now().toUtc(),
-      updatedAt: Hlc.now(_clock),
-    );
+    final ok = await _db.transaction(() async {
+      final ok = await _db.settlementsDao.softDelete(
+        id: id,
+        deletedAt: _clock.now().toUtc(),
+        updatedAt: Hlc.now(_clock),
+      );
+      if (ok) await _outbox.enqueue(OutboxEntity.settlement, id);
+      return ok;
+    });
     return ok ? Ok(Undo(() => restore(id))) : Err(NotFound('settlement', id));
   });
 
   @override
   Future<RepoResult<void>> restore(String id) => guardStorage(() async {
-    final ok = await _db.settlementsDao.restore(
-      id: id,
-      updatedAt: Hlc.now(_clock),
-    );
+    final ok = await _db.transaction(() async {
+      final ok = await _db.settlementsDao.restore(
+        id: id,
+        updatedAt: Hlc.now(_clock),
+      );
+      if (ok) await _outbox.enqueue(OutboxEntity.settlement, id);
+      return ok;
+    });
     if (ok) return const Ok(null);
     return await _db.settlementsDao.findById(id) != null
         ? const Err(Conflict('settlement is not deleted'))

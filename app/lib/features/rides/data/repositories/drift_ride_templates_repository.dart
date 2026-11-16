@@ -8,6 +8,7 @@ import 'package:mitlio/db/daos/rides_dao.dart';
 import 'package:mitlio/features/rides/data/repositories/drift_rides_refs.dart';
 import 'package:mitlio/features/rides/data/repositories/ride_templates_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_codec.dart';
+import 'package:mitlio/features/sync/data/outbox_writer.dart';
 import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [RideTemplatesRepository] backed by Drift.
@@ -23,6 +24,11 @@ class DriftRideTemplatesRepository implements RideTemplatesRepository {
   final RidesDao _dao;
   final Clock _clock;
   final IdGenerator _ids;
+  late final OutboxWriter _outbox = OutboxWriter(
+    db: _db,
+    clock: _clock,
+    ids: _ids,
+  );
 
   RepoResult<RideTemplate> _map(RideTemplateRow row) {
     final passengers = decodeIds(row.defaultPassengerIds);
@@ -79,21 +85,24 @@ class DriftRideTemplatesRepository implements RideTemplatesRepository {
       memberIds: _members(t),
     );
     if (missing != null) return Err(missing);
-    await _dao.insertTemplate(
-      RideTemplatesCompanion.insert(
-        id: id,
-        groupId: groupId,
-        createdAt: _clock.now().toUtc(),
-        updatedAt: Hlc.now(_clock),
-        name: t.name,
-        distanceMeters: t.distanceMeters,
-        vehicleId: t.vehicleId,
-        roundTrip: Value(t.roundTrip),
-        defaultDriverId: Value(t.defaultDriverId),
-        defaultPassengerIds: Value(encodeIds(t.defaultPassengerIds)),
-        tollsCents: Value(t.tollsCents),
-      ),
-    );
+    await _db.transaction(() async {
+      await _dao.insertTemplate(
+        RideTemplatesCompanion.insert(
+          id: id,
+          groupId: groupId,
+          createdAt: _clock.now().toUtc(),
+          updatedAt: Hlc.now(_clock),
+          name: t.name,
+          distanceMeters: t.distanceMeters,
+          vehicleId: t.vehicleId,
+          roundTrip: Value(t.roundTrip),
+          defaultDriverId: Value(t.defaultDriverId),
+          defaultPassengerIds: Value(encodeIds(t.defaultPassengerIds)),
+          tollsCents: Value(t.tollsCents),
+        ),
+      );
+      await _outbox.enqueue(OutboxEntity.rideTemplate, id);
+    });
     return get(id);
   });
 
@@ -114,29 +123,36 @@ class DriftRideTemplatesRepository implements RideTemplatesRepository {
           memberIds: _members(t),
         );
         if (missing != null) return Err(missing);
-        await _dao.updateTemplate(
-          t.id,
-          RideTemplatesCompanion(
-            name: Value(t.name),
-            distanceMeters: Value(t.distanceMeters),
-            vehicleId: Value(t.vehicleId),
-            roundTrip: Value(t.roundTrip),
-            defaultDriverId: Value(t.defaultDriverId),
-            defaultPassengerIds: Value(encodeIds(t.defaultPassengerIds)),
-            tollsCents: Value(t.tollsCents),
-            updatedAt: Value(Hlc.now(_clock)),
-          ),
-        );
+        await _db.transaction(() async {
+          final ok = await _dao.updateTemplate(
+            t.id,
+            RideTemplatesCompanion(
+              name: Value(t.name),
+              distanceMeters: Value(t.distanceMeters),
+              vehicleId: Value(t.vehicleId),
+              roundTrip: Value(t.roundTrip),
+              defaultDriverId: Value(t.defaultDriverId),
+              defaultPassengerIds: Value(encodeIds(t.defaultPassengerIds)),
+              tollsCents: Value(t.tollsCents),
+              updatedAt: Value(Hlc.now(_clock)),
+            ),
+          );
+          if (ok) await _outbox.enqueue(OutboxEntity.rideTemplate, t.id);
+        });
         return get(t.id);
       });
 
   @override
   Future<RepoResult<Undo>> softDelete(String id) => guardStorage(() async {
-    final ok = await _dao.softDeleteTemplate(
-      id,
-      _clock.now().toUtc(),
-      Hlc.now(_clock),
-    );
+    final ok = await _db.transaction(() async {
+      final ok = await _dao.softDeleteTemplate(
+        id,
+        _clock.now().toUtc(),
+        Hlc.now(_clock),
+      );
+      if (ok) await _outbox.enqueue(OutboxEntity.rideTemplate, id);
+      return ok;
+    });
     return ok
         ? Ok(Undo(() => restore(id)))
         : Err(NotFound('ride template', id));
@@ -144,9 +160,12 @@ class DriftRideTemplatesRepository implements RideTemplatesRepository {
 
   @override
   Future<RepoResult<void>> restore(String id) => guardStorage(() async {
-    if (await _dao.restoreTemplate(id, Hlc.now(_clock))) {
-      return const Ok(null);
-    }
+    final ok = await _db.transaction(() async {
+      final ok = await _dao.restoreTemplate(id, Hlc.now(_clock));
+      if (ok) await _outbox.enqueue(OutboxEntity.rideTemplate, id);
+      return ok;
+    });
+    if (ok) return const Ok(null);
     return await _dao.findTemplate(id) != null
         ? const Err(Conflict('ride template is not deleted'))
         : Err(NotFound('ride template', id));

@@ -6,6 +6,7 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/daos/rides_dao.dart';
 import 'package:mitlio/features/rides/data/repositories/vehicles_repository.dart';
+import 'package:mitlio/features/sync/data/outbox_writer.dart';
 import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [VehiclesRepository] backed by Drift.
@@ -21,6 +22,11 @@ class DriftVehiclesRepository implements VehiclesRepository {
   final RidesDao _dao;
   final Clock _clock;
   final IdGenerator _ids;
+  late final OutboxWriter _outbox = OutboxWriter(
+    db: _db,
+    clock: _clock,
+    ids: _ids,
+  );
 
   RepoResult<Vehicle> _map(VehicleRow row) {
     final fuel = FuelType.values.asNameMap()[row.fuelType];
@@ -75,19 +81,22 @@ class DriftVehiclesRepository implements VehiclesRepository {
       return Err(NotFound('group', groupId));
     }
     final v = built.orThrow();
-    await _dao.insertVehicle(
-      VehiclesCompanion.insert(
-        id: id,
-        groupId: groupId,
-        createdAt: _clock.now().toUtc(),
-        updatedAt: Hlc.now(_clock),
-        name: v.name,
-        fuelType: v.fuelType.name,
-        consumptionMilliPer100km: v.consumptionMilliPer100km,
-        wearMilliPerKm: Value(v.wearMilliPerKm),
-        kmRateMilliPerKm: Value(v.kmRateMilliPerKm),
-      ),
-    );
+    await _db.transaction(() async {
+      await _dao.insertVehicle(
+        VehiclesCompanion.insert(
+          id: id,
+          groupId: groupId,
+          createdAt: _clock.now().toUtc(),
+          updatedAt: Hlc.now(_clock),
+          name: v.name,
+          fuelType: v.fuelType.name,
+          consumptionMilliPer100km: v.consumptionMilliPer100km,
+          wearMilliPerKm: Value(v.wearMilliPerKm),
+          kmRateMilliPerKm: Value(v.kmRateMilliPerKm),
+        ),
+      );
+      await _outbox.enqueue(OutboxEntity.vehicle, id);
+    });
     return get(id);
   });
 
@@ -105,35 +114,46 @@ class DriftVehiclesRepository implements VehiclesRepository {
       return Err(error);
     }
     final v = built.orThrow();
-    final ok = await _dao.updateVehicle(
-      v.id,
-      VehiclesCompanion(
-        name: Value(v.name),
-        fuelType: Value(v.fuelType.name),
-        consumptionMilliPer100km: Value(v.consumptionMilliPer100km),
-        wearMilliPerKm: Value(v.wearMilliPerKm),
-        kmRateMilliPerKm: Value(v.kmRateMilliPerKm),
-        updatedAt: Value(Hlc.now(_clock)),
-      ),
-    );
+    final ok = await _db.transaction(() async {
+      final ok = await _dao.updateVehicle(
+        v.id,
+        VehiclesCompanion(
+          name: Value(v.name),
+          fuelType: Value(v.fuelType.name),
+          consumptionMilliPer100km: Value(v.consumptionMilliPer100km),
+          wearMilliPerKm: Value(v.wearMilliPerKm),
+          kmRateMilliPerKm: Value(v.kmRateMilliPerKm),
+          updatedAt: Value(Hlc.now(_clock)),
+        ),
+      );
+      if (ok) await _outbox.enqueue(OutboxEntity.vehicle, v.id);
+      return ok;
+    });
     return ok ? get(v.id) : Err(NotFound('vehicle', v.id));
   });
 
   @override
   Future<RepoResult<Undo>> softDelete(String id) => guardStorage(() async {
-    final ok = await _dao.softDeleteVehicle(
-      id,
-      _clock.now().toUtc(),
-      Hlc.now(_clock),
-    );
+    final ok = await _db.transaction(() async {
+      final ok = await _dao.softDeleteVehicle(
+        id,
+        _clock.now().toUtc(),
+        Hlc.now(_clock),
+      );
+      if (ok) await _outbox.enqueue(OutboxEntity.vehicle, id);
+      return ok;
+    });
     return ok ? Ok(Undo(() => restore(id))) : Err(NotFound('vehicle', id));
   });
 
   @override
   Future<RepoResult<void>> restore(String id) => guardStorage(() async {
-    if (await _dao.restoreVehicle(id, Hlc.now(_clock))) {
-      return const Ok(null);
-    }
+    final ok = await _db.transaction(() async {
+      final ok = await _dao.restoreVehicle(id, Hlc.now(_clock));
+      if (ok) await _outbox.enqueue(OutboxEntity.vehicle, id);
+      return ok;
+    });
+    if (ok) return const Ok(null);
     return await _dao.findVehicle(id) != null
         ? const Err(Conflict('vehicle is not deleted'))
         : Err(NotFound('vehicle', id));

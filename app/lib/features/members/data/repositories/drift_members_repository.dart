@@ -5,6 +5,7 @@ import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
+import 'package:mitlio/features/sync/data/outbox_writer.dart';
 import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [MembersRepository] backed by Drift.
@@ -18,6 +19,11 @@ class DriftMembersRepository implements MembersRepository {
   final AppDatabase _db;
   final Clock _clock;
   final IdGenerator _ids;
+  late final OutboxWriter _outbox = OutboxWriter(
+    db: _db,
+    clock: _clock,
+    ids: _ids,
+  );
 
   static GroupMember _map(MemberRow r) => GroupMember(
     id: r.id,
@@ -67,18 +73,21 @@ class DriftMembersRepository implements MembersRepository {
     final existing = await _db.membersDao.listAllByGroup(groupId);
     final position = existing.isEmpty ? 0 : existing.last.position + 1;
     final id = _ids.newId();
-    await _db.membersDao.insertMember(
-      MembersCompanion.insert(
-        id: id,
-        groupId: groupId,
-        createdAt: _clock.now().toUtc(),
-        updatedAt: Hlc.now(_clock),
-        name: trimmed,
-        position: position,
-        paypalMe: Value(paypalMe),
-        ibanHint: Value(ibanHint),
-      ),
-    );
+    await _db.transaction(() async {
+      await _db.membersDao.insertMember(
+        MembersCompanion.insert(
+          id: id,
+          groupId: groupId,
+          createdAt: _clock.now().toUtc(),
+          updatedAt: Hlc.now(_clock),
+          name: trimmed,
+          position: position,
+          paypalMe: Value(paypalMe),
+          ibanHint: Value(ibanHint),
+        ),
+      );
+      await _outbox.enqueue(OutboxEntity.member, id);
+    });
     return _get(id);
   });
 
@@ -95,14 +104,17 @@ class DriftMembersRepository implements MembersRepository {
     }
     final current = await _db.membersDao.findById(id);
     if (current == null) return Err(NotFound('member', id));
-    await _db.membersDao.updateMember(
-      id: id,
-      name: trimmed,
-      position: current.position,
-      paypalMe: paypalMe,
-      ibanHint: ibanHint,
-      updatedAt: Hlc.now(_clock),
-    );
+    await _db.transaction(() async {
+      await _db.membersDao.updateMember(
+        id: id,
+        name: trimmed,
+        position: current.position,
+        paypalMe: paypalMe,
+        ibanHint: ibanHint,
+        updatedAt: Hlc.now(_clock),
+      );
+      await _outbox.enqueue(OutboxEntity.member, id);
+    });
     return _get(id);
   });
 
@@ -111,11 +123,15 @@ class DriftMembersRepository implements MembersRepository {
     String id, {
     required bool canDrive,
   }) => guardStorage(() async {
-    final changed = await _db.membersDao.setCanDrive(
-      id: id,
-      canDrive: canDrive,
-      updatedAt: Hlc.now(_clock),
-    );
+    final changed = await _db.transaction(() async {
+      final changed = await _db.membersDao.setCanDrive(
+        id: id,
+        canDrive: canDrive,
+        updatedAt: Hlc.now(_clock),
+      );
+      if (changed) await _outbox.enqueue(OutboxEntity.member, id);
+      return changed;
+    });
     return changed ? _get(id) : Err(NotFound('member', id));
   });
 
@@ -150,6 +166,7 @@ class DriftMembersRepository implements MembersRepository {
               position: positions[i],
               updatedAt: Hlc.now(_clock),
             );
+            await _outbox.enqueue(OutboxEntity.member, orderedIds[i]);
           }
         });
         return const Ok(null);
@@ -157,17 +174,28 @@ class DriftMembersRepository implements MembersRepository {
 
   @override
   Future<RepoResult<Undo>> softDelete(String id) => guardStorage(() async {
-    final ok = await _db.membersDao.softDelete(
-      id: id,
-      deletedAt: _clock.now().toUtc(),
-      updatedAt: Hlc.now(_clock),
-    );
+    final ok = await _db.transaction(() async {
+      final ok = await _db.membersDao.softDelete(
+        id: id,
+        deletedAt: _clock.now().toUtc(),
+        updatedAt: Hlc.now(_clock),
+      );
+      if (ok) await _outbox.enqueue(OutboxEntity.member, id);
+      return ok;
+    });
     return ok ? Ok(Undo(() => restore(id))) : Err(NotFound('member', id));
   });
 
   @override
   Future<RepoResult<void>> restore(String id) => guardStorage(() async {
-    final ok = await _db.membersDao.restore(id: id, updatedAt: Hlc.now(_clock));
+    final ok = await _db.transaction(() async {
+      final ok = await _db.membersDao.restore(
+        id: id,
+        updatedAt: Hlc.now(_clock),
+      );
+      if (ok) await _outbox.enqueue(OutboxEntity.member, id);
+      return ok;
+    });
     if (ok) return const Ok(null);
     return await _db.membersDao.findById(id) != null
         ? const Err(Conflict('member is not deleted'))

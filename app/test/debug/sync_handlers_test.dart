@@ -69,5 +69,47 @@ void main() {
 
   test('a missing groupId is invalid_params', () async {
     expect((await h['sync.state']!({}))['error'], 'invalid_params');
+    expect((await h['sync.outbox']!({}))['error'], 'invalid_params');
+  });
+
+  test('outbox lists pending ops in queue order without payloads', () async {
+    expect(await h['sync.outbox']!({'groupId': 'g1'}), {
+      'groupId': 'g1',
+      'ops': <Object?>[],
+    });
+    for (final (i, e) in ['m1', 'e1'].indexed) {
+      await db
+          .into(db.localOutbox)
+          .insert(
+            LocalOutboxCompanion.insert(
+              opId: 'op$i',
+              groupId: 'g1',
+              entity: i == 0 ? 'members' : 'expenses',
+              entityId: e,
+              op: 'upsert',
+              payload: '{"secret":1}',
+              createdAt: DateTime.utc(2026, 3),
+            ),
+          );
+    }
+    final r = await h['sync.outbox']!({'groupId': 'g1'});
+    expect(r['ops'], [
+      {
+        'entity': 'members',
+        'id': 'm1',
+        'opId': 'op0',
+        'op': 'upsert',
+        'attempts': 0,
+        'lastErrorCode': null,
+      },
+      {
+        'entity': 'expenses',
+        'id': 'e1',
+        'opId': 'op1',
+        'op': 'upsert',
+        'attempts': 0,
+        'lastErrorCode': null,
+      },
+    ]);
   });
 }

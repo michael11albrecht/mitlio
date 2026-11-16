@@ -75,7 +75,12 @@ Future<Repos> driftRepos() async {
       clock: clock,
       ids: ids,
     ),
-    rides: DriftRidesRepository(db: db, clock: clock, expenses: expenses),
+    rides: DriftRidesRepository(
+      db: db,
+      clock: clock,
+      ids: ids,
+      expenses: expenses,
+    ),
     clock: clock,
     db: db,
   );
