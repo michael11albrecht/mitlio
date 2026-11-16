@@ -5,7 +5,7 @@ import {
   type ContactConfig,
   corsHeaders,
   type Deps,
-  GLOBAL_KEY,
+  GLOBAL_ID,
   handleContact,
   isHoneypot,
   mapProviderStatus,
@@ -14,6 +14,10 @@ import {
   retryAfterSeconds,
   validateContact,
 } from "./contact.ts";
+import { hashClient } from "./fuel.ts";
+
+// Same salt as ENV below; the global bucket key is hashed like the per-client one.
+const GLOBAL_KEY = await hashClient(GLOBAL_ID, "salt");
 
 const valid = {
   name: "Mia",
@@ -161,6 +165,8 @@ function harness(
         return Promise.resolve((opts.provider ?? (() => Response.json({ id: "1" })))());
       },
       takeToken: (key, capacity, refill) => {
+        // rate_limits.key_hash is checked to be 16..128 chars (migration 0005): a short key fails in the RPC.
+        assertEquals(key.length >= 16 && key.length <= 128, true, `bad key length: ${key.length}`);
         h.keys.push({ key, capacity, refill });
         if (opts.limiterThrows) return Promise.reject(new Error("db down"));
         if (key === GLOBAL_KEY) return Promise.resolve(opts.globalAllowed ?? true);
@@ -195,7 +201,8 @@ Deno.test("handler: success sends one mail through Resend", async () => {
   assertEquals(/^[0-9a-f]{64}$/.test(h.keys[0].key), true);
   assertEquals(h.keys[0].capacity, 5);
   assertEquals(h.keys[0].refill, 5 / 3600);
-  // Global cap: fixed key (no client data), 50 per day.
+  // Global cap: salted hash of a fixed id (no client data), 50 per day.
+  assertEquals(h.keys[1].key.length, 64);
   assertEquals(h.keys[1], { key: GLOBAL_KEY, capacity: 50, refill: 50 / 86400 });
 });
 
@@ -353,4 +360,12 @@ Deno.test("handler: limiter failure logs a fixed line", async () => {
   const h = harness({ limiterThrows: true });
   await handleContact(post(valid), h.deps);
   assertEquals(h.logs, ["contact rate limiter failed"]);
+});
+
+Deno.test("every key passed to takeToken fits rate_limits.key_hash (16..128 chars)", async () => {
+  const h = harness();
+  await handleContact(post(valid), h.deps);
+  assertEquals(h.keys.length, 2);
+  for (const k of h.keys) assertEquals(/^[0-9a-f]{64}$/.test(k.key), true);
+  assertEquals(h.keys[0].key === h.keys[1].key, false);
 });

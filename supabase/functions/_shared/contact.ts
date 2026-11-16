@@ -12,8 +12,11 @@ export const SUBJECT_PREFIX = "mitlio Kontakt: ";
 export const SUBJECT_EXCERPT = 60;
 export const DEFAULT_PER_HOUR = 5;
 export const DEFAULT_GLOBAL_PER_DAY = 50;
-/** Fixed bucket key for the all-clients daily cap; holds no client data. */
-export const GLOBAL_KEY = "contact:global";
+/**
+ * Fixed id of the all-clients daily cap; holds no client data. Like the per-client key it is sent as a salted
+ * sha256 hex (64 chars): rate_limits.key_hash is checked to be 16..128 chars, a raw short id fails in the RPC.
+ */
+export const GLOBAL_ID = "contact:global";
 const SEND_TIMEOUT_MS = 8000;
 
 export type Locale = "de" | "en";
@@ -228,10 +231,11 @@ export async function handleContact(req: Request, deps: Deps): Promise<Response>
       env("SUPABASE_SERVICE_ROLE_KEY");
     // A separate prefix keeps this bucket apart from the fuel-prices bucket of the same client.
     const key = await hashClient(`contact|${clientIp(req.headers)}`, salt);
+    const globalKey = await hashClient(GLOBAL_ID, salt);
     allowed = await deps.takeToken(key, perHour, perHour / 3600);
     // Daily cap over all clients, so rotating IPs cannot burn the provider quota or flood the inbox.
     // Only checked once the client's own limit passed: a refused client does not use up the global cap.
-    if (allowed) globalAllowed = await deps.takeToken(GLOBAL_KEY, perDay, perDay / 86400);
+    if (allowed) globalAllowed = await deps.takeToken(globalKey, perDay, perDay / 86400);
   } catch {
     // Without a working limiter a mail endpoint must stay closed. No detail: errors may carry request data.
     deps.log("contact rate limiter failed");
