@@ -14,6 +14,7 @@ class DbColumn {
 
 /// Table names of the server schema (`public`).
 abstract final class DbTables {
+  static const appConfig = 'app_config';
   static const expensePayers = 'expense_payers';
   static const expenseRevisions = 'expense_revisions';
   static const expenseShares = 'expense_shares';
@@ -30,6 +31,14 @@ abstract final class DbTables {
   static const rides = 'rides';
   static const settlements = 'settlements';
   static const vehicles = 'vehicles';
+}
+
+/// Column names of `app_config`.
+abstract final class DbAppConfigCols {
+  static const minSupportedVersion = 'min_supported_version';
+  static const platform = 'platform';
+  static const storeUrl = 'store_url';
+  static const updatedAt = 'updated_at';
 }
 
 /// Column names of `expense_payers`.
@@ -239,6 +248,12 @@ abstract final class DbVehiclesCols {
 
 /// Server schema: table -> column -> type.
 const dbContract = <String, Map<String, DbColumn>>{
+  'app_config': {
+    'min_supported_version': DbColumn(DbColumnType.string, nullable: false),
+    'platform': DbColumn(DbColumnType.string, nullable: false),
+    'store_url': DbColumn(DbColumnType.string, nullable: true),
+    'updated_at': DbColumn(DbColumnType.string, nullable: false),
+  },
   'expense_payers': {
     'expense_id': DbColumn(DbColumnType.string, nullable: false),
     'group_id': DbColumn(DbColumnType.string, nullable: false),
