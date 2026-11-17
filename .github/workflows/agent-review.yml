@@ -42,6 +42,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
+          REVIEWER_MODEL_SMALL: ${{ vars.REVIEWER_MODEL_SMALL || 'claude-haiku-5-5' }}
+          SMALL_LINES: ${{ vars.REVIEW_SMALL_LINES || 80 }}
+          SKIP_LINES: ${{ vars.REVIEW_SKIP_LINES || 15 }}
         run: |
           number=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/pulls" --jq '[.[] | select(.state=="open")][0].number // empty')
           if [ -z "$number" ]; then echo "no open PR for ${HEAD_SHA}"; echo "ok=false" >> "$GITHUB_OUTPUT"; exit 0; fi
@@ -53,8 +57,74 @@ jobs:
           [ "$oid" != "$HEAD_SHA" ] && ok=false    # stale CI run, a newer commit is coming
           case "$HEAD_BRANCH" in agent/*) ;; *) case ",$labels," in *,agent-review,*) ;; *) ok=false ;; esac ;; esac
           echo "number=${number}" >> "$GITHUB_OUTPUT"
-          echo "ok=${ok}" >> "$GITHUB_OUTPUT"
 
+          # Cost savers (docs/claude-auth.md): skip docs-only PRs, skip small increments after an approved
+          # review, and pick the model by diff size. Sensitive paths always get the full model.
+          model="${REVIEWER_MODEL:-claude-sonnet-5-5}"
+          turns=12
+          sensitive='^(\.github/|supabase/|packages/domain/|tool/|\.claude/|CLAUDE\.md$|CODEOWNERS$|analysis_options\.yaml$|lefthook\.yml$)'
+          if [ "$ok" = true ]; then
+            files=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${number}/files" --jq '.[] | [.filename, .changes] | @tsv')
+            lines=$(printf '%s\n' "$files" | awk -F'\t' '{n += $2} END {print n + 0}')
+            names=$(printf '%s\n' "$files" | cut -f1)
+            has_sensitive=false
+            printf '%s\n' "$names" | grep -Eq "$sensitive" && has_sensitive=true
+            code=$(printf '%s\n' "$names" | grep -Ev '^(docs/|reports/)|\.md$' || true)
+            if [ "$has_sensitive" = false ] && [ -z "$code" ]; then
+              reason="docs-only PR, no review needed"
+              ok=false
+            fi
+            if [ "$ok" = true ]; then
+              prev=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${number}/reviews" --jq '.[] | select(.user.login=="github-actions[bot]") | .commit_id' | tail -1)
+              if [ -n "$prev" ] && [ "$prev" != "$HEAD_SHA" ]; then
+                prevstate=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${prev}/statuses" --jq '[.[] | select(.context=="agent-review")][0].state // empty' || true)
+                delta=$(gh api "repos/${GITHUB_REPOSITORY}/compare/${prev}...${HEAD_SHA}" --jq '[.files[].changes] | add // 0' || echo 999999)
+                dsens=$(gh api "repos/${GITHUB_REPOSITORY}/compare/${prev}...${HEAD_SHA}" --jq '.files[].filename' | grep -Ec "$sensitive" || true)
+                if [ "$prevstate" = success ] && [ "$delta" -le "$SKIP_LINES" ] && [ "${dsens:-0}" -eq 0 ]; then
+                  reason="small increment (${delta} lines) after an approved review"
+                  ok=false
+                fi
+              fi
+            fi
+            if [ -n "${reason:-}" ]; then
+              echo "Review skipped: ${reason}" | tee -a "$GITHUB_STEP_SUMMARY"
+              gh api "repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state=success -f context=agent-review -f "description=skipped: ${reason}" > /dev/null
+            elif [ -z "$REVIEWER_MODEL" ] && [ "$has_sensitive" = false ] && [ "$lines" -le "$SMALL_LINES" ]; then
+              model="$REVIEWER_MODEL_SMALL"
+              turns=8
+            fi
+            echo "diff: ${lines} lines, sensitive=${has_sensitive}, model=${model}, max-turns=${turns}" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          {
+            echo "ok=${ok}"
+            echo "model=${model}"
+            echo "turns=${turns}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Check Claude credentials
+        if: steps.pr.outputs.ok == 'true'
+        env:
+          CLAUDE_AUTH: ${{ vars.CLAUDE_AUTH }}
+          HAS_API_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+          HAS_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' }}
+        run: |
+          case "$CLAUDE_AUTH" in
+            api)
+              if [ "$HAS_API_KEY" != true ]; then
+                echo "::error::CLAUDE_AUTH=api but the ANTHROPIC_API_KEY secret is empty. Add it (Settings > Secrets and variables > Actions) or switch back with: gh variable delete CLAUDE_AUTH"
+                exit 1
+              fi
+              echo "Claude auth: API key (billed per token on the Console workspace)" ;;
+            ""|oauth)
+              if [ "$HAS_OAUTH_TOKEN" != true ]; then
+                echo "::error::CLAUDE_AUTH is not 'api' but the CLAUDE_CODE_OAUTH_TOKEN secret is empty. Create one with 'claude setup-token' or switch with: gh variable set CLAUDE_AUTH --body api"
+                exit 1
+              fi
+              echo "Claude auth: subscription OAuth token" ;;
+            *)
+              echo "::error::CLAUDE_AUTH='$CLAUDE_AUTH' is invalid. Use 'api' or 'oauth' (or delete the variable)."
+              exit 1 ;;
+          esac
       - uses: actions/checkout@v4
         if: steps.pr.outputs.ok == 'true'
         with:
@@ -62,9 +132,13 @@ jobs:
           fetch-depth: 0
 
       - uses: anthropics/claude-code-action@v1
+        id: claude
         if: steps.pr.outputs.ok == 'true'
         with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # CLAUDE_AUTH=api -> Console API key (per token); unset/oauth -> subscription token.
+          # The unused credential is blanked so the action never sees both (docs/claude-auth.md).
+          anthropic_api_key: ${{ vars.CLAUDE_AUTH == 'api' && secrets.ANTHROPIC_API_KEY || '' }}
+          claude_code_oauth_token: ${{ vars.CLAUDE_AUTH != 'api' && secrets.CLAUDE_CODE_OAUTH_TOKEN || '' }}
           # Full Claude output only on "Re-run with debug logging" (logs are public).
           show_full_output: ${{ runner.debug == '1' }}
           # PRs are opened by the implementer App; the action refuses bot-triggered runs otherwise.
@@ -74,8 +148,8 @@ jobs:
           github_token: ${{ github.token }}
           # Read-only code tools + gh for posting the review/status. No Edit/Write.
           claude_args: |
-            --max-turns 20
-            --model ${{ vars.REVIEWER_MODEL || 'claude-sonnet-5-5' }}
+            --max-turns ${{ steps.pr.outputs.turns }}
+            --model ${{ steps.pr.outputs.model }}
             --allowedTools "Read,Glob,Grep,Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(gh pr view:*),Bash(gh issue view:*),Bash(gh pr diff:*),Bash(gh pr review:*),Bash(gh pr comment:*),Bash(gh api:*)"
           prompt: |
             You are the REVIEWER for PR #${{ steps.pr.outputs.number }} in ${{ github.repository }} (head ${{ github.event.workflow_run.head_sha }}).
@@ -107,3 +181,17 @@ jobs:
             If the PR body says `Closes #N`, read that issue (`gh issue view N`): paths it explicitly authorizes are not "critical without the issue asking for it". Local orchestrated runs without an issue need the owner.
             Finally set the verdict status:
             `gh api repos/${{ github.repository }}/statuses/${{ github.event.workflow_run.head_sha }} -f state=<success|failure> -f context=agent-review -f description="<approve|request-changes>"`.
+
+      # Records cost per run in the job summary. Inline (not a local action) so PR code is never executed here.
+      - name: Cost summary
+        if: always() && steps.claude.outcome != 'skipped'
+        env:
+          EXEC_FILE: ${{ steps.claude.outputs.execution_file }}
+          LABEL: review (${{ steps.pr.outputs.model }})
+        run: |
+          if [ -z "$EXEC_FILE" ] || [ ! -f "$EXEC_FILE" ]; then
+            echo "::warning::No execution file from the action, cost not recorded for this run."
+            exit 0
+          fi
+          jq -r --arg l "$LABEL" '(if type=="array" then . else [.] end) | map(select(.type=="result")) | last | "**\($l)**: $\(.total_cost_usd // "?") over \(.num_turns // "?") turns"' "$EXEC_FILE" | tee -a "$GITHUB_STEP_SUMMARY" \
+            || echo "::warning::Could not read the cost from the execution file."
