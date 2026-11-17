@@ -66,7 +66,7 @@ configured backend the page shows only the e-mail address and sends nothing.
 
 | What the browser contacts | What is sent | What the recipient can see |
 |---|---|---|
-| our Supabase `contact` Edge Function (POST, JSON body) | the text the user typed: optional name, e-mail address, message, page language | the function forwards it as one e-mail through Resend (EU region, sending domain mitlio.de) to our mailbox; Resend sees the mail and processes it as our processor (DPA to sign); the browser's IP address is seen by Supabase as for any request |
+| our Supabase `contact` Edge Function (POST, JSON body) | the text the user typed: optional name, e-mail address, message, page language | the function forwards it as one e-mail through Resend (sent from Resend's Ireland region, sending domain mitlio.de; Resend stores account data, mail metadata and logs in the US, see "Providers" above) to our mailbox; Resend sees the mail and processes it as our processor (DPA to sign); the browser's IP address is seen by Supabase as for any request |
 
 Notes for the policy text:
 
