@@ -3,6 +3,22 @@
 Plain-language list of what leaves the device and where it goes. The owner writes the privacy policy
 (P7-T07); see also `docs/data-deletion.md`. Keep this file current when a flow is added.
 
+How long each kind of data is kept: `docs/retention.md` (periods in `supabase/retention.json`).
+
+## Providers (legal entity and transfer basis, as stated in the privacy text)
+
+Checked against the providers' own pages on 2026-11-17; re-check when a provider changes its terms.
+
+| Provider | Entity named in the text | Role | Transfer basis (per provider) |
+|---|---|---|---|
+| Supabase | Supabase Pte. Ltd., Singapore (DPA preamble) | processor, server in eu-central-1 | EU SCCs (DPA clause 12; no DPF) |
+| Firebase Hosting | Google Ireland Limited (see "unverified" in PR #182) | processor | EU-US DPF (Google LLC certified), SCCs as fallback (Firebase DP terms). Google documents IP addresses for Hosting, kept "a few months" |
+| Sentry | Functional Software, Inc. | processor, opt-in crash reports | DPF + SCCs fallback (DPA schedule 3). Event data at rest in Frankfurt when the EU region is chosen; accounts, tokens, support data in the US |
+| Resend | Plus Five Five, Inc. (d/b/a Resend) | processor, contact form mail | DPF + EU SCCs (DPA). The "Ireland" region only selects where mail is sent from; Resend stores account data, mail metadata and logs in the US |
+| Tankerkönig | Tankerkönig UG (haftungsbeschränkt), Nesselwang | independent source | none: only a rounded geohash point arrives, no personal data |
+| EU Commission, Frankfurter | n/a | no personal data except the IP address on the direct Weekly Oil Bulletin download | n/a |
+| Apple App Store, Google Play | Apple / Google | independent controllers for store accounts and downloads | their own policies; we receive no personal data |
+
 ## Fuel prices (chips in the ride and trip form)
 
 | Case | What the device contacts | What is sent | What the recipient can see |
@@ -50,7 +66,7 @@ configured backend the page shows only the e-mail address and sends nothing.
 
 | What the browser contacts | What is sent | What the recipient can see |
 |---|---|---|
-| our Supabase `contact` Edge Function (POST, JSON body) | the text the user typed: optional name, e-mail address, message, page language | the function forwards it as one e-mail through Resend (EU region, sending domain mitlio.de) to our mailbox; Resend sees the mail and processes it as our processor (DPA to sign); the browser's IP address is seen by Supabase as for any request |
+| our Supabase `contact` Edge Function (POST, JSON body) | the text the user typed: optional name, e-mail address, message, page language | the function forwards it as one e-mail through Resend (sent from Resend's Ireland region, sending domain mitlio.de; Resend stores account data, mail metadata and logs in the US, see "Providers" above) to our mailbox; Resend sees the mail and processes it as our processor (DPA to sign); the browser's IP address is seen by Supabase as for any request |
 
 Notes for the policy text:
 

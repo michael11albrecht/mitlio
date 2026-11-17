@@ -2,15 +2,14 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 import { futurePrivacySectionsDe, futurePrivacySectionsEn, legalTexts } from '../src/i18n/legal';
-import { assertNoPlaceholders, findPlaceholders, isProductionSite } from '../src/lib/legal';
+import { assertNoPlaceholders, fillAddress, findPlaceholders, isProductionSite } from '../src/lib/legal';
+import retention from '../../supabase/retention.json' with { type: 'json' };
 
-// Release blockers: the owner fills these in src/i18n/legal.ts (docs/release.md, "Legal texts").
-const EXPECTED_PLACEHOLDERS = [
-  '[[STRASSE HAUSNUMMER]]',
-  '[[PLZ ORT]]',
-  '[[E-MAIL]]',
-  '[[ZUSTÄNDIGE LANDESBEHÖRDE FÜR DEN DATENSCHUTZ]]',
-];
+// Release blockers: filled at build time from LEGAL_STREET / LEGAL_CITY (docs/release.md, "Legal texts").
+const EXPECTED_PLACEHOLDERS = ['[[STRASSE HAUSNUMMER]]', '[[PLZ ORT]]'];
+const ALL_TEXTS = (['de', 'en'] as const).flatMap((l) => (['imprint', 'privacy'] as const).map((k) => legalTexts[l][k]));
+const flat = (t: (typeof ALL_TEXTS)[number]): string =>
+  t.sections.flatMap((s) => [s.heading, ...(s.paragraphs ?? []), ...(s.items ?? [])]).join('\n');
 
 test.describe('placeholder gate', () => {
   test('lists exactly the known placeholders, in every text', () => {
@@ -38,7 +37,9 @@ test.describe('placeholder gate', () => {
       for (const key of ['imprint', 'privacy'] as const) {
         const text = legalTexts[locale][key];
         expect(() => assertNoPlaceholders(text, 'https://mitlio.de')).toThrow(/placeholders/);
+        // Strict mode (set by web-deploy.yml) arms the gate on the stand-in origin that deploy publishes live.
         expect(() => assertNoPlaceholders(text, 'https://mitlio.web.app', true)).toThrow(/placeholders/);
+        expect(() => assertNoPlaceholders(fillAddress(text, {}), 'https://mitlio.web.app', true)).toThrow(/placeholders/);
         expect(() => assertNoPlaceholders(text, 'https://mitlio.web.app')).not.toThrow();
       }
     }
@@ -47,6 +48,124 @@ test.describe('placeholder gate', () => {
   test('passes once every placeholder is filled', () => {
     const filled = { sections: [{ heading: 'A', paragraphs: ['Musterstraße 1'] }] };
     expect(() => assertNoPlaceholders(filled, 'https://mitlio.de')).not.toThrow();
+  });
+});
+
+test.describe('address from the build environment', () => {
+  const env = { LEGAL_STREET: 'Teststraße 1', LEGAL_CITY: '12345 Teststadt' };
+
+  test('fills both placeholders in every text', () => {
+    for (const t of ALL_TEXTS) {
+      const filled = fillAddress(t, env);
+      expect(findPlaceholders(filled)).toEqual([]);
+      expect(() => assertNoPlaceholders(filled, 'https://mitlio.de')).not.toThrow();
+    }
+    expect(flat(fillAddress(legalTexts.de.imprint, env))).toContain('Teststraße 1');
+    expect(flat(fillAddress(legalTexts.en.privacy, env))).toContain('12345 Teststadt');
+  });
+
+  test('a missing or blank variable keeps the placeholder, so the production build still fails', () => {
+    for (const t of ALL_TEXTS) {
+      expect(findPlaceholders(fillAddress(t, {}))).toEqual(findPlaceholders(t));
+      const onlyStreet = fillAddress(t, { LEGAL_STREET: 'Teststraße 1', LEGAL_CITY: '   ' });
+      expect(findPlaceholders(onlyStreet)).toEqual(['[[PLZ ORT]]']);
+      expect(() => assertNoPlaceholders(onlyStreet, 'https://mitlio.de')).toThrow(/PLZ ORT/);
+    }
+    expect(() => assertNoPlaceholders(fillAddress(legalTexts.de.imprint, {}), 'https://mitlio.de')).toThrow();
+  });
+});
+
+test.describe('retention numbers come from supabase/retention.json', () => {
+  const de = flat(legalTexts.de.privacy) + flat({ sections: futurePrivacySectionsDe });
+  const en = flat(legalTexts.en.privacy) + flat({ sections: futurePrivacySectionsEn });
+  const days = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+  test('German text', () => {
+    expect(de).toContain(`höchstens etwa ${days(retention.rate_limits_days + 1, 'Tag', 'Tage')}`);
+    expect(de).toContain(`älter als ${days(retention.rate_limits_days, 'Tag', 'Tage')}`);
+    expect(de).toContain(`nach ${days(retention.sentry_days, 'Tag', 'Tagen')}`);
+    expect(de).toContain(`höchstens ${days(retention.platform_logs_max_days, 'Tag', 'Tage')}`);
+    expect(de).toContain(`${retention.email_months} Monate nach der letzten Nachricht`);
+    expect(de).toContain(`${retention.privacy_request_years} Jahre`);
+    expect(de).toContain(`nach ${retention.join_audit_days} Tagen`);
+    expect(de).toContain(`${retention.expired_invites_days_after_expiry} Tagen nach Ablauf`);
+  });
+
+  test('English text', () => {
+    expect(en).toContain(`about ${days(retention.rate_limits_days + 1, 'day', 'days')} at most`);
+    expect(en).toContain(`older than ${days(retention.rate_limits_days, 'day', 'days')}`);
+    expect(en).toContain(`after ${days(retention.sentry_days, 'day', 'days')}`);
+    expect(en).toContain(`${days(retention.platform_logs_max_days, 'day', 'days')} at most`);
+    expect(en).toContain(`${retention.email_months} months after the last message`);
+    expect(en).toContain(`${retention.privacy_request_years} years`);
+    expect(en).toContain(`after ${retention.join_audit_days} days`);
+    expect(en).toContain(`${retention.expired_invites_days_after_expiry} days after they expire`);
+  });
+
+  test('join audit and invites only appear in the not-yet-live sections', () => {
+    for (const t of [legalTexts.de.privacy, legalTexts.en.privacy]) {
+      expect(flat(t)).not.toMatch(new RegExp(`${retention.join_audit_days} (Tagen|days)`));
+    }
+  });
+});
+
+test.describe('contacts and authority', () => {
+  test('imprint, controller, contact form and BayLDA', () => {
+    expect(flat(legalTexts.de.imprint)).toContain('contact@mitlio.de');
+    expect(flat(legalTexts.de.imprint)).toContain('mitlio.de/kontakt/');
+    expect(flat(legalTexts.en.imprint)).toContain('contact@mitlio.de');
+    expect(flat(legalTexts.en.imprint)).toContain('mitlio.de/en/contact/');
+    for (const t of [legalTexts.de.privacy, legalTexts.en.privacy]) {
+      expect(flat(t)).toContain('privacy@mitlio.de');
+      expect(flat(t)).toContain('BayLDA');
+      expect(flat(t)).toContain('Promenade 18, 91522 Ansbach');
+      expect(flat(t)).toContain('Resend');
+    }
+  });
+});
+
+test.describe('structure and DE/EN parity', () => {
+  const shape = (t: (typeof ALL_TEXTS)[number]) =>
+    t.sections.map((s) => [(s as { emphasis?: boolean }).emphasis === true, s.paragraphs?.length ?? 0, s.items?.length ?? 0]);
+
+  test('DE and EN have the same sections, paragraph counts and emphasis flags', () => {
+    for (const key of ['imprint', 'privacy'] as const) {
+      expect(shape(legalTexts.en[key]), key).toEqual(shape(legalTexts.de[key]));
+    }
+    expect(futurePrivacySectionsEn.length).toBe(futurePrivacySectionsDe.length);
+  });
+
+  test('the right to object is its own emphasised section, with Art. 6(1)(f) and no marketing', () => {
+    for (const [locale, heading, f, marketing] of [
+      ['de', 'Widerspruchsrecht (Art. 21 DSGVO)', 'Art. 6 Abs. 1 lit. f DSGVO', 'keine Direktwerbung'],
+      ['en', 'Right to object (Art. 21 GDPR)', 'Art. 6(1)(f) GDPR', 'no direct marketing'],
+    ] as const) {
+      const sections = legalTexts[locale].privacy.sections;
+      const emphasised = sections.filter((s) => (s as { emphasis?: boolean }).emphasis);
+      expect(emphasised.map((s) => s.heading)).toEqual([heading]);
+      const text = flat({ sections: emphasised });
+      expect(text).toContain(f);
+      expect(text).toContain(marketing);
+      expect(text).toContain('privacy@mitlio.de');
+    }
+  });
+
+  test('every provider is named by legal entity, with its transfer basis', () => {
+    for (const locale of ['de', 'en'] as const) {
+      const t = flat(legalTexts[locale].privacy);
+      for (const entity of [
+        'Google Ireland Limited',
+        'Functional Software, Inc.',
+        'Plus Five Five, Inc.',
+        'Supabase Pte. Ltd.',
+        'Tankerkönig UG (haftungsbeschränkt)',
+        'Data Privacy Framework',
+      ]) {
+        expect(t, `${locale}: ${entity}`).toContain(entity);
+      }
+      expect(t).toContain('HTTPS/TLS');
+      expect(t).toContain('Art. 22');
+    }
   });
 });
 
@@ -81,6 +200,21 @@ test.describe('legal pages', () => {
       for (const s of future) for (const p of s.paragraphs ?? []) expect(body).not.toContain(p);
       expect(body).not.toContain('Firebase Cloud Messaging');
     }
+  });
+
+  test('the right to object is rendered as a highlighted box', async ({ page }) => {
+    for (const [path, heading] of [
+      ['/datenschutz/', 'Widerspruchsrecht (Art. 21 DSGVO)'],
+      ['/en/privacy/', 'Right to object (Art. 21 GDPR)'],
+    ] as const) {
+      await page.goto(path);
+      const box = page.locator('section.legal-emphasis');
+      await expect(box).toHaveCount(1);
+      await expect(box.getByRole('heading', { level: 2, name: heading })).toBeVisible();
+      await expect(box).toHaveCSS('border-top-width', '2px');
+    }
+    await page.goto('/impressum/');
+    await expect(page.locator('section.legal-emphasis')).toHaveCount(0);
   });
 
   test('the privacy pages state that there are no cookies', async ({ page }) => {

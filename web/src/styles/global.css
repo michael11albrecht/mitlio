@@ -160,3 +160,20 @@ h1 {
   min-height: 2.75rem;
   line-height: 1.75rem;
 }
+
+/* Legal text: a section the reader must not miss (right to object, Art. 21 GDPR). */
+.legal-emphasis {
+  margin: var(--space-8) 0;
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius);
+}
+
+.legal-emphasis h2 {
+  margin-top: 0;
+}
+
+.legal-emphasis p:last-child {
+  margin-bottom: 0;
+}
