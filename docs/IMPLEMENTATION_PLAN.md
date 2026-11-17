@@ -439,8 +439,9 @@ jobs:
       - run: make bootstrap
       - uses: anthropics/claude-code-action@v1
         with:
-          # Subscription token (no marginal cost, §6.8).
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Subscription token or API key, picked by vars.CLAUDE_AUTH (docs/claude-auth.md).
+          claude_code_oauth_token: ${{ vars.CLAUDE_AUTH != 'api' && secrets.CLAUDE_CODE_OAUTH_TOKEN || '' }}
+          anthropic_api_key: ${{ vars.CLAUDE_AUTH == 'api' && secrets.ANTHROPIC_API_KEY || '' }}
           github_token: ${{ steps.app.outputs.token }}
           # IMPLEMENTER_MODEL = claude-sonnet-5-5 (§6.7).
           claude_args: "--max-turns 40 --model ${{ vars.IMPLEMENTER_MODEL }}"
@@ -519,10 +520,10 @@ Target: **≈ €45–80 / month during active development, ≈ €30 / month in
 | Firebase (FCM + Hosting) | Spark (free) | €0 |
 | Sentry | Developer (free) tier, EU | €0 |
 | GitHub | private repo, Free plan Actions quota (Linux minutes; macOS minutes count with a large multiplier) | €0 if within quota, then pay-as-you-go with **$0 spending limit** by default |
-| LLM — Claude (Sonnet implementation + review, Opus planning) | **Use the existing Claude subscription** via `CLAUDE_CODE_OAUTH_TOKEN` (`claude setup-token`) in the action instead of an API key → no marginal cost, bounded by subscription usage limits | €0 extra (if subscription already paid) |
+| LLM — Claude (Sonnet implementation + review, Opus planning) | Switchable via repo variable `CLAUDE_AUTH` (`docs/claude-auth.md`): **subscription** (`CLAUDE_CODE_OAUTH_TOKEN`, default) is bounded by subscription limits, **`api`** (`ANTHROPIC_API_KEY`) bills per token. Reviewer alone ≈ $125 / month at API prices at the early build-out pace (≈190 runs in 3 days at ≈$0.08) | €0 extra on subscription; per-token cost in `api` mode |
 
 **Hard caps (mechanical, not willpower):**
-- LLM providers: prepaid balance only, no auto-recharge; Anthropic API key (only if used instead of the subscription) with a workspace spend limit.
+- LLM providers: prepaid balance only, no auto-recharge; Anthropic API key (`CLAUDE_AUTH=api`) in a dedicated Console workspace with a monthly spend limit and auto-reload off.
 - GitHub: Actions spending limit $0 → jobs stop instead of billing; raise deliberately.
 - Agent workflows: `concurrency: agent` (max 1 agent job at a time), `--max-turns 40`, `timeout-minutes: 45`, max 2 CI-fix retries per PR, max **N agent runs per day** (repo variable `AGENT_DAILY_LIMIT`, default 6; the workflow counts today's runs via `gh run list` and exits early).
 - Reviewer runs only once CI is green (no reviewing broken code), and re-reviews only the incremental diff.
