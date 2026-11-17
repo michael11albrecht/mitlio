@@ -156,7 +156,14 @@ class SyncStateDao extends DatabaseAccessor<AppDatabase>
 
   // -- outbox --------------------------------------------------------------
 
-  /// Unpushed operations of [groupId].
+  /// Unpushed operations of [groupId] in queue order.
+  Future<List<LocalOutboxRow>> outboxOf(String groupId) =>
+      (select(localOutbox)
+            ..where((o) => o.groupId.equals(groupId))
+            ..orderBy([(o) => OrderingTerm.asc(o.seq)]))
+          .get();
+
+  /// Number of unpushed operations of [groupId].
   Future<int> pendingOutboxCount(String groupId) async {
     final count = countAll();
     final q = selectOnly(localOutbox)
