@@ -16,6 +16,11 @@ export const PLAY_STORE_URL = process.env.PLAY_STORE_URL ?? '';
 export const FUEL_API_URL = process.env.FUEL_API_URL ?? '';
 export const FUEL_API_ANON_KEY = process.env.FUEL_API_ANON_KEY ?? '';
 
+// Contact form (Impressum). Same Supabase project as the fuel chips: the `contact` Edge Function lives next to
+// `fuel-prices`, so endpoint, CSP origin and anon key all derive from FUEL_API_URL. Empty when FUEL_API_URL is
+// empty: the contact page then shows the e-mail address instead of the form and makes no network request.
+export const CONTACT_API_URL = FUEL_API_URL ? new URL('contact', FUEL_API_URL).href : '';
+
 // App links (PW-T10). Needed for /.well-known/apple-app-site-association and /.well-known/assetlinks.json, which are
 // generated at build time (scripts/write-hosting-files.mjs). Both stay empty until the apps are signed (owner decision):
 // an empty value means the matching file is NOT emitted (a 404 is honest, a file with placeholder ids would make

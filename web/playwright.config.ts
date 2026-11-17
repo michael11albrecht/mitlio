@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 // Runs against the built static site (`npm run build` first), served by `astro preview`.
 // A second server (scripts/serve-fuel-fixture.mjs) serves a build with a fake FUEL_API_URL; only
-// tests/fuel.spec.ts runs against it, with the API mocked via page.route.
+// tests/fuel.spec.ts and tests/contact-form.spec.ts run against it, with the API mocked via page.route.
 const PORT = 4321;
 const FUEL_PORT = 4322;
 
@@ -17,12 +17,12 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      testIgnore: /fuel\.spec\.ts/,
+      testIgnore: /(fuel|contact-form)\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], baseURL: `http://127.0.0.1:${PORT}` },
     },
     {
       name: 'chromium-fuel',
-      testMatch: /fuel\.spec\.ts/,
+      testMatch: /(fuel|contact-form)\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], baseURL: `http://127.0.0.1:${FUEL_PORT}` },
     },
   ],

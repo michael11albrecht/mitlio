@@ -1,0 +1,157 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { contactMessages } from '../i18n/contact';
+import { paths, type Locale } from '../i18n';
+import { CONTACT_API_URL, FUEL_API_ANON_KEY } from '../../site.config.mjs';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const m = contactMessages[locale];
+const formEnabled = CONTACT_API_URL !== '';
+---
+
+<Layout locale={locale} route="contact" title={m.title} description={m.description} noindex>
+  <h1>{m.heading}</h1>
+  <p class="lead">{m.lead}</p>
+
+  {
+    formEnabled ? (
+      <>
+        <form
+          id="contact-form"
+          novalidate
+          data-api={CONTACT_API_URL}
+          data-key={FUEL_API_ANON_KEY || undefined}
+          data-locale={locale}
+        >
+          <div class="field">
+            <label for="contact-name">{m.labelName}</label>
+            <input id="contact-name" name="name" type="text" autocomplete="name" maxlength="200" aria-describedby="contact-name-error" />
+            <p class="error" id="contact-name-error" hidden />
+          </div>
+          <div class="field">
+            <label for="contact-email">{m.labelEmail}</label>
+            <input
+              id="contact-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              aria-describedby="contact-email-error"
+            />
+            <p class="error" id="contact-email-error" hidden />
+          </div>
+          <div class="field">
+            <label for="contact-message">{m.labelMessage}</label>
+            <textarea id="contact-message" name="message" rows="7" required aria-describedby="contact-message-error" />
+            <p class="error" id="contact-message-error" hidden />
+          </div>
+          <div class="hp" aria-hidden="true">
+            <input name="website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+          <p class="error" id="contact-error" role="alert" hidden />
+          <button type="submit" id="contact-submit">{m.send}</button>
+        </form>
+        <p class="success" id="contact-success" role="status" tabindex="-1" hidden>
+          {m.success}
+        </p>
+        <noscript><p class="error">{m.noscript}</p></noscript>
+      </>
+    ) : (
+      <p id="contact-fallback">{m.noForm}</p>
+    )
+  }
+
+  <p class="direct">{m.direct} <a href="mailto:contact@mitlio.de">contact@mitlio.de</a>.</p>
+  <p class="hint">
+    {m.privacyBefore}
+    <a href={paths.privacy[locale]}>{m.privacyLink}</a>{m.privacyAfter}
+  </p>
+</Layout>
+
+{formEnabled && <script>import '../contact/form';</script>}
+
+<style>
+  .field {
+    display: grid;
+    gap: var(--space-1);
+    margin-bottom: var(--space-4);
+  }
+
+  label {
+    font-weight: 600;
+  }
+
+  input,
+  textarea {
+    font: inherit;
+    color: inherit;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius);
+    padding: var(--space-3);
+    width: 100%;
+    min-height: 2.75rem;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  [aria-invalid='true'] {
+    border-color: var(--color-error);
+  }
+
+  .error {
+    margin: 0;
+    color: var(--color-error);
+    font-size: 0.95rem;
+  }
+
+  button {
+    font: inherit;
+    font-weight: 700;
+    min-height: 2.75rem;
+    padding: var(--space-2) var(--space-6);
+    border: 0;
+    border-radius: var(--radius);
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    cursor: pointer;
+  }
+
+  button:disabled {
+    opacity: 0.7;
+    cursor: progress;
+  }
+
+  /* Honeypot: off screen for people and screen readers, still "visible" for naive bots. */
+  .hp {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .success {
+    font-size: 1.125rem;
+    font-weight: 600;
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
+
+  .direct {
+    margin-top: var(--space-6);
+  }
+
+  .hint {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+</style>
