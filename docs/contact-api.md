@@ -52,7 +52,7 @@ above. Verify this in the Resend docs before go-live; if Resend ever documents a
 - Rate limit: token bucket in `public.rate_limits` via `consume_rate_limit` (same as `fuel-prices`), key
   `sha256(salt|contact|ip)` (IP from `cf-connecting-ip`, else first `x-forwarded-for`), default 5 per hour per client.
   One token returns after `3600 / limit` seconds, which is the `Retry-After` value (720 s by default).
-- Global cap: one more bucket in `rate_limits` under the fixed key `contact:global` (no client data), default 50 mails per
+- Global cap: one more bucket in `rate_limits` under the key `sha256(salt|contact:global)` (64 hex chars like the per-client key, as `rate_limits.key_hash` must be 16..128 chars; no client data), default 50 mails per
   day over all clients, so rotating IPs cannot burn the Resend quota or flood the inbox. It is checked after the
   per-client limit; `Retry-After` is `86400 / limit` (1728 s by default).
 - CORS: origins from `CONTACT_ALLOWED_ORIGINS`, falling back to `FUEL_ALLOWED_ORIGINS`; `Retry-After` is exposed.
