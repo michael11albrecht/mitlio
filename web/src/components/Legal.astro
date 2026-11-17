@@ -24,7 +24,7 @@ assertNoPlaceholders(text, SITE_URL, process.env.LEGAL_STRICT === '1');
   <div class="prose legal">
     {
       text.sections.map((s) => (
-        <section>
+        <section class:list={[s.emphasis && 'legal-emphasis']} data-emphasis={s.emphasis ? 'true' : undefined}>
           <h2>{s.heading}</h2>
           {s.paragraphs?.map((p) => <p>{p}</p>)}
           {s.items && <ul>{s.items.map((i) => <li>{i}</li>)}</ul>}

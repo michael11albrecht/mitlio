@@ -124,6 +124,51 @@ test.describe('contacts and authority', () => {
   });
 });
 
+test.describe('structure and DE/EN parity', () => {
+  const shape = (t: (typeof ALL_TEXTS)[number]) =>
+    t.sections.map((s) => [(s as { emphasis?: boolean }).emphasis === true, s.paragraphs?.length ?? 0, s.items?.length ?? 0]);
+
+  test('DE and EN have the same sections, paragraph counts and emphasis flags', () => {
+    for (const key of ['imprint', 'privacy'] as const) {
+      expect(shape(legalTexts.en[key]), key).toEqual(shape(legalTexts.de[key]));
+    }
+    expect(futurePrivacySectionsEn.length).toBe(futurePrivacySectionsDe.length);
+  });
+
+  test('the right to object is its own emphasised section, with Art. 6(1)(f) and no marketing', () => {
+    for (const [locale, heading, f, marketing] of [
+      ['de', 'Widerspruchsrecht (Art. 21 DSGVO)', 'Art. 6 Abs. 1 lit. f DSGVO', 'keine Direktwerbung'],
+      ['en', 'Right to object (Art. 21 GDPR)', 'Art. 6(1)(f) GDPR', 'no direct marketing'],
+    ] as const) {
+      const sections = legalTexts[locale].privacy.sections;
+      const emphasised = sections.filter((s) => (s as { emphasis?: boolean }).emphasis);
+      expect(emphasised.map((s) => s.heading)).toEqual([heading]);
+      const text = flat({ sections: emphasised });
+      expect(text).toContain(f);
+      expect(text).toContain(marketing);
+      expect(text).toContain('privacy@mitlio.de');
+    }
+  });
+
+  test('every provider is named by legal entity, with its transfer basis', () => {
+    for (const locale of ['de', 'en'] as const) {
+      const t = flat(legalTexts[locale].privacy);
+      for (const entity of [
+        'Google Ireland Limited',
+        'Functional Software, Inc.',
+        'Plus Five Five, Inc.',
+        'Supabase Pte. Ltd.',
+        'Tankerkönig UG (haftungsbeschränkt)',
+        'Data Privacy Framework',
+      ]) {
+        expect(t, `${locale}: ${entity}`).toContain(entity);
+      }
+      expect(t).toContain('HTTPS/TLS');
+      expect(t).toContain('Art. 22');
+    }
+  });
+});
+
 const pages = [
   { path: '/impressum/', lang: 'de', h1: 'Impressum', h2: 'Angaben gemäß § 5 DDG' },
   { path: '/datenschutz/', lang: 'de', h1: 'Datenschutz', h2: 'Deine Rechte' },
@@ -155,6 +200,21 @@ test.describe('legal pages', () => {
       for (const s of future) for (const p of s.paragraphs ?? []) expect(body).not.toContain(p);
       expect(body).not.toContain('Firebase Cloud Messaging');
     }
+  });
+
+  test('the right to object is rendered as a highlighted box', async ({ page }) => {
+    for (const [path, heading] of [
+      ['/datenschutz/', 'Widerspruchsrecht (Art. 21 DSGVO)'],
+      ['/en/privacy/', 'Right to object (Art. 21 GDPR)'],
+    ] as const) {
+      await page.goto(path);
+      const box = page.locator('section.legal-emphasis');
+      await expect(box).toHaveCount(1);
+      await expect(box.getByRole('heading', { level: 2, name: heading })).toBeVisible();
+      await expect(box).toHaveCSS('border-top-width', '2px');
+    }
+    await page.goto('/impressum/');
+    await expect(page.locator('section.legal-emphasis')).toHaveCount(0);
   });
 
   test('the privacy pages state that there are no cookies', async ({ page }) => {

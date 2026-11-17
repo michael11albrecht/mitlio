@@ -16,6 +16,8 @@ import type { Locale } from './index';
 
 export interface LegalSection {
   heading: string;
+  /** Rendered as a highlighted box (Legal.astro), for what the reader must not miss (right to object). */
+  emphasis?: boolean;
   paragraphs?: readonly string[];
   items?: readonly string[];
 }
@@ -63,6 +65,7 @@ const de = {
           'Unser Server liefert nur Spritpreise und Wechselkurse und nimmt Nachrichten aus dem Kontaktformular entgegen.',
           'Dein Standort und Absturzberichte werden nur mit deiner Zustimmung verwendet.',
           'Die Website setzt keine Cookies und nutzt keine Analyse- oder Werbedienste.',
+          'Website, App und Server sprechen nur über verschlüsselte Verbindungen (HTTPS/TLS).',
         ],
       },
       {
@@ -82,7 +85,7 @@ const de = {
         heading: 'Spritpreise',
         paragraphs: [
           'Der Bundesdurchschnitt kommt aus dem Weekly Oil Bulletin der EU. Ist kein Server eingerichtet, lädt die App diese öffentliche Datei direkt bei der Europäischen Kommission (energy.ec.europa.eu) herunter, höchstens alle 12 Stunden. Dabei sieht die Kommission wie bei jedem Download deine IP-Adresse. Die App sendet sonst nichts: kein Konto, keinen Standort, keine Gruppendaten. Rechtsgrundlage ist unser berechtigtes Interesse, dir aktuelle Preise anzuzeigen (Art. 6 Abs. 1 lit. f DSGVO). Ruft unser Server die Datei ab, werden dabei keine Nutzerdaten übertragen.',
-          '„In meiner Nähe“ ist freiwillig und startet nur, wenn du es antippst. Die App fragt den Standort nur während der Nutzung und nur grob ab (nicht im Hintergrund). Sie rundet ihn auf zwei Nachkommastellen (ca. 1 km) und sendet ihn an unsere Edge Function. Dort wird er auf ein Raster von ca. 1,2 × 0,6 km (Geohash, Stufe 6) gerundet. Nur dieser gerundete Punkt geht an Tankerkönig, ohne IP-Adresse und ohne Nutzerkennung. Der genaue Standort wird nicht gespeichert.',
+          '„In meiner Nähe“ ist freiwillig und startet nur, wenn du es antippst. Die App fragt den Standort nur während der Nutzung und nur grob ab (nicht im Hintergrund). Sie rundet ihn auf zwei Nachkommastellen (ca. 1 km) und sendet ihn an unsere Edge Function. Dort wird er auf ein Raster von ca. 1,2 × 0,6 km (Geohash, Stufe 6) gerundet. Nur dieser gerundete Punkt geht an Tankerkönig (Tankerkönig UG (haftungsbeschränkt), Nesselwang), ohne deine IP-Adresse und ohne Nutzerkennung. Tankerkönig erhält also keine personenbezogenen Daten von dir. Der genaue Standort wird nicht gespeichert.',
           'Bei einer Postleitzahl senden wir sie an unseren Server. Wir geben sie nicht an Tankerkönig weiter, sondern ordnen ihr einen festen Ort zu.',
           'Rechtsgrundlage für den Standort ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG). Du kannst sie jederzeit in den Systemeinstellungen deines Geräts widerrufen. Für die Postleitzahl gilt Art. 6 Abs. 1 lit. b DSGVO.',
           'Preisdaten: MTS-K über Tankerkönig (CC BY 4.0).',
@@ -113,7 +116,7 @@ const de = {
       {
         heading: 'Absturzberichte (freiwillig)',
         paragraphs: [
-          'Absturzberichte sind standardmäßig aus. Du kannst sie unter Einstellungen, Datenschutz einschalten und jederzeit wieder ausschalten. Dann gehen sie an Sentry (EU-Region). Bevor ein Bericht die App verlässt, entfernt sie persönliche Angaben.',
+          'Absturzberichte sind standardmäßig aus. Du kannst sie unter Einstellungen, Datenschutz einschalten und jederzeit wieder ausschalten. Dann gehen sie an Sentry (Functional Software, Inc., USA), das als unser Auftragsverarbeiter arbeitet (Auftragsverarbeitungsvertrag). Die Berichte werden in der EU-Region (Frankfurt) gespeichert. Konto- und Projektdaten sowie Support-Daten liegen bei Sentry in den USA. Für Übermittlungen in die USA gilt der Angemessenheitsbeschluss zum EU-US Data Privacy Framework (Sentry ist zertifiziert), hilfsweise Standardvertragsklauseln. Bevor ein Bericht die App verlässt, entfernt sie persönliche Angaben.',
           `Sentry löscht die Berichte nach ${deDaysDat(r.sentry_days)}.`,
           'Gesendet werden: der Typ des Fehlers und der Stack-Trace (Funktions-, Datei- und Paketnamen, Zeile, Spalte), Betriebssystem und Version, Dart-Laufzeit, App-Name und -Version, Zeitpunkt, technische Kennungen zur Zuordnung des Codes, die Namen der aufgerufenen Bildschirme und Befehle. Technisch bedingt sieht Sentry beim Empfang auch die IP-Adresse.',
           'Nicht gesendet werden: Fehlertexte, Namen, Titel, Notizen, Beträge, IBAN, E-Mail-Adressen, Telefonnummern, Gerätename oder -modell, Screenshots. Es gibt keine Nutzerkennung.',
@@ -123,7 +126,7 @@ const de = {
       {
         heading: 'Server (Supabase)',
         paragraphs: [
-          'Unser Server läuft bei Supabase (Supabase Pte. Ltd.) in der Region eu-central-1 (Frankfurt). Supabase ist unser Auftragsverarbeiter. Es gilt ein Auftragsverarbeitungsvertrag. Übermittlungen in Drittländer sichern Standardvertragsklauseln. Unterauftragsverarbeiter sind AWS, Cloudflare und Google.',
+          'Unser Server läuft bei Supabase (Supabase Pte. Ltd., Singapur) in der Region eu-central-1 (Frankfurt). Supabase ist unser Auftragsverarbeiter. Es gilt ein Auftragsverarbeitungsvertrag. Weil Supabase ihren Sitz in Singapur hat, stützen sich Übermittlungen in Drittländer auf Standardvertragsklauseln (Art. 46 Abs. 2 lit. c DSGVO), die Teil dieses Vertrags sind. Unterauftragsverarbeiter sind AWS, Cloudflare und Google.',
           'Heute läuft dort nur die Abfrage von Spritpreisen und Wechselkursen sowie die Annahme von Nachrichten aus dem Kontaktformular. Konten, Gruppen-Synchronisierung und Push-Nachrichten gibt es noch nicht.',
           `Die Plattform-Logs von Supabase (technische Protokolle der Anfragen an den Server) werden höchstens ${deDays(r.platform_logs_max_days)} aufbewahrt. Die genaue Dauer legt Supabase fest.`,
         ],
@@ -131,7 +134,8 @@ const de = {
       {
         heading: 'Website',
         paragraphs: [
-          'Die Website ist eine statische Seite bei Firebase Hosting (Google). Beim Aufruf verarbeitet der Hosting-Anbieter technisch notwendige Verbindungsdaten (u. a. IP-Adresse, Zeitpunkt, aufgerufene Seite) in Server-Logs. Diese Logs verarbeitet Google. Wir haben keinen Zugriff darauf und werten sie nicht aus. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.',
+          'Die Website ist eine statische Seite bei Firebase Hosting (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland; Google LLC, USA, ist Konzerngesellschaft). Google ist unser Auftragsverarbeiter (Firebase-Auftragsverarbeitungsbedingungen). Für Übermittlungen in die USA gilt der EU-US Data Privacy Framework (Google LLC ist zertifiziert), hilfsweise Standardvertragsklauseln.',
+          'Bei jedem Aufruf übermittelt dein Browser technisch notwendige Verbindungsdaten: IP-Adresse, Datum und Uhrzeit, aufgerufene URL, HTTP-Status, übertragene Datenmenge, Referrer sowie Browser und Betriebssystem (User-Agent). Google nennt für Firebase Hosting ausdrücklich die IP-Adresse (zur Missbrauchserkennung und für Nutzungsstatistiken); welche der weiteren Angaben Google protokolliert, legt Google fest. Wir haben keinen Zugriff auf diese Logs und werten sie nicht aus. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.',
           'Die Seite setzt keine Cookies und speichert nichts im Browser. Sie nutzt keine Analyse- oder Werbedienste und lädt keine externen Schriften oder Skripte.',
           'Der Rechner läuft in deinem Browser. Deine Eingaben verlassen ihn nicht.',
           'Zeigt der Rechner Spritpreise an, ruft dein Browser unseren Server ab, ohne Cookies und ohne Referrer. Die Folgen sind wie oben unter „Spritpreise“ beschrieben: Standort nur, wenn du „In meiner Nähe“ antippst. Der Link „Per WhatsApp teilen“ öffnet erst beim Anklicken WhatsApp.',
@@ -140,8 +144,8 @@ const de = {
       {
         heading: 'Kontaktformular',
         paragraphs: [
-          'Im Kontaktformular auf der Website gibst du eine Nachricht, deine E-Mail-Adresse und optional deinen Namen ein. Diese Angaben gehen über eine Edge Function unseres Servers (Supabase) an Resend (Resend, Inc., EU-Region), unseren Auftragsverarbeiter. Es gilt ein Auftragsverarbeitungsvertrag. Für eine mögliche Übermittlung in Drittländer gelten Standardvertragsklauseln. Resend stellt die Nachricht in unser Postfach zu.',
-          'Auf unserem Server wird nichts gespeichert außer dem Rate-Limit-Eintrag mit dem Hash deiner IP-Adresse (siehe „Missbrauchsschutz“).',
+          'Im Kontaktformular auf der Website gibst du eine Nachricht, deine E-Mail-Adresse und optional deinen Namen ein. Pflicht sind nur E-Mail-Adresse und Nachricht. Diese Angaben gehen über eine Edge Function unseres Servers (Supabase) an Resend (Plus Five Five, Inc., USA, handelt unter dem Namen Resend), unseren Auftragsverarbeiter. Es gilt ein Auftragsverarbeitungsvertrag. Wir lassen die Mails über Resends Region Irland versenden. Resend speichert Konto-Daten, Mail-Metadaten und Protokolle nach eigenen Angaben aber in den USA. Für Übermittlungen in die USA gilt der EU-US Data Privacy Framework (Resend ist zertifiziert), hilfsweise Standardvertragsklauseln. Resend stellt die Nachricht in unser Postfach bei unserem E-Mail-Anbieter zu.',
+          'Auf unserem Server wird nichts gespeichert außer den Rate-Limit-Einträgen: ein Hash deiner IP-Adresse mit geheimem Zusatz (Salt) und ein Zähler, dazu ein einziger globaler Tageszähler ohne Bezug zu dir (siehe „Missbrauchsschutz“). Fehlerprotokolle des Servers enthalten nie Nachricht, E-Mail-Adresse, Name oder IP-Adresse.',
           'Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO, wenn deine Nachricht die Nutzung der App betrifft, sonst unser berechtigtes Interesse, Anfragen zu beantworten (Art. 6 Abs. 1 lit. f DSGVO).',
           `Wir löschen die Nachricht ${deMonths(r.email_months)} nach der letzten Nachricht in diesem Austausch.`,
         ],
@@ -153,9 +157,36 @@ const de = {
           `Rate-Limit-Hashes auf dem Server: ${deDays(r.rate_limits_days)}, höchstens etwa ${deDays(r.rate_limits_days + 1)}.`,
           `Absturzberichte bei Sentry (nur mit deiner Einwilligung): ${deDays(r.sentry_days)}.`,
           `Plattform-Logs bei Supabase: höchstens ${deDays(r.platform_logs_max_days)}. Die Dauer legt der Anbieter fest.`,
-          'Server-Logs der Website bei Firebase Hosting: verarbeitet Google. Wir haben keinen Zugriff darauf und werten sie nicht aus.',
+          'Server-Logs der Website bei Firebase Hosting: verarbeitet Google. Nach Angaben von Google bleibt die IP-Adresse dort einige Monate gespeichert. Wir haben keinen Zugriff darauf und werten sie nicht aus.',
+          'Versandprotokolle bei Resend: legt Resend fest.',
           `E-Mails und Nachrichten aus dem Kontaktformular: ${deMonths(r.email_months)} nach der letzten Nachricht.`,
           `Datenschutzanfragen und unsere Antworten: ${deYears(r.privacy_request_years)}, um nachzuweisen, dass wir deine Rechte erfüllt haben (Rechenschaftspflicht, Art. 5 Abs. 2 DSGVO).`,
+        ],
+      },
+      {
+        heading: 'App Store und Google Play',
+        paragraphs: [
+          'Wenn du die App über den Apple App Store oder Google Play lädst, verarbeiten Apple bzw. Google deine Daten (z. B. Konto, Zahlung, Download) als eigene Verantwortliche nach ihren Datenschutzerklärungen. Wir erhalten von ihnen keine personenbezogenen Daten über dich.',
+        ],
+      },
+      {
+        heading: 'Empfänger',
+        items: [
+          'Supabase Pte. Ltd. (Auftragsverarbeiter): unser Server, siehe „Server (Supabase)“.',
+          'Resend, Plus Five Five, Inc. (Auftragsverarbeiter): Versand der Kontaktformular-Nachrichten, siehe „Kontaktformular“.',
+          'Google Ireland Limited (Auftragsverarbeiter): Firebase Hosting der Website, siehe „Website“.',
+          'Functional Software, Inc. (Sentry) (Auftragsverarbeiter): Absturzberichte, nur mit deiner Einwilligung, siehe „Absturzberichte“.',
+          'Tankerkönig UG (haftungsbeschränkt): erhält nur den gerundeten Punkt, keine personenbezogenen Daten, siehe „Spritpreise“.',
+          'Europäische Kommission: sieht beim direkten Download des Weekly Oil Bulletin deine IP-Adresse, siehe „Spritpreise“.',
+          'Apple und Google (App Stores): eigene Verantwortliche, siehe „App Store und Google Play“.',
+          'Unser E-Mail-Anbieter: hält das Postfach, in dem Nachrichten an contact@ und privacy@mitlio.de landen.',
+        ],
+      },
+      {
+        heading: 'Bereitstellung der Daten und automatisierte Entscheidungen',
+        paragraphs: [
+          'Du bist weder gesetzlich noch vertraglich verpflichtet, uns Daten bereitzustellen. Ohne sie kannst du das Kontaktformular nicht nutzen bzw. „In meiner Nähe“ nicht verwenden. Die App und der Rechner funktionieren ohne beides.',
+          'Es findet keine automatisierte Entscheidungsfindung einschließlich Profiling nach Art. 22 DSGVO statt.',
         ],
       },
       {
@@ -164,6 +195,16 @@ const de = {
           'Du hast das Recht auf Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch (Art. 21 DSGVO). Eine Einwilligung kannst du jederzeit mit Wirkung für die Zukunft widerrufen (Art. 7 Abs. 3).',
           'Schreib uns dafür an privacy@mitlio.de. Weil die App keine Konten hat, können wir dich auf dem Server in der Regel nicht zuordnen. Die Daten auf deinem Gerät kannst du selbst löschen.',
           'Du kannst dich bei einer Datenschutz-Aufsichtsbehörde beschweren. Zuständig ist: Bayerisches Landesamt für Datenschutzaufsicht (BayLDA), Promenade 18, 91522 Ansbach, www.lda.bayern.de.',
+        ],
+      },
+      {
+        heading: 'Widerspruchsrecht (Art. 21 DSGVO)',
+        emphasis: true,
+        paragraphs: [
+          'Du kannst jederzeit aus Gründen, die sich aus deiner besonderen Situation ergeben, Widerspruch gegen eine Verarbeitung einlegen, die wir auf berechtigte Interessen stützen (Art. 6 Abs. 1 lit. f DSGVO). Wir verarbeiten deine Daten dann nicht mehr, es sei denn, wir können zwingende schutzwürdige Gründe nachweisen, die deine Interessen überwiegen, oder die Verarbeitung dient der Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen.',
+          'Auf berechtigte Interessen stützen wir: den Missbrauchsschutz (Rate Limit), die Server-Logs der Website bei Firebase Hosting, den direkten Download des Weekly Oil Bulletin bei der Europäischen Kommission und das Kontaktformular, soweit deine Nachricht nicht die Nutzung der App betrifft.',
+          'Wir betreiben keine Direktwerbung. Deine Daten werden dafür nicht verwendet.',
+          'Schreib uns den Widerspruch an privacy@mitlio.de.',
         ],
       },
     ],
@@ -197,6 +238,7 @@ const en = {
           'Our server only provides fuel prices and exchange rates and receives messages from the contact form.',
           'Your location and crash reports are only used with your consent.',
           'The website sets no cookies and uses no analytics or advertising services.',
+          'Website, app and server talk only over encrypted connections (HTTPS/TLS).',
         ],
       },
       {
@@ -216,7 +258,7 @@ const en = {
         heading: 'Fuel prices',
         paragraphs: [
           'The national average comes from the EU Weekly Oil Bulletin. Without a configured server, the app downloads this public file directly from the European Commission (energy.ec.europa.eu), at most every 12 hours. As with any download, the Commission sees your IP address. The app sends nothing else: no account, no location, no group data. The legal basis is our legitimate interest in showing you current prices (Art. 6(1)(f) GDPR). When our server fetches the file, no user data is sent.',
-          '“Near me” is optional and starts only when you tap it. The app asks for your location only while you use it and only roughly (never in the background). It rounds it to two decimals (about 1 km) and sends it to our Edge Function. There it is rounded to a grid cell of about 1.2 × 0.6 km (geohash, precision 6). Only that rounded point goes to Tankerkönig, without IP address and without any user ID. The exact location is not stored.',
+          '“Near me” is optional and starts only when you tap it. The app asks for your location only while you use it and only roughly (never in the background). It rounds it to two decimals (about 1 km) and sends it to our Edge Function. There it is rounded to a grid cell of about 1.2 × 0.6 km (geohash, precision 6). Only that rounded point goes to Tankerkönig (Tankerkönig UG (haftungsbeschränkt), Nesselwang, Germany), without your IP address and without any user ID. Tankerkönig therefore receives no personal data from you. The exact location is not stored.',
           'If you enter a postcode, we send it to our server. We do not pass it on to Tankerkönig; we map it to a fixed place instead.',
           'Legal basis for the location is your consent (Art. 6(1)(a) GDPR, § 25(1) TDDDG). You can withdraw it at any time in your device settings. For the postcode, Art. 6(1)(b) GDPR applies.',
           'Price data: MTS-K via Tankerkönig (CC BY 4.0).',
@@ -247,7 +289,7 @@ const en = {
       {
         heading: 'Crash reports (optional)',
         paragraphs: [
-          'Crash reports are off by default. You can turn them on under Settings, Privacy, and off again at any time. They then go to Sentry (EU region). Before a report leaves the app, the app removes personal details.',
+          'Crash reports are off by default. You can turn them on under Settings, Privacy, and off again at any time. They then go to Sentry (Functional Software, Inc., USA), which acts as our processor (data processing agreement). The reports are stored in the EU region (Frankfurt). Account and project data and support data are held by Sentry in the USA. Transfers to the USA rely on the adequacy decision for the EU-US Data Privacy Framework (Sentry is certified) and, as a fallback, standard contractual clauses. Before a report leaves the app, the app removes personal details.',
           `Sentry deletes the reports after ${enDays(r.sentry_days)}.`,
           'What is sent: the error type and stack trace (function, file and package names, line, column), operating system and version, Dart runtime, app name and version, time, technical identifiers to match the code, and the names of the screens and commands used. By the nature of the connection, Sentry also sees the IP address on receipt.',
           'What is not sent: error messages, names, titles, notes, amounts, IBAN, email addresses, phone numbers, device name or model, screenshots. There is no user ID.',
@@ -257,7 +299,7 @@ const en = {
       {
         heading: 'Server (Supabase)',
         paragraphs: [
-          'Our server runs at Supabase (Supabase Pte. Ltd.) in region eu-central-1 (Frankfurt). Supabase is our processor under a data processing agreement. Transfers to third countries are covered by standard contractual clauses. Sub-processors are AWS, Cloudflare and Google.',
+          'Our server runs at Supabase (Supabase Pte. Ltd., Singapore) in region eu-central-1 (Frankfurt). Supabase is our processor under a data processing agreement. Because Supabase is based in Singapore, transfers to third countries rely on standard contractual clauses (Art. 46(2)(c) GDPR), which are part of that agreement. Sub-processors are AWS, Cloudflare and Google.',
           'Today it only serves fuel prices and exchange rates and receives messages from the contact form. There are no accounts, group sync or push notifications yet.',
           `Supabase’s platform logs (technical records of requests to the server) are kept for ${enDays(r.platform_logs_max_days)} at most. Supabase decides the exact period.`,
         ],
@@ -265,7 +307,8 @@ const en = {
       {
         heading: 'Website',
         paragraphs: [
-          'The website is a static site on Firebase Hosting (Google). When you visit it, the hosting provider processes technically necessary connection data (including IP address, time, page requested) in server logs. Google processes these logs. We have no access to them and do not evaluate them. Legal basis: Art. 6(1)(f) GDPR.',
+          'The website is a static site on Firebase Hosting (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland; Google LLC, USA, is a group company). Google is our processor (Firebase data processing terms). Transfers to the USA rely on the EU-US Data Privacy Framework (Google LLC is certified) and, as a fallback, standard contractual clauses.',
+          'With every request your browser sends technically necessary connection data: IP address, date and time, requested URL, HTTP status, amount of data transferred, referrer, and browser and operating system (user agent). Google explicitly names the IP address for Firebase Hosting (to detect abuse and for usage statistics); which of the other items Google logs is up to Google. We have no access to these logs and do not evaluate them. Legal basis: Art. 6(1)(f) GDPR.',
           'The site sets no cookies and stores nothing in your browser. It uses no analytics or advertising services and loads no external fonts or scripts.',
           'The calculator runs in your browser. Your input does not leave it.',
           'If the calculator shows fuel prices, your browser calls our server, without cookies and without a referrer. The same applies as under “Fuel prices” above: your location is used only if you tap “Near me”. The “Share via WhatsApp” link opens WhatsApp only when you click it.',
@@ -274,8 +317,8 @@ const en = {
       {
         heading: 'Contact form',
         paragraphs: [
-          'In the contact form on the website you enter a message, your email address and optionally your name. This data goes through an Edge Function on our server (Supabase) to Resend (Resend, Inc., EU region), our processor, under a data processing agreement. Standard contractual clauses cover any transfer to a third country. Resend delivers the message to our mailbox.',
-          'Nothing is stored on our server except the rate-limit entry with the hash of your IP address (see “Abuse protection”).',
+          'In the contact form on the website you enter a message, your email address and optionally your name. Only the email address and the message are required. This data goes through an Edge Function on our server (Supabase) to Resend (Plus Five Five, Inc., USA, operating as Resend), our processor, under a data processing agreement. We have the mails sent from Resend’s Ireland region. By its own account, however, Resend stores account data, mail metadata and logs in the USA. Transfers to the USA rely on the EU-US Data Privacy Framework (Resend is certified) and, as a fallback, standard contractual clauses. Resend delivers the message to our mailbox at our email provider.',
+          'Nothing is stored on our server except the rate-limit entries: a hash of your IP address with a secret salt and a counter, plus a single global daily counter that has no link to you (see “Abuse protection”). The server’s error logs never contain the message, email address, name or IP address.',
           'Legal basis: Art. 6(1)(b) GDPR if your message concerns using the app, otherwise our legitimate interest in answering enquiries (Art. 6(1)(f) GDPR).',
           `We delete the message ${enMonths(r.email_months)} after the last message in that exchange.`,
         ],
@@ -287,9 +330,36 @@ const en = {
           `Rate-limit hashes on the server: ${enDays(r.rate_limits_days)}, about ${enDays(r.rate_limits_days + 1)} at most.`,
           `Crash reports at Sentry (only with your consent): ${enDays(r.sentry_days)}.`,
           `Platform logs at Supabase: ${enDays(r.platform_logs_max_days)} at most. The provider decides the period.`,
-          'Website server logs at Firebase Hosting: processed by Google. We have no access to them and do not evaluate them.',
+          'Website server logs at Firebase Hosting: processed by Google. According to Google, the IP address is kept there for a few months. We have no access to them and do not evaluate them.',
+          'Sending logs at Resend: set by Resend.',
           `Emails and contact form messages: ${enMonths(r.email_months)} after the last message.`,
           `Data protection requests and our replies: ${enYears(r.privacy_request_years)}, to prove that we met your rights (accountability, Art. 5(2) GDPR).`,
+        ],
+      },
+      {
+        heading: 'App Store and Google Play',
+        paragraphs: [
+          'If you download the app from the Apple App Store or Google Play, Apple or Google process your data (for example account, payment, download) as independent controllers under their own privacy policies. We receive no personal data about you from them.',
+        ],
+      },
+      {
+        heading: 'Recipients',
+        items: [
+          'Supabase Pte. Ltd. (processor): our server, see “Server (Supabase)”.',
+          'Resend, Plus Five Five, Inc. (processor): sending contact form messages, see “Contact form”.',
+          'Google Ireland Limited (processor): Firebase Hosting of the website, see “Website”.',
+          'Functional Software, Inc. (Sentry) (processor): crash reports, only with your consent, see “Crash reports”.',
+          'Tankerkönig UG (haftungsbeschränkt): receives only the rounded point, no personal data, see “Fuel prices”.',
+          'European Commission: sees your IP address when the Weekly Oil Bulletin is downloaded directly, see “Fuel prices”.',
+          'Apple and Google (app stores): independent controllers, see “App Store and Google Play”.',
+          'Our email provider: hosts the mailbox where messages to contact@ and privacy@mitlio.de arrive.',
+        ],
+      },
+      {
+        heading: 'Providing data and automated decisions',
+        paragraphs: [
+          'You are neither legally nor contractually required to provide us with data. Without it you simply cannot use the contact form or “Near me”. The app and the calculator work without either.',
+          'There is no automated decision-making, including profiling, under Art. 22 GDPR.',
         ],
       },
       {
@@ -298,6 +368,16 @@ const en = {
           'You have the right of access (Art. 15), rectification (Art. 16), erasure (Art. 17), restriction of processing (Art. 18), data portability (Art. 20) and objection (Art. 21 GDPR). You can withdraw consent at any time with effect for the future (Art. 7(3)).',
           'Write to privacy@mitlio.de. Because the app has no accounts, we usually cannot link anything on the server to you. You can delete the data on your device yourself.',
           'You can lodge a complaint with a data protection supervisory authority. The competent one is: Bavarian Data Protection Authority (BayLDA), Promenade 18, 91522 Ansbach, www.lda.bayern.de.',
+        ],
+      },
+      {
+        heading: 'Right to object (Art. 21 GDPR)',
+        emphasis: true,
+        paragraphs: [
+          'You can object at any time, on grounds relating to your particular situation, to processing that we base on legitimate interests (Art. 6(1)(f) GDPR). We then stop processing your data unless we can show compelling legitimate grounds that override your interests, or the processing serves to establish, exercise or defend legal claims.',
+          'We rely on legitimate interests for: abuse protection (rate limit), the website server logs at Firebase Hosting, the direct download of the Weekly Oil Bulletin from the European Commission, and the contact form where your message does not concern using the app.',
+          'We do no direct marketing. Your data is not used for it.',
+          'Send your objection to privacy@mitlio.de.',
         ],
       },
     ],

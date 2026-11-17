@@ -23,6 +23,7 @@ export function fillAddress(text: LegalText, env: Record<string, string | undefi
   return {
     sections: text.sections.map((s) => ({
       heading: fill(s.heading),
+      ...(s.emphasis && { emphasis: true }),
       ...(s.paragraphs && { paragraphs: s.paragraphs.map(fill) }),
       ...(s.items && { items: s.items.map(fill) }),
     })),
