@@ -23,7 +23,10 @@ const _localOnlyTables = {
 /// price cache, the FX rate cache and the rate limiter are edge-function
 /// backend tables (P6c, P7-T02). The revisions are trigger-written history
 /// (P7-T03). The join audit is written only by join_group (#89).
+/// `app_config` is the owner-edited minimum app version, read before
+/// sign-in (P6-T16a).
 const _serverOnlyTables = {
+  'app_config',
   'expense_revisions',
   'group_memberships',
   'group_invites',

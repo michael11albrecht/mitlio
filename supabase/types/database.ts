@@ -34,6 +34,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_config: {
+        Row: {
+          min_supported_version: string
+          platform: string
+          store_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          min_supported_version: string
+          platform: string
+          store_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          min_supported_version?: string
+          platform?: string
+          store_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       expense_payers: {
         Row: {
           expense_id: string

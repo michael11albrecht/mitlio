@@ -38,6 +38,7 @@ final ridesRepositoryProvider = Provider<RidesRepository>(
   (ref) => DriftRidesRepository(
     db: ref.watch(appDatabaseProvider),
     clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
     expenses: ref.watch(expensesRepositoryProvider),
   ),
 );

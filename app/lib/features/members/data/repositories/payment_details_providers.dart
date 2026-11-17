@@ -16,6 +16,7 @@ final paymentDetailsRepositoryProvider = Provider<PaymentDetailsRepository>(
   (ref) => DriftPaymentDetailsRepository(
     db: ref.watch(appDatabaseProvider),
     clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
     cipher: ref.watch(ibanCipherProvider),
   ),
 );

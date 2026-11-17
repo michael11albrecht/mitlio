@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/members/data/repositories/drift_payment_details_repository.dart';
 import 'package:mitlio/features/members/data/repositories/fake_members_repository.dart';
@@ -20,6 +21,7 @@ Future<PaymentRepos> _drift([
     payments: DriftPaymentDetailsRepository(
       db: base.db!,
       clock: base.clock,
+      ids: SequentialIdGenerator(),
       cipher: cipher,
     ),
   );
@@ -97,6 +99,7 @@ void main() {
       final plain = DriftPaymentDetailsRepository(
         db: r.base.db!,
         clock: r.base.clock,
+        ids: SequentialIdGenerator(),
         cipher: const PlaintextIbanCipher(),
       );
       ok(await plain.save(annId, iban: testIban));
@@ -118,6 +121,7 @@ void main() {
       final broken = DriftPaymentDetailsRepository(
         db: r.base.db!,
         clock: r.base.clock,
+        ids: SequentialIdGenerator(),
         cipher: _FailingCipher(),
       );
       expect(err(await broken.get(annId)), isA<Storage>());
