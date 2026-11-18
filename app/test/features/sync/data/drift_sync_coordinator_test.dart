@@ -121,6 +121,9 @@ class _World {
     final db = r.db!;
     final fake = remote ?? FakeSyncRemote();
     if (shared) {
+      // Since #198 the fake server is strict: the owner is made a member
+      // by the bootstrap call of makeShared, which these tests skip.
+      fake.addMember(seeded.groupId);
       await db.syncStateDao.setState(
         seeded.groupId,
         SyncState.uploading,
