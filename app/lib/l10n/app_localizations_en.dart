@@ -1924,6 +1924,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'Map and route data © OpenStreetMap contributors';
 
   @override
+  String shareUploadPartial(int uploaded, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'entries',
+      one: 'entry',
+    );
+    return '$uploaded of $total $_temp0 uploaded. Everything on this phone is unchanged. We will keep trying.';
+  }
+
+  @override
+  String get shareGroupMissing =>
+      'This group is no longer on this phone. Reload the group list.';
+
+  @override
   String get syncStatusUpToDate => 'Up to date';
 
   @override

@@ -947,6 +947,18 @@
   "routeUnconfigured": "Route calculation is not available on this server. Just enter the kilometres yourself.",
   "routeInvalid": "Start and destination do not fit together. Pick two different places or enter the kilometres yourself.",
   "routeAttributionFallback": "Map and route data © OpenStreetMap contributors",
+  "shareUploadPartial": "{uploaded} of {total} {total, plural, =1{entry} other{entries}} uploaded. Everything on this phone is unchanged. We will keep trying.",
+  "@shareUploadPartial": {
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "shareGroupMissing": "This group is no longer on this phone. Reload the group list.",
   "syncStatusUpToDate": "Up to date",
   "syncStatusSending": "Sending …",
   "syncStatusPending": "{count, plural, =1{1 change waiting} other{{count} changes waiting}}",

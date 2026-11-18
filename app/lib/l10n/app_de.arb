@@ -1451,6 +1451,18 @@
   "routeUnconfigured": "Die Streckenberechnung gibt es auf diesem Server nicht. Trag die Kilometer einfach selbst ein.",
   "routeInvalid": "Start und Ziel passen nicht zusammen. Wähl zwei verschiedene Orte oder trag die Kilometer selbst ein.",
   "routeAttributionFallback": "Karten- und Routendaten © OpenStreetMap-Mitwirkende",
+  "shareUploadPartial": "{uploaded} von {total} {total, plural, =1{Eintrag} other{Einträgen}} hochgeladen. Auf diesem Handy ist alles unverändert. Wir versuchen es weiter.",
+  "@shareUploadPartial": {
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "shareGroupMissing": "Diese Gruppe gibt es auf diesem Handy nicht mehr. Lade die Gruppenliste neu.",
   "syncStatusUpToDate": "Aktuell",
   "syncStatusSending": "Wird gesendet …",
   "syncStatusPending": "{count, plural, =1{1 Änderung wartet} other{{count} Änderungen warten}}",

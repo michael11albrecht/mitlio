@@ -177,6 +177,8 @@ class _Pair {
       ids: SequentialIdGenerator(prefix: 'up'),
     );
     await writer.enqueue(OutboxEntity.group, seeded.groupId);
+    expect(await aService.push(seeded.groupId), const SyncIdle());
+    await aRemote.bootstrapMembership(seeded.groupId);
     for (final m in seeded.members) {
       await writer.enqueue(OutboxEntity.member, m.id);
     }

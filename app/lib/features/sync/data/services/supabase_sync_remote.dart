@@ -6,6 +6,9 @@ import 'package:mitlio/features/sync/data/services/sync_remote.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+const _membershipsTable = 'group_memberships';
+const _uniqueViolation = '23505';
+
 /// Name of the RPC that upserts an expense with payers and shares.
 const upsertExpenseRpc = 'upsert_expense';
 
@@ -60,10 +63,54 @@ class SupabaseSyncRemote implements SyncRemote {
     if (uid == null) {
       throw const _NotSignedIn();
     }
-    await client.from(DbTables.groups).insert({
-      ...row,
-      DbGroupsCols.createdBy: uid,
-    });
+    try {
+      await client.from(DbTables.groups).insert({
+        ...row,
+        DbGroupsCols.createdBy: uid,
+      });
+    } on PostgrestException catch (e) {
+      // A replay: the first insert reached the server but its answer was
+      // lost, and the creator is not a member until the bootstrap, so the
+      // update above could not see the row. Only the creator's own row
+      // counts; anything else stays an error.
+      if (e.code != _uniqueViolation || !await _isOwnGroup(client, id, uid)) {
+        rethrow;
+      }
+    }
+  }
+
+  Future<bool> _isOwnGroup(SupabaseClient client, String id, String uid) async {
+    final rows = await client
+        .from(DbTables.groups)
+        .select(DbGroupsCols.id)
+        .eq(DbGroupsCols.id, id)
+        .eq(DbGroupsCols.createdBy, uid);
+    return rows.isNotEmpty;
+  }
+
+  @override
+  Future<Result<bool, RemoteError>> bootstrapMembership(String groupId) async {
+    final client = _client;
+    if (client == null) return const Err(_unavailable);
+    try {
+      final uid = client.auth.currentUser?.id;
+      if (uid == null) throw const _NotSignedIn();
+      // Checked first: for an existing member the bootstrap policy refuses
+      // the insert (42501), which would look like "removed".
+      final mine = await client
+          .from(_membershipsTable)
+          .select('id')
+          .eq('group_id', groupId)
+          .eq('user_id', uid);
+      if (mine.isNotEmpty) return const Ok(false);
+      await client.from(_membershipsTable).insert({
+        'group_id': groupId,
+        'user_id': uid,
+      });
+      return const Ok(true);
+    } on Object catch (e) {
+      return Err(_map(e));
+    }
   }
 
   @override

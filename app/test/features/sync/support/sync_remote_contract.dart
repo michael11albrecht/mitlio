@@ -107,6 +107,7 @@ void runSyncRemoteContract(
         _ok(await f.owner.upsertRows(DbTables.groups, [_group()])),
         PushOutcome.applied,
       );
+      expect(_ok(await f.owner.bootstrapMembership(_g)), isTrue);
       expect(
         _ok(
           await f.owner.upsertRows(DbTables.members, [
@@ -117,6 +118,64 @@ void runSyncRemoteContract(
         PushOutcome.applied,
       );
     }
+
+    group('bootstrap membership', () {
+      Future<void> groupOnly() async => expect(
+        _ok(await f.owner.upsertRows(DbTables.groups, [_group()])),
+        PushOutcome.applied,
+      );
+
+      test('a new group has no member until the bootstrap', () async {
+        await groupOnly();
+        expect(
+          _err(await f.owner.upsertRows(DbTables.members, [_member(_m1)])),
+          const NotMember(),
+        );
+        expect(
+          _err(await f.owner.upsertExpense(_expense())),
+          const NotMember(),
+        );
+      });
+
+      test(
+        'the creator bootstraps once; again is done, not an error',
+        () async {
+          await groupOnly();
+          expect(_ok(await f.owner.bootstrapMembership(_g)), isTrue);
+          expect(_ok(await f.owner.bootstrapMembership(_g)), isFalse);
+          expect(
+            _ok(await f.owner.upsertRows(DbTables.members, [_member(_m1)])),
+            PushOutcome.applied,
+          );
+        },
+      );
+
+      test('the group row can be sent again before the bootstrap', () async {
+        await groupOnly();
+        expect(
+          _ok(await f.owner.upsertRows(DbTables.groups, [_group(v: 2)])),
+          PushOutcome.applied,
+        );
+        expect(_ok(await f.owner.bootstrapMembership(_g)), isTrue);
+      });
+
+      test('nobody else can bootstrap the group', () async {
+        await groupOnly();
+        expect(
+          _err(await f.stranger.bootstrapMembership(_g)),
+          const NotMember(),
+        );
+        expect(_ok(await f.owner.bootstrapMembership(_g)), isTrue);
+        expect(
+          _err(await f.stranger.bootstrapMembership(_g)),
+          const NotMember(),
+        );
+      });
+
+      test('a group the server does not hold cannot be bootstrapped', () async {
+        expect(_err(await f.owner.bootstrapMembership(_g)), const NotMember());
+      });
+    });
 
     test('a pushed row is pulled back with a server_seq', () async {
       await seed();

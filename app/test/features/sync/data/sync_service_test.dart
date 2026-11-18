@@ -148,6 +148,11 @@ class _World {
         ids: SequentialIdGenerator(prefix: 'upload'),
       );
       await writer.enqueue(OutboxEntity.group, seeded.groupId);
+      expect(await world.push(), const SyncIdle());
+      expect(
+        await fake.bootstrapMembership(seeded.groupId),
+        const Ok<bool, RemoteError>(true),
+      );
       for (final x in seeded.members) {
         await writer.enqueue(OutboxEntity.member, x.id);
       }
@@ -206,6 +211,8 @@ void main() {
 
     test('sends by entity rank, then queue order', () async {
       final w = await _World.create(uploaded: false);
+      // Member already (the bootstrap is covered by the share tests).
+      w.remote.addMember(w.groupId);
       final writer = OutboxWriter(
         db: w.db,
         clock: w.clock,
