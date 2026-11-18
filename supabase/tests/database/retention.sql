@@ -116,7 +116,7 @@ insert into public.expense_revisions (expense_id, group_id, revision, snapshot) 
 insert into public.settlements (id, group_id, updated_at, from_member, to_member, amount_cents, currency, date, method) values
   ('00000000-0000-0000-0006-0000000000b1', '00000000-0000-0000-0001-0000000000b1', 'h1',
    '00000000-0000-0000-0002-0000000000b2', '00000000-0000-0000-0002-0000000000b1', 500, 'EUR', now(), 'cash');
-insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per_100km) values
+insert into public.vehicles (id, group_id, updated_at, name, fuel_type, consumption_milli_per100km) values
   ('00000000-0000-0000-0007-0000000000b1', '00000000-0000-0000-0001-0000000000b1', 'h1', 'Car', 'petrol', 7000);
 insert into public.ride_templates (id, group_id, updated_at, name, distance_meters, vehicle_id) values
   ('00000000-0000-0000-0008-0000000000b1', '00000000-0000-0000-0001-0000000000b1', 'h1', 'Commute', 10000,
