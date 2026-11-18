@@ -831,6 +831,7 @@ export type Database = {
       can_bootstrap_group: { Args: { gid: string }; Returns: boolean }
       cleanup_fuel_tables: { Args: never; Returns: undefined }
       cleanup_fx_rates: { Args: never; Returns: undefined }
+      cleanup_inactive_accounts: { Args: never; Returns: undefined }
       cleanup_join_data: { Args: never; Returns: undefined }
       connect_member: {
         Args: { gid: string; member_id: string }
@@ -841,6 +842,7 @@ export type Database = {
         Returns: boolean
       }
       create_invite: { Args: { gid: string }; Returns: string }
+      delete_account_data: { Args: { p_uid: string }; Returns: Json }
       delete_my_data: { Args: never; Returns: Json }
       is_group_member: { Args: { gid: string }; Returns: boolean }
       join_group: {
