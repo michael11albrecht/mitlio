@@ -77,9 +77,20 @@ class SyncStateDao extends DatabaseAccessor<AppDatabase>
     ),
   );
 
+  /// Stamps a pull. Does not touch the last error: a pull proves nothing
+  /// about the pending pushes; see [clearError].
   Future<void> markPulled(String groupId, DateTime at) =>
       (update(localGroupSync)..where((r) => r.groupId.equals(groupId))).write(
         LocalGroupSyncCompanion(lastPullAt: Value(at)),
+      );
+
+  /// Forgets the last error of [groupId].
+  Future<void> clearError(String groupId) =>
+      (update(localGroupSync)..where((r) => r.groupId.equals(groupId))).write(
+        const LocalGroupSyncCompanion(
+          lastErrorCode: Value(null),
+          lastErrorAt: Value(null),
+        ),
       );
 
   /// Remembers a stable error case name (ADR-27 §3) for the group.

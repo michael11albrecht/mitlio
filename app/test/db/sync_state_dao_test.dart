@@ -77,6 +77,15 @@ void main() {
       expect((await dao.groupSync('g1'))!.lastErrorCode, isNull);
     });
 
+    test('clearError forgets the error and nothing else', () async {
+      await dao.setState('g1', SyncState.shared);
+      await dao.recordError('g1', 'offline', t1);
+      await dao.clearError('g1');
+      final row = (await dao.groupSync('g1'))!;
+      expect((row.lastErrorCode, row.lastErrorAt), (null, null));
+      expect(row.state, SyncState.shared.name);
+    });
+
     test('watchGroupSync emits changes', () async {
       final states = <String?>[];
       final sub = dao.watchGroupSync('g1').listen((r) => states.add(r?.state));

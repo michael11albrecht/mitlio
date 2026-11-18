@@ -4,10 +4,12 @@ import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:mitlio/core/clock.dart';
+import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/remote/remote_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/daos/sync_state_dao.dart';
 import 'package:mitlio/features/sync/data/db_contract.g.dart';
+import 'package:mitlio/features/sync/data/pull_applier.dart';
 import 'package:mitlio/features/sync/data/services/sync_remote.dart';
 import 'package:mitlio/features/sync/data/sync_status.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -46,6 +48,9 @@ const baseBackoff = Duration(seconds: 2);
 /// Longest wait between two attempts of an op.
 const maxBackoff = Duration(minutes: 5);
 
+/// Rows asked per pull request (ADR-07).
+const pullPageSize = 500;
+
 /// `local_settings` key holding the title of the entry the server refused last
 /// (the schema has no column for it; `last_error_code` stays the case name).
 String rejectedTitleKey(String groupId) => 'sync_rejected_title.$groupId';
@@ -76,14 +81,17 @@ class SyncService {
     required this._remote,
     required this._clock,
     required this._random,
-  });
+    required IdGenerator ids,
+  }) : _applier = PullApplier(db: _db, clock: _clock, ids: ids);
 
   final AppDatabase _db;
   final SyncRemote _remote;
   final Clock _clock;
   final Random _random;
+  final PullApplier _applier;
 
   final _running = <String, Completer<void>>{};
+  final _pulling = <String, Completer<void>>{};
   final _again = <String>{};
   final _changes = StreamController<String>.broadcast();
 
@@ -128,9 +136,124 @@ class SyncService {
     return status(groupId);
   }
 
+  /// Downloads what other devices changed in [groupId] and returns the
+  /// resulting status (P6-T11, ADR-07, ADR-27).
+  ///
+  /// Tables are pulled in [pushRank] order (parents first; Drift enforces the
+  /// foreign keys), each by its own `server_seq` cursor in pages of
+  /// [pullPageSize]. A page is applied in one transaction by [PullApplier]
+  /// together with its cursor; applying never queues outbox ops.
+  ///
+  /// Failures stay visible through [status] and stop the pull; the cursor
+  /// stays at the last applied page, so the next pull resumes there:
+  /// - not a member: the group becomes `removed`, all data is kept;
+  /// - offline / server down / rate limited / app too old: stored as the
+  ///   error, nothing of the failed page is applied;
+  /// - a page that cannot be applied locally: `pullFailed:<reason>`.
+  /// A second call while a pull of the group runs waits for that one.
+  Future<SyncStatus> pull(String groupId) async {
+    final running = _pulling[groupId];
+    if (running != null) {
+      await running.future;
+      return status(groupId);
+    }
+    final done = Completer<void>();
+    _pulling[groupId] = done;
+    _announce(groupId);
+    try {
+      await _pullTables(groupId);
+    } finally {
+      _pulling.remove(groupId);
+      done.complete();
+      _announce(groupId);
+    }
+    return status(groupId);
+  }
+
+  Future<void> _pullTables(String groupId) async {
+    final sync = await _dao.groupSync(groupId);
+    if (sync == null || sync.state == SyncState.removed.name) return;
+    final tables = pushRank.keys.toList()
+      ..sort((a, b) => pushRank[a]!.compareTo(pushRank[b]!));
+    for (final table in tables) {
+      while (true) {
+        final cursor = await _dao.cursorOf(groupId, table);
+        final fetched = await _remote.pullChanges(
+          groupId: groupId,
+          table: table,
+          afterSeq: cursor,
+          limit: pullPageSize,
+        );
+        final List<Map<String, Object?>> rows;
+        switch (fetched) {
+          case Err(:final error):
+            return _onPullFailure(groupId, error);
+          case Ok(:final value):
+            rows = value;
+        }
+        if (rows.isEmpty) break;
+        var children = const <String, ExpenseChildren>{};
+        if (table == DbTables.expenses) {
+          final kids = await _remote.fetchExpenseChildren([
+            for (final r in rows) r[DbExpensesCols.id]! as String,
+          ]);
+          switch (kids) {
+            case Err(:final error):
+              return _onPullFailure(groupId, error);
+            case Ok(:final value):
+              children = value;
+          }
+        }
+        try {
+          await _applier.applyPage(
+            groupId: groupId,
+            table: table,
+            rows: rows,
+            children: children,
+          );
+        } on PullAbort catch (abort) {
+          return _onPullFailure(groupId, abort.error);
+        } on Exception {
+          // The page was rolled back. Not swallowed: shown as pullFailed.
+          return _onPullFailure(
+            groupId,
+            const PullFailed('local_apply_failed'),
+          );
+        }
+        if (await _dao.cursorOf(groupId, table) <= cursor) {
+          // The server sent rows that do not advance the cursor; looping
+          // would never end.
+          return _onPullFailure(groupId, const PullFailed('cursor_stuck'));
+        }
+        if (rows.length < pullPageSize) break;
+      }
+    }
+    await _dao.markPulled(groupId, _clock.now());
+    // A good pull shows the server answers, so a connection error is stale.
+    // Kept: a refusal of a push (it stays until the user has seen it) and
+    // any error while ops still wait (the next push settles it).
+    final current = (await _dao.groupSync(groupId))?.lastErrorCode;
+    if (current != null &&
+        !current.startsWith('rejected:') &&
+        await _dao.pendingOutboxCount(groupId) == 0) {
+      await _dao.clearError(groupId);
+      _liveErrors.remove(groupId);
+    }
+  }
+
+  Future<void> _onPullFailure(String groupId, RemoteError error) async {
+    if (error is NotMember) {
+      // Removed from the group: keep every row and op, stop syncing.
+      await _dao.setState(groupId, SyncState.removed);
+    }
+    await _record(groupId, error);
+  }
+
   /// Syncing > error > pending > idle.
   Future<SyncStatus> status(String groupId) async {
-    if (_running.containsKey(groupId)) return const SyncSyncing();
+    if (_running.containsKey(groupId) || _pulling.containsKey(groupId)) {
+      return const SyncSyncing();
+    }
     final code = (await _dao.groupSync(groupId))?.lastErrorCode;
     if (code != null) {
       final live = _liveErrors[groupId];

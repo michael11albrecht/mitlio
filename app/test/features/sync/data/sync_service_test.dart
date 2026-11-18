@@ -137,6 +137,7 @@ class _World {
         remote: fake,
         clock: r.clock,
         random: _FixedRandom(jitter),
+        ids: SequentialIdGenerator(prefix: 'pull'),
       ),
     );
     if (uploaded) {
@@ -448,6 +449,7 @@ void main() {
           remote: FakeSyncRemote(),
           clock: FixedClock(DateTime.utc(2026)),
           random: _FixedRandom(jitter),
+          ids: SequentialIdGenerator(prefix: 'pull'),
         );
         return svc.backoff(1);
       }
@@ -572,6 +574,7 @@ void main() {
         remote: w.remote,
         clock: w.clock,
         random: _FixedRandom(0.5),
+        ids: SequentialIdGenerator(prefix: 'pull'),
       );
       expect(
         await restarted.status(w.groupId),

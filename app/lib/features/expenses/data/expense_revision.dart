@@ -3,6 +3,8 @@
 
 import 'dart:convert';
 
+import 'package:mitlio/db/daos/expenses_dao.dart';
+
 /// Revisions kept per expense; older ones are pruned in the write transaction.
 const expenseRevisionLimit = 50;
 
@@ -26,6 +28,27 @@ final class ExpenseSnapshot {
     this.category,
     this.tripMeta,
   });
+
+  /// The stored aggregate as it is now (used before every local edit and
+  /// before a pull overwrites it).
+  factory ExpenseSnapshot.ofStored(ExpenseWithChildren stored) {
+    final row = stored.expense;
+    return ExpenseSnapshot(
+      title: row.title,
+      amountCents: row.amountCents,
+      currency: row.currency,
+      fxRatePpm: row.fxRatePpm,
+      groupAmountCents: row.groupAmountCents,
+      date: row.date.toUtc(),
+      category: row.category,
+      type: row.type,
+      splitMode: row.splitMode,
+      tripMeta: row.tripMeta,
+      payers: {for (final p in stored.payers) p.memberId: p.paidCents},
+      shares: {for (final s in stored.shares) s.memberId: s.shareCents},
+      weights: {for (final s in stored.shares) s.memberId: s.weight},
+    );
+  }
 
   factory ExpenseSnapshot.fromJson(Map<String, Object?> json) {
     final shares = (json['shares']! as List).cast<Map<String, Object?>>();

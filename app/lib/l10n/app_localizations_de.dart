@@ -119,6 +119,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.';
 
   @override
+  String get remoteErrorPullFailed =>
+      'Neue Änderungen aus der Gruppe konnten nicht übernommen werden. Deine eigenen Daten sind sicher. Versuch es später nochmal oder aktualisiere mitlio.';
+
+  @override
   String get errorSettingNotSaved =>
       'Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.';
 

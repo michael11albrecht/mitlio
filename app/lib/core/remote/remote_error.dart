@@ -182,6 +182,26 @@ final class Rejected extends RemoteError {
   String toString() => 'Rejected($code)';
 }
 
+/// Pull only: changes from other devices could not be applied here, e.g. the
+/// server sent a row without a readable `updated_at`, or the local database
+/// refused the page. Nothing of the page was applied and local data is
+/// untouched. [reason] is a stable code.
+final class PullFailed extends RemoteError {
+  const PullFailed(this.reason);
+
+  final String reason;
+
+  @override
+  bool operator ==(Object other) =>
+      other is PullFailed && other.reason == reason;
+
+  @override
+  int get hashCode => Object.hash(PullFailed, reason);
+
+  @override
+  String toString() => 'PullFailed($reason)';
+}
+
 /// Stable, machine-readable name of the case (ADR-27 §3): what DebugDrive
 /// reports and what `local_group_sync.last_error_code` stores. Never shown
 /// to users; their text is `remoteErrorText`.
@@ -199,6 +219,7 @@ extension RemoteErrorName on RemoteError {
     VersionTooOld() => 'versionTooOld',
     ServerDown() => 'serverDown',
     Rejected() => 'rejected',
+    PullFailed() => 'pullFailed',
   };
 }
 
@@ -209,6 +230,10 @@ RemoteError remoteErrorFromCaseName(String name) {
   const rejectedPrefix = 'rejected:';
   if (name.startsWith(rejectedPrefix)) {
     return Rejected(name.substring(rejectedPrefix.length));
+  }
+  const pullFailedPrefix = 'pullFailed:';
+  if (name.startsWith(pullFailedPrefix)) {
+    return PullFailed(name.substring(pullFailedPrefix.length));
   }
   return switch (name) {
     'offline' => const Offline(),
@@ -222,6 +247,7 @@ RemoteError remoteErrorFromCaseName(String name) {
     'cannotRemoveSelf' => const CannotRemoveSelf(),
     'versionTooOld' => const VersionTooOld(),
     'serverDown' => const ServerDown(),
+    'pullFailed' => const PullFailed(''),
     _ => Rejected(name),
   };
 }
@@ -232,6 +258,7 @@ RemoteError remoteErrorFromCaseName(String name) {
 extension RemoteErrorStorage on RemoteError {
   String get storedCode => switch (this) {
     Rejected(:final code) => 'rejected:$code',
+    PullFailed(:final reason) => 'pullFailed:$reason',
     _ => caseName,
   };
 }

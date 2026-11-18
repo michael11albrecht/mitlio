@@ -15,6 +15,7 @@ void main() {
     VersionTooOld(),
     ServerDown(),
     Rejected('payers_sum_mismatch'),
+    PullFailed('invalid_updated_at'),
   ];
 
   test('every case survives a trip through the stored code', () {
