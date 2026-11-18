@@ -1477,6 +1477,8 @@
   "syncRejectedShow": "Ansehen",
   "syncRejectedSheetTitle": "Nicht geteilt",
   "syncRejectedOk": "OK",
+  "syncUpdateAction": "Aktualisieren",
+  "syncUpdateOpenFailed": "Der Store lässt sich nicht öffnen. Öffne ihn selbst und aktualisiere mitlio.",
   "syncStatusUploading": "Wird hochgeladen …",
   "syncStatusUploadingLeft": "{count, plural, =1{Wird hochgeladen … noch 1 Eintrag} other{Wird hochgeladen … noch {count} Einträge}}",
   "@syncStatusUploadingLeft": {

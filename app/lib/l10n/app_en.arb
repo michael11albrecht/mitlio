@@ -973,6 +973,8 @@
   "syncRejectedShow": "Show",
   "syncRejectedSheetTitle": "Not shared",
   "syncRejectedOk": "OK",
+  "syncUpdateAction": "Update",
+  "syncUpdateOpenFailed": "Could not open the store. Open it yourself and update mitlio.",
   "syncStatusUploading": "Uploading …",
   "syncStatusUploadingLeft": "{count, plural, =1{Uploading … 1 entry left} other{Uploading … {count} entries left}}",
   "@syncStatusUploadingLeft": {

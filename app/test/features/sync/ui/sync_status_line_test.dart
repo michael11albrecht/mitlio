@@ -33,6 +33,29 @@ String _expected(AppLocalizations l10n, SyncStatus status) => switch (status) {
   ),
 };
 
+/// A too-old status whose store action is counted instead of launched.
+class _StoreViewModel extends StubSyncStatusViewModel {
+  _StoreViewModel({required this.opens})
+    : super('g', const SyncLineShown(SyncError(VersionTooOld())));
+
+  final bool opens;
+  int opened = 0;
+
+  @override
+  Future<bool> openStore() async {
+    opened++;
+    return opens;
+  }
+}
+
+Widget _versionLine(
+  _StoreViewModel vm, {
+  Locale locale = const Locale('de'),
+}) => ProviderScope(
+  overrides: [syncStatusViewModelProvider.overrideWith2((_) => vm)],
+  child: themedApp(const SyncStatusLine(groupId: 'g'), locale: locale),
+);
+
 void main() {
   group('texts', () {
     for (final (name, status) in syncLineCases) {
@@ -82,7 +105,7 @@ void main() {
     testWidgets('offline and not-member offer nothing to press', (
       tester,
     ) async {
-      for (final error in const [Offline(), NotMember(), VersionTooOld()]) {
+      for (final error in const [Offline(), NotMember()]) {
         await tester.pumpWidget(
           KeyedSubtree(
             key: UniqueKey(),
@@ -93,6 +116,58 @@ void main() {
         expect(find.byType(TextButton), findsNothing, reason: '$error');
       }
     });
+
+    testWidgets('a too old app offers "Aktualisieren", which opens the store', (
+      tester,
+    ) async {
+      final vm = _StoreViewModel(opens: true);
+      await tester.pumpWidget(_versionLine(vm));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Diese Version kann nicht mehr teilen. Aktualisiere mitlio.'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Aktualisieren'));
+      await tester.pumpAndSettle();
+      expect(vm.opened, 1);
+      expect(find.byType(SnackBar), findsNothing);
+    });
+
+    testWidgets('"Update" in English', (tester) async {
+      await tester.pumpWidget(
+        _versionLine(_StoreViewModel(opens: true), locale: const Locale('en')),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.text('This version can no longer share. Update mitlio.'),
+        findsOneWidget,
+      );
+      expect(find.text('Update'), findsOneWidget);
+    });
+
+    for (final (lang, text) in [
+      (
+        'de',
+        'Der Store lässt sich nicht öffnen. Öffne ihn selbst und '
+            'aktualisiere mitlio.',
+      ),
+      (
+        'en',
+        'Could not open the store. Open it yourself and update mitlio.',
+      ),
+    ]) {
+      testWidgets('a store that cannot open says so in $lang', (tester) async {
+        final vm = _StoreViewModel(opens: false);
+        await tester.pumpWidget(_versionLine(vm, locale: Locale(lang)));
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.text(lang == 'de' ? 'Aktualisieren' : 'Update'),
+        );
+        await tester.pumpAndSettle();
+        expect(vm.opened, 1);
+        expect(find.text(text), findsOneWidget);
+      });
+    }
 
     testWidgets('"Nochmal versuchen" syncs the group now', (tester) async {
       final coordinator = FakeSyncCoordinator();

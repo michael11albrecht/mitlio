@@ -1976,6 +1976,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get syncRejectedOk => 'OK';
 
   @override
+  String get syncUpdateAction => 'Aktualisieren';
+
+  @override
+  String get syncUpdateOpenFailed =>
+      'Der Store lässt sich nicht öffnen. Öffne ihn selbst und aktualisiere mitlio.';
+
+  @override
   String get syncStatusUploading => 'Wird hochgeladen …';
 
   @override
