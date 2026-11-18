@@ -3,6 +3,7 @@ import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/remote/secure_local_storage.dart';
 import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/features/settings/data/repositories/legal_links_providers.dart';
+import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
 import 'package:mitlio/features/sync/data/auth_providers.dart';
 import 'package:mitlio/features/sync/data/drift_sync_coordinator.dart';
 import 'package:mitlio/features/sync/data/drift_sync_state_repository.dart';
@@ -64,13 +65,9 @@ final shareLinkRepositoryProvider = Provider<ShareLinkRepository>(
     auth: ref.watch(authRepositoryProvider),
     secrets: ref.watch(secretStoreProvider),
     logger: ref.watch(loggerProvider),
+    share: ref.watch(shareServiceProvider),
     siteUrl: siteUrl,
   ),
-);
-
-/// Whether sharing is offered at all: not without a backend (plan §2.6).
-final shareAvailableProvider = Provider<bool>(
-  (ref) => ref.watch(remoteBackendProvider).isAvailable,
 );
 
 /// One coordinator per app. `main` calls `start()`; the group detail calls

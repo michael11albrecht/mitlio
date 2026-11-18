@@ -45,7 +45,7 @@ final shareStates = <(String, ShareState)>[
       groupName: 'Wochenende in den Bergen',
       isOwner: true,
       confirmingRotate: true,
-      rotateError: LinkRemoteFailure(Offline()),
+      rotateError: ShareFailureLink(LinkRemoteFailure(Offline())),
     ),
   ),
   (

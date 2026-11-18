@@ -71,7 +71,7 @@ Future<Map<String, Object?>> _withShare(
     await command(c.read(provider.notifier));
     return switch (c.read(provider)) {
       ShareReady(:final link, :final isOwner, :final rotateError) => {
-        if (rotateError != null) ..._linkError(rotateError),
+        if (rotateError != null) ..._failure(rotateError),
         'link': link.shortUrl,
         'isOwner': isOwner,
         'saved': link.saved,

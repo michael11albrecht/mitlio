@@ -2,18 +2,23 @@
 // ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mitlio/core/providers.dart';
+import 'package:mitlio/core/remote/remote_error_text.dart';
 import 'package:mitlio/db/daos/sync_state_dao.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
-import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
+import 'package:mitlio/features/sync/data/repositories/share_error_text.dart';
 import 'package:mitlio/features/sync/data/repositories/share_group_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/share_link_repository.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
-/// Why the share sheet has no link (plain words in `share_text`).
+/// Why the share sheet has no link (plain words in [text]).
 sealed class ShareFailure {
   const ShareFailure();
+
+  /// Du-form words: what happened and what to do next (plan §2.6 #9).
+  String text(AppLocalizations l10n);
 }
 
 /// Turning the local group into a shared one failed (P6-T15).
@@ -21,6 +26,9 @@ final class ShareFailureUpload extends ShareFailure {
   const ShareFailureUpload(this.error);
 
   final ShareError error;
+
+  @override
+  String text(AppLocalizations l10n) => shareErrorText(l10n, error);
 
   @override
   bool operator ==(Object other) =>
@@ -39,6 +47,10 @@ final class ShareFailureUnfinished extends ShareFailure {
   final int total;
 
   @override
+  String text(AppLocalizations l10n) =>
+      l10n.shareUploadPartial(uploaded, total);
+
+  @override
   bool operator ==(Object other) =>
       other is ShareFailureUnfinished &&
       other.uploaded == uploaded &&
@@ -53,6 +65,14 @@ final class ShareFailureLink extends ShareFailure {
   const ShareFailureLink(this.failure);
 
   final ShareLinkFailure failure;
+
+  @override
+  String text(AppLocalizations l10n) => switch (failure) {
+    LinkRemoteFailure(:final error) => remoteErrorText(l10n, error),
+    LinkNotKnownToMember() => l10n.inviteNoLinkMember,
+    LinkRotated() => l10n.inviteLinkRotated,
+    LinkStoreUnreadable() => l10n.inviteStoreUnreadable,
+  };
 
   @override
   bool operator ==(Object other) =>
@@ -99,13 +119,13 @@ final class ShareReady extends ShareState {
   final bool rotating;
 
   /// Why the last "Neuen Link erstellen" failed; the old link still works.
-  final ShareLinkFailure? rotateError;
+  final ShareFailure? rotateError;
 
   ShareReady copyWith({
     ShareLink? link,
     bool? confirmingRotate,
     bool? rotating,
-    ShareLinkFailure? rotateError,
+    ShareFailure? rotateError,
     bool clearRotateError = false,
   }) => ShareReady(
     link: link ?? this.link,
@@ -215,7 +235,10 @@ class ShareViewModel extends Notifier<ShareState> {
         rotating: false,
         clearRotateError: true,
       ),
-      Err(:final error) => s.copyWith(rotating: false, rotateError: error),
+      Err(:final error) => s.copyWith(
+        rotating: false,
+        rotateError: ShareFailureLink(error),
+      ),
     };
   }
 
@@ -226,7 +249,7 @@ class ShareViewModel extends Notifier<ShareState> {
     if (s is! ShareReady) return const Ok(null);
     try {
       await ref
-          .read(shareServiceProvider)
+          .read(shareLinkRepositoryProvider)
           .shareText(l10n.inviteShareText(s.groupName, s.link.url));
       return const Ok(null);
     } on Object catch (e) {
@@ -238,3 +261,8 @@ class ShareViewModel extends Notifier<ShareState> {
 // ignore: specify_nonobvious_property_types, the family provider type is not exported
 final shareViewModelProvider = NotifierProvider.autoDispose
     .family<ShareViewModel, ShareState, String>(ShareViewModel.new);
+
+/// Whether the share entry is shown at all: not without a backend.
+final shareAvailableProvider = Provider<bool>(
+  (ref) => ref.watch(remoteBackendProvider).isAvailable,
+);

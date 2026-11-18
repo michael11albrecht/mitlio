@@ -4,6 +4,7 @@
 import 'package:mitlio/core/logging.dart';
 import 'package:mitlio/core/remote/remote_error.dart';
 import 'package:mitlio/core/remote/secure_local_storage.dart';
+import 'package:mitlio/features/settle/data/services/share_service.dart';
 import 'package:mitlio/features/sync/data/repositories/auth_repository.dart';
 import 'package:mitlio/features/sync/data/services/invite_remote.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -51,7 +52,7 @@ class ShareLink {
   String toString() => 'ShareLink($shortUrl)';
 }
 
-/// Why there is no link to show (plain words in `share_text`).
+/// Why there is no link to show (plain words in `ShareFailureLink.text`).
 sealed class ShareLinkFailure {
   const ShareLinkFailure();
 }
@@ -128,6 +129,7 @@ class ShareLinkRepository {
     required this._auth,
     required this._secrets,
     required this._logger,
+    required this._share,
     required this._siteUrl,
   });
 
@@ -135,7 +137,11 @@ class ShareLinkRepository {
   final AuthRepository _auth;
   final SecretStore _secrets;
   final Logger _logger;
+  final ShareService _share;
   final String _siteUrl;
+
+  /// Hands [text] (the invitation) to the system share sheet.
+  Future<void> shareText(String text) => _share.shareText(text);
 
   static String _key(String groupId) => 'mitlio.invite.$groupId';
 

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/theme/theme.dart';
-import 'package:mitlio/features/sync/ui/share_text.dart';
 import 'package:mitlio/features/sync/ui/share_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -60,7 +59,7 @@ class _ShareSheetState extends ConsumerState<ShareSheet> {
             switch (state) {
               ShareLoading() => _Loading(text: l10n.sharePreparing),
               ShareFailed(:final failure) => _Failed(
-                text: shareFailureText(l10n, failure),
+                text: failure.text(l10n),
                 onRetry: () => unawaited(vm.share()),
               ),
               final ShareReady ready => _Ready(state: ready, vm: vm),
@@ -199,7 +198,7 @@ class _RotateConfirm extends StatelessWidget {
         if (error != null) ...[
           const SizedBox(height: Spacing.sm),
           Text(
-            shareLinkFailureText(l10n, error),
+            error.text(l10n),
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.error,

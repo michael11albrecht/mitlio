@@ -15,6 +15,7 @@ import 'package:mitlio/features/sync/data/services/fake_auth_service.dart';
 import 'package:mitlio/features/sync/data/services/fake_invite_remote.dart';
 import 'package:mitlio/features/sync/data/services/fake_sync_remote.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
+import 'package:mitlio/features/sync/ui/share_view_model.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../../../db/test_support.dart';

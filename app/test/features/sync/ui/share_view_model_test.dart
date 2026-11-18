@@ -6,7 +6,6 @@ import 'package:mitlio/db/daos/sync_state_dao.dart';
 import 'package:mitlio/features/sync/data/repositories/share_group_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/share_link_repository.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
-import 'package:mitlio/features/sync/ui/share_text.dart';
 import 'package:mitlio/features/sync/ui/share_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio/l10n/app_localizations_de.dart';
@@ -124,7 +123,7 @@ void main() {
       expect(s.rotating, isFalse);
       for (final l in langs) {
         expect(
-          shareLinkFailureText(l, s.rotateError!),
+          s.rotateError!.text(l),
           remoteErrorText(l, const Offline()),
         );
       }
@@ -186,7 +185,7 @@ void main() {
       expect(w.invites.calls, createCalls);
       for (final l in langs) {
         expect(
-          shareFailureText(l, failure()),
+          failure().text(l),
           l.inviteStoreUnreadable,
         );
       }
@@ -201,7 +200,7 @@ void main() {
       await vm.share();
       expect(failure(), isA<ShareFailureUpload>());
       for (final l in langs) {
-        final text = shareFailureText(l, failure());
+        final text = failure().text(l);
         expect(text, contains(remoteErrorText(l, const Offline())));
         expect(text, startsWith(l.shareUploadPartial(0, 3)));
       }
@@ -222,7 +221,7 @@ void main() {
         const ShareFailureUpload(ShareGroupRemoved()),
       );
       for (final l in langs) {
-        expect(shareFailureText(l, failure()), l.remoteErrorNotMember);
+        expect(failure().text(l), l.remoteErrorNotMember);
       }
     });
 
@@ -242,7 +241,7 @@ void main() {
       await vm.share();
       for (final l in langs) {
         expect(
-          shareFailureText(l, failure()),
+          failure().text(l),
           contains(l.remoteErrorRateLimitedIn(3)),
         );
       }
@@ -251,7 +250,7 @@ void main() {
     test('unfinished upload text is the partial text', () {
       for (final l in langs) {
         expect(
-          shareFailureText(l, const ShareFailureUnfinished(2, 5)),
+          const ShareFailureUnfinished(2, 5).text(l),
           l.shareUploadPartial(2, 5),
         );
       }
@@ -260,7 +259,7 @@ void main() {
     test('a group that is not on this phone', () {
       for (final l in langs) {
         expect(
-          shareFailureText(l, const ShareFailureUpload(ShareGroupMissing())),
+          const ShareFailureUpload(ShareGroupMissing()).text(l),
           l.shareGroupMissing,
         );
       }
@@ -305,7 +304,7 @@ void main() {
           await vm.share();
           expect(failure(), ShareFailureLink(LinkRemoteFailure(error)));
           for (final l in langs) {
-            expect(shareFailureText(l, failure()), remoteErrorText(l, error));
+            expect(failure().text(l), remoteErrorText(l, error));
           }
           expect(w.storedToken, isNull);
           // Retry works once the server answers.
@@ -361,12 +360,12 @@ void main() {
       expect(failure(), const ShareFailureLink(LinkRotated()));
       expect(w.storedToken, isNull);
       expect(
-        shareFailureText(de, failure()),
+        failure().text(de),
         'Dieser Link gilt nicht mehr. Frag, wer die Gruppe erstellt hat, '
         'nach dem neuen.',
       );
       expect(
-        shareFailureText(en, failure()),
+        failure().text(en),
         'This link no longer works. Ask whoever created the group for the '
         'new one.',
       );
@@ -378,7 +377,7 @@ void main() {
       await vm.share();
       expect(failure(), const ShareFailureLink(LinkNotKnownToMember()));
       for (final l in langs) {
-        expect(shareFailureText(l, failure()), l.inviteNoLinkMember);
+        expect(failure().text(l), l.inviteNoLinkMember);
       }
       expect(w.invites.calls, 1); // the join in the fixture only
       expect(w.storedToken, isNull);
@@ -408,7 +407,7 @@ void main() {
       open(w);
       await vm.share();
       for (final l in langs) {
-        expect(shareFailureText(l, failure()), l.remoteErrorNotMember);
+        expect(failure().text(l), l.remoteErrorNotMember);
       }
     });
   });

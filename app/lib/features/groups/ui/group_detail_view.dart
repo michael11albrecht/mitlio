@@ -16,8 +16,9 @@ import 'package:mitlio/features/export/ui/export_sheet.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
 import 'package:mitlio/features/members/ui/member_payment_view.dart';
 import 'package:mitlio/features/rides/ui/rides_view.dart';
-import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio/features/sync/ui/share_sheet.dart';
+import 'package:mitlio/features/sync/ui/share_view_model.dart'
+    show shareAvailableProvider;
 import 'package:mitlio/features/sync/ui/sync_status_line.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
