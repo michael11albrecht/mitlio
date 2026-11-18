@@ -3259,6 +3259,60 @@ abstract class AppLocalizations {
   /// **'Diese Gruppe gibt es auf diesem Handy nicht mehr. Lade die Gruppenliste neu.'**
   String get shareGroupMissing;
 
+  /// No description provided for @syncStatusUpToDate.
+  ///
+  /// In de, this message translates to:
+  /// **'Aktuell'**
+  String get syncStatusUpToDate;
+
+  /// No description provided for @syncStatusSending.
+  ///
+  /// In de, this message translates to:
+  /// **'Wird gesendet …'**
+  String get syncStatusSending;
+
+  /// No description provided for @syncStatusPending.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{1 Änderung wartet} other{{count} Änderungen warten}}'**
+  String syncStatusPending(int count);
+
+  /// No description provided for @syncRejectedLine.
+  ///
+  /// In de, this message translates to:
+  /// **'Eine Änderung konnte nicht geteilt werden.'**
+  String get syncRejectedLine;
+
+  /// No description provided for @syncRejectedShow.
+  ///
+  /// In de, this message translates to:
+  /// **'Ansehen'**
+  String get syncRejectedShow;
+
+  /// No description provided for @syncRejectedSheetTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Nicht geteilt'**
+  String get syncRejectedSheetTitle;
+
+  /// No description provided for @syncRejectedOk.
+  ///
+  /// In de, this message translates to:
+  /// **'OK'**
+  String get syncRejectedOk;
+
+  /// No description provided for @syncStatusUploading.
+  ///
+  /// In de, this message translates to:
+  /// **'Wird hochgeladen …'**
+  String get syncStatusUploading;
+
+  /// No description provided for @syncStatusUploadingLeft.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{Wird hochgeladen … noch 1 Eintrag} other{Wird hochgeladen … noch {count} Einträge}}'**
+  String syncStatusUploadingLeft(int count);
+
   /// No description provided for @shareMenu.
   ///
   /// In de, this message translates to:

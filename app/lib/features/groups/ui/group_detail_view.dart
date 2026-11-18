@@ -18,6 +18,7 @@ import 'package:mitlio/features/members/ui/member_payment_view.dart';
 import 'package:mitlio/features/rides/ui/rides_view.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio/features/sync/ui/share_sheet.dart';
+import 'package:mitlio/features/sync/ui/sync_status_line.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -149,131 +150,176 @@ class GroupDetailView extends ConsumerWidget {
               ),
               // Swipes belong to the rows (swipe to delete); tabs switch by
               // tap.
-              body: TabBarView(
-                physics: const NeverScrollableScrollPhysics(),
+              body: Column(
                 children: [
-                  Column(
-                    children: [
-                      Expanded(
-                        child: members.isEmpty
-                            ? EmptyState(
-                                icon: Icons.person_add_alt_outlined,
-                                title: l10n.membersEmptyTitle,
-                                message: l10n.membersEmptyMessage,
-                              )
-                            : ReorderableListView.builder(
-                                padding: Spacing.screen,
-                                keyboardDismissBehavior:
-                                    ScrollViewKeyboardDismissBehavior.onDrag,
-                                buildDefaultDragHandles: false,
-                                itemCount: members.length,
-                                onReorderItem: (from, to) async {
-                                  final messenger = ScaffoldMessenger.of(
-                                    context,
-                                  );
-                                  final result = await vm.reorder(from, to);
-                                  if (result case Err(:final error)) {
-                                    showErrorSnackBar(messenger, l10n, error);
-                                  }
-                                },
-                                header: notice == null
-                                    ? null
-                                    : Padding(
-                                        padding: const EdgeInsets.only(
-                                          bottom: Spacing.sm,
-                                        ),
-                                        child: _InlineNotice(
-                                          message: l10n.memberInUse(
-                                            notice.name,
-                                          ),
-                                          onDismiss: vm.dismissNotice,
-                                        ),
-                                      ),
-                                footer: members.length < 2
-                                    ? null
-                                    : Padding(
-                                        padding: Spacing.allSm,
-                                        child: Text(
-                                          l10n.memberOrderHint,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall
-                                              ?.copyWith(
-                                                color: Theme.of(
-                                                  context,
-                                                ).colorScheme.onSurfaceVariant,
-                                              ),
-                                        ),
-                                      ),
-                                itemBuilder: (context, index) {
-                                  final item = members[index];
-                                  return _MemberTile(
-                                    key: ValueKey(item.member.id),
-                                    item: item,
-                                    index: index,
-                                    onRename: (name) async {
-                                      final messenger = ScaffoldMessenger.of(
-                                        context,
-                                      );
-                                      final result = await vm.renameMember(
-                                        item.member.id,
-                                        name,
-                                      );
-                                      if (result case Err(:final error)) {
-                                        showErrorSnackBar(
-                                          messenger,
-                                          l10n,
-                                          error,
-                                        );
-                                      }
-                                    },
-                                    onRemove: () async {
-                                      final messenger = ScaffoldMessenger.of(
-                                        context,
-                                      );
-                                      final result = await vm.removeMember(
-                                        item.member.id,
-                                      );
-                                      if (!context.mounted) return;
-                                      switch (result) {
-                                        case Ok(:final value):
-                                          showUndoSnackBar(
-                                            context,
-                                            message: l10n.memberRemoved(
-                                              item.member.name,
-                                            ),
-                                            undo: value,
-                                          );
-                                        // "In use" is explained by the inline
-                                        // notice above the list.
-                                        case Err(error: Conflict()):
-                                          break;
-                                        case Err(:final error):
-                                          showErrorSnackBar(
-                                            messenger,
-                                            l10n,
-                                            error,
-                                          );
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
-                      ),
-                      _AddMemberField(
-                        autofocus: members.isEmpty,
-                        onAdd: vm.addMember,
-                      ),
-                    ],
+                  SyncStatusLine(groupId: groupId),
+                  Expanded(
+                    child: TabBarView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        _MembersTab(
+                          groupId: groupId,
+                          members: members,
+                          notice: notice,
+                          vm: vm,
+                        ),
+                        ExpensesView(groupId: groupId),
+                        RidesView(groupId: groupId),
+                      ],
+                    ),
                   ),
-                  ExpensesView(groupId: groupId),
-                  RidesView(groupId: groupId),
                 ],
               ),
             ),
           ),
         ),
     };
+  }
+}
+
+/// The members tab: list (pull to refresh), notice and the add field.
+class _MembersTab extends StatelessWidget {
+  const _MembersTab({
+    required this.groupId,
+    required this.members,
+    required this.notice,
+    required this.vm,
+  });
+
+  final String groupId;
+  final List<MemberItem> members;
+  final MemberInUse? notice;
+  final GroupDetailViewModel vm;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final notice = this.notice;
+    return Column(
+      children: [
+        Expanded(
+          child: members.isEmpty
+              ? EmptyState(
+                  icon: Icons.person_add_alt_outlined,
+                  title: l10n.membersEmptyTitle,
+                  message: l10n.membersEmptyMessage,
+                )
+              : RefreshIndicator(
+                  onRefresh: vm.refresh,
+                  child: ReorderableListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: Spacing.screen,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    buildDefaultDragHandles: false,
+                    itemCount: members.length,
+                    onReorderItem: (from, to) async {
+                      final messenger = ScaffoldMessenger.of(
+                        context,
+                      );
+                      final result = await vm.reorder(
+                        from,
+                        to,
+                      );
+                      if (result case Err(:final error)) {
+                        showErrorSnackBar(
+                          messenger,
+                          l10n,
+                          error,
+                        );
+                      }
+                    },
+                    header: notice == null
+                        ? null
+                        : Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: Spacing.sm,
+                            ),
+                            child: _InlineNotice(
+                              message: l10n.memberInUse(
+                                notice.name,
+                              ),
+                              onDismiss: vm.dismissNotice,
+                            ),
+                          ),
+                    footer: members.length < 2
+                        ? null
+                        : Padding(
+                            padding: Spacing.allSm,
+                            child: Text(
+                              l10n.memberOrderHint,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                          ),
+                    itemBuilder: (context, index) {
+                      final item = members[index];
+                      return _MemberTile(
+                        key: ValueKey(item.member.id),
+                        item: item,
+                        index: index,
+                        onRename: (name) async {
+                          final messenger = ScaffoldMessenger.of(
+                            context,
+                          );
+                          final result = await vm.renameMember(
+                            item.member.id,
+                            name,
+                          );
+                          if (result case Err(
+                            :final error,
+                          )) {
+                            showErrorSnackBar(
+                              messenger,
+                              l10n,
+                              error,
+                            );
+                          }
+                        },
+                        onRemove: () async {
+                          final messenger = ScaffoldMessenger.of(
+                            context,
+                          );
+                          final result = await vm.removeMember(
+                            item.member.id,
+                          );
+                          if (!context.mounted) return;
+                          switch (result) {
+                            case Ok(:final value):
+                              showUndoSnackBar(
+                                context,
+                                message: l10n.memberRemoved(
+                                  item.member.name,
+                                ),
+                                undo: value,
+                              );
+                            // "In use" is explained by the inline
+                            // notice above the list.
+                            case Err(error: Conflict()):
+                              break;
+                            case Err(:final error):
+                              showErrorSnackBar(
+                                messenger,
+                                l10n,
+                                error,
+                              );
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+        ),
+        _AddMemberField(
+          autofocus: members.isEmpty,
+          onAdd: vm.addMember,
+        ),
+      ],
+    );
   }
 }
 

@@ -959,6 +959,29 @@
     }
   },
   "shareGroupMissing": "This group is no longer on this phone. Reload the group list.",
+  "syncStatusUpToDate": "Up to date",
+  "syncStatusSending": "Sending …",
+  "syncStatusPending": "{count, plural, =1{1 change waiting} other{{count} changes waiting}}",
+  "@syncStatusPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRejectedLine": "A change could not be shared.",
+  "syncRejectedShow": "Show",
+  "syncRejectedSheetTitle": "Not shared",
+  "syncRejectedOk": "OK",
+  "syncStatusUploading": "Uploading …",
+  "syncStatusUploadingLeft": "{count, plural, =1{Uploading … 1 entry left} other{Uploading … {count} entries left}}",
+  "@syncStatusUploadingLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "shareMenu": "Share group",
   "shareSheetTitle": "Share group",
   "sharePreparing": "Preparing the link …",

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/crash/crash_reporter.dart';
 import 'package:mitlio/core/id_generator.dart';
+import 'package:mitlio/core/lifecycle.dart';
 import 'package:mitlio/core/logging.dart';
 import 'package:mitlio/core/remote/remote_backend.dart';
 
@@ -38,4 +39,9 @@ final errorSinkProvider = Provider<ErrorSink>(
 /// overrides it when `AppConfig.hasBackend`.
 final remoteBackendProvider = Provider<RemoteBackend>(
   (ref) => const RemoteBackend.none(),
+);
+
+/// App resume events (sync trigger). Tests override it with a fake.
+final lifecycleSourceProvider = Provider<LifecycleSource>(
+  (ref) => WidgetsLifecycleSource(),
 );

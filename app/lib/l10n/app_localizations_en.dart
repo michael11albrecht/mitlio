@@ -1939,6 +1939,49 @@ class AppLocalizationsEn extends AppLocalizations {
       'This group is no longer on this phone. Reload the group list.';
 
   @override
+  String get syncStatusUpToDate => 'Up to date';
+
+  @override
+  String get syncStatusSending => 'Sending …';
+
+  @override
+  String syncStatusPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count changes waiting',
+      one: '1 change waiting',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncRejectedLine => 'A change could not be shared.';
+
+  @override
+  String get syncRejectedShow => 'Show';
+
+  @override
+  String get syncRejectedSheetTitle => 'Not shared';
+
+  @override
+  String get syncRejectedOk => 'OK';
+
+  @override
+  String get syncStatusUploading => 'Uploading …';
+
+  @override
+  String syncStatusUploadingLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Uploading … $count entries left',
+      one: 'Uploading … 1 entry left',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get shareMenu => 'Share group';
 
   @override

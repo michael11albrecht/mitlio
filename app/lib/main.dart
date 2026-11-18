@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:drift/native.dart';
@@ -24,6 +25,7 @@ import 'package:mitlio/features/fx/data/repositories/fx_providers.dart';
 import 'package:mitlio/features/fx/data/services/fx_rate_service.dart';
 import 'package:mitlio/features/routes/data/repositories/route_providers.dart';
 import 'package:mitlio/features/routes/data/services/route_distance_service.dart';
+import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:path_provider/path_provider.dart';
 
 // TODO(P8-T01): read from AppConfig once the config files land. Empty in the
@@ -97,6 +99,9 @@ Future<void> main() async {
     await db.syncStateDao.hlcNodeId(container.read(idGeneratorProvider)),
   );
   container.read(errorSinkProvider).install();
+  // Syncs shared groups on start and on resume; with none, no network call
+  // and no sign-in happen.
+  unawaited(container.read(syncCoordinatorProvider).start());
   if (kDebugMode) registerDebugDrive(container);
   runApp(
     UncontrolledProviderScope(container: container, child: const MitlioApp()),

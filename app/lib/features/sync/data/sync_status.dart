@@ -54,6 +54,25 @@ final class SyncPending extends SyncStatus {
   String toString() => 'SyncPending($count)';
 }
 
+/// The group is being shared: its history is still going out. [remaining]
+/// entries wait (null: not known right now). Only the coordinator produces it
+/// (for a group in state `uploading`); `SyncService.status` does not.
+final class SyncUploading extends SyncStatus {
+  const SyncUploading({this.remaining});
+
+  final int? remaining;
+
+  @override
+  bool operator ==(Object other) =>
+      other is SyncUploading && other.remaining == remaining;
+
+  @override
+  int get hashCode => Object.hash(SyncUploading, remaining);
+
+  @override
+  String toString() => 'SyncUploading($remaining)';
+}
+
 /// The last push failed or the server refused something. [title] names the
 /// refused entry (an expense title) for [Rejected].
 final class SyncError extends SyncStatus {

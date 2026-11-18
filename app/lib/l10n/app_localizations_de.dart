@@ -1947,6 +1947,49 @@ class AppLocalizationsDe extends AppLocalizations {
       'Diese Gruppe gibt es auf diesem Handy nicht mehr. Lade die Gruppenliste neu.';
 
   @override
+  String get syncStatusUpToDate => 'Aktuell';
+
+  @override
+  String get syncStatusSending => 'Wird gesendet …';
+
+  @override
+  String syncStatusPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Änderungen warten',
+      one: '1 Änderung wartet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncRejectedLine => 'Eine Änderung konnte nicht geteilt werden.';
+
+  @override
+  String get syncRejectedShow => 'Ansehen';
+
+  @override
+  String get syncRejectedSheetTitle => 'Nicht geteilt';
+
+  @override
+  String get syncRejectedOk => 'OK';
+
+  @override
+  String get syncStatusUploading => 'Wird hochgeladen …';
+
+  @override
+  String syncStatusUploadingLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Wird hochgeladen … noch $count Einträge',
+      one: 'Wird hochgeladen … noch 1 Eintrag',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get shareMenu => 'Gruppe teilen';
 
   @override
