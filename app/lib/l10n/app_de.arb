@@ -65,6 +65,7 @@
     }
   },
   "remoteErrorRejectedNoTitle": "Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.",
+  "remoteErrorPullFailed": "Neue Änderungen aus der Gruppe konnten nicht übernommen werden. Deine eigenen Daten sind sicher. Versuch es später nochmal oder aktualisiere mitlio.",
   "errorSettingNotSaved": "Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.",
   "errorUndoFailed": "Rückgängig machen hat nicht geklappt. Prüf den Stand und versuch es nochmal.",
   "retry": "Nochmal versuchen",

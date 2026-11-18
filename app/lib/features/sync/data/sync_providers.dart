@@ -23,5 +23,6 @@ final syncServiceProvider = Provider<SyncService>(
     remote: ref.watch(syncRemoteProvider),
     clock: ref.watch(clockProvider),
     random: ref.watch(randomProvider),
+    ids: ref.watch(idGeneratorProvider),
   ),
 );

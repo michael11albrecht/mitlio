@@ -260,6 +260,12 @@ abstract class AppLocalizations {
   /// **'Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.'**
   String get remoteErrorRejectedNoTitle;
 
+  /// No description provided for @remoteErrorPullFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Neue Änderungen aus der Gruppe konnten nicht übernommen werden. Deine eigenen Daten sind sicher. Versuch es später nochmal oder aktualisiere mitlio.'**
+  String get remoteErrorPullFailed;
+
   /// No description provided for @errorSettingNotSaved.
   ///
   /// In de, this message translates to:
