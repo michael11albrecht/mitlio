@@ -23,7 +23,7 @@ List<Override> shareStateOverride(ShareState state) => [
 ];
 
 const sampleLink = ShareLink(
-  token: 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG',
+  token: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
   siteUrl: 'https://mitlio.web.app',
 );
 
