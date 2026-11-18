@@ -19,6 +19,43 @@ Checked against the providers' own pages on 2026-11-17; re-check when a provider
 | EU Commission, Frankfurter | n/a | no personal data except the IP address on the direct Weekly Oil Bulletin download | n/a |
 | Apple App Store, Google Play | Apple / Google | independent controllers for store accounts and downloads | their own policies; we receive no personal data |
 
+## Shared groups (sync, not live yet)
+
+Only once `app/config/prod.json` carries a Supabase URL and the user shares or joins a group. Without sync nothing
+below happens. The privacy text for it is written (`futurePrivacySections*` in `web/src/i18n/legal.ts`) and rendered when
+`SYNC_PRIVACY_RENDERED` is true; the production web build fails if the URL is set while it is not (`docs/release.md`).
+
+| What the device contacts | What is sent | What the recipient can see |
+|---|---|---|
+| our Supabase project (Auth, PostgREST/RPC), region eu-central-1 | anonymous sign-in on the first share or join; then the group's rows as the outbox pushes them (`app/lib/features/sync/data/outbox_writer.dart`); pulls for the groups the account belongs to | Supabase (processor) and, through row-level security, the accounts linked to the group |
+
+Stored on the server (tables of migrations 0001 to 0014):
+
+- Account: random user id, no email or name, Supabase Auth sessions (`auth.users`, `auth.sessions`, refresh tokens).
+- Group content, keyed by group: `groups` (name, currency, `created_by`), `members` (name, position, `paypal_me`,
+  `iban_hint` = masked hint such as `DE89 …3000`, `user_id` link), `expenses` (title, category, amounts, currency, frozen
+  fx rate, date, type, split mode, `trip_meta` JSON such as period, driver id, ride ids), `expense_payers`,
+  `expense_shares`, `settlements` (from, to, amount, method), `rides` (date, distance, round trip, tolls, vehicle, driver,
+  passengers, fuel price), `vehicles`, `ride_templates`. There is no notes column. Soft-deleted rows stay (`deleted_at`).
+- `expense_revisions`: previous state of an expense before each change, author member, time; newest 50 per expense.
+- `group_memberships` (account to group, member link, role owner/member), `group_invites` (SHA-256 token hash, creator,
+  timestamps, `revoked_at`), `group_join_audit` (account, group, member, time; 90 days).
+- `rate_limits`: `join:` plus hash of the user id, token bucket (see "Abuse protection" in the privacy text).
+- Later (P6b): `device_tokens`, `notification_prefs`.
+
+Never sent: full IBAN, BIC, account holder (`local_member_bank`, `local_profile_bank`), saved places (`local_places`),
+route lookup text and place labels (only the distance goes into the ride), location, the crash-report choice.
+
+Notes for the policy text:
+
+- Legal bases: Art. 6(1)(b) for members using the feature; Art. 6(1)(f) for people who were entered by name and do not
+  use mitlio (Art. 14 notice in the text: source = group members, categories = name plus amounts, shares, settlements,
+  rides, optional PayPal.Me name / IBAN hint; removal by asking the group or privacy@mitlio.de) and for the join
+  protocol and rate limit.
+- Retention and deletion: `docs/retention.md`, `docs/data-deletion.md`.
+- Unverified in code (check on the staging project before launch): which session metadata (IP, user agent) Supabase Auth
+  keeps per session; the privacy text only says Supabase Auth creates session data.
+
 ## Fuel prices (chips in the ride and trip form)
 
 | Case | What the device contacts | What is sent | What the recipient can see |

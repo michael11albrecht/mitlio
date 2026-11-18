@@ -19,15 +19,18 @@ of view: the screen says so and the user can try again.
 
 ## On the server
 
-mitlio has no accounts yet, so today nothing about a person is stored on the server and this step does nothing.
-Once sign-in exists, the app first calls `delete_my_data()` (migration `0008_delete_my_data.sql`) and only then
-wipes the device, so a failed call can simply be repeated. For the signed-in user it deletes:
+Without sync (today: no Supabase URL in `app/config/prod.json`) nothing about a person is stored on the server and this
+step does nothing. Once sync is live, the app first calls `delete_my_data()` (migration `0008`, rewritten in `0010` and
+`0014`) and only then wipes the device, so a failed call can simply be repeated. `delete_my_data()` acts for
+`auth.uid()` and delegates to `delete_account_data(uid)` (migration `0014`), the one deletion path that the daily
+cleanup of inactive anonymous accounts (`docs/retention.md`) uses as well. For the account it deletes:
 
 - the links between the user and their groups (the user can no longer open them),
 - the link between the user and their member entries (the entry keeps its name, but no longer points to an
   account),
 - push tokens and notification settings, once those tables exist,
-- the account itself, including invites the user created and login sessions.
+- the account itself, including invites the user created, their entries in the join audit and login sessions,
+- ownership: a group the user owned passes to its oldest remaining membership.
 
 Calling it twice is harmless.
 
@@ -36,7 +39,9 @@ Calling it twice is harmless.
 Group records that other people share stay for them: the group, its members' names, expenses, settlements and
 rides. They belong to the group, not to one person, and removing them would change everybody else's balances.
 A member entry that was linked to the deleted account remains as a plain name; the user can ask the group to
-rename or remove it. Copies in other members' devices and in backups the user made themselves (exports, PDFs,
+rename or remove it (or write to privacy@mitlio.de). The expense edit history (`expense_revisions`) stays with the group.
+When the deleted account was the last one linked to a group, the daily job `cleanup_inactive_accounts()` (0014) deletes
+the group and all its rows at its next run (groups younger than one day are skipped). Copies in other members' devices and in backups the user made themselves (exports, PDFs,
 shared messages) are outside our reach.
 
 ## Technical notes
@@ -45,7 +50,9 @@ shared messages) are outside our reach.
 - The account row is deleted from SQL. If a Supabase deployment ever refuses that, replace the `DELETE` in the
   migration with a returned flag and add an Edge Function using the service role as a follow-up.
 - `groups.created_by` keeps the id of the deleted user. It no longer points to any account.
+- `delete_account_data(uid)` is internal: execute is revoked from `public`, `anon` and `authenticated`; only
+  `delete_my_data()` and the cleanup job (both `security definer`) call it.
 - pgTAP: `supabase/tests/database/rpc_delete_my_data.sql` (own data only, others untouched, anon denied,
-  idempotent).
+  idempotent), `retention.sql` (automatic path: threshold, shared groups, orphan groups, dependent rows).
 - App: `features/settings/` (`DeleteMyDataViewModel`, `DataDeletionRepository`). `ServerDataService` is inert
   until accounts exist; wire the RPC there.
