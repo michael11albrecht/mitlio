@@ -1930,4 +1930,19 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get routeAttributionFallback =>
       'Karten- und Routendaten © OpenStreetMap-Mitwirkende';
+
+  @override
+  String shareUploadPartial(int uploaded, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'Einträgen',
+      one: 'Eintrag',
+    );
+    return '$uploaded von $total $_temp0 hochgeladen. Auf diesem Handy ist alles unverändert. Wir versuchen es weiter.';
+  }
+
+  @override
+  String get shareGroupMissing =>
+      'Diese Gruppe gibt es auf diesem Handy nicht mehr. Lade die Gruppenliste neu.';
 }

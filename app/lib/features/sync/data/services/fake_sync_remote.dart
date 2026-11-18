@@ -8,7 +8,9 @@ import 'package:mitlio_domain/mitlio_domain.dart';
 /// In-memory server for tests and DebugDrive (ADR-27 §4). It implements the
 /// rules the app depends on, mirroring the migrations:
 /// - membership (0001 RLS): writes to a group the account is not in fail with
-///   [NotMember]; the first write of a new group makes the writer a member;
+///   [NotMember]. Pushing a new group row only records its creator; the
+///   creator becomes a member through [bootstrapMembership] (policy
+///   `group_memberships_insert`), and every other write needs that first;
 /// - foreign keys (0001): a row pointing at a parent the server does not hold
 ///   is `Rejected('foreign_key_violation')`, so a wrongly ordered push shows;
 /// - `enforce_lww` (0001): a backwards `updated_at` is [PushOutcome.stale]
@@ -21,12 +23,14 @@ class FakeSyncRemote implements SyncRemote {
   FakeSyncRemote({this.userId = 'user-1'})
     : _tables = {},
       _members = {},
+      _creators = {},
       _seq = _Seq();
 
   /// Another view onto the same server as a different account.
   FakeSyncRemote.sharing(FakeSyncRemote other, {required this.userId})
     : _tables = other._tables,
       _members = other._members,
+      _creators = other._creators,
       _seq = other._seq;
 
   /// The signed-in account of this client.
@@ -34,6 +38,7 @@ class FakeSyncRemote implements SyncRemote {
 
   final Map<String, Map<String, Map<String, Object?>>> _tables;
   final Map<String, Set<String>> _members;
+  final Map<String, String> _creators;
   final _Seq _seq;
 
   /// While true every call fails with [Offline] (the server never answers).
@@ -65,6 +70,11 @@ class FakeSyncRemote implements SyncRemote {
   /// Adds an account to [groupId] (what `join_group` does).
   void addMember(String groupId, {String? user}) =>
       (_members[groupId] ??= {}).add(user ?? userId);
+
+  /// Whether [user] (default: this client's account) is a member of
+  /// [groupId].
+  bool hasMember(String groupId, {String? user}) =>
+      _members[groupId]?.contains(user ?? userId) ?? false;
 
   /// The row `table`/`id` as the server holds it, or null.
   Map<String, Object?>? row(String table, String id) => _tables[table]?[id];
@@ -109,11 +119,21 @@ class FakeSyncRemote implements SyncRemote {
     final tableRows = _tables[table] ??= {};
     final existing = tableRows[id];
 
-    if (isGroup && existing == null && !_groupExists(groupId)) {
-      // The bootstrap: whoever creates the group is its first member.
-      addMember(groupId);
+    if (isGroup && !_groupExists(groupId)) {
+      // groups_insert: created_by = auth.uid(). Not a member yet.
+      _creators[groupId] = userId;
+      tableRows[id] = {...row, DbGroupsCols.serverSeq: ++_seq.value};
+      received.add('$table:$id');
+      return const Ok(PushOutcome.applied);
     }
-    if (!_isMember(groupId)) return const Err(NotMember());
+    if (!_isMember(groupId)) {
+      // A replayed insert of the creator before its bootstrap (the real
+      // remote treats the duplicate key as done).
+      if (isGroup && _creators[groupId] == userId) {
+        return const Ok(PushOutcome.applied);
+      }
+      return const Err(NotMember());
+    }
     if (!isGroup && !_groupExists(groupId)) return const Err(_fk);
     final missing = _missingParent(table, row);
     if (missing) return const Err(_fk);
@@ -243,6 +263,23 @@ class FakeSyncRemote implements SyncRemote {
       );
     }
     return Ok(result);
+  }
+
+  @override
+  Future<Result<bool, RemoteError>> bootstrapMembership(String groupId) async {
+    final gate = _gate();
+    if (gate != null) return Err(gate);
+    if (_isMember(groupId)) return const Ok(false);
+    // can_bootstrap_group: own group, not deleted, no membership yet.
+    final group = _tables[DbTables.groups]?[groupId];
+    if (group == null ||
+        _creators[groupId] != userId ||
+        group[DbGroupsCols.deletedAt] != null ||
+        (_members[groupId]?.isNotEmpty ?? false)) {
+      return const Err(NotMember());
+    }
+    addMember(groupId);
+    return const Ok(true);
   }
 
   // -- rules ----------------------------------------------------------------
