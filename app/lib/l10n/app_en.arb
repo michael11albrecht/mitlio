@@ -981,5 +981,35 @@
         "type": "int"
       }
     }
-  }
+  },
+  "shareMenu": "Share group",
+  "shareSheetTitle": "Share group",
+  "sharePreparing": "Preparing the link …",
+  "shareLinkButton": "Share link",
+  "shareQrLabel": "QR code to join the group {name}",
+  "@shareQrLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteShareText": "Join the group {name} on mitlio: {link}",
+  "@inviteShareText": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteRotate": "Create a new link",
+  "inviteRotateWarning": "The old link will stop working.",
+  "inviteRotateCancel": "Cancel",
+  "inviteLinkRotated": "This link no longer works. Ask whoever created the group for the new one.",
+  "inviteNoLinkMember": "No link is saved on this phone. Ask whoever created the group for the link.",
+  "inviteStoreUnreadable": "The saved link could not be read. Restart mitlio and try again.",
+  "inviteNotSaved": "The link could not be saved on this phone. Share it now; later you will need a new link."
 }

@@ -76,6 +76,13 @@ class FakeSyncRemote implements SyncRemote {
   bool hasMember(String groupId, {String? user}) =>
       _members[groupId]?.contains(user ?? userId) ?? false;
 
+  /// The accounts that are members of [groupId] (for `FakeInviteRemote`).
+  Set<String> membersOf(String groupId) =>
+      Set.unmodifiable(_members[groupId] ?? const <String>{});
+
+  /// The account that created [groupId]: its owner (for `FakeInviteRemote`).
+  String? creatorOf(String groupId) => _creators[groupId];
+
   /// The row `table`/`id` as the server holds it, or null.
   Map<String, Object?>? row(String table, String id) => _tables[table]?[id];
 
