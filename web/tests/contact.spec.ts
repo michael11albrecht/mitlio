@@ -5,8 +5,8 @@ import { expect, test } from '@playwright/test';
 import { failureFromResponse, networkFailure, validateFields } from '../src/lib/contact';
 
 const pages = [
-  { path: '/kontakt/', lang: 'de-DE', h1: 'Kontakt', privacy: '/datenschutz/', other: '/en/contact/' },
-  { path: '/en/contact/', lang: 'en', h1: 'Contact', privacy: '/en/privacy/', other: '/kontakt/' },
+  { path: '/kontakt/', lang: 'de-DE', h1: 'Kontakt', privacy: '/datenschutz/', other: '/en/contact/', hint: 'in der Datenschutzerklärung.' },
+  { path: '/en/contact/', lang: 'en', h1: 'Contact', privacy: '/en/privacy/', other: '/kontakt/', hint: 'in the privacy policy.' },
 ] as const;
 
 for (const p of pages) {
@@ -25,6 +25,11 @@ for (const p of pages) {
     expect(new Set(requests)).toEqual(new Set(['http://127.0.0.1:4321']));
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
+  });
+
+  test(`${p.path}: privacy hint keeps the space before the link`, async ({ page }) => {
+    await page.goto(p.path);
+    await expect(page.locator('p.hint')).toContainText(p.hint);
   });
 
   test(`${p.path}: is linked from the footer, noindex`, async ({ page }) => {
