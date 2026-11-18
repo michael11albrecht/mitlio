@@ -1,3 +1,7 @@
 # Test fixture, not a secret: a fake rate-limit key_hash in a pgTAP test (supabase/tests/database/fuel_prices.sql).
 72870af30d61413d836eb755d0348ea33de1a994:supabase/tests/database/fuel_prices.sql:generic-api-key:58
 0b0fe0d9ada022f616854274a1124fc2e022c3fa:supabase/tests/database/fuel_prices.sql:generic-api-key:58
+# Setting-name constants (version_gate.*Key, renamed to *Setting in the next commit) that gitleaks 8.21.2 generic-api-key flags by entropy; not secrets (#201).
+4c3c7c68686a711a860ae726cde00dddb5c497b7:dartneric-api-key:16
+4c3c7c68686a711a860ae726cde00dddb5c497b7:dartneric-api-key:17
+4c3c7c68686a711a860ae726cde00dddb5c497b7:dartneric-api-key:18
