@@ -32,6 +32,8 @@ import 'package:mitlio/features/settle/data/services/payment_link_providers.dart
 import 'package:mitlio/features/settlements/data/repositories/fake_settlements_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
+import 'package:mitlio/features/sync/data/sync_coordinator.dart';
+import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 import 'fake_platform.dart';
@@ -254,6 +256,10 @@ class FakeApp {
   /// Texts handed to the share sheet.
   final share = FakeShareService();
 
+  /// In-memory groups are never shared: nothing syncs, no database needed.
+  /// Tests of sync triggers swap in a recording one.
+  SyncCoordinator sync = const NoSyncCoordinator();
+
   List<Override> get overrides => overridesWith();
 
   /// [overrides], optionally with another payment details repository (e.g. a
@@ -270,6 +276,7 @@ class FakeApp {
     settlementsRepositoryProvider.overrideWithValue(settlements),
     linkLauncherProvider.overrideWithValue(launcher),
     shareServiceProvider.overrideWithValue(share),
+    syncCoordinatorProvider.overrideWithValue(sync),
   ];
 
   /// The fuel price backend and location, off by default (chips hidden):

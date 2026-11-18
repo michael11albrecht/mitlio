@@ -1450,5 +1450,28 @@
   "routeServerDown": "Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.",
   "routeUnconfigured": "Die Streckenberechnung gibt es auf diesem Server nicht. Trag die Kilometer einfach selbst ein.",
   "routeInvalid": "Start und Ziel passen nicht zusammen. Wähl zwei verschiedene Orte oder trag die Kilometer selbst ein.",
-  "routeAttributionFallback": "Karten- und Routendaten © OpenStreetMap-Mitwirkende"
+  "routeAttributionFallback": "Karten- und Routendaten © OpenStreetMap-Mitwirkende",
+  "syncStatusUpToDate": "Aktuell",
+  "syncStatusSending": "Wird gesendet …",
+  "syncStatusPending": "{count, plural, =1{1 Änderung wartet} other{{count} Änderungen warten}}",
+  "@syncStatusPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRejectedLine": "Eine Änderung konnte nicht geteilt werden.",
+  "syncRejectedShow": "Ansehen",
+  "syncRejectedSheetTitle": "Nicht geteilt",
+  "syncRejectedOk": "OK",
+  "syncStatusUploading": "Wird hochgeladen …",
+  "syncStatusUploadingLeft": "{count, plural, =1{Wird hochgeladen … noch 1 Eintrag} other{Wird hochgeladen … noch {count} Einträge}}",
+  "@syncStatusUploadingLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

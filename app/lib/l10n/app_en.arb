@@ -946,5 +946,28 @@
   "routeServerDown": "The route service is unreachable right now. Try again later or enter the kilometres yourself.",
   "routeUnconfigured": "Route calculation is not available on this server. Just enter the kilometres yourself.",
   "routeInvalid": "Start and destination do not fit together. Pick two different places or enter the kilometres yourself.",
-  "routeAttributionFallback": "Map and route data © OpenStreetMap contributors"
+  "routeAttributionFallback": "Map and route data © OpenStreetMap contributors",
+  "syncStatusUpToDate": "Up to date",
+  "syncStatusSending": "Sending …",
+  "syncStatusPending": "{count, plural, =1{1 change waiting} other{{count} changes waiting}}",
+  "@syncStatusPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRejectedLine": "A change could not be shared.",
+  "syncRejectedShow": "Show",
+  "syncRejectedSheetTitle": "Not shared",
+  "syncRejectedOk": "OK",
+  "syncStatusUploading": "Uploading …",
+  "syncStatusUploadingLeft": "{count, plural, =1{Uploading … 1 entry left} other{Uploading … {count} entries left}}",
+  "@syncStatusUploadingLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

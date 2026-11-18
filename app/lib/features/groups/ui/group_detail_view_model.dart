@@ -9,6 +9,8 @@ import 'package:mitlio/features/groups/data/repositories/groups_repository.dart'
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
+import 'package:mitlio/features/sync/data/sync_coordinator.dart';
+import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 /// A member row: the member and whether expenses or settlements refer to
@@ -119,8 +121,15 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
         unawaited(s.cancel());
       }
     });
+    // Opening a shared group syncs it; a local-only group stays offline.
+    ref.read(syncCoordinatorProvider).groupOpened(groupId);
     return const GroupDetailLoading();
   }
+
+  /// Pull-to-refresh: push and pull a shared group now. The outcome shows in
+  /// the status line; a local-only group is a no-op.
+  Future<SyncStats> refresh() =>
+      ref.read(syncCoordinatorProvider).syncNow(groupId, force: true);
 
   StreamSubscription<T> _listen<T>(Stream<T> stream, void Function(T) onData) =>
       stream.listen(

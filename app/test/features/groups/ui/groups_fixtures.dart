@@ -5,6 +5,8 @@ import 'package:mitlio/features/groups/data/repositories/groups_repository.dart'
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
 import 'package:mitlio/features/groups/ui/groups_view_model.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
+import 'package:mitlio/features/sync/data/sync_coordinator.dart';
+import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 /// Fixed states for goldens and a11y tests: the ViewModels are replaced by
@@ -52,8 +54,14 @@ List<Override> detailStateOverride(GroupDetailState state) => [
   ),
 ];
 
-Widget scoped(List<Override> overrides, Widget child) =>
-    ProviderScope(overrides: overrides, child: child);
+/// Without a database: nothing is shared, so no status line and no sync.
+Widget scoped(List<Override> overrides, Widget child) => ProviderScope(
+  overrides: [
+    syncCoordinatorProvider.overrideWithValue(const NoSyncCoordinator()),
+    ...overrides,
+  ],
+  child: child,
+);
 
 final sampleGroups = [
   Group(
