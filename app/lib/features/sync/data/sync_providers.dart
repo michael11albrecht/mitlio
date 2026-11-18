@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/db/database_provider.dart';
+import 'package:mitlio/features/sync/data/auth_providers.dart';
 import 'package:mitlio/features/sync/data/drift_sync_state_repository.dart';
+import 'package:mitlio/features/sync/data/repositories/share_group_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/sync_service.dart';
 import 'package:mitlio/features/sync/data/services/supabase_sync_remote.dart';
 import 'package:mitlio/features/sync/data/services/sync_remote.dart';
@@ -15,6 +17,17 @@ final syncStateRepositoryProvider = Provider<SyncStateRepository>(
 /// `FakeSyncRemote`.
 final syncRemoteProvider = Provider<SyncRemote>(
   (ref) => SupabaseSyncRemote(ref.watch(remoteBackendProvider)),
+);
+
+final shareGroupRepositoryProvider = Provider<ShareGroupRepository>(
+  (ref) => ShareGroupRepository(
+    db: ref.watch(appDatabaseProvider),
+    auth: ref.watch(authRepositoryProvider),
+    remote: ref.watch(syncRemoteProvider),
+    sync: ref.watch(syncServiceProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+  ),
 );
 
 final syncServiceProvider = Provider<SyncService>(

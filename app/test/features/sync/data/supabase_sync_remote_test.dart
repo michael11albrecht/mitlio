@@ -190,6 +190,93 @@ void main() {
           const Ok<PushOutcome, RemoteError>(PushOutcome.stale),
         );
       });
+
+      const duplicate = (
+        409,
+        '{"code":"23505","message":"duplicate key value violates unique '
+            r'constraint \"groups_pkey\""}',
+      );
+
+      test('a replayed insert of my own group (not a member yet) is '
+          'applied', () async {
+        await signIn();
+        answers['POST /rest/v1/groups'] = duplicate;
+        answers['GET /rest/v1/groups'] = (200, '[{"id":"g1"}]');
+        final r = await remote().upsertRows(DbTables.groups, [group]);
+        expect(r, const Ok<PushOutcome, RemoteError>(PushOutcome.applied));
+        final check = seen.last;
+        expect(check.uri.queryParameters['created_by'], 'eq.user-42');
+      });
+
+      test(
+        'a duplicate key on a group that is not mine stays an error',
+        () async {
+          await signIn();
+          answers['POST /rest/v1/groups'] = duplicate;
+          final r = await remote().upsertRows(DbTables.groups, [group]);
+          expect(r, isA<Err<PushOutcome, RemoteError>>());
+          expect(
+            (r as Err<PushOutcome, RemoteError>).error,
+            isNot(isA<Offline>()),
+          );
+        },
+      );
+    });
+  });
+
+  group('bootstrapMembership', () {
+    test('inserts my own membership row', () async {
+      await signIn();
+      final r = await remote().bootstrapMembership('g1');
+      expect(r, const Ok<bool, RemoteError>(true));
+      expect(seen.map((s) => s.method), ['GET', 'POST']);
+      expect(seen.last.uri.path, '/rest/v1/group_memberships');
+      expect(jsonDecode(seen.last.body), {
+        'group_id': 'g1',
+        'user_id': 'user-42',
+      });
+    });
+
+    test('already a member: done, no insert', () async {
+      await signIn();
+      answers['GET /rest/v1/group_memberships'] = (200, '[{"id":"m"}]');
+      final r = await remote().bootstrapMembership('g1');
+      expect(r, const Ok<bool, RemoteError>(false));
+      expect(seen.map((s) => s.method), ['GET']);
+    });
+
+    test('a refused bootstrap is NotMember', () async {
+      await signIn();
+      answers['POST /rest/v1/group_memberships'] = (
+        403,
+        jsonEncode({
+          'code': '42501',
+          'message':
+              'new row violates row-level security policy for table '
+              '"group_memberships"',
+        }),
+      );
+      expect(
+        await remote().bootstrapMembership('g1'),
+        const Err<bool, RemoteError>(NotMember()),
+      );
+    });
+
+    test('without a session it says so, never "offline"', () async {
+      expect(
+        await remote().bootstrapMembership('g1'),
+        const Err<bool, RemoteError>(Rejected('not_authenticated')),
+      );
+      expect(seen, isEmpty);
+    });
+
+    test('no server at all is offline', () async {
+      await signIn();
+      await server.close(force: true);
+      expect(
+        await remote().bootstrapMembership('g1'),
+        const Err<bool, RemoteError>(Offline()),
+      );
     });
   });
 

@@ -3246,6 +3246,18 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Karten- und Routendaten © OpenStreetMap-Mitwirkende'**
   String get routeAttributionFallback;
+
+  /// No description provided for @shareUploadPartial.
+  ///
+  /// In de, this message translates to:
+  /// **'{uploaded} von {total} {total, plural, =1{Eintrag} other{Einträgen}} hochgeladen. Auf diesem Handy ist alles unverändert. Wir versuchen es weiter.'**
+  String shareUploadPartial(int uploaded, int total);
+
+  /// No description provided for @shareGroupMissing.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Gruppe gibt es auf diesem Handy nicht mehr. Lade die Gruppenliste neu.'**
+  String get shareGroupMissing;
 }
 
 class _AppLocalizationsDelegate

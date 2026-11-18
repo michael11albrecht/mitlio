@@ -74,6 +74,7 @@ void main() {
       'a row whose parent the server lacks is a foreign key error',
       () async {
         await remote.upsertRows(DbTables.groups, [group()]);
+        await remote.bootstrapMembership('g1');
         final r = await remote.upsertRows(DbTables.settlements, [
           {
             ..._row('s1', 'g1'),

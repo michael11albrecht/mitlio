@@ -51,4 +51,15 @@ abstract interface class SyncRemote {
   /// Payers and shares of [expenseIds], by expense id (pull, P6-T11).
   Future<Result<Map<String, ExpenseChildren>, RemoteError>>
   fetchExpenseChildren(List<String> expenseIds);
+
+  /// Creates the caller's own `group_memberships` row of a group the caller
+  /// created (the bootstrap, policy `group_memberships_insert`; the role
+  /// becomes `owner` by trigger, migration 0010). Every member, expense, ...
+  /// write of the group needs it (`is_group_member`), so it must be committed
+  /// before any of them is pushed.
+  ///
+  /// `Ok(true)` when the row was created, `Ok(false)` when the caller already
+  /// was a member (done, not an error). [NotMember] when the group does not
+  /// exist, belongs to someone else, or already has another member.
+  Future<Result<bool, RemoteError>> bootstrapMembership(String groupId);
 }
