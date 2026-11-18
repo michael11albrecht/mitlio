@@ -215,7 +215,7 @@ void main() {
     test('an unreadable cache stamp is a cache miss', () async {
       serve('0.0.0');
       await gate().check();
-      await db.syncStateDao.putSetting(versionGateCheckedAtKey, 'garbage');
+      await db.syncStateDao.putSetting(versionGateCheckedAtSetting, 'garbage');
       await gate().check();
       expect(config.calls, 2);
     });

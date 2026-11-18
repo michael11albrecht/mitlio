@@ -13,9 +13,9 @@ import 'package:mitlio_domain/mitlio_domain.dart';
 const versionGateCacheTtl = Duration(hours: 12);
 
 /// `local_settings` keys of the cached answer.
-const versionGateCheckedAtKey = 'version_gate.checked_at';
-const versionGateMinKey = 'version_gate.min';
-const versionGateStoreUrlKey = 'version_gate.store_url';
+const versionGateCheckedAtSetting = 'version_gate.checked_at';
+const versionGateMinSetting = 'version_gate.min';
+const versionGateStoreUrlSetting = 'version_gate.store_url';
 
 /// Where "Aktualisieren" goes when the server row has no (usable) `store_url`.
 /// Android: the prod application id (`app/android/app_identity.properties`).
@@ -153,10 +153,10 @@ class VersionGate {
           storeUrl: value?.storeUrl,
         );
         final dao = _db.syncStateDao;
-        await dao.putSetting(versionGateMinKey, cached.min);
-        await dao.putSetting(versionGateStoreUrlKey, cached.storeUrl ?? '');
+        await dao.putSetting(versionGateMinSetting, cached.min);
+        await dao.putSetting(versionGateStoreUrlSetting, cached.storeUrl ?? '');
         await dao.putSetting(
-          versionGateCheckedAtKey,
+          versionGateCheckedAtSetting,
           now.toUtc().toIso8601String(),
         );
         return cached;
@@ -165,11 +165,11 @@ class VersionGate {
 
   Future<_Cached?> _readCache() async {
     final dao = _db.syncStateDao;
-    final at = await dao.setting(versionGateCheckedAtKey);
-    final min = await dao.setting(versionGateMinKey);
+    final at = await dao.setting(versionGateCheckedAtSetting);
+    final min = await dao.setting(versionGateMinSetting);
     final parsed = at == null ? null : DateTime.tryParse(at);
     if (parsed == null || min == null) return null;
-    final url = await dao.setting(versionGateStoreUrlKey);
+    final url = await dao.setting(versionGateStoreUrlSetting);
     return _Cached(
       checkedAt: parsed,
       min: min,
