@@ -68,15 +68,16 @@ class SupabaseAuthService implements AuthService {
     try {
       await auth.signOut();
     } on Object catch (e) {
-      // A keychain that kept the session must surface (#181).
       if (e is SessionStorageException) rethrow;
       // The server revoke may fail (offline, user already deleted); only a
       // session that is still here counts as a failure.
-      if (auth.currentUser == null) return;
-      rethrow;
+      if (auth.currentUser != null) rethrow;
     }
     if (auth.currentUser != null) {
       throw StateError('local session still present after sign out');
     }
+    // supabase_flutter only logs a failed keychain delete; do it again here
+    // so the failure reaches the user. Harmless when already gone.
+    await _backend.sessionStorage?.removePersistedSession();
   }
 }
