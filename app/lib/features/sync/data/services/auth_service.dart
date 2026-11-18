@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:mitlio/core/remote/remote_backend.dart';
 import 'package:mitlio/core/remote/remote_error.dart';
 import 'package:mitlio/core/remote/remote_error_mapper.dart';
+import 'package:mitlio/core/remote/secure_local_storage.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -66,14 +67,17 @@ class SupabaseAuthService implements AuthService {
     if (auth == null) return;
     try {
       await auth.signOut();
-    } on Object {
+    } on Object catch (e) {
+      if (e is SessionStorageException) rethrow;
       // The server revoke may fail (offline, user already deleted); only a
       // session that is still here counts as a failure.
-      if (auth.currentUser == null) return;
-      rethrow;
+      if (auth.currentUser != null) rethrow;
     }
     if (auth.currentUser != null) {
       throw StateError('local session still present after sign out');
     }
+    // supabase_flutter only logs a failed keychain delete; do it again here
+    // so the failure reaches the user. Harmless when already gone.
+    await _backend.sessionStorage?.removePersistedSession();
   }
 }

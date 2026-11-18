@@ -5,9 +5,21 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/remote/remote_backend.dart';
 import 'package:mitlio/core/remote/remote_error.dart';
+import 'package:mitlio/core/remote/secure_local_storage.dart';
 import 'package:mitlio/features/sync/data/services/auth_service.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../support/capturing_logger.dart';
+
+class _FailingStore implements SecretStore {
+  @override
+  Future<String?> read(String key) async => null;
+  @override
+  Future<void> write(String key, String value) async {}
+  @override
+  Future<void> delete(String key) async => throw Exception('keychain locked');
+}
 
 /// The Supabase service against a loopback GoTrue stand-in: real client,
 /// real HTTP, no network.
@@ -68,6 +80,28 @@ void main() {
         authOptions: const AuthClientOptions(autoRefreshToken: false),
       ),
     ),
+  );
+
+  test(
+    'clearLocalSession throws when the keychain keeps the session',
+    () async {
+      final store = _FailingStore();
+      final s = SupabaseAuthService(
+        RemoteBackend.withClient(
+          SupabaseClient(
+            'http://${server.address.host}:${server.port}',
+            'anon-key',
+            authOptions: const AuthClientOptions(autoRefreshToken: false),
+          ),
+          sessionStorage: SecureLocalStorage(store, CapturingLogger()),
+        ),
+      );
+      await s.ensureSignedIn();
+      await expectLater(
+        s.clearLocalSession(),
+        throwsA(isA<SessionStorageException>()),
+      );
+    },
   );
 
   void failWith(int code, String errorCode) {
