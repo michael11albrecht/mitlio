@@ -1462,5 +1462,28 @@
       }
     }
   },
-  "shareGroupMissing": "Diese Gruppe gibt es auf diesem Handy nicht mehr. Lade die Gruppenliste neu."
+  "shareGroupMissing": "Diese Gruppe gibt es auf diesem Handy nicht mehr. Lade die Gruppenliste neu.",
+  "syncStatusUpToDate": "Aktuell",
+  "syncStatusSending": "Wird gesendet …",
+  "syncStatusPending": "{count, plural, =1{1 Änderung wartet} other{{count} Änderungen warten}}",
+  "@syncStatusPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRejectedLine": "Eine Änderung konnte nicht geteilt werden.",
+  "syncRejectedShow": "Ansehen",
+  "syncRejectedSheetTitle": "Nicht geteilt",
+  "syncRejectedOk": "OK",
+  "syncStatusUploading": "Wird hochgeladen …",
+  "syncStatusUploadingLeft": "{count, plural, =1{Wird hochgeladen … noch 1 Eintrag} other{Wird hochgeladen … noch {count} Einträge}}",
+  "@syncStatusUploadingLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

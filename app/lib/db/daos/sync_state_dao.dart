@@ -57,6 +57,20 @@ class SyncStateDao extends DatabaseAccessor<AppDatabase>
     ),
   );
 
+  /// Groups this device syncs: state `shared` or `uploading` (not local only,
+  /// not `removed`).
+  Future<List<String>> syncGroupIds() async {
+    final rows =
+        await (select(localGroupSync)..where(
+              (r) => r.state.isIn([
+                SyncState.shared.name,
+                SyncState.uploading.name,
+              ]),
+            ))
+            .get();
+    return [for (final r in rows) r.groupId];
+  }
+
   /// Sets [role] on an existing row; no-op without one.
   Future<void> setRole(String groupId, SyncRole role) =>
       (update(localGroupSync)..where((r) => r.groupId.equals(groupId))).write(
@@ -208,4 +222,10 @@ class SyncStateDao extends DatabaseAccessor<AppDatabase>
       lastErrorCode: Value(errorCode),
     ),
   );
+
+  /// Makes every waiting op of [groupId] due now (the user asked to retry).
+  Future<void> resetBackoff(String groupId) =>
+      (update(localOutbox)..where((o) => o.groupId.equals(groupId))).write(
+        const LocalOutboxCompanion(nextAttemptAt: Value(null)),
+      );
 }
