@@ -16,6 +16,8 @@ import 'package:mitlio/features/export/ui/export_sheet.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
 import 'package:mitlio/features/members/ui/member_payment_view.dart';
 import 'package:mitlio/features/rides/ui/rides_view.dart';
+import 'package:mitlio/features/sync/data/sync_providers.dart';
+import 'package:mitlio/features/sync/ui/share_sheet.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -66,6 +68,14 @@ class GroupDetailView extends ConsumerWidget {
               appBar: AppBar(
                 title: Text(group.name),
                 actions: [
+                  // One tap to the link and QR; not offered without a backend.
+                  if (ref.watch(shareAvailableProvider))
+                    IconButton(
+                      tooltip: l10n.shareMenu,
+                      icon: const Icon(Icons.group_add_outlined),
+                      onPressed: () =>
+                          unawaited(showShareSheet(context, groupId)),
+                    ),
                   IconButton(
                     tooltip: l10n.tripAdd,
                     icon: const Icon(Icons.directions_car_outlined),

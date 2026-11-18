@@ -3258,6 +3258,84 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Diese Gruppe gibt es auf diesem Handy nicht mehr. Lade die Gruppenliste neu.'**
   String get shareGroupMissing;
+
+  /// No description provided for @shareMenu.
+  ///
+  /// In de, this message translates to:
+  /// **'Gruppe teilen'**
+  String get shareMenu;
+
+  /// No description provided for @shareSheetTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Gruppe teilen'**
+  String get shareSheetTitle;
+
+  /// No description provided for @sharePreparing.
+  ///
+  /// In de, this message translates to:
+  /// **'Link wird vorbereitet …'**
+  String get sharePreparing;
+
+  /// No description provided for @shareLinkButton.
+  ///
+  /// In de, this message translates to:
+  /// **'Link teilen'**
+  String get shareLinkButton;
+
+  /// No description provided for @shareQrLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'QR-Code zum Beitreten der Gruppe {name}'**
+  String shareQrLabel(String name);
+
+  /// No description provided for @inviteShareText.
+  ///
+  /// In de, this message translates to:
+  /// **'Komm in die Gruppe {name} bei mitlio: {link}'**
+  String inviteShareText(String name, String link);
+
+  /// No description provided for @inviteRotate.
+  ///
+  /// In de, this message translates to:
+  /// **'Neuen Link erstellen'**
+  String get inviteRotate;
+
+  /// No description provided for @inviteRotateWarning.
+  ///
+  /// In de, this message translates to:
+  /// **'Der alte Link funktioniert dann nicht mehr.'**
+  String get inviteRotateWarning;
+
+  /// No description provided for @inviteRotateCancel.
+  ///
+  /// In de, this message translates to:
+  /// **'Abbrechen'**
+  String get inviteRotateCancel;
+
+  /// No description provided for @inviteLinkRotated.
+  ///
+  /// In de, this message translates to:
+  /// **'Dieser Link gilt nicht mehr. Frag, wer die Gruppe erstellt hat, nach dem neuen.'**
+  String get inviteLinkRotated;
+
+  /// No description provided for @inviteNoLinkMember.
+  ///
+  /// In de, this message translates to:
+  /// **'Auf diesem Handy ist kein Link gespeichert. Frag, wer die Gruppe erstellt hat, nach dem Link.'**
+  String get inviteNoLinkMember;
+
+  /// No description provided for @inviteStoreUnreadable.
+  ///
+  /// In de, this message translates to:
+  /// **'Der gespeicherte Link ließ sich nicht lesen. Starte mitlio neu und versuch es nochmal.'**
+  String get inviteStoreUnreadable;
+
+  /// No description provided for @inviteNotSaved.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Link konnte auf diesem Handy nicht gespeichert werden. Teile ihn jetzt, später brauchst du einen neuen Link.'**
+  String get inviteNotSaved;
 }
 
 class _AppLocalizationsDelegate

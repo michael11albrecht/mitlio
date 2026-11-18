@@ -1945,4 +1945,52 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get shareGroupMissing =>
       'Diese Gruppe gibt es auf diesem Handy nicht mehr. Lade die Gruppenliste neu.';
+
+  @override
+  String get shareMenu => 'Gruppe teilen';
+
+  @override
+  String get shareSheetTitle => 'Gruppe teilen';
+
+  @override
+  String get sharePreparing => 'Link wird vorbereitet …';
+
+  @override
+  String get shareLinkButton => 'Link teilen';
+
+  @override
+  String shareQrLabel(String name) {
+    return 'QR-Code zum Beitreten der Gruppe $name';
+  }
+
+  @override
+  String inviteShareText(String name, String link) {
+    return 'Komm in die Gruppe $name bei mitlio: $link';
+  }
+
+  @override
+  String get inviteRotate => 'Neuen Link erstellen';
+
+  @override
+  String get inviteRotateWarning =>
+      'Der alte Link funktioniert dann nicht mehr.';
+
+  @override
+  String get inviteRotateCancel => 'Abbrechen';
+
+  @override
+  String get inviteLinkRotated =>
+      'Dieser Link gilt nicht mehr. Frag, wer die Gruppe erstellt hat, nach dem neuen.';
+
+  @override
+  String get inviteNoLinkMember =>
+      'Auf diesem Handy ist kein Link gespeichert. Frag, wer die Gruppe erstellt hat, nach dem Link.';
+
+  @override
+  String get inviteStoreUnreadable =>
+      'Der gespeicherte Link ließ sich nicht lesen. Starte mitlio neu und versuch es nochmal.';
+
+  @override
+  String get inviteNotSaved =>
+      'Der Link konnte auf diesem Handy nicht gespeichert werden. Teile ihn jetzt, später brauchst du einen neuen Link.';
 }
