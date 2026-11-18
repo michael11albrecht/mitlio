@@ -63,14 +63,19 @@ class SyncStateDao extends DatabaseAccessor<AppDatabase>
         LocalGroupSyncCompanion(role: Value(role.name)),
       );
 
-  Future<void> markPushed(String groupId, DateTime at) =>
-      (update(localGroupSync)..where((r) => r.groupId.equals(groupId))).write(
-        LocalGroupSyncCompanion(
-          lastPushAt: Value(at),
-          lastErrorCode: const Value(null),
-          lastErrorAt: const Value(null),
-        ),
-      );
+  /// Stamps a push. Clears the last error unless [keepError] (a rejected op
+  /// stays visible until something else clears it).
+  Future<void> markPushed(
+    String groupId,
+    DateTime at, {
+    bool keepError = false,
+  }) => (update(localGroupSync)..where((r) => r.groupId.equals(groupId))).write(
+    LocalGroupSyncCompanion(
+      lastPushAt: Value(at),
+      lastErrorCode: keepError ? const Value.absent() : const Value(null),
+      lastErrorAt: keepError ? const Value.absent() : const Value(null),
+    ),
+  );
 
   Future<void> markPulled(String groupId, DateTime at) =>
       (update(localGroupSync)..where((r) => r.groupId.equals(groupId))).write(
@@ -171,4 +176,25 @@ class SyncStateDao extends DatabaseAccessor<AppDatabase>
       ..where(localOutbox.groupId.equals(groupId));
     return (await q.getSingle()).read(count) ?? 0;
   }
+
+  /// Deletes the op with [opId]; false when it is gone because a newer write
+  /// of the same aggregate replaced it (new `op_id`, ADR-07). Never deletes by
+  /// (entity, id): the replacement was not sent yet.
+  Future<bool> deleteOutboxOp(String opId) async =>
+      await (delete(localOutbox)..where((o) => o.opId.equals(opId))).go() > 0;
+
+  /// Keeps the op for a retry: [attempts] so far, not before [nextAttemptAt],
+  /// and why. No-op when the op was replaced meanwhile (the new one is fresh).
+  Future<void> deferOutboxOp(
+    String opId, {
+    required int attempts,
+    required DateTime nextAttemptAt,
+    required String errorCode,
+  }) => (update(localOutbox)..where((o) => o.opId.equals(opId))).write(
+    LocalOutboxCompanion(
+      attempts: Value(attempts),
+      nextAttemptAt: Value(nextAttemptAt),
+      lastErrorCode: Value(errorCode),
+    ),
+  );
 }

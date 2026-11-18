@@ -201,3 +201,37 @@ extension RemoteErrorName on RemoteError {
     Rejected() => 'rejected',
   };
 }
+
+/// Inverse of [RemoteErrorName.caseName] for what `local_group_sync` stored:
+/// `rejected:<code>` is a [Rejected]; a stored rate limit has lost its wait.
+/// An unknown name is shown as a [Rejected] rather than hidden.
+RemoteError remoteErrorFromCaseName(String name) {
+  const rejectedPrefix = 'rejected:';
+  if (name.startsWith(rejectedPrefix)) {
+    return Rejected(name.substring(rejectedPrefix.length));
+  }
+  return switch (name) {
+    'offline' => const Offline(),
+    'rateLimited' => const RateLimitedRemote(null),
+    'inviteInvalid' => const InviteInvalid(),
+    'memberAlreadyClaimed' => const MemberAlreadyClaimed(),
+    'alreadyConnected' => const AlreadyConnected(),
+    'memberGone' => const MemberGone(),
+    'notOwner' => const NotOwner(),
+    'notMember' => const NotMember(),
+    'cannotRemoveSelf' => const CannotRemoveSelf(),
+    'versionTooOld' => const VersionTooOld(),
+    'serverDown' => const ServerDown(),
+    _ => Rejected(name),
+  };
+}
+
+/// The stable string stored in `last_error_code` and
+/// `local_outbox.last_error_code`: [RemoteErrorName.caseName], and for a
+/// [Rejected] `rejected:<code>` (ADR-27 §3, P6-T10).
+extension RemoteErrorStorage on RemoteError {
+  String get storedCode => switch (this) {
+    Rejected(:final code) => 'rejected:$code',
+    _ => caseName,
+  };
+}

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/crash/crash_reporter.dart';
@@ -8,6 +10,9 @@ import 'package:mitlio/core/remote/remote_backend.dart';
 /// Root providers. Override in tests / DebugDrive with fakes (ADR-23: plain
 /// providers, no codegen).
 final clockProvider = Provider<Clock>((ref) => const SystemClock());
+
+/// Source of randomness (retry jitter). Tests override it with a seeded one.
+final randomProvider = Provider<Random>((ref) => Random());
 
 final idGeneratorProvider = Provider<IdGenerator>(
   (ref) => UuidV7Generator(clock: ref.watch(clockProvider)),
