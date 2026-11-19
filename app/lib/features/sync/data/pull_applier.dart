@@ -102,6 +102,17 @@ class PullApplier {
     );
     switch (decision) {
       case domain.MergeDecision.keepLocal || domain.MergeDecision.same:
+        // The account link is server-owned and changes without a new
+        // `updated_at`; take it even when the person itself did not change,
+        // or "verbunden" would never reach the other phones.
+        if (table == DbTables.members &&
+            local != null &&
+            row.containsKey(DbMembersCols.userId)) {
+          await _db.membersDao.setUserId(
+            id,
+            row[DbMembersCols.userId] as String?,
+          );
+        }
         return;
       case domain.MergeDecision.applyRemoteDropPending:
         await (_db.delete(

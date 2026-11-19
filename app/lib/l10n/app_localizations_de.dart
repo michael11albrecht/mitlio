@@ -285,6 +285,40 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get memberDisconnect => 'Verbindung trennen';
+
+  @override
+  String memberDisconnectFor(String name) {
+    return 'Verbindung trennen, $name';
+  }
+
+  @override
+  String memberDisconnected(String name) {
+    return '$name ist nicht mehr verbunden';
+  }
+
+  @override
+  String memberDisconnectOffline(String name) {
+    return 'Keine Verbindung. Nichts geändert: $name bleibt verbunden. Versuch es nochmal, sobald du online bist.';
+  }
+
+  @override
+  String memberDisconnectServerDown(String name) {
+    return 'Der Server antwortet gerade nicht. Nichts geändert: $name bleibt verbunden. Versuch es in ein paar Minuten nochmal.';
+  }
+
+  @override
+  String get memberDisconnectNothingChanged => 'Nichts geändert.';
+
+  @override
+  String get memberThatsMe => 'Das bin ich';
+
+  @override
+  String memberThatsMeFor(String name) {
+    return 'Das bin ich, $name';
+  }
+
+  @override
   String get paymentSectionTitle => 'Zahlungsdaten';
 
   @override

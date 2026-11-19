@@ -80,6 +80,11 @@ Future<void> main() async {
   );
   await golden('group_detail_data', () => _detail(sampleDetail));
   await golden(
+    'group_detail_connected_owner',
+    () => _detail(sampleDetailOwner),
+  );
+  await golden('group_detail_claim', () => _detail(sampleDetailClaim));
+  await golden(
     'group_detail_notice',
     () => _detail(sampleDetailWithNotice),
   );

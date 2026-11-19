@@ -222,10 +222,26 @@ class JoinRepository {
     String memberId,
   ) async {
     final result = await _invites.connectMember(groupId, memberId);
-    return switch (result) {
-      Ok() => const Ok(null),
-      Err(:final error) => Err(error),
-    };
+    switch (result) {
+      case Err(:final error):
+        return Err(error);
+      case Ok():
+        await _markConnected(memberId);
+        return const Ok(null);
+    }
+  }
+
+  /// The server set `members.user_id`; mirror it here at once so the badge
+  /// does not wait for the next pull.
+  Future<void> _markConnected(String memberId) async {
+    final me = _auth.currentUserId;
+    if (me == null) return;
+    try {
+      await _db.membersDao.setUserId(memberId, me);
+    } on Object catch (e, st) {
+      // Connected on the server; the next pull brings the link here.
+      _logger.warn('connect: local link not set', e, st);
+    }
   }
 
   /// A new person for the joiner, written locally like any other member

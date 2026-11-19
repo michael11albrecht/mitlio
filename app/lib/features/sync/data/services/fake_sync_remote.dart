@@ -86,6 +86,19 @@ class FakeSyncRemote implements SyncRemote {
   /// The row `table`/`id` as the server holds it, or null.
   Map<String, Object?>? row(String table, String id) => _tables[table]?[id];
 
+  /// What `connect_member` / `remove_membership` do to the person: sets or
+  /// clears `members.user_id` and bumps `server_seq` so peers pull it (the
+  /// row's `updated_at` stays, as on the real server).
+  void setMemberUser(String memberId, String? user) {
+    final existing = _tables[DbTables.members]?[memberId];
+    if (existing == null) return;
+    _tables[DbTables.members]![memberId] = {
+      ...existing,
+      DbMembersCols.userId: user,
+      DbGroupsCols.serverSeq: ++_seq.value,
+    };
+  }
+
   /// Number of rows in [table].
   int count(String table) => _tables[table]?.length ?? 0;
 
