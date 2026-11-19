@@ -1,0 +1,77 @@
+# iOS build -> TestFlight (docs/IMPLEMENTATION_PLAN.md P8-T02/P8-T03, iOS half).
+# macOS minutes are the most expensive item (plan §6.8): nightly only when main changed since
+# the last successful run, plus manual dispatch. Secrets live in the GitHub environment
+# `ios-release` (owner step, see docs/release-ios.md). Never trigger from pull_request.
+name: ios-testflight
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      flavor:
+        description: 'Flavor to upload'
+        type: choice
+        options: [prod, dev]
+        default: prod
+      create_signing:
+        description: 'Create certificates/profiles via match (first run only)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  testflight:
+    runs-on: macos-15
+    timeout-minutes: 45
+    environment: ios-release
+    concurrency:
+      group: ios-testflight
+      cancel-in-progress: false
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+      FLAVOR: ${{ inputs.flavor || 'prod' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Skip when main did not change since last successful run
+        id: changed
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          last="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ios-testflight.yml/runs?status=success&per_page=1" --jq '.workflow_runs[0].head_sha // empty')"
+          if [ -n "$last" ] && [ "$last" = "$GITHUB_SHA" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "main unchanged since $last, skipping" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: subosito/flutter-action@v2
+        if: steps.changed.outputs.skip != 'true'
+        with:
+          flutter-version-file: pubspec.yaml
+          cache: true
+      - uses: ruby/setup-ruby@v1
+        if: steps.changed.outputs.skip != 'true'
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: app/ios
+      - name: Bootstrap
+        if: steps.changed.outputs.skip != 'true'
+        run: make bootstrap
+      - name: Create signing assets (first run only)
+        if: steps.changed.outputs.skip != 'true' && inputs.create_signing
+        working-directory: app/ios
+        run: bundle exec fastlane signing flavor:"$FLAVOR" create:true
+      - name: Build and upload to TestFlight
+        if: steps.changed.outputs.skip != 'true'
+        working-directory: app/ios
+        run: bundle exec fastlane beta flavor:"$FLAVOR"

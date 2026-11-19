@@ -1,0 +1,80 @@
+require "yaml"
+
+default_platform(:ios)
+
+IDENTITY = YAML.load_file(File.expand_path("../../app_identity.yaml", __dir__))
+
+def bundle_id_for(flavor)
+  IDENTITY.fetch("flavors").fetch(flavor).fetch("bundle_id")
+end
+
+def asc_api_key
+  app_store_connect_api_key(
+    key_id: ENV.fetch("ASC_KEY_ID"),
+    issuer_id: ENV.fetch("ASC_ISSUER_ID"),
+    key_content: ENV.fetch("ASC_KEY_P8"),
+    in_house: false
+  )
+end
+
+platform :ios do
+  desc "Fetch (or create, with create:true) App Store signing assets for a flavor"
+  lane :signing do |options|
+    flavor = options.fetch(:flavor, "prod")
+    api_key = asc_api_key
+    match(
+      type: "appstore",
+      app_identifier: bundle_id_for(flavor),
+      api_key: api_key,
+      readonly: !options[:create]
+    )
+  end
+
+  desc "Build a signed IPA for a flavor and upload it to TestFlight"
+  lane :beta do |options|
+    flavor = options.fetch(:flavor, "prod")
+    bundle_id = bundle_id_for(flavor)
+    api_key = asc_api_key
+
+    match(type: "appstore", app_identifier: bundle_id, api_key: api_key, readonly: true)
+
+    profile = ENV.fetch("sigh_#{bundle_id}_appstore_profile-name")
+    update_code_signing_settings(
+      path: "Runner.xcodeproj",
+      targets: ["Runner"],
+      use_automatic_signing: false,
+      team_id: CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
+      code_sign_identity: "Apple Distribution",
+      profile_name: profile,
+      bundle_identifier: bundle_id
+    )
+
+    # TestFlight needs a strictly increasing build number per app.
+    build_number = latest_testflight_build_number(
+      app_identifier: bundle_id,
+      api_key: api_key
+    ) + 1
+
+    export_options = File.expand_path("../build/ExportOptions.plist", __dir__)
+    FileUtils.mkdir_p(File.dirname(export_options))
+    File.write(export_options, {
+      "method" => "app-store-connect",
+      "signingStyle" => "manual",
+      "teamID" => CredentialsManager::AppfileConfig.try_fetch_value(:team_id),
+      "provisioningProfiles" => { bundle_id => profile },
+      "uploadSymbols" => true
+    }.to_plist)
+
+    sh(
+      "cd ../.. && flutter build ipa --release --flavor #{flavor} " \
+      "--build-number #{build_number} --export-options-plist=#{export_options}"
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      app_identifier: bundle_id,
+      ipa: Dir[File.expand_path("../../build/ios/ipa/*.ipa", __dir__)].first,
+      skip_waiting_for_build_processing: true
+    )
+  end
+end

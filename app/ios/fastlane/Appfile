@@ -1,0 +1,3 @@
+# Team id is public (also in project.pbxproj). Bundle ids come from app/app_identity.yaml
+# via the Fastfile, so there is one source of truth (ADR-16).
+team_id("C9B9SUM8W6")
