@@ -10,6 +10,7 @@ import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/daos/sync_state_dao.dart';
 import 'package:mitlio/features/sync/data/db_contract.g.dart';
 import 'package:mitlio/features/sync/data/pull_applier.dart';
+import 'package:mitlio/features/sync/data/repositories/version_gate.dart';
 import 'package:mitlio/features/sync/data/services/sync_remote.dart';
 import 'package:mitlio/features/sync/data/sync_status.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -82,6 +83,7 @@ class SyncService {
     required this._clock,
     required this._random,
     required IdGenerator ids,
+    this._gate,
   }) : _applier = PullApplier(db: _db, clock: _clock, ids: ids);
 
   final AppDatabase _db;
@@ -89,6 +91,11 @@ class SyncService {
   final Clock _clock;
   final Random _random;
   final PullApplier _applier;
+
+  /// The version gate (P6-T16, ADR-27 §2.3): an app below the server's
+  /// `min_supported_version` neither pushes nor pulls; every shared group
+  /// shows [VersionTooOld]. Local data and ops are untouched. Null: no gate.
+  final VersionGate? _gate;
 
   final _running = <String, Completer<void>>{};
   final _pulling = <String, Completer<void>>{};
@@ -206,6 +213,7 @@ class SyncService {
   Future<void> _pullTables(String groupId) async {
     final sync = await _dao.groupSync(groupId);
     if (sync == null || sync.state == SyncState.removed.name) return;
+    if (await _blockedByVersion(groupId)) return;
     final tables = pushRank.keys.toList()
       ..sort((a, b) => pushRank[a]!.compareTo(pushRank[b]!));
     for (final table in tables) {
@@ -272,6 +280,15 @@ class SyncService {
       await _dao.clearError(groupId);
       _liveErrors.remove(groupId);
     }
+  }
+
+  /// True (and the group shows [VersionTooOld]) when the app is too old to
+  /// sync. No network call for the group follows; the ops stay queued.
+  Future<bool> _blockedByVersion(String groupId) async {
+    final gate = _gate;
+    if (gate == null || !(await gate.check()).blocked) return false;
+    await _record(groupId, const VersionTooOld());
+    return true;
   }
 
   Future<void> _onPullFailure(String groupId, RemoteError error) async {
@@ -351,6 +368,7 @@ class SyncService {
   Future<void> _drain(String groupId) async {
     final sync = await _dao.groupSync(groupId);
     if (sync == null || sync.state == SyncState.removed.name) return;
+    if (await _blockedByVersion(groupId)) return;
     final pass = _Pass();
     while (!pass.stopped) {
       final ops = _inPushOrder(await _dao.outboxOf(groupId));

@@ -1,13 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mitlio/core/app_version.dart';
 import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/logging.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/remote/remote_error.dart';
+import 'package:mitlio/db/database_provider.dart';
+import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
+import 'package:mitlio/features/sync/data/repositories/version_gate.dart';
+import 'package:mitlio/features/sync/data/services/app_config_remote.dart';
+import 'package:mitlio/features/sync/data/services/fake_app_config_remote.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio/features/sync/data/sync_status.dart';
 import 'package:mitlio/features/sync/ui/sync_status_view_model.dart';
 
+import '../../../db/test_support.dart';
+import '../../../helpers/fake_platform.dart';
 import '../../../support/capturing_logger.dart';
 import '../support/fake_sync_coordinator.dart';
 
@@ -86,7 +94,7 @@ void main() {
       (RateLimitedRemote(Duration(minutes: 3)), SyncLineAction.retry),
       (PullFailed('local_apply_failed'), SyncLineAction.retry),
       (Rejected('payers_sum_mismatch'), SyncLineAction.showRejected),
-      (VersionTooOld(), null),
+      (VersionTooOld(), SyncLineAction.update),
       (InviteInvalid(), null),
       (MemberAlreadyClaimed(), null),
       (AlreadyConnected(), null),
@@ -148,5 +156,31 @@ void main() {
       const SyncLineShown(SyncIdle()),
       isNot(const SyncLineShown(SyncSyncing())),
     );
+  });
+
+  test('"Aktualisieren" asks the version gate to open the store', () async {
+    final launcher = FakeLinkLauncher();
+    final config = FakeAppConfigRemote(
+      rows: {'ios': const MinVersionConfig(version: '9.0.0')},
+    );
+    final db = openTestDb();
+    addTearDown(db.close);
+    final c = ProviderContainer(
+      overrides: [
+        syncCoordinatorProvider.overrideWithValue(coordinator),
+        appDatabaseProvider.overrideWithValue(db),
+        appConfigRemoteProvider.overrideWithValue(config),
+        linkLauncherProvider.overrideWithValue(launcher),
+        appVersionProvider.overrideWithValue('1.0.0'),
+        storePlatformProvider.overrideWithValue('ios'),
+      ],
+    );
+    addTearDown(c.dispose);
+    final model = c.read(syncStatusViewModelProvider('g').notifier);
+    expect(await model.openStore(), isTrue);
+    expect(launcher.launched.single.toString(), fallbackStoreUrls['ios']);
+
+    launcher.canLaunch = false;
+    expect(await model.openStore(), isFalse);
   });
 }

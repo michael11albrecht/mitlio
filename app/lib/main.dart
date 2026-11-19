@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/app.dart';
 import 'package:mitlio/core/app_config.dart';
+import 'package:mitlio/core/app_version.dart';
 import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/crash/crash_reporter.dart';
 import 'package:mitlio/core/hlc.dart';
@@ -26,6 +27,7 @@ import 'package:mitlio/features/fx/data/services/fx_rate_service.dart';
 import 'package:mitlio/features/routes/data/repositories/route_providers.dart';
 import 'package:mitlio/features/routes/data/services/route_distance_service.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
 // TODO(P8-T01): read from AppConfig once the config files land. Empty in the
@@ -50,9 +52,13 @@ Future<void> main() async {
     store: const FlutterSecretStore(),
     logger: const DeveloperLogger(),
   );
+  final appVersion = await _readAppVersion(const DeveloperLogger());
   final container = ProviderContainer(
     overrides: [
       remoteBackendProvider.overrideWithValue(remoteBackend),
+      // Read once for the version gate (P6-T16). Unreadable: null, so the
+      // gate cannot compare and does not block.
+      appVersionProvider.overrideWithValue(appVersion),
       // With a backend: its Edge Function (national, postcode, nearby).
       // Without: the national average straight from the EU Weekly Oil
       // Bulletin, cached in a file; no postcode, no location.
@@ -106,4 +112,14 @@ Future<void> main() async {
   runApp(
     UncontrolledProviderScope(container: container, child: const MitlioApp()),
   );
+}
+
+/// The app's version from the platform; null (and logged) when unreadable.
+Future<String?> _readAppVersion(Logger logger) async {
+  try {
+    return (await PackageInfo.fromPlatform()).version;
+  } on Object catch (e, st) {
+    logger.error('cannot read the app version, version gate is open', e, st);
+    return null;
+  }
 }

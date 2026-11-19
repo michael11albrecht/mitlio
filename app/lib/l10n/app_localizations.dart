@@ -3301,6 +3301,18 @@ abstract class AppLocalizations {
   /// **'OK'**
   String get syncRejectedOk;
 
+  /// No description provided for @syncUpdateAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Aktualisieren'**
+  String get syncUpdateAction;
+
+  /// No description provided for @syncUpdateOpenFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Store lässt sich nicht öffnen. Öffne ihn selbst und aktualisiere mitlio.'**
+  String get syncUpdateOpenFailed;
+
   /// No description provided for @syncStatusUploading.
   ///
   /// In de, this message translates to:

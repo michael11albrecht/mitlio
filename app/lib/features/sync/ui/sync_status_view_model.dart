@@ -18,6 +18,9 @@ enum SyncLineAction {
 
   /// "Ansehen": a change the server refused; opens the sheet that explains it.
   showRejected,
+
+  /// "Aktualisieren": the app is too old to sync; opens the store page.
+  update,
 }
 
 /// What the line says, in order of the words.
@@ -78,6 +81,7 @@ final class SyncLineShown extends SyncLineState {
       RateLimitedRemote() ||
       PullFailed() => SyncLineAction.retry,
       Rejected() => SyncLineAction.showRejected,
+      VersionTooOld() => SyncLineAction.update,
       _ => null,
     },
     _ => null,
@@ -117,6 +121,10 @@ class SyncStatusViewModel extends Notifier<SyncLineState> {
   /// "Nochmal versuchen": push and pull now, ignoring a waiting backoff.
   Future<void> retry() =>
       ref.read(syncCoordinatorProvider).syncNow(groupId, force: true);
+
+  /// "Aktualisieren": opens the store page. False when nothing could open it;
+  /// the view then says so.
+  Future<bool> openStore() => ref.read(versionGateProvider).openStore();
 
   /// "OK" in the sheet of a refused change.
   Future<void> acknowledge() =>
