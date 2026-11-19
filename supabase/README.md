@@ -77,7 +77,7 @@ The access token expires after 90 days: rotate it in the `staging` environment b
   | `TANKERKOENIG_API_KEY` | fuel-prices | Tankerkoenig key; optional, without it fuel prices are unavailable |
   | `FUEL_WARM_TOKEN` | fuel-prices | shared secret for the pg_cron cache warm-up |
   | `FUEL_RATE_LIMIT_SALT` | fuel-prices | salt for hashed rate-limit keys |
-  | `FUEL_ALLOWED_ORIGINS` | fuel-prices | CORS origins |
+  | `FUEL_ALLOWED_ORIGINS` | fuel-prices | CORS origins; set by `deploy-dev.yml` on every deploy (override via the variable `FUEL_ALLOWED_ORIGINS`), not by hand. Prod needs the same step |
   | `TANKERKOENIG_BASE_URL`, `OIL_BULLETIN_URL` | fuel-prices | optional overrides |
   | `FX_WARM_TOKEN` | fx-rates | shared secret for the pg_cron warm-up |
   | `FX_RATE_LIMIT_SALT` | fx-rates | salt for hashed rate-limit keys |

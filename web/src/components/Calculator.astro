@@ -303,7 +303,36 @@ const ctaDeepLink = buildDeepLink({
     min-height: 2.75rem;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
     font-weight: 600;
+    list-style: none;
+  }
+
+  .breakdown summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* display:flex removes the native triangle, so draw a chevron: the row must look expandable. */
+  .breakdown summary::after {
+    content: '';
+    width: 0.6rem;
+    height: 0.6rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.15s;
+    margin-right: var(--space-1);
+  }
+
+  .breakdown[open] summary::after {
+    transform: rotate(225deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .breakdown summary::after {
+      transition: none;
+    }
   }
 
   .breakdown dl {

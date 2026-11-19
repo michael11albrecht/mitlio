@@ -1,6 +1,7 @@
 // Live fuel price chips (PW-T04). Rendered by Calculator.astro only when FUEL_API_URL is configured.
 // Privacy: no location unless the user taps "In meiner Nähe"; coordinates are rounded to 2 decimals
-// before sending; the only network target is the configured API. Any failure just hides the chips.
+// before sending; the only network target is the configured API. A failure hides the chips and says so
+// in plain text (never silent); the manual price field keeps working.
 import { calculatorMessages, type CalculatorMessageKey } from '../i18n/calculator';
 import { fill, formatField, parseDecimal, type Locale } from './core';
 import {
@@ -44,6 +45,7 @@ export function initFuel(hooks: FuelHooks): { sync: () => void } | null {
     const el = root.querySelector<HTMLButtonElement>(`.chip[data-fuel="${t}"]`);
     if (el) chipEls.set(t, el);
   }
+  const titleEl = document.getElementById('calc-fuel-title') as HTMLElement;
   const sourceEl = document.getElementById('calc-fuel-source') as HTMLElement;
   const statusEl = document.getElementById('calc-fuel-status') as HTMLElement;
   const whereEl = document.getElementById('calc-fuel-where') as HTMLElement;
@@ -54,6 +56,8 @@ export function initFuel(hooks: FuelHooks): { sync: () => void } | null {
   const prices = new Map<FuelType, FuelPrice>();
   let started = false;
   let hasChips = false;
+  // The national average could not be loaded: keep the block visible to show why, without chips.
+  let nationalFailed = false;
   let generation = 0;
 
   const status = (msg: CalculatorMessageKey | '') => {
@@ -221,14 +225,24 @@ export function initFuel(hooks: FuelHooks): { sync: () => void } | null {
 
   const loadNational = async () => {
     const gen = ++generation;
-    const { got } = await fetchAll({ kind: 'national' });
-    // A regional answer that arrived first wins; failure of the national average hides everything.
+    const { got, failure } = await fetchAll({ kind: 'national' });
+    // A regional answer that arrived first wins.
     if (gen !== generation) return;
-    if (got.length > 0) show(got);
+    if (got.length > 0) {
+      show(got);
+      return;
+    }
+    // No national price: say so. "Regional prices off" would mislead here, so rate limits and
+    // everything else map to their own text and "unconfigured" to the generic one.
+    nationalFailed = true;
+    titleEl.hidden = true;
+    whereEl.hidden = true;
+    status(failure === 'rate_limited' || failure === 'no_data' ? failureKey(failure) : 'fuelUnavailable');
+    sync();
   };
 
   function sync() {
-    const visible = hooks.active() && hasChips;
+    const visible = hooks.active() && (hasChips || nationalFailed);
     root!.hidden = !visible;
     if (hooks.active() && !started) {
       started = true;
