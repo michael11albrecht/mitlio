@@ -28,7 +28,7 @@ class ShareLink {
   /// but the app cannot show it again later.
   final bool saved;
 
-  /// `https://mitlio.web.app/join/<token>` (ADR-17, plan P6-T14).
+  /// `https://mitlio.de/join/<token>` (ADR-17, plan P6-T14).
   String get url => '$siteUrl/join/$token';
 
   /// For display: without scheme, the token cut after a few characters.

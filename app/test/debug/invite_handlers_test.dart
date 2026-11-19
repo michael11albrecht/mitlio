@@ -32,7 +32,7 @@ void main() {
     final out = await h['group.invite']!({'groupId': shareGroupId});
     expect(out['isOwner'], isTrue);
     expect(out['saved'], isTrue);
-    expect(out['link'], startsWith('mitlio.web.app/join/'));
+    expect(out['link'], startsWith('mitlio.de/join/'));
     // The secret never leaves the app through DebugDrive.
     expect(jsonEncode(out), isNot(contains(w.storedToken)));
     expect(w.remote.hasMember(shareGroupId), isTrue);

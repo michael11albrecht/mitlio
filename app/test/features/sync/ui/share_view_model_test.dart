@@ -49,7 +49,7 @@ void main() {
       final s = ready();
       expect(s.isOwner, isTrue);
       expect(s.groupName, 'Trip');
-      expect(s.link.url, startsWith('https://mitlio.web.app/join/'));
+      expect(s.link.url, startsWith('https://mitlio.de/join/'));
       expect(s.link.url, endsWith(w.storedToken!));
       expect(
         (await w.db.syncStateDao.groupSync(shareGroupId))!.state,
@@ -73,7 +73,7 @@ void main() {
       final link = ready().link;
       expect('$link', isNot(contains(link.token)));
       expect(link.shortUrl, isNot(contains(link.token)));
-      expect(link.shortUrl, startsWith('mitlio.web.app/join/'));
+      expect(link.shortUrl, startsWith('mitlio.de/join/'));
     });
 
     test('rotate: ask, cancel, ask, confirm replaces the link', () async {

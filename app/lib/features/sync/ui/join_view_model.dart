@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/remote/remote_error.dart';
 import 'package:mitlio/core/remote/remote_error_text.dart';
+import 'package:mitlio/features/sync/data/invite_link.dart';
 import 'package:mitlio/features/sync/data/repositories/join_repository.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
@@ -144,6 +145,13 @@ class JoinViewModel extends Notifier<JoinState> {
     _running = true;
     try {
       state = const JoinJoining();
+      if (!isInviteToken(token)) {
+        // Not a live invite for sure: no sign-in, no server call.
+        state = const JoinFailed(
+          JoinProblemJoin(JoinRemoteFailure(InviteInvalid())),
+        );
+        return;
+      }
       final joined = await _repo.join(token);
       state = switch (joined) {
         Err(:final error) => JoinFailed(JoinProblemJoin(error)),

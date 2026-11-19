@@ -20,7 +20,7 @@ export default defineConfig({
     sitemap({
       // Legal placeholder pages stay noindex (and out of the sitemap) until the owner supplies the text.
       // The contact form page is noindex as well.
-      filter: (page) => !/\/(impressum|datenschutz|imprint|privacy|kontakt|contact)\/$/.test(page),
+      filter: (page) => !/\/(impressum|datenschutz|imprint|privacy|kontakt|contact|join)\/$/.test(page),
       i18n: { defaultLocale: 'de', locales: { de: 'de-DE', en: 'en' } },
     }),
   ],

@@ -24,7 +24,7 @@ List<Override> shareStateOverride(ShareState state) => [
 
 const sampleLink = ShareLink(
   token: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-  siteUrl: 'https://mitlio.web.app',
+  siteUrl: 'https://mitlio.de',
 );
 
 /// Named states for goldens and widget tests.
