@@ -199,6 +199,49 @@
       }
     }
   },
+  "memberDisconnect": "Verbindung trennen",
+  "memberDisconnectFor": "Verbindung trennen, {name}",
+  "@memberDisconnectFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnected": "{name} ist nicht mehr verbunden",
+  "@memberDisconnected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnectOffline": "Keine Verbindung. Nichts geändert: {name} bleibt verbunden. Versuch es nochmal, sobald du online bist.",
+  "@memberDisconnectOffline": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnectServerDown": "Der Server antwortet gerade nicht. Nichts geändert: {name} bleibt verbunden. Versuch es in ein paar Minuten nochmal.",
+  "@memberDisconnectServerDown": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnectNothingChanged": "Nichts geändert.",
+  "memberThatsMe": "Das bin ich",
+  "memberThatsMeFor": "Das bin ich, {name}",
+  "@memberThatsMeFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "@@x-feature-payment": "payment",
   "paymentSectionTitle": "Zahlungsdaten",
   "paymentOpen": "Zahlungsdaten von {name}",

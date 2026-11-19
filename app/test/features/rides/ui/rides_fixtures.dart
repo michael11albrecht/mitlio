@@ -25,6 +25,7 @@ import 'package:mitlio/features/rides/ui/rides_view_model.dart';
 import 'package:mitlio/features/rides/ui/template_form_view_model.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
+import 'package:mitlio/features/sync/data/repositories/fake_connections_repository.dart';
 import 'package:mitlio/features/sync/data/sync_coordinator.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -266,6 +267,9 @@ class RidesApp {
     ridesRepositoryProvider.overrideWithValue(rides),
     carCatalogRepositoryProvider.overrideWithValue(catalog),
     syncCoordinatorProvider.overrideWithValue(const NoSyncCoordinator()),
+    connectionsRepositoryProvider.overrideWithValue(
+      FakeConnectionsRepository(),
+    ),
   ];
 
   ProviderContainer container({List<Override> extra = const []}) =>

@@ -119,6 +119,7 @@ class FakeInviteRemote implements InviteRemote {
         final e = _claim(gid, claimMemberId);
         if (e != null) return Err(e);
         claims[_me] = claimMemberId;
+        sync.setMemberUser(claimMemberId, _me);
       }
     } else {
       if (claimMemberId != null) {
@@ -127,6 +128,7 @@ class FakeInviteRemote implements InviteRemote {
       }
       sync.addMember(gid);
       claims[_me] = claimMemberId;
+      if (claimMemberId != null) sync.setMemberUser(claimMemberId, _me);
     }
     return Ok(_outcome(gid, alreadyMember: already));
   }
@@ -148,6 +150,7 @@ class FakeInviteRemote implements InviteRemote {
     final e = _claim(groupId, memberId);
     if (e != null) return Err(e);
     claims[_me] = memberId;
+    sync.setMemberUser(memberId, _me);
     return Ok(_outcome(groupId, alreadyMember: false));
   }
 
@@ -183,7 +186,8 @@ class FakeInviteRemote implements InviteRemote {
         if (!_isOwner(entry.key)) return const Err(NotOwner());
         if (user == _me) return const Err(CannotRemoveSelf());
         sync.removeMember(entry.key, user: user);
-        entry.value.remove(user);
+        final person = entry.value.remove(user);
+        if (person != null) sync.setMemberUser(person, null);
         return const Ok(null);
       }
     }

@@ -500,6 +500,54 @@ abstract class AppLocalizations {
   /// **'{name} hat Ausgaben oder Zahlungen und bleibt deshalb in der Gruppe.'**
   String memberInUse(String name);
 
+  /// No description provided for @memberDisconnect.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbindung trennen'**
+  String get memberDisconnect;
+
+  /// No description provided for @memberDisconnectFor.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbindung trennen, {name}'**
+  String memberDisconnectFor(String name);
+
+  /// No description provided for @memberDisconnected.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} ist nicht mehr verbunden'**
+  String memberDisconnected(String name);
+
+  /// No description provided for @memberDisconnectOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Nichts geändert: {name} bleibt verbunden. Versuch es nochmal, sobald du online bist.'**
+  String memberDisconnectOffline(String name);
+
+  /// No description provided for @memberDisconnectServerDown.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Server antwortet gerade nicht. Nichts geändert: {name} bleibt verbunden. Versuch es in ein paar Minuten nochmal.'**
+  String memberDisconnectServerDown(String name);
+
+  /// No description provided for @memberDisconnectNothingChanged.
+  ///
+  /// In de, this message translates to:
+  /// **'Nichts geändert.'**
+  String get memberDisconnectNothingChanged;
+
+  /// No description provided for @memberThatsMe.
+  ///
+  /// In de, this message translates to:
+  /// **'Das bin ich'**
+  String get memberThatsMe;
+
+  /// No description provided for @memberThatsMeFor.
+  ///
+  /// In de, this message translates to:
+  /// **'Das bin ich, {name}'**
+  String memberThatsMeFor(String name);
+
   /// No description provided for @paymentSectionTitle.
   ///
   /// In de, this message translates to:

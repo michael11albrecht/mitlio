@@ -9,6 +9,8 @@ import 'package:mitlio/features/settle/data/services/payment_link_providers.dart
 import 'package:mitlio/features/sync/data/auth_providers.dart';
 import 'package:mitlio/features/sync/data/drift_sync_coordinator.dart';
 import 'package:mitlio/features/sync/data/drift_sync_state_repository.dart';
+import 'package:mitlio/features/sync/data/repositories/connections_repository.dart';
+import 'package:mitlio/features/sync/data/repositories/drift_connections_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/join_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/share_group_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/share_link_repository.dart';
@@ -104,6 +106,19 @@ final joinRepositoryProvider = Provider<JoinRepository>(
     sync: ref.watch(syncServiceProvider),
     members: ref.watch(membersRepositoryProvider),
     links: ref.watch(shareLinkRepositoryProvider),
+    logger: ref.watch(loggerProvider),
+  ),
+);
+
+/// Who is connected to whom, and "Verbindung trennen" / "Das bin ich"
+/// (P6-T14d). Tests override it with `FakeConnectionsRepository`.
+final connectionsRepositoryProvider = Provider<ConnectionsRepository>(
+  (ref) => DriftConnectionsRepository(
+    db: ref.watch(appDatabaseProvider),
+    auth: ref.watch(authRepositoryProvider),
+    invites: ref.watch(inviteRemoteProvider),
+    join: ref.watch(joinRepositoryProvider),
+    sync: ref.watch(syncServiceProvider),
     logger: ref.watch(loggerProvider),
   ),
 );
