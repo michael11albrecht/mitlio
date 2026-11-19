@@ -54,6 +54,10 @@ View → ViewModel → Repository → Service. Views contain no logic. Every use
 - **No silent errors.** Every failure a user action can hit is shown in plain du-form German/English: what happened + what to do (wait N minutes, check the connection). No swallowed errors: no empty `catch`, no `catch (_) {}`, no ignored `Err` without surfacing it or a documented reason. Rate limits say so and when to retry. Never misleading (not "offline" when the server refused). Use `showErrorSnackBar` / `repositoryErrorMessage` (`app/lib/core/error_snack_bar.dart`).
 - All UI strings via ARB (l10n). Design tokens only from `core/theme`.
 
+## Tooling and budget
+
+Which AI tool to use for what (Copilot is credit-limited, Gemini is optional manual second opinion only): `docs/agent-tooling.md`.
+
 ## Known toolchain issues
 
 Read `docs/known-issues.md` before writing app code (e.g. a Linux release AOT crash pattern to avoid).

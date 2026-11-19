@@ -2,7 +2,8 @@
 # with changes under supabase/** applies pending migrations and deploys Edge Functions to the
 # staging Supabase project. Secrets live in the GitHub environment `staging`.
 # Never trigger this from pull_request / pull_request_target. Keep the CLI version in sync
-# with db.yml. Edge Function secrets are an owner step (supabase/README.md), not set here.
+# with db.yml. Real secrets (API keys, salts) are an owner step (supabase/README.md); only the public,
+# non-secret CORS allowlist for the web calculator is applied here so it never has to be set by hand.
 name: deploy-dev
 on:
   push:
@@ -60,6 +61,13 @@ jobs:
             echo "Deploying $name"
             supabase functions deploy "$name" --use-api
           done
+      - name: Set fuel-prices CORS allowlist (public web origins, not a secret)
+        env:
+          # The web calculator calls fuel-prices from the browser; without an allowed origin the
+          # preflight has no Access-Control headers and the browser blocks the request.
+          # Override with the repo/environment variable FUEL_ALLOWED_ORIGINS (e.g. once the domain is live).
+          FUEL_ALLOWED_ORIGINS: ${{ vars.FUEL_ALLOWED_ORIGINS || 'https://mitlio.web.app,https://mitlio.de,https://www.mitlio.de' }}
+        run: supabase secrets set "FUEL_ALLOWED_ORIGINS=$FUEL_ALLOWED_ORIGINS"
       - name: Smoke check (local and remote migrations match)
         run: |
           supabase migration list | tee migrations.txt

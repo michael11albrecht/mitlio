@@ -117,6 +117,19 @@ test.describe('calculator (de)', () => {
     await expect(page.locator('#calc-b-total')).toHaveText(/^22,60\s€$/);
   });
 
+  test('breakdown shows a visible expand indicator that flips when opened', async ({ page }) => {
+    const details = page.locator('details.breakdown');
+    const marker = () =>
+      details.locator('summary').evaluate((el) => getComputedStyle(el, '::after').content);
+    expect(await marker()).not.toBe('none');
+    const closed = await details.locator('summary').evaluate((el) => getComputedStyle(el, '::after').transform);
+    await details.locator('summary').click();
+    // The chevron animates (0.15 s), so poll until the computed transform settles on the flipped value.
+    await expect
+      .poll(() => details.locator('summary').evaluate((el) => getComputedStyle(el, '::after').transform))
+      .not.toBe(closed);
+  });
+
   test('inline validation is calm: no dialogs, messages tied to fields', async ({ page }) => {
     let dialogs = 0;
     page.on('dialog', (d) => {
