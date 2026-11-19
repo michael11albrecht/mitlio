@@ -16,13 +16,21 @@ final class BackendUnavailable {
 /// Holds the Supabase client, which exists only when [AppConfig.hasBackend].
 /// Remote services take this and call [client]; nothing else creates one.
 class RemoteBackend {
-  const RemoteBackend._(this._client);
+  const RemoteBackend._(this._client, [this.sessionStorage]);
 
   /// No backend: the app runs fully local.
-  const RemoteBackend.none() : _client = null;
+  const RemoteBackend.none() : _client = null, sessionStorage = null;
 
   /// A backend with an already created client (tests pass a fake here).
-  const RemoteBackend.withClient(SupabaseClient client) : _client = client;
+  const RemoteBackend.withClient(
+    SupabaseClient client, {
+    this.sessionStorage,
+  }) : _client = client;
+
+  /// The store holding the persisted session; lets "Meine Daten löschen"
+  /// delete it explicitly and see a keychain failure (supabase_flutter only
+  /// logs it).
+  final SecureLocalStorage? sessionStorage;
 
   final SupabaseClient? _client;
 
@@ -42,18 +50,19 @@ class RemoteBackend {
     required Logger logger,
   }) async {
     if (!config.hasBackend) return const RemoteBackend.none();
+    final sessionStorage = SecureLocalStorage(store, logger);
     try {
       final supabase = await Supabase.initialize(
         url: config.supabaseUrl,
         publishableKey: config.supabaseAnonKey,
         authOptions: FlutterAuthClientOptions(
-          localStorage: SecureLocalStorage(store, logger),
+          localStorage: sessionStorage,
           pkceAsyncStorage: SecureAsyncStorage(store, logger),
           // Anonymous accounts only (ADR-27 §2.2): no deep-link sign-in.
           detectSessionInUri: false,
         ),
       );
-      return RemoteBackend._(supabase.client);
+      return RemoteBackend._(supabase.client, sessionStorage);
     } on Object catch (e, st) {
       // A broken config must not stop the app: it stays fully local.
       logger.error('supabase init failed, running without backend', e, st);

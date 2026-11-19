@@ -94,25 +94,6 @@ class DriftExpensesRepository implements ExpensesRepository {
     };
   }
 
-  ExpenseSnapshot _snapshotOf(ExpenseWithChildren stored) {
-    final row = stored.expense;
-    return ExpenseSnapshot(
-      title: row.title,
-      amountCents: row.amountCents,
-      currency: row.currency,
-      fxRatePpm: row.fxRatePpm,
-      groupAmountCents: row.groupAmountCents,
-      date: row.date.toUtc(),
-      category: row.category,
-      type: row.type,
-      splitMode: row.splitMode,
-      tripMeta: row.tripMeta,
-      payers: {for (final p in stored.payers) p.memberId: p.paidCents},
-      shares: {for (final s in stored.shares) s.memberId: s.shareCents},
-      weights: {for (final s in stored.shares) s.memberId: s.weight},
-    );
-  }
-
   /// Records the state before a change. Call it inside the transaction of
   /// that change.
   Future<void> _recordRevision(ExpenseWithChildren before) => _dao.addRevision(
@@ -120,7 +101,7 @@ class DriftExpensesRepository implements ExpensesRepository {
     expenseId: before.expense.id,
     groupId: before.expense.groupId,
     changedAt: _clock.now().toUtc(),
-    snapshot: jsonEncode(_snapshotOf(before).toJson()),
+    snapshot: jsonEncode(ExpenseSnapshot.ofStored(before).toJson()),
     keep: expenseRevisionLimit,
   );
 

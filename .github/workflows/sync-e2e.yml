@@ -1,0 +1,64 @@
+# Two-device sync E2E and the contract suites against a LOCAL Supabase stack
+# (docs/adr/0027-sync-go.md §4, plan §7 P6-T13). The stack lives in this job's Docker only: no
+# secrets, no staging, no prod. The Supabase CLI pin matches db.yml; bump both together.
+# Actions are pinned by full commit SHA (comment = release).
+name: sync-e2e
+on:
+  pull_request:
+    paths:
+      - 'app/lib/features/sync/**'
+      - 'app/lib/core/remote/**'
+      - 'app/test/sync_e2e/**'
+      - 'app/test/features/sync/support/**'
+      - 'app/dart_test.yaml'
+      - 'supabase/**'
+      - 'Makefile'
+      - '.github/workflows/sync-e2e.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'app/lib/features/sync/**'
+      - 'app/lib/core/remote/**'
+      - 'app/test/sync_e2e/**'
+      - 'app/test/features/sync/support/**'
+      - 'app/dart_test.yaml'
+      - 'supabase/**'
+      - 'Makefile'
+      - '.github/workflows/sync-e2e.yml'
+
+concurrency:
+  group: sync-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  sync-e2e:
+    name: sync-e2e (local Supabase)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # actions/checkout v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      # supabase/setup-cli v1.7.3
+      - uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb
+        with:
+          version: 2.70.0
+      # subosito/flutter-action v2.23.0
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version-file: pubspec.yaml
+          cache: true
+      - run: make bootstrap
+      - name: Start local Supabase
+        run: supabase start
+      - name: Apply migrations from scratch
+        run: supabase db reset
+      - name: Sync E2E and contract suites
+        run: make test-sync-e2e
+      - name: Stop local Supabase
+        if: always()
+        run: supabase stop --no-backup

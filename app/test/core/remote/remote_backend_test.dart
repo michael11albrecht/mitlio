@@ -129,7 +129,10 @@ void main() {
       store.failWith = Exception('no keystore');
       expect(await storage.hasAccessToken(), isFalse);
       await storage.persistSession('secret-refresh-token');
-      await storage.removePersistedSession();
+      await expectLater(
+        storage.removePersistedSession(),
+        throwsA(isA<SessionStorageException>()),
+      );
       expect(logger.output, contains('session read failed'));
       expect(logger.output, contains('session write failed'));
       expect(logger.output, contains('session delete failed'));

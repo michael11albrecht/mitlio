@@ -57,24 +57,54 @@ class SyncStateDao extends DatabaseAccessor<AppDatabase>
     ),
   );
 
+  /// Groups this device syncs: state `shared` or `uploading` (not local only,
+  /// not `removed`).
+  Future<List<String>> syncGroupIds() async {
+    final rows =
+        await (select(localGroupSync)..where(
+              (r) => r.state.isIn([
+                SyncState.shared.name,
+                SyncState.uploading.name,
+              ]),
+            ))
+            .get();
+    return [for (final r in rows) r.groupId];
+  }
+
   /// Sets [role] on an existing row; no-op without one.
   Future<void> setRole(String groupId, SyncRole role) =>
       (update(localGroupSync)..where((r) => r.groupId.equals(groupId))).write(
         LocalGroupSyncCompanion(role: Value(role.name)),
       );
 
-  Future<void> markPushed(String groupId, DateTime at) =>
-      (update(localGroupSync)..where((r) => r.groupId.equals(groupId))).write(
-        LocalGroupSyncCompanion(
-          lastPushAt: Value(at),
-          lastErrorCode: const Value(null),
-          lastErrorAt: const Value(null),
-        ),
-      );
+  /// Stamps a push. Clears the last error unless [keepError] (a rejected op
+  /// stays visible until something else clears it).
+  Future<void> markPushed(
+    String groupId,
+    DateTime at, {
+    bool keepError = false,
+  }) => (update(localGroupSync)..where((r) => r.groupId.equals(groupId))).write(
+    LocalGroupSyncCompanion(
+      lastPushAt: Value(at),
+      lastErrorCode: keepError ? const Value.absent() : const Value(null),
+      lastErrorAt: keepError ? const Value.absent() : const Value(null),
+    ),
+  );
 
+  /// Stamps a pull. Does not touch the last error: a pull proves nothing
+  /// about the pending pushes; see [clearError].
   Future<void> markPulled(String groupId, DateTime at) =>
       (update(localGroupSync)..where((r) => r.groupId.equals(groupId))).write(
         LocalGroupSyncCompanion(lastPullAt: Value(at)),
+      );
+
+  /// Forgets the last error of [groupId].
+  Future<void> clearError(String groupId) =>
+      (update(localGroupSync)..where((r) => r.groupId.equals(groupId))).write(
+        const LocalGroupSyncCompanion(
+          lastErrorCode: Value(null),
+          lastErrorAt: Value(null),
+        ),
       );
 
   /// Remembers a stable error case name (ADR-27 §3) for the group.
@@ -171,4 +201,31 @@ class SyncStateDao extends DatabaseAccessor<AppDatabase>
       ..where(localOutbox.groupId.equals(groupId));
     return (await q.getSingle()).read(count) ?? 0;
   }
+
+  /// Deletes the op with [opId]; false when it is gone because a newer write
+  /// of the same aggregate replaced it (new `op_id`, ADR-07). Never deletes by
+  /// (entity, id): the replacement was not sent yet.
+  Future<bool> deleteOutboxOp(String opId) async =>
+      await (delete(localOutbox)..where((o) => o.opId.equals(opId))).go() > 0;
+
+  /// Keeps the op for a retry: [attempts] so far, not before [nextAttemptAt],
+  /// and why. No-op when the op was replaced meanwhile (the new one is fresh).
+  Future<void> deferOutboxOp(
+    String opId, {
+    required int attempts,
+    required DateTime nextAttemptAt,
+    required String errorCode,
+  }) => (update(localOutbox)..where((o) => o.opId.equals(opId))).write(
+    LocalOutboxCompanion(
+      attempts: Value(attempts),
+      nextAttemptAt: Value(nextAttemptAt),
+      lastErrorCode: Value(errorCode),
+    ),
+  );
+
+  /// Makes every waiting op of [groupId] due now (the user asked to retry).
+  Future<void> resetBackoff(String groupId) =>
+      (update(localOutbox)..where((o) => o.groupId.equals(groupId))).write(
+        const LocalOutboxCompanion(nextAttemptAt: Value(null)),
+      );
 }

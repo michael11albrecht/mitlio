@@ -6,7 +6,7 @@ import retention from '../../supabase/retention.json' with { type: 'json' };
 // supabase/retention.json is the single source of truth (docs/retention.md). The cleanup SQL and the pgTAP
 // test hard-code the same numbers; this test fails when any of them drifts.
 const read = (path: string): string => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
-const interval = (n: number): string => `interval '${n} ${n === 1 ? 'day' : 'days'}'`;
+const interval = (n: number, unit = 'day'): string => `interval '${n} ${n === 1 ? unit : `${unit}s`}'`;
 
 const jobs = [
   { key: 'rate_limits_days', file: 'supabase/migrations/0005_fuel_prices.sql', stmt: /from public\.rate_limits where updated_at < now\(\) - (interval '[^']+')/ },
@@ -14,6 +14,7 @@ const jobs = [
   { key: 'fx_rates_days', file: 'supabase/migrations/0006_fx_rates.sql', stmt: /from public\.fx_rates where fetched_at < now\(\) - (interval '[^']+')/ },
   { key: 'join_audit_days', file: 'supabase/migrations/0013_retention.sql', stmt: /from public\.group_join_audit where joined_at < now\(\) - (interval '[^']+')/ },
   { key: 'expired_invites_days_after_expiry', file: 'supabase/migrations/0013_retention.sql', stmt: /from public\.group_invites where expires_at < now\(\) - (interval '[^']+')/ },
+  { key: 'inactive_account_months', unit: 'month', file: 'supabase/migrations/0014_inactive_accounts_cleanup.sql', stmt: /< now\(\) - (interval '[^']+')\s*loop/ },
 ] as const;
 
 test.describe('retention.json matches the cleanup jobs', () => {
@@ -21,7 +22,7 @@ test.describe('retention.json matches the cleanup jobs', () => {
     test(`${job.key} in ${job.file}`, () => {
       const match = job.stmt.exec(read(job.file));
       expect(match, `cleanup statement not found in ${job.file}`).not.toBeNull();
-      expect(match?.[1]).toBe(interval(retention[job.key]));
+      expect(match?.[1]).toBe(interval(retention[job.key], 'unit' in job ? job.unit : 'day'));
     });
   }
 
@@ -29,9 +30,16 @@ test.describe('retention.json matches the cleanup jobs', () => {
     const sql = read('supabase/tests/database/retention.sql');
     for (const job of jobs) {
       expect(sql, job.key).toContain(`-- retention: ${job.key}=${retention[job.key]}\n`);
-      expect(sql, job.key).toContain(`${interval(retention[job.key])} - interval '1 hour'`);
-      expect(sql, job.key).toContain(`${interval(retention[job.key])} + interval '1 hour'`);
+      const iv = interval(retention[job.key], 'unit' in job ? job.unit : 'day');
+      expect(sql, job.key).toContain(`${iv} - interval '1 hour'`);
+      expect(sql, job.key).toContain(`${iv} + interval '1 hour'`);
     }
+  });
+
+  test('the edit history keeps the newest expense_revisions_per_expense revisions per expense', () => {
+    const match = /r\.revision <= v_next - (\d+)/.exec(read('supabase/migrations/0007_expense_revisions.sql'));
+    expect(match, 'prune statement not found in 0007').not.toBeNull();
+    expect(Number(match?.[1])).toBe(retention.expense_revisions_per_expense);
   });
 
   test('every key is documented in docs/retention.md', () => {

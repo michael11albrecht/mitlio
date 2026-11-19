@@ -3,8 +3,9 @@
 
 // App ids come from app/app_identity.yaml (tests/hosting.spec.ts keeps them in sync).
 export const IOS_APP_IDS = ['app.mitlio', 'app.mitlio.dev'];
-// Only the prod package: the dev flavor is signed with a per-machine debug key, so it cannot be listed here.
-export const ANDROID_PACKAGE = 'app.mitlio';
+// Both flavors. The dev flavor is signed with the debug key: it verifies only while the debug cert is in
+// ANDROID_SHA256_CERT_FINGERPRINTS (docs/release.md).
+export const ANDROID_PACKAGES = ['app.mitlio', 'app.mitlio.dev'];
 // Invite links, see docs/deeplink.md. The site itself is only the fallback page.
 export const LINK_PATH = '/join/*';
 
@@ -42,6 +43,9 @@ export function firebaseConfig(fuelApiUrl = '') {
       trailingSlash: true,
       // Firebase ignores dotfiles by default, which would drop /.well-known: override the default list.
       ignore: ['firebase.json', '**/node_modules/**'],
+      // Invite links https://<domain>/join/<token>: every token path is the same static fallback page (no script
+      // reads the token, see src/pages/join.astro).
+      rewrites: [{ source: '/join/**', destination: '/join/index.html' }],
       // Firebase applies every matching rule; for a repeated key the LAST rule wins. Order: general, then specific.
       headers: [
         {
@@ -60,6 +64,7 @@ export function firebaseConfig(fuelApiUrl = '') {
         { source: '**/*.@(png|svg|ico)', headers: [h('Cache-Control', 'public, max-age=86400')] },
         // Content-hashed by Astro: safe to cache forever.
         { source: '/_astro/**', headers: [h('Cache-Control', 'public, max-age=31536000, immutable')] },
+        { source: '/join/**', headers: [h('X-Robots-Tag', 'noindex')] },
         {
           // apple-app-site-association has no extension, so the type must be set explicitly (iOS requires JSON).
           source: '/.well-known/**',
@@ -89,12 +94,10 @@ export function wellKnownFiles(teamId = '', fingerprints = '') {
     for (const p of prints) {
       if (!FINGERPRINT.test(p)) throw new Error(`ANDROID_SHA256_CERT_FINGERPRINTS: "${p}" is not a SHA-256 fingerprint (AA:BB:..)`);
     }
-    files['assetlinks.json'] = [
-      {
-        relation: ['delegate_permission/common.handle_all_urls'],
-        target: { namespace: 'android_app', package_name: ANDROID_PACKAGE, sha256_cert_fingerprints: prints },
-      },
-    ];
+    files['assetlinks.json'] = ANDROID_PACKAGES.map((packageName) => ({
+      relation: ['delegate_permission/common.handle_all_urls'],
+      target: { namespace: 'android_app', package_name: packageName, sha256_cert_fingerprints: prints },
+    }));
   }
   return files;
 }

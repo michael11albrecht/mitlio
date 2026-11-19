@@ -65,6 +65,7 @@
     }
   },
   "remoteErrorRejectedNoTitle": "Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.",
+  "remoteErrorPullFailed": "Neue Änderungen aus der Gruppe konnten nicht übernommen werden. Deine eigenen Daten sind sicher. Versuch es später nochmal oder aktualisiere mitlio.",
   "errorSettingNotSaved": "Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.",
   "errorUndoFailed": "Rückgängig machen hat nicht geklappt. Prüf den Stand und versuch es nochmal.",
   "retry": "Nochmal versuchen",
@@ -192,6 +193,49 @@
   "memberOrderHint": "Zum Sortieren ziehen. Wer weiter oben steht, zahlt bei Restcents zuerst einen Cent mehr.",
   "memberInUse": "{name} hat Ausgaben oder Zahlungen und bleibt deshalb in der Gruppe.",
   "@memberInUse": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnect": "Verbindung trennen",
+  "memberDisconnectFor": "Verbindung trennen, {name}",
+  "@memberDisconnectFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnected": "{name} ist nicht mehr verbunden",
+  "@memberDisconnected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnectOffline": "Keine Verbindung. Nichts geändert: {name} bleibt verbunden. Versuch es nochmal, sobald du online bist.",
+  "@memberDisconnectOffline": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnectServerDown": "Der Server antwortet gerade nicht. Nichts geändert: {name} bleibt verbunden. Versuch es in ein paar Minuten nochmal.",
+  "@memberDisconnectServerDown": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnectNothingChanged": "Nichts geändert.",
+  "memberThatsMe": "Das bin ich",
+  "memberThatsMeFor": "Das bin ich, {name}",
+  "@memberThatsMeFor": {
     "placeholders": {
       "name": {
         "type": "String"
@@ -1449,5 +1493,86 @@
   "routeServerDown": "Der Routendienst ist gerade nicht erreichbar. Versuch es später nochmal oder trag die Kilometer selbst ein.",
   "routeUnconfigured": "Die Streckenberechnung gibt es auf diesem Server nicht. Trag die Kilometer einfach selbst ein.",
   "routeInvalid": "Start und Ziel passen nicht zusammen. Wähl zwei verschiedene Orte oder trag die Kilometer selbst ein.",
-  "routeAttributionFallback": "Karten- und Routendaten © OpenStreetMap-Mitwirkende"
+  "routeAttributionFallback": "Karten- und Routendaten © OpenStreetMap-Mitwirkende",
+  "shareUploadPartial": "{uploaded} von {total} {total, plural, =1{Eintrag} other{Einträgen}} hochgeladen. Auf diesem Handy ist alles unverändert. Wir versuchen es weiter.",
+  "@shareUploadPartial": {
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "shareGroupMissing": "Diese Gruppe gibt es auf diesem Handy nicht mehr. Lade die Gruppenliste neu.",
+  "syncStatusUpToDate": "Aktuell",
+  "syncStatusSending": "Wird gesendet …",
+  "syncStatusPending": "{count, plural, =1{1 Änderung wartet} other{{count} Änderungen warten}}",
+  "@syncStatusPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRejectedLine": "Eine Änderung konnte nicht geteilt werden.",
+  "syncRejectedShow": "Ansehen",
+  "syncRejectedSheetTitle": "Nicht geteilt",
+  "syncRejectedOk": "OK",
+  "syncUpdateAction": "Aktualisieren",
+  "syncUpdateOpenFailed": "Der Store lässt sich nicht öffnen. Öffne ihn selbst und aktualisiere mitlio.",
+  "syncStatusUploading": "Wird hochgeladen …",
+  "syncStatusUploadingLeft": "{count, plural, =1{Wird hochgeladen … noch 1 Eintrag} other{Wird hochgeladen … noch {count} Einträge}}",
+  "@syncStatusUploadingLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shareMenu": "Gruppe teilen",
+  "shareSheetTitle": "Gruppe teilen",
+  "sharePreparing": "Link wird vorbereitet …",
+  "shareLinkButton": "Link teilen",
+  "shareQrLabel": "QR-Code zum Beitreten der Gruppe {name}",
+  "@shareQrLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteShareText": "Komm in die Gruppe {name} bei mitlio: {link}",
+  "@inviteShareText": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteRotate": "Neuen Link erstellen",
+  "inviteRotateWarning": "Der alte Link funktioniert dann nicht mehr.",
+  "inviteRotateCancel": "Abbrechen",
+  "inviteLinkRotated": "Dieser Link gilt nicht mehr. Frag, wer die Gruppe erstellt hat, nach dem neuen.",
+  "inviteNoLinkMember": "Auf diesem Handy ist kein Link gespeichert. Frag, wer die Gruppe erstellt hat, nach dem Link.",
+  "inviteStoreUnreadable": "Der gespeicherte Link ließ sich nicht lesen. Starte mitlio neu und versuch es nochmal.",
+  "inviteNotSaved": "Der Link konnte auf diesem Handy nicht gespeichert werden. Teile ihn jetzt, später brauchst du einen neuen Link.",
+  "joinTitle": "Wer bist du?",
+  "joinJoining": "Du trittst der Gruppe bei …",
+  "joinConnected": "verbunden",
+  "joinNewHere": "Ich bin neu hier",
+  "joinNameLabel": "Dein Name",
+  "joinNameRequired": "Wie heißt du? Trag deinen Namen ein.",
+  "joinNameConfirm": "Beitreten",
+  "joinSkip": "Überspringen",
+  "joinConnecting": "Einen Moment …",
+  "joinOffline": "Keine Verbindung. Du bist der Gruppe noch nicht beigetreten und auf diesem Handy wurde nichts angelegt. Verbinde dich mit dem Internet und öffne den Link nochmal.",
+  "joinLocalFailed": "Die Gruppe konnte auf diesem Handy nicht gespeichert werden. Prüfe den freien Speicher und öffne den Link nochmal.",
+  "joinOpenGroup": "Zur Gruppe",
+  "joinClose": "Schließen",
+  "joinConnectOffline": "Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist."
 }

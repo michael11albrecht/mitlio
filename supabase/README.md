@@ -19,6 +19,7 @@ Never run `supabase link` / `supabase db push` from an agent; deploys are an own
 | `migrations/0007_expense_revisions.sql` | `expense_revisions` (member read, trigger-written snapshots before each expense change, newest 50 kept). Client twin: Drift schema v3. |
 | `migrations/0009_join_hardening.sql` | `join_group` per-user rate limit (10/hour, SQLSTATE `P0429` `rate_limited`) and `group_join_audit` (member read, written only by `join_group`). |
 | `migrations/0010_people_accounts.sql` | ADR-24: `group_memberships.role` (owner/member, trigger-enforced), owner-only `create_invite` (non-expiring, revokes other links) and `revoke_invite`, `connect_member`, `remove_membership`, `delete_my_data` hands ownership on. |
+| `migrations/0014_inactive_accounts_cleanup.sql` | Retention for sync (#188): `delete_account_data(uid)` (internal, the one deletion path; `delete_my_data` now delegates to it) and the daily cron job `inactive-accounts-cleanup` (`cleanup_inactive_accounts()`): anonymous accounts inactive for 13 months, then groups with no linked account (with all rows). Activity signal in `docs/retention.md`. |
 | `migrations/0012_app_config.sql` | `app_config` (min_supported_version per platform, ADR-27 §2.3): the one anon-readable app table (the gate runs before sign-in), no client writes, owner edits it in the SQL editor. `join_group`'s `P0429` now carries `hint = 'retry_after_seconds=<n>'`. |
 | `functions/` | Edge Functions (Deno 2.1.4). `fuel-prices/`, `fx-rates/` + pure logic in `_shared/`; `tests/coverage_gate.sh` (unit, >= 90 %) and `tests/run_integration.sh` (`functions serve` + provider stub). CI only; never `functions deploy` from an agent. |
 | `functions/route-distance/` | P9-T08: start/destination text to coordinates and driving distance via openrouteservice (primary) or Geoapify (fallback), no migration (reuses `consume_rate_limit`). Contract: `../docs/route-distance-api.md`. |
@@ -78,7 +79,7 @@ The access token expires after 90 days: rotate it in the `staging` environment b
   | `TANKERKOENIG_API_KEY` | fuel-prices | Tankerkoenig key; optional, without it fuel prices are unavailable |
   | `FUEL_WARM_TOKEN` | fuel-prices | shared secret for the pg_cron cache warm-up |
   | `FUEL_RATE_LIMIT_SALT` | fuel-prices | salt for hashed rate-limit keys |
-  | `FUEL_ALLOWED_ORIGINS` | fuel-prices | CORS origins |
+  | `FUEL_ALLOWED_ORIGINS` | fuel-prices | CORS origins; set by `deploy-dev.yml` on every deploy (override via the variable `FUEL_ALLOWED_ORIGINS`), not by hand. Prod needs the same step |
   | `TANKERKOENIG_BASE_URL`, `OIL_BULLETIN_URL` | fuel-prices | optional overrides |
   | `FX_WARM_TOKEN` | fx-rates | shared secret for the pg_cron warm-up |
   | `FX_RATE_LIMIT_SALT` | fx-rates | salt for hashed rate-limit keys |

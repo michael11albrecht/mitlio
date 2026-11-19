@@ -30,6 +30,7 @@ String remoteErrorText(
   CannotRemoveSelf() => l10n.remoteErrorCannotRemoveSelf,
   VersionTooOld() => l10n.remoteErrorVersionTooOld,
   ServerDown() => l10n.remoteErrorServerDown,
+  PullFailed() => l10n.remoteErrorPullFailed,
   Rejected() =>
     title == null
         ? l10n.remoteErrorRejectedNoTitle

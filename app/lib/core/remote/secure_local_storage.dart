@@ -27,9 +27,20 @@ class FlutterSecretStore implements SecretStore {
   Future<void> delete(String key) => _storage.delete(key: key);
 }
 
+/// The keychain refused to forget the stored session.
+class SessionStorageException implements Exception {
+  const SessionStorageException(this.cause);
+
+  final Object cause;
+
+  @override
+  String toString() => 'SessionStorageException: $cause';
+}
+
 /// Supabase session persistence in the secure store: the refresh token never
 /// lands in plain preferences (P6-T07a). An unavailable key store degrades to
-/// "not signed in" and is logged, never thrown into auth start-up.
+/// "not signed in" and is logged, never thrown into auth start-up. Deleting
+/// the session is the exception: that failure propagates.
 class SecureLocalStorage extends LocalStorage {
   const SecureLocalStorage(this._store, this._logger);
 
@@ -69,6 +80,9 @@ class SecureLocalStorage extends LocalStorage {
       await _store.delete(sessionKey);
     } on Object catch (e, st) {
       _logger.warn('session delete failed', e, st);
+      // Not swallowed: a session that survives "Meine Daten löschen" must
+      // reach the user (#181).
+      throw SessionStorageException(e);
     }
   }
 }

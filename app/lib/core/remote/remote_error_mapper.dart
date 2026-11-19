@@ -14,6 +14,9 @@ const _rateLimitedState = 'P0429';
 /// `hint` of the rate-limit raise: `retry_after_seconds=<n>`.
 final _retryAfter = RegExp(r'retry_after_seconds=(\d+)');
 
+/// Start of the message PostgreSQL raises when a row fails an RLS check.
+const _rlsViolation = 'new row violates row-level security policy';
+
 /// Maps a PostgREST / RPC failure. Matches the SQLSTATE and the stable
 /// message strings raised by migrations 0002, 0003, 0009 and 0010.
 RemoteError fromPostgrest({
@@ -41,6 +44,9 @@ RemoteError? _byMessage(String? code, String msg) => switch ((code, msg)) {
   ('23514', 'cannot remove own membership') => const CannotRemoveSelf(),
   ('42501', 'not the owner of this group') => const NotOwner(),
   ('42501', 'not a member of this group') => const NotMember(),
+  // A write the RLS policy refuses: every policy on a synced table is
+  // "member of the row's group", so this means the account was removed.
+  ('42501', _) when msg.startsWith(_rlsViolation) => const NotMember(),
   _ => null,
 };
 

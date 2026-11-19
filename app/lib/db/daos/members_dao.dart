@@ -82,6 +82,15 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
     return n > 0;
   }
 
+  /// Sets or clears the account link of [id] (server-owned, so no
+  /// `updatedAt`, no upload). Returns true if a row changed.
+  Future<bool> setUserId(String id, String? userId) async {
+    final n = await (update(members)..where((m) => m.id.equals(id))).write(
+      MembersCompanion(userId: Value(userId)),
+    );
+    return n > 0;
+  }
+
   /// Ids of the members already asked whether they drive (local only).
   Future<Set<String>> askedDriverPrompts() async => {
     for (final r in await select(localDriverPrompts).get()) r.memberId,

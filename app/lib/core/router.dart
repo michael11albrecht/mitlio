@@ -18,6 +18,8 @@ import 'package:mitlio/features/settings/ui/licenses_view.dart';
 import 'package:mitlio/features/settings/ui/settings_view.dart';
 import 'package:mitlio/features/settle/ui/settle_view.dart';
 import 'package:mitlio/features/statistics/ui/statistics_view.dart';
+import 'package:mitlio/features/sync/data/invite_link.dart';
+import 'package:mitlio/features/sync/ui/join_view.dart';
 import 'package:mitlio/features/trips/ui/trip_form_view.dart';
 import 'package:mitlio/features/trips/ui/trip_form_view_model.dart'
     show standaloneTripGroupId;
@@ -30,6 +32,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       RouteBreadcrumbObserver(ref.watch(crashReporterProvider)),
       KeyboardDismissObserver(),
     ],
+    // `mitlio://join/<token>` arrives with the token as the path and "join" as
+    // the host; the https app link already matches `/join/:token`.
+    redirect: (context, state) => inviteLocationFor(state.uri),
     routes: [
       GoRoute(
         path: '/',
@@ -58,6 +63,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const LicensesView(),
               ),
             ],
+          ),
+          // Invite link (app links, `mitlio://join/<token>` and DebugDrive land here). Unnamed
+          // on purpose: the token is a secret and must not reach breadcrumbs.
+          GoRoute(
+            path: 'join/:token',
+            builder: (context, state) =>
+                JoinView(token: state.pathParameters['token']!),
           ),
           GoRoute(
             path: 'groups/new',

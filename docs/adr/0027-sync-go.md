@@ -60,6 +60,7 @@ Copy below is the intended German text; final wording goes through `docs/copy-gu
 | version below `min_supported_version` | `versionTooOld` | "Diese Version kann nicht mehr teilen. Aktualisiere mitlio." + store button |
 | HTTP 5xx | `serverDown` | "Der Server antwortet gerade nicht. Wir versuchen es gleich nochmal." |
 | other 4xx on push (e.g. `payers_sum_mismatch`) | `rejected(code)` | "„{Titel}“ konnte nicht geteilt werden. Sie ist nur auf diesem Handy." |
+| pull page cannot be applied (unreadable `updated_at`, local DB refusal; P6-T11) | `pullFailed(reason)` | "Neue Änderungen aus der Gruppe konnten nicht übernommen werden. Deine eigenen Daten sind sicher. Versuch es später nochmal oder aktualisiere mitlio." |
 
 - **One message for invalid, expired and revoked links.** `join_group` returns `invite_invalid` for
   all three on purpose: telling them apart would confirm that a guessed token once existed. The

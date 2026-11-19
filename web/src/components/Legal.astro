@@ -1,8 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { messages, type Locale, type RouteKey } from '../i18n';
-import { legalTexts } from '../i18n/legal';
-import { assertNoPlaceholders, fillAddress } from '../lib/legal';
+import { legalTexts, syncPrivacySections } from '../i18n/legal';
+import { assertNoPlaceholders, assertSyncDisclosed, fillAddress } from '../lib/legal';
+import prodConfig from '../../../app/config/prod.json';
 import { SITE_URL } from '../../site.config.mjs';
 
 interface Props {
@@ -17,6 +18,8 @@ const text = fillAddress(legalTexts[locale][route], process.env);
 
 // DRAFT, have it reviewed before publishing. Fails the production build while `[[` placeholders remain.
 assertNoPlaceholders(text, SITE_URL, process.env.LEGAL_STRICT === '1');
+// Release gate: a production app config with a Supabase URL needs the sync sections in the privacy text.
+if (route === 'privacy') assertSyncDisclosed(prodConfig.SUPABASE_URL, text, syncPrivacySections[locale]);
 ---
 
 <Layout locale={locale} route={route} title={`${heading} | mitlio`} description={heading} noindex>

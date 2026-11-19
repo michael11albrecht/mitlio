@@ -133,21 +133,80 @@ test.describe('/.well-known', () => {
     expect(detail.components).toEqual([{ '/': '/join/*' }]);
   });
 
-  test('assetlinks.json uses the prod package and the fingerprints', () => {
+  test('assetlinks.json lists both flavors with the fingerprints', () => {
     const files = wellKnownFiles('', `${fingerprint.toLowerCase()}, ${fingerprint}`);
     expect(Object.keys(files)).toEqual(['assetlinks.json']);
-    const [entry] = files['assetlinks.json'];
-    expect(entry.relation).toEqual(['delegate_permission/common.handle_all_urls']);
-    expect(entry.target).toEqual({
-      namespace: 'android_app',
-      package_name: prod,
-      sha256_cert_fingerprints: [fingerprint, fingerprint],
-    });
+    const entries = files['assetlinks.json'];
+    expect(entries).toHaveLength(2);
+    for (const [i, pkg] of [prod, dev].entries()) {
+      expect(entries[i].relation).toEqual(['delegate_permission/common.handle_all_urls']);
+      expect(entries[i].target).toEqual({
+        namespace: 'android_app',
+        package_name: pkg,
+        sha256_cert_fingerprints: [fingerprint, fingerprint],
+      });
+    }
     expect(() => JSON.parse(JSON.stringify(files['assetlinks.json']))).not.toThrow();
+  });
+
+  test('the committed apple-app-site-association is valid JSON for both bundle ids, /join/* only', () => {
+    const file = join(web, 'public', '.well-known', 'apple-app-site-association');
+    const json = JSON.parse(readFileSync(file, 'utf8')) as {
+      applinks: { details: { appIDs: string[]; components: Record<string, string>[] }[] };
+    };
+    expect(json.applinks.details).toHaveLength(1);
+    expect(json.applinks.details[0].appIDs).toEqual([`C9B9SUM8W6.${prod}`, `C9B9SUM8W6.${dev}`]);
+    expect(json.applinks.details[0].components).toEqual([{ '/': '/join/*' }]);
+    // The build copies it as is, so the served file is the committed one.
+    expect(JSON.parse(readFileSync(join(dist, '.well-known', 'apple-app-site-association'), 'utf8'))).toEqual(json);
+  });
+
+  test('the generated apple-app-site-association for the same team equals the committed one', () => {
+    const committed = JSON.parse(
+      readFileSync(join(web, 'public', '.well-known', 'apple-app-site-association'), 'utf8'),
+    );
+    expect(wellKnownFiles('C9B9SUM8W6', '')['apple-app-site-association']).toEqual(committed);
   });
 
   test('malformed values fail the build instead of shipping a broken file', () => {
     expect(() => wellKnownFiles('short', '')).toThrow(/APPLE_TEAM_ID/);
     expect(() => wellKnownFiles('', 'AA:BB')).toThrow(/ANDROID_SHA256_CERT_FINGERPRINTS/);
+  });
+});
+
+test.describe('/join/<token> fallback (P6-T14c)', () => {
+  const html = () => readFileSync(join(dist, 'join', 'index.html'), 'utf8');
+
+  test('firebase rewrites every /join/** path to the static fallback page', () => {
+    const rewrites = (firebase.hosting as unknown as { rewrites: { source: string; destination: string }[] }).rewrites;
+    expect(rewrites).toEqual([{ source: '/join/**', destination: '/join/index.html' }]);
+  });
+
+  test('the join paths are noindex for crawlers (header and meta)', () => {
+    expect(header('/join/**', 'X-Robots-Tag')).toBe('noindex');
+    expect(html()).toMatch(/<meta name="robots" content="noindex"/);
+  });
+
+  test('says what to do, in du-form German', () => {
+    expect(html()).toContain('Öffne den Link auf deinem Handy mit mitlio');
+    expect(html()).toContain('<html lang="de-DE"');
+  });
+
+  test('no script at all, so nothing can read, log, store or send the token', () => {
+    expect(html()).not.toMatch(/<script\b/i);
+    expect(html()).not.toMatch(/\son[a-z]+="/);
+  });
+
+  test('is not in the sitemap', () => {
+    expect(readFileSync(join(dist, 'sitemap-0.xml'), 'utf8')).not.toContain('/join/');
+  });
+
+  test('browser: the page renders and makes no request carrying a token', async ({ page }) => {
+    // Firebase does the rewrite in production; astro preview serves the same file at /join/.
+    const requests: string[] = [];
+    page.on('request', (r) => requests.push(r.url()));
+    await page.goto('/join/');
+    await expect(page.locator('h1')).toHaveText('Öffne den Link auf deinem Handy mit mitlio');
+    expect(requests.filter((u) => /\/join\/./.test(u))).toEqual([]);
   });
 });
