@@ -1011,5 +1011,19 @@
   "inviteLinkRotated": "This link no longer works. Ask whoever created the group for the new one.",
   "inviteNoLinkMember": "No link is saved on this phone. Ask whoever created the group for the link.",
   "inviteStoreUnreadable": "The saved link could not be read. Restart mitlio and try again.",
-  "inviteNotSaved": "The link could not be saved on this phone. Share it now; later you will need a new link."
+  "inviteNotSaved": "The link could not be saved on this phone. Share it now; later you will need a new link.",
+  "joinTitle": "Who are you?",
+  "joinJoining": "Joining the group …",
+  "joinConnected": "connected",
+  "joinNewHere": "I am new here",
+  "joinNameLabel": "Your name",
+  "joinNameRequired": "What is your name? Enter it first.",
+  "joinNameConfirm": "Join",
+  "joinSkip": "Skip",
+  "joinConnecting": "One moment …",
+  "joinOffline": "No connection. You have not joined the group yet and nothing was created on this phone. Connect to the internet and open the link again.",
+  "joinLocalFailed": "The group could not be saved on this phone. Check your free storage and open the link again.",
+  "joinOpenGroup": "Open group",
+  "joinClose": "Close",
+  "joinConnectOffline": "No connection. You are in the group but not connected to anyone yet. Try again as soon as you are online."
 }

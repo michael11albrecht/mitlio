@@ -16,6 +16,7 @@ import 'package:mitlio/debug/handlers/expenses.dart';
 import 'package:mitlio/debug/handlers/export.dart';
 import 'package:mitlio/debug/handlers/fuel.dart';
 import 'package:mitlio/debug/handlers/groups.dart';
+import 'package:mitlio/debug/handlers/join.dart';
 import 'package:mitlio/debug/handlers/payment.dart';
 import 'package:mitlio/debug/handlers/rides.dart';
 import 'package:mitlio/debug/handlers/routes.dart';
@@ -127,6 +128,7 @@ void registerDebugDrive(ProviderContainer container) {
     ...fuelDriveHandlers(container),
     ...syncDriveHandlers(container),
     ...shareDriveHandlers(container),
+    ...joinDriveHandlers(container),
     ...authDriveHandlers(container),
     ...routeDriveHandlers(container),
   };

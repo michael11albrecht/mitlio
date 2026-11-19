@@ -2,11 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/remote/secure_local_storage.dart';
 import 'package:mitlio/db/database_provider.dart';
+import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/settings/data/repositories/legal_links_providers.dart';
 import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
 import 'package:mitlio/features/sync/data/auth_providers.dart';
 import 'package:mitlio/features/sync/data/drift_sync_coordinator.dart';
 import 'package:mitlio/features/sync/data/drift_sync_state_repository.dart';
+import 'package:mitlio/features/sync/data/repositories/join_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/share_group_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/share_link_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/sync_service.dart';
@@ -67,6 +69,18 @@ final shareLinkRepositoryProvider = Provider<ShareLinkRepository>(
     logger: ref.watch(loggerProvider),
     share: ref.watch(shareServiceProvider),
     siteUrl: siteUrl,
+  ),
+);
+
+final joinRepositoryProvider = Provider<JoinRepository>(
+  (ref) => JoinRepository(
+    db: ref.watch(appDatabaseProvider),
+    auth: ref.watch(authRepositoryProvider),
+    invites: ref.watch(inviteRemoteProvider),
+    sync: ref.watch(syncServiceProvider),
+    members: ref.watch(membersRepositoryProvider),
+    links: ref.watch(shareLinkRepositoryProvider),
+    logger: ref.watch(loggerProvider),
   ),
 );
 
