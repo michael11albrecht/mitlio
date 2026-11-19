@@ -58,7 +58,7 @@ Map<String, Object?> _expense({
   DbExpensesCols.groupAmountCents: 3000,
   DbExpensesCols.date: '2026-03-01T00:00:00.000Z',
   DbExpensesCols.category: 'food',
-  DbExpensesCols.type: 'expense',
+  DbExpensesCols.type: 'regular',
   DbExpensesCols.splitMode: 'equal',
   DbExpensesCols.tripMeta: null,
   DbExpensesCols.updatedAt: _hlc(v),

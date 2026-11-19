@@ -97,12 +97,7 @@ class SupabaseSyncRemote implements SyncRemote {
       if (uid == null) throw const _NotSignedIn();
       // Checked first: for an existing member the bootstrap policy refuses
       // the insert (42501), which would look like "removed".
-      final mine = await client
-          .from(_membershipsTable)
-          .select('id')
-          .eq('group_id', groupId)
-          .eq('user_id', uid);
-      if (mine.isNotEmpty) return const Ok(false);
+      if (await _hasMembership(client, groupId, uid)) return const Ok(false);
       await client.from(_membershipsTable).insert({
         'group_id': groupId,
         'user_id': uid,
@@ -149,10 +144,33 @@ class SupabaseSyncRemote implements SyncRemote {
           .gt(DbGroupsCols.serverSeq, afterSeq)
           .order(DbGroupsCols.serverSeq, ascending: true)
           .limit(limit);
+      if (rows.isEmpty) {
+        // Row level security hides a group from someone who is not (or no
+        // longer) in it by returning nothing, not an error. "Nothing new"
+        // and "removed" must not look alike: a removed phone has to be told.
+        final uid = client.auth.currentUser?.id;
+        if (uid == null) throw const _NotSignedIn();
+        if (!await _hasMembership(client, groupId, uid)) {
+          return const Err(NotMember());
+        }
+      }
       return Ok([for (final r in rows) Map<String, Object?>.of(r)]);
     } on Object catch (e) {
       return Err(_map(e));
     }
+  }
+
+  Future<bool> _hasMembership(
+    SupabaseClient client,
+    String groupId,
+    String uid,
+  ) async {
+    final mine = await client
+        .from(_membershipsTable)
+        .select('id')
+        .eq('group_id', groupId)
+        .eq('user_id', uid);
+    return mine.isNotEmpty;
   }
 
   @override
