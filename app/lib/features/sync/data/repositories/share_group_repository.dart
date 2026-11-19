@@ -11,6 +11,7 @@ import 'package:mitlio/db/daos/sync_state_dao.dart';
 import 'package:mitlio/features/sync/data/outbox_writer.dart';
 import 'package:mitlio/features/sync/data/repositories/auth_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/sync_service.dart';
+import 'package:mitlio/features/sync/data/repositories/version_gate.dart';
 import 'package:mitlio/features/sync/data/services/sync_remote.dart';
 import 'package:mitlio/features/sync/data/sync_status.dart';
 import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
@@ -141,6 +142,7 @@ class ShareGroupRepository {
     required this._sync,
     required Clock clock,
     required IdGenerator ids,
+    this._gate,
   }) : _clock = clock,
        _outbox = OutboxWriter(db: _db, clock: clock, ids: ids);
 
@@ -148,6 +150,10 @@ class ShareGroupRepository {
   final AuthRepository _auth;
   final SyncRemote _remote;
   final SyncService _sync;
+
+  /// An app below `min_supported_version` does not start a share either
+  /// (P6-T16); null: no gate.
+  final VersionGate? _gate;
   final Clock _clock;
   final OutboxWriter _outbox;
 
@@ -178,6 +184,9 @@ class ShareGroupRepository {
         ShareUploadFailed(uploaded: uploaded, total: total, error: e);
 
     if (state != SyncState.uploading.name) {
+      if (await _gate?.check() case VersionGateState(blocked: true)) {
+        return Err(failed(const VersionTooOld(), 0));
+      }
       final signedIn = await _auth.ensureSignedIn();
       if (signedIn case Err(:final error)) return Err(failed(error, 0));
       final uid = (signedIn as Ok<String, RemoteError>).value;

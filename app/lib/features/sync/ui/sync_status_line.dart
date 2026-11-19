@@ -77,6 +77,7 @@ class SyncStatusLine extends ConsumerWidget {
                 child: TextButton(
                   onPressed: () => switch (action) {
                     SyncLineAction.retry => unawaited(vm.retry()),
+                    SyncLineAction.update => unawaited(_openStore(context, vm)),
                     SyncLineAction.showRejected => unawaited(
                       showRejectedChangeSheet(
                         context,
@@ -92,6 +93,7 @@ class SyncStatusLine extends ConsumerWidget {
                   child: Text(switch (action) {
                     SyncLineAction.retry => l10n.retry,
                     SyncLineAction.showRejected => l10n.syncRejectedShow,
+                    SyncLineAction.update => l10n.syncUpdateAction,
                   }),
                 ),
               ),
@@ -99,6 +101,19 @@ class SyncStatusLine extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// "Aktualisieren": the store page, or plain words when it cannot open.
+  static Future<void> _openStore(
+    BuildContext context,
+    SyncStatusViewModel vm,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
+    if (await vm.openStore()) return;
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(l10n.syncUpdateOpenFailed)));
   }
 
   static IconData _icon(SyncLineKind kind) => switch (kind) {

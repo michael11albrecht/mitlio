@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mitlio/core/app_version.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/remote/secure_local_storage.dart';
 import 'package:mitlio/db/database_provider.dart';
@@ -10,6 +11,8 @@ import 'package:mitlio/features/sync/data/drift_sync_state_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/share_group_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/share_link_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/sync_service.dart';
+import 'package:mitlio/features/sync/data/repositories/version_gate.dart';
+import 'package:mitlio/features/sync/data/services/app_config_remote.dart';
 import 'package:mitlio/features/sync/data/services/invite_remote.dart';
 import 'package:mitlio/features/sync/data/services/supabase_invite_remote.dart';
 import 'package:mitlio/features/sync/data/services/supabase_sync_remote.dart';
@@ -27,6 +30,25 @@ final syncRemoteProvider = Provider<SyncRemote>(
   (ref) => SupabaseSyncRemote(ref.watch(remoteBackendProvider)),
 );
 
+/// The `app_config` endpoint (public read); tests and DebugDrive override it
+/// with `FakeAppConfigRemote`.
+final appConfigRemoteProvider = Provider<AppConfigRemote>(
+  (ref) => SupabaseAppConfigRemote(ref.watch(remoteBackendProvider)),
+);
+
+/// Blocks sync (never local use) below the server's `min_supported_version`
+/// (P6-T16).
+final versionGateProvider = Provider<VersionGate>(
+  (ref) => VersionGate(
+    db: ref.watch(appDatabaseProvider),
+    remote: ref.watch(appConfigRemoteProvider),
+    clock: ref.watch(clockProvider),
+    launcher: ref.watch(linkLauncherProvider),
+    currentVersion: ref.watch(appVersionProvider),
+    platform: ref.watch(storePlatformProvider),
+  ),
+);
+
 final shareGroupRepositoryProvider = Provider<ShareGroupRepository>(
   (ref) => ShareGroupRepository(
     db: ref.watch(appDatabaseProvider),
@@ -35,6 +57,7 @@ final shareGroupRepositoryProvider = Provider<ShareGroupRepository>(
     sync: ref.watch(syncServiceProvider),
     clock: ref.watch(clockProvider),
     ids: ref.watch(idGeneratorProvider),
+    gate: ref.watch(versionGateProvider),
   ),
 );
 
@@ -45,6 +68,7 @@ final syncServiceProvider = Provider<SyncService>(
     clock: ref.watch(clockProvider),
     random: ref.watch(randomProvider),
     ids: ref.watch(idGeneratorProvider),
+    gate: ref.watch(versionGateProvider),
   ),
 );
 

@@ -25,6 +25,11 @@ String _words(SyncStatus status) =>
 /// order (`entity`, `id`, `opId`, `op`, `attempts`, `lastErrorCode`); never the
 /// payload.
 ///
+/// `ext.mitlio.sync.versionGate` (read-only; may refresh the cached answer
+/// once its 12 h are over, pass `force: true` to refetch): `{current, min,
+/// blocked, storeUrl}`. `min` is null when the server's answer is unknown or
+/// unusable (the gate then fails open).
+///
 /// `ext.mitlio.sync.state` (read-only): what this device knows about syncing
 /// a group. `state` is `local` when the group was never shared. Keys without
 /// the `ext.mitlio.` prefix.
@@ -73,6 +78,17 @@ Map<String, DriveHandler> syncDriveHandlers(ProviderContainer c) => {
       'lastPullAt': s.lastPullAt?.toIso8601String(),
       'lastErrorCode': s.lastErrorCode,
       'lastErrorAt': s.lastErrorAt?.toIso8601String(),
+    };
+  },
+  'sync.versionGate': (p) async {
+    final state = await c
+        .read(versionGateProvider)
+        .check(force: p['force'] == 'true');
+    return {
+      'current': state.current,
+      'min': state.min,
+      'blocked': state.blocked,
+      'storeUrl': state.storeUrl,
     };
   },
   'sync.outbox': (p) async {
