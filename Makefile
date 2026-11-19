@@ -187,6 +187,13 @@ db-types: ## Regenerate supabase/types/database.ts (needs Docker + db-up) and th
 	$(SUPABASE) gen types typescript --local > supabase/types/database.ts
 	$(DART) tool/gen_db_contract.dart
 
+.PHONY: test-sync-e2e
+test-sync-e2e: ## Two-device sync E2E + contract suites against local Supabase (needs Docker, run db-up first)
+	$(call need_docker)
+	@set -eo pipefail; eval "$$($(SUPABASE) status -o env)"; \
+	  cd $(APP) && SUPABASE_URL="$$API_URL" SUPABASE_ANON_KEY="$$ANON_KEY" SUPABASE_DB_URL="$$DB_URL" \
+	  $(FLUTTER) test -P supabase test/sync_e2e
+
 .PHONY: car-catalog
 car-catalog: ## Rebuild the bundled car list from the EEA CO2 data (needs network, developer-run, docs/car-catalog.md)
 	$(DART) run packages/tooling/bin/build_car_catalog.dart --output app/assets/car_catalog/catalog_v1.json.gz
