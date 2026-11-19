@@ -260,6 +260,12 @@ abstract class AppLocalizations {
   /// **'Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.'**
   String get remoteErrorRejectedNoTitle;
 
+  /// No description provided for @remoteErrorPullFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Neue Änderungen aus der Gruppe konnten nicht übernommen werden. Deine eigenen Daten sind sicher. Versuch es später nochmal oder aktualisiere mitlio.'**
+  String get remoteErrorPullFailed;
+
   /// No description provided for @errorSettingNotSaved.
   ///
   /// In de, this message translates to:
@@ -493,6 +499,54 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'{name} hat Ausgaben oder Zahlungen und bleibt deshalb in der Gruppe.'**
   String memberInUse(String name);
+
+  /// No description provided for @memberDisconnect.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbindung trennen'**
+  String get memberDisconnect;
+
+  /// No description provided for @memberDisconnectFor.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbindung trennen, {name}'**
+  String memberDisconnectFor(String name);
+
+  /// No description provided for @memberDisconnected.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} ist nicht mehr verbunden'**
+  String memberDisconnected(String name);
+
+  /// No description provided for @memberDisconnectOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Nichts geändert: {name} bleibt verbunden. Versuch es nochmal, sobald du online bist.'**
+  String memberDisconnectOffline(String name);
+
+  /// No description provided for @memberDisconnectServerDown.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Server antwortet gerade nicht. Nichts geändert: {name} bleibt verbunden. Versuch es in ein paar Minuten nochmal.'**
+  String memberDisconnectServerDown(String name);
+
+  /// No description provided for @memberDisconnectNothingChanged.
+  ///
+  /// In de, this message translates to:
+  /// **'Nichts geändert.'**
+  String get memberDisconnectNothingChanged;
+
+  /// No description provided for @memberThatsMe.
+  ///
+  /// In de, this message translates to:
+  /// **'Das bin ich'**
+  String get memberThatsMe;
+
+  /// No description provided for @memberThatsMeFor.
+  ///
+  /// In de, this message translates to:
+  /// **'Das bin ich, {name}'**
+  String memberThatsMeFor(String name);
 
   /// No description provided for @paymentSectionTitle.
   ///
@@ -3240,6 +3294,246 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Karten- und Routendaten © OpenStreetMap-Mitwirkende'**
   String get routeAttributionFallback;
+
+  /// No description provided for @shareUploadPartial.
+  ///
+  /// In de, this message translates to:
+  /// **'{uploaded} von {total} {total, plural, =1{Eintrag} other{Einträgen}} hochgeladen. Auf diesem Handy ist alles unverändert. Wir versuchen es weiter.'**
+  String shareUploadPartial(int uploaded, int total);
+
+  /// No description provided for @shareGroupMissing.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Gruppe gibt es auf diesem Handy nicht mehr. Lade die Gruppenliste neu.'**
+  String get shareGroupMissing;
+
+  /// No description provided for @syncStatusUpToDate.
+  ///
+  /// In de, this message translates to:
+  /// **'Aktuell'**
+  String get syncStatusUpToDate;
+
+  /// No description provided for @syncStatusSending.
+  ///
+  /// In de, this message translates to:
+  /// **'Wird gesendet …'**
+  String get syncStatusSending;
+
+  /// No description provided for @syncStatusPending.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{1 Änderung wartet} other{{count} Änderungen warten}}'**
+  String syncStatusPending(int count);
+
+  /// No description provided for @syncRejectedLine.
+  ///
+  /// In de, this message translates to:
+  /// **'Eine Änderung konnte nicht geteilt werden.'**
+  String get syncRejectedLine;
+
+  /// No description provided for @syncRejectedShow.
+  ///
+  /// In de, this message translates to:
+  /// **'Ansehen'**
+  String get syncRejectedShow;
+
+  /// No description provided for @syncRejectedSheetTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Nicht geteilt'**
+  String get syncRejectedSheetTitle;
+
+  /// No description provided for @syncRejectedOk.
+  ///
+  /// In de, this message translates to:
+  /// **'OK'**
+  String get syncRejectedOk;
+
+  /// No description provided for @syncUpdateAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Aktualisieren'**
+  String get syncUpdateAction;
+
+  /// No description provided for @syncUpdateOpenFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Store lässt sich nicht öffnen. Öffne ihn selbst und aktualisiere mitlio.'**
+  String get syncUpdateOpenFailed;
+
+  /// No description provided for @syncStatusUploading.
+  ///
+  /// In de, this message translates to:
+  /// **'Wird hochgeladen …'**
+  String get syncStatusUploading;
+
+  /// No description provided for @syncStatusUploadingLeft.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{Wird hochgeladen … noch 1 Eintrag} other{Wird hochgeladen … noch {count} Einträge}}'**
+  String syncStatusUploadingLeft(int count);
+
+  /// No description provided for @shareMenu.
+  ///
+  /// In de, this message translates to:
+  /// **'Gruppe teilen'**
+  String get shareMenu;
+
+  /// No description provided for @shareSheetTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Gruppe teilen'**
+  String get shareSheetTitle;
+
+  /// No description provided for @sharePreparing.
+  ///
+  /// In de, this message translates to:
+  /// **'Link wird vorbereitet …'**
+  String get sharePreparing;
+
+  /// No description provided for @shareLinkButton.
+  ///
+  /// In de, this message translates to:
+  /// **'Link teilen'**
+  String get shareLinkButton;
+
+  /// No description provided for @shareQrLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'QR-Code zum Beitreten der Gruppe {name}'**
+  String shareQrLabel(String name);
+
+  /// No description provided for @inviteShareText.
+  ///
+  /// In de, this message translates to:
+  /// **'Komm in die Gruppe {name} bei mitlio: {link}'**
+  String inviteShareText(String name, String link);
+
+  /// No description provided for @inviteRotate.
+  ///
+  /// In de, this message translates to:
+  /// **'Neuen Link erstellen'**
+  String get inviteRotate;
+
+  /// No description provided for @inviteRotateWarning.
+  ///
+  /// In de, this message translates to:
+  /// **'Der alte Link funktioniert dann nicht mehr.'**
+  String get inviteRotateWarning;
+
+  /// No description provided for @inviteRotateCancel.
+  ///
+  /// In de, this message translates to:
+  /// **'Abbrechen'**
+  String get inviteRotateCancel;
+
+  /// No description provided for @inviteLinkRotated.
+  ///
+  /// In de, this message translates to:
+  /// **'Dieser Link gilt nicht mehr. Frag, wer die Gruppe erstellt hat, nach dem neuen.'**
+  String get inviteLinkRotated;
+
+  /// No description provided for @inviteNoLinkMember.
+  ///
+  /// In de, this message translates to:
+  /// **'Auf diesem Handy ist kein Link gespeichert. Frag, wer die Gruppe erstellt hat, nach dem Link.'**
+  String get inviteNoLinkMember;
+
+  /// No description provided for @inviteStoreUnreadable.
+  ///
+  /// In de, this message translates to:
+  /// **'Der gespeicherte Link ließ sich nicht lesen. Starte mitlio neu und versuch es nochmal.'**
+  String get inviteStoreUnreadable;
+
+  /// No description provided for @inviteNotSaved.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Link konnte auf diesem Handy nicht gespeichert werden. Teile ihn jetzt, später brauchst du einen neuen Link.'**
+  String get inviteNotSaved;
+
+  /// No description provided for @joinTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer bist du?'**
+  String get joinTitle;
+
+  /// No description provided for @joinJoining.
+  ///
+  /// In de, this message translates to:
+  /// **'Du trittst der Gruppe bei …'**
+  String get joinJoining;
+
+  /// No description provided for @joinConnected.
+  ///
+  /// In de, this message translates to:
+  /// **'verbunden'**
+  String get joinConnected;
+
+  /// No description provided for @joinNewHere.
+  ///
+  /// In de, this message translates to:
+  /// **'Ich bin neu hier'**
+  String get joinNewHere;
+
+  /// No description provided for @joinNameLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Name'**
+  String get joinNameLabel;
+
+  /// No description provided for @joinNameRequired.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie heißt du? Trag deinen Namen ein.'**
+  String get joinNameRequired;
+
+  /// No description provided for @joinNameConfirm.
+  ///
+  /// In de, this message translates to:
+  /// **'Beitreten'**
+  String get joinNameConfirm;
+
+  /// No description provided for @joinSkip.
+  ///
+  /// In de, this message translates to:
+  /// **'Überspringen'**
+  String get joinSkip;
+
+  /// No description provided for @joinConnecting.
+  ///
+  /// In de, this message translates to:
+  /// **'Einen Moment …'**
+  String get joinConnecting;
+
+  /// No description provided for @joinOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Du bist der Gruppe noch nicht beigetreten und auf diesem Handy wurde nichts angelegt. Verbinde dich mit dem Internet und öffne den Link nochmal.'**
+  String get joinOffline;
+
+  /// No description provided for @joinLocalFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Gruppe konnte auf diesem Handy nicht gespeichert werden. Prüfe den freien Speicher und öffne den Link nochmal.'**
+  String get joinLocalFailed;
+
+  /// No description provided for @joinOpenGroup.
+  ///
+  /// In de, this message translates to:
+  /// **'Zur Gruppe'**
+  String get joinOpenGroup;
+
+  /// No description provided for @joinClose.
+  ///
+  /// In de, this message translates to:
+  /// **'Schließen'**
+  String get joinClose;
+
+  /// No description provided for @joinConnectOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist.'**
+  String get joinConnectOffline;
 }
 
 class _AppLocalizationsDelegate

@@ -1,3 +1,15 @@
 tags:
   golden:
     description: Alchemist CI goldens (make goldens)
+  supabase:
+    description: >-
+      Needs a local Supabase stack (make test-sync-e2e); excluded from
+      `flutter test` by default, selected by the `supabase` preset.
+
+# `make test` must not need Docker: tests tagged `supabase` are filtered out
+# here, not skipped. The preset swaps the filter (`flutter test -P supabase`).
+exclude_tags: supabase
+
+presets:
+  supabase:
+    include_tags: supabase

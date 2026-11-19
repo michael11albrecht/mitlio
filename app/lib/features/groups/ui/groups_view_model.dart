@@ -6,6 +6,8 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
+import 'package:mitlio/features/sync/data/sync_providers.dart';
+import 'package:mitlio/features/sync/data/sync_status.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 /// What the group list shows. Empty is `GroupsLoaded` with no groups.
@@ -101,6 +103,18 @@ class GroupsViewModel extends Notifier<GroupsState> {
       }
     }
     return created;
+  }
+
+  /// Pull-to-refresh: syncs every shared group now (local-only groups never
+  /// touch the network). Returns the first failure so the list can say so
+  /// (`remoteErrorText`); each group's status line shows its own.
+  Future<SyncError?> refresh() async {
+    final stats = await ref.read(syncCoordinatorProvider).refreshAll();
+    for (final s in stats) {
+      final status = s.status;
+      if (status is SyncError) return status;
+    }
+    return null;
   }
 
   /// The groups as of now (for DebugDrive; the UI watches the state).

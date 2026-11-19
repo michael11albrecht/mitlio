@@ -119,6 +119,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Das konnte nicht geteilt werden. Es ist nur auf diesem Handy.';
 
   @override
+  String get remoteErrorPullFailed =>
+      'Neue Änderungen aus der Gruppe konnten nicht übernommen werden. Deine eigenen Daten sind sicher. Versuch es später nochmal oder aktualisiere mitlio.';
+
+  @override
   String get errorSettingNotSaved =>
       'Die Einstellung konnte nicht gespeichert werden. Versuch es nochmal.';
 
@@ -278,6 +282,40 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String memberInUse(String name) {
     return '$name hat Ausgaben oder Zahlungen und bleibt deshalb in der Gruppe.';
+  }
+
+  @override
+  String get memberDisconnect => 'Verbindung trennen';
+
+  @override
+  String memberDisconnectFor(String name) {
+    return 'Verbindung trennen, $name';
+  }
+
+  @override
+  String memberDisconnected(String name) {
+    return '$name ist nicht mehr verbunden';
+  }
+
+  @override
+  String memberDisconnectOffline(String name) {
+    return 'Keine Verbindung. Nichts geändert: $name bleibt verbunden. Versuch es nochmal, sobald du online bist.';
+  }
+
+  @override
+  String memberDisconnectServerDown(String name) {
+    return 'Der Server antwortet gerade nicht. Nichts geändert: $name bleibt verbunden. Versuch es in ein paar Minuten nochmal.';
+  }
+
+  @override
+  String get memberDisconnectNothingChanged => 'Nichts geändert.';
+
+  @override
+  String get memberThatsMe => 'Das bin ich';
+
+  @override
+  String memberThatsMeFor(String name) {
+    return 'Das bin ich, $name';
   }
 
   @override
@@ -1926,4 +1964,162 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get routeAttributionFallback =>
       'Karten- und Routendaten © OpenStreetMap-Mitwirkende';
+
+  @override
+  String shareUploadPartial(int uploaded, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'Einträgen',
+      one: 'Eintrag',
+    );
+    return '$uploaded von $total $_temp0 hochgeladen. Auf diesem Handy ist alles unverändert. Wir versuchen es weiter.';
+  }
+
+  @override
+  String get shareGroupMissing =>
+      'Diese Gruppe gibt es auf diesem Handy nicht mehr. Lade die Gruppenliste neu.';
+
+  @override
+  String get syncStatusUpToDate => 'Aktuell';
+
+  @override
+  String get syncStatusSending => 'Wird gesendet …';
+
+  @override
+  String syncStatusPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Änderungen warten',
+      one: '1 Änderung wartet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncRejectedLine => 'Eine Änderung konnte nicht geteilt werden.';
+
+  @override
+  String get syncRejectedShow => 'Ansehen';
+
+  @override
+  String get syncRejectedSheetTitle => 'Nicht geteilt';
+
+  @override
+  String get syncRejectedOk => 'OK';
+
+  @override
+  String get syncUpdateAction => 'Aktualisieren';
+
+  @override
+  String get syncUpdateOpenFailed =>
+      'Der Store lässt sich nicht öffnen. Öffne ihn selbst und aktualisiere mitlio.';
+
+  @override
+  String get syncStatusUploading => 'Wird hochgeladen …';
+
+  @override
+  String syncStatusUploadingLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Wird hochgeladen … noch $count Einträge',
+      one: 'Wird hochgeladen … noch 1 Eintrag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get shareMenu => 'Gruppe teilen';
+
+  @override
+  String get shareSheetTitle => 'Gruppe teilen';
+
+  @override
+  String get sharePreparing => 'Link wird vorbereitet …';
+
+  @override
+  String get shareLinkButton => 'Link teilen';
+
+  @override
+  String shareQrLabel(String name) {
+    return 'QR-Code zum Beitreten der Gruppe $name';
+  }
+
+  @override
+  String inviteShareText(String name, String link) {
+    return 'Komm in die Gruppe $name bei mitlio: $link';
+  }
+
+  @override
+  String get inviteRotate => 'Neuen Link erstellen';
+
+  @override
+  String get inviteRotateWarning =>
+      'Der alte Link funktioniert dann nicht mehr.';
+
+  @override
+  String get inviteRotateCancel => 'Abbrechen';
+
+  @override
+  String get inviteLinkRotated =>
+      'Dieser Link gilt nicht mehr. Frag, wer die Gruppe erstellt hat, nach dem neuen.';
+
+  @override
+  String get inviteNoLinkMember =>
+      'Auf diesem Handy ist kein Link gespeichert. Frag, wer die Gruppe erstellt hat, nach dem Link.';
+
+  @override
+  String get inviteStoreUnreadable =>
+      'Der gespeicherte Link ließ sich nicht lesen. Starte mitlio neu und versuch es nochmal.';
+
+  @override
+  String get inviteNotSaved =>
+      'Der Link konnte auf diesem Handy nicht gespeichert werden. Teile ihn jetzt, später brauchst du einen neuen Link.';
+
+  @override
+  String get joinTitle => 'Wer bist du?';
+
+  @override
+  String get joinJoining => 'Du trittst der Gruppe bei …';
+
+  @override
+  String get joinConnected => 'verbunden';
+
+  @override
+  String get joinNewHere => 'Ich bin neu hier';
+
+  @override
+  String get joinNameLabel => 'Dein Name';
+
+  @override
+  String get joinNameRequired => 'Wie heißt du? Trag deinen Namen ein.';
+
+  @override
+  String get joinNameConfirm => 'Beitreten';
+
+  @override
+  String get joinSkip => 'Überspringen';
+
+  @override
+  String get joinConnecting => 'Einen Moment …';
+
+  @override
+  String get joinOffline =>
+      'Keine Verbindung. Du bist der Gruppe noch nicht beigetreten und auf diesem Handy wurde nichts angelegt. Verbinde dich mit dem Internet und öffne den Link nochmal.';
+
+  @override
+  String get joinLocalFailed =>
+      'Die Gruppe konnte auf diesem Handy nicht gespeichert werden. Prüfe den freien Speicher und öffne den Link nochmal.';
+
+  @override
+  String get joinOpenGroup => 'Zur Gruppe';
+
+  @override
+  String get joinClose => 'Schließen';
+
+  @override
+  String get joinConnectOffline =>
+      'Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist.';
 }

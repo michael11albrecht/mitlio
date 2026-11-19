@@ -1,10 +1,12 @@
 import 'package:drift/drift.dart';
 import 'package:mitlio/core/clock.dart';
 import 'package:mitlio/core/hlc.dart';
+import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_repository.dart';
 import 'package:mitlio/features/members/data/services/iban_cipher.dart';
+import 'package:mitlio/features/sync/data/outbox_writer.dart';
 import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [PaymentDetailsRepository] backed by Drift: handle and masked hint on the
@@ -13,12 +15,19 @@ class DriftPaymentDetailsRepository implements PaymentDetailsRepository {
   DriftPaymentDetailsRepository({
     required this._db,
     required this._clock,
+    required this._ids,
     required this._cipher,
   });
 
   final AppDatabase _db;
   final Clock _clock;
+  final IdGenerator _ids;
   final IbanCipher _cipher;
+  late final OutboxWriter _outbox = OutboxWriter(
+    db: _db,
+    clock: _clock,
+    ids: _ids,
+  );
 
   @override
   Future<RepoResult<PaymentDetails>> get(String memberId) =>
@@ -82,6 +91,7 @@ class DriftPaymentDetailsRepository implements PaymentDetailsRepository {
         ibanHint: details.ibanHint,
         updatedAt: Hlc.now(_clock),
       );
+      await _outbox.enqueue(OutboxEntity.member, memberId);
       if (encrypted == null) {
         await _db.localMemberBankDao.deleteByMember(memberId);
       } else {

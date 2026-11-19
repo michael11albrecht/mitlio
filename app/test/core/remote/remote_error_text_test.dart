@@ -39,6 +39,7 @@ void main() {
     VersionTooOld(),
     ServerDown(),
     Rejected('payers_sum_mismatch'),
+    PullFailed('invalid_updated_at'),
   ];
 
   for (final locale in locales.keys) {

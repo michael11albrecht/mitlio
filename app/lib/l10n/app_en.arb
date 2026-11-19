@@ -62,6 +62,7 @@
     }
   },
   "remoteErrorRejectedNoTitle": "This could not be shared. It is only on this phone.",
+  "remoteErrorPullFailed": "New changes from the group could not be applied. Your own data is safe. Try again later or update mitlio.",
   "errorSettingNotSaved": "The setting could not be saved. Try again.",
   "errorUndoFailed": "Undo did not work. Check the current state and try again.",
   "retry": "Try again",
@@ -122,6 +123,49 @@
   "memberRemoved": "“{name}” removed",
   "memberOrderHint": "Drag to reorder. When a split leaves spare cents, people higher up pay the extra cent first.",
   "memberInUse": "{name} has expenses or payments, so they stay in the group.",
+  "memberDisconnect": "Disconnect",
+  "memberDisconnectFor": "Disconnect, {name}",
+  "@memberDisconnectFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnected": "{name} is no longer connected",
+  "@memberDisconnected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnectOffline": "No connection. Nothing changed: {name} stays connected. Try again once you are online.",
+  "@memberDisconnectOffline": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnectServerDown": "The server is not answering right now. Nothing changed: {name} stays connected. Try again in a few minutes.",
+  "@memberDisconnectServerDown": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberDisconnectNothingChanged": "Nothing changed.",
+  "memberThatsMe": "That's me",
+  "memberThatsMeFor": "That's me, {name}",
+  "@memberThatsMeFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "@@x-feature-payment": "payment",
   "paymentSectionTitle": "Payment details",
   "paymentOpen": "Payment details of {name}",
@@ -945,5 +989,86 @@
   "routeServerDown": "The route service is unreachable right now. Try again later or enter the kilometres yourself.",
   "routeUnconfigured": "Route calculation is not available on this server. Just enter the kilometres yourself.",
   "routeInvalid": "Start and destination do not fit together. Pick two different places or enter the kilometres yourself.",
-  "routeAttributionFallback": "Map and route data © OpenStreetMap contributors"
+  "routeAttributionFallback": "Map and route data © OpenStreetMap contributors",
+  "shareUploadPartial": "{uploaded} of {total} {total, plural, =1{entry} other{entries}} uploaded. Everything on this phone is unchanged. We will keep trying.",
+  "@shareUploadPartial": {
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "shareGroupMissing": "This group is no longer on this phone. Reload the group list.",
+  "syncStatusUpToDate": "Up to date",
+  "syncStatusSending": "Sending …",
+  "syncStatusPending": "{count, plural, =1{1 change waiting} other{{count} changes waiting}}",
+  "@syncStatusPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRejectedLine": "A change could not be shared.",
+  "syncRejectedShow": "Show",
+  "syncRejectedSheetTitle": "Not shared",
+  "syncRejectedOk": "OK",
+  "syncUpdateAction": "Update",
+  "syncUpdateOpenFailed": "Could not open the store. Open it yourself and update mitlio.",
+  "syncStatusUploading": "Uploading …",
+  "syncStatusUploadingLeft": "{count, plural, =1{Uploading … 1 entry left} other{Uploading … {count} entries left}}",
+  "@syncStatusUploadingLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shareMenu": "Share group",
+  "shareSheetTitle": "Share group",
+  "sharePreparing": "Preparing the link …",
+  "shareLinkButton": "Share link",
+  "shareQrLabel": "QR code to join the group {name}",
+  "@shareQrLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteShareText": "Join the group {name} on mitlio: {link}",
+  "@inviteShareText": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteRotate": "Create a new link",
+  "inviteRotateWarning": "The old link will stop working.",
+  "inviteRotateCancel": "Cancel",
+  "inviteLinkRotated": "This link no longer works. Ask whoever created the group for the new one.",
+  "inviteNoLinkMember": "No link is saved on this phone. Ask whoever created the group for the link.",
+  "inviteStoreUnreadable": "The saved link could not be read. Restart mitlio and try again.",
+  "inviteNotSaved": "The link could not be saved on this phone. Share it now; later you will need a new link.",
+  "joinTitle": "Who are you?",
+  "joinJoining": "Joining the group …",
+  "joinConnected": "connected",
+  "joinNewHere": "I am new here",
+  "joinNameLabel": "Your name",
+  "joinNameRequired": "What is your name? Enter it first.",
+  "joinNameConfirm": "Join",
+  "joinSkip": "Skip",
+  "joinConnecting": "One moment …",
+  "joinOffline": "No connection. You have not joined the group yet and nothing was created on this phone. Connect to the internet and open the link again.",
+  "joinLocalFailed": "The group could not be saved on this phone. Check your free storage and open the link again.",
+  "joinOpenGroup": "Open group",
+  "joinClose": "Close",
+  "joinConnectOffline": "No connection. You are in the group but not connected to anyone yet. Try again as soon as you are online."
 }

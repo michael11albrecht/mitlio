@@ -1,8 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { messages, type Locale, type RouteKey } from '../i18n';
-import { legalTexts } from '../i18n/legal';
-import { assertNoPlaceholders } from '../lib/legal';
+import { legalTexts, syncPrivacySections } from '../i18n/legal';
+import { assertNoPlaceholders, assertSyncDisclosed, fillAddress } from '../lib/legal';
+import prodConfig from '../../../app/config/prod.json';
 import { SITE_URL } from '../../site.config.mjs';
 
 interface Props {
@@ -13,10 +14,12 @@ interface Props {
 const { locale, route } = Astro.props;
 const t = messages[locale];
 const heading = t[route];
-const text = legalTexts[locale][route];
+const text = fillAddress(legalTexts[locale][route], process.env);
 
 // DRAFT, have it reviewed before publishing. Fails the production build while `[[` placeholders remain.
 assertNoPlaceholders(text, SITE_URL, process.env.LEGAL_STRICT === '1');
+// Release gate: a production app config with a Supabase URL needs the sync sections in the privacy text.
+if (route === 'privacy') assertSyncDisclosed(prodConfig.SUPABASE_URL, text, syncPrivacySections[locale]);
 ---
 
 <Layout locale={locale} route={route} title={`${heading} | mitlio`} description={heading} noindex>
@@ -24,7 +27,7 @@ assertNoPlaceholders(text, SITE_URL, process.env.LEGAL_STRICT === '1');
   <div class="prose legal">
     {
       text.sections.map((s) => (
-        <section>
+        <section class:list={[s.emphasis && 'legal-emphasis']} data-emphasis={s.emphasis ? 'true' : undefined}>
           <h2>{s.heading}</h2>
           {s.paragraphs?.map((p) => <p>{p}</p>)}
           {s.items && <ul>{s.items.map((i) => <li>{i}</li>)}</ul>}

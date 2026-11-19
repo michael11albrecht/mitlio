@@ -1,6 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/crash/crash_reporter.dart';
+import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/daos/sync_state_dao.dart';
 import 'package:mitlio/features/members/data/repositories/drift_payment_details_repository.dart';
@@ -68,6 +69,7 @@ Future<_Fixture> _fixture({bool signedIn = false}) async {
     await DriftPaymentDetailsRepository(
       db: repos.db!,
       clock: repos.clock,
+      ids: SequentialIdGenerator(),
       cipher: cipher,
     ).save(member.id, iban: testIban),
   );

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/remote/remote_error_text.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/features/groups/ui/groups_view_model.dart';
@@ -57,35 +58,63 @@ class GroupsView extends ConsumerWidget {
                     ),
                   ],
                 ),
-        GroupsLoaded(:final groups, :final archivedCount) => ListView.separated(
-          padding: Spacing.screen.copyWith(bottom: Sizes.fabClearance),
-          itemCount: groups.length + (archivedCount > 0 ? 1 : 0),
-          separatorBuilder: (_, _) => const SizedBox(height: Spacing.sm),
-          itemBuilder: (context, i) {
-            if (i == groups.length) {
-              // Quiet entry, only when something is archived.
-              return Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: _ArchivedEntry(archivedCount),
-              );
-            }
-            final group = groups[i];
-            return Card(
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                children: [
-                  ListTile(
-                    title: Text(group.name),
-                    subtitle: Text(l10n.currencyName(group.currency.code)),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => unawaited(context.push('/groups/${group.id}')),
+        GroupsLoaded(
+          :final groups,
+          :final archivedCount,
+        ) =>
+          RefreshIndicator(
+            onRefresh: () async {
+              final messenger = ScaffoldMessenger.of(context);
+              final failed = await ref
+                  .read(groupsViewModelProvider.notifier)
+                  .refresh();
+              if (failed == null) return;
+              messenger
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      remoteErrorText(
+                        l10n,
+                        failed.error,
+                        title: failed.title,
+                      ),
+                    ),
                   ),
-                  RidesShortcut(groupId: group.id),
-                ],
-              ),
-            );
-          },
-        ),
+                );
+            },
+            child: ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: Spacing.screen.copyWith(bottom: Sizes.fabClearance),
+              itemCount: groups.length + (archivedCount > 0 ? 1 : 0),
+              separatorBuilder: (_, _) => const SizedBox(height: Spacing.sm),
+              itemBuilder: (context, i) {
+                if (i == groups.length) {
+                  // Quiet entry, only when something is archived.
+                  return Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: _ArchivedEntry(archivedCount),
+                  );
+                }
+                final group = groups[i];
+                return Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: Text(group.name),
+                        subtitle: Text(l10n.currencyName(group.currency.code)),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () =>
+                            unawaited(context.push('/groups/${group.id}')),
+                      ),
+                      RidesShortcut(groupId: group.id),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
       },
     );
   }

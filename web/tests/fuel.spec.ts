@@ -174,19 +174,45 @@ test.describe('fuel chips (de)', () => {
     await expect(page.locator('#calc-fuel')).toBeVisible();
   });
 
-  test('a 503 on the national average leaves the page exactly as before', async ({ page }) => {
+  test('a 503 on the national average says so and the manual price keeps working', async ({ page }) => {
     await mockApi(page, () => ({ status: 503, body: { error: 'provider_unavailable' } }));
     await open(page);
-    await expect(page.locator('#calc-fuel')).toBeHidden();
+    await expect(page.locator('#calc-fuel-status')).toHaveText(/Preise gerade nicht verfügbar.*selbst eingeben/);
+    await expect(chip(page, 'e5')).toBeHidden();
+    await expect(page.locator('#calc-fuel-where')).toBeHidden();
     await expect(amount(page)).toHaveText(/^6,30\s€$/);
     await page.locator('#calc-price').fill('1,95');
     await expect(amount(page)).not.toHaveText(/^6,30\s€$/);
   });
 
-  test('a malformed body is treated as no live price', async ({ page }) => {
+  test('a blocked request (CORS or network) is shown, not swallowed', async ({ page }) => {
+    await page.route(`${API_ORIGIN}/**`, (route) => route.abort('failed'));
+    await open(page);
+    await expect(page.locator('#calc-fuel-status')).toContainText('Preise gerade nicht verfügbar');
+    await expect(chip(page, 'e5')).toBeHidden();
+  });
+
+  test('a 429 on the national average says to retry', async ({ page }) => {
+    await mockApi(page, () => ({ status: 429, body: { error: 'rate_limited' } }));
+    await open(page);
+    await expect(page.locator('#calc-fuel-status')).toContainText('Zu viele Anfragen');
+  });
+
+  test('a malformed body is shown as unavailable', async ({ page }) => {
     await mockApi(page, () => ({ status: 200, body: { priceMilli: 1.8 } }));
     await open(page);
+    await expect(page.locator('#calc-fuel-status')).toContainText('Preise gerade nicht verfügbar');
+  });
+
+  test('the failure message hides for electric and returns for fuel', async ({ page }) => {
+    await mockApi(page, () => ({ status: 503, body: { error: 'provider_unavailable' } }));
+    await open(page);
+    await expect(page.locator('#calc-fuel')).toBeVisible();
+    await page.getByLabel('Elektro').check();
     await expect(page.locator('#calc-fuel')).toBeHidden();
+    await page.getByLabel('Benzin / Diesel').check();
+    await expect(page.locator('#calc-fuel')).toBeVisible();
+    await expect(page.locator('#calc-fuel-status')).toContainText('Preise gerade nicht verfügbar');
   });
 
   test('does not touch geolocation or send a location on load', async ({ page, context }) => {

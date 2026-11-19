@@ -34,6 +34,12 @@ void main() {
         ('23514', 'member_not_in_group', const Rejected('member_not_in_group')),
         ('23514', 'group_mismatch', const Rejected('group_mismatch')),
         ('42501', 'not authenticated', const Rejected('not authenticated')),
+        // A refused PostgREST write: every policy is "member of the group".
+        (
+          '42501',
+          'new row violates row-level security policy for table "members"',
+          const NotMember(),
+        ),
       ];
       for (final (state, message, expected) in rows) {
         test('$state "$message" -> $expected', () {
