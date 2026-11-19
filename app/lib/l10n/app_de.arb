@@ -1487,5 +1487,35 @@
         "type": "int"
       }
     }
-  }
+  },
+  "shareMenu": "Gruppe teilen",
+  "shareSheetTitle": "Gruppe teilen",
+  "sharePreparing": "Link wird vorbereitet …",
+  "shareLinkButton": "Link teilen",
+  "shareQrLabel": "QR-Code zum Beitreten der Gruppe {name}",
+  "@shareQrLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteShareText": "Komm in die Gruppe {name} bei mitlio: {link}",
+  "@inviteShareText": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteRotate": "Neuen Link erstellen",
+  "inviteRotateWarning": "Der alte Link funktioniert dann nicht mehr.",
+  "inviteRotateCancel": "Abbrechen",
+  "inviteLinkRotated": "Dieser Link gilt nicht mehr. Frag, wer die Gruppe erstellt hat, nach dem neuen.",
+  "inviteNoLinkMember": "Auf diesem Handy ist kein Link gespeichert. Frag, wer die Gruppe erstellt hat, nach dem Link.",
+  "inviteStoreUnreadable": "Der gespeicherte Link ließ sich nicht lesen. Starte mitlio neu und versuch es nochmal.",
+  "inviteNotSaved": "Der Link konnte auf diesem Handy nicht gespeichert werden. Teile ihn jetzt, später brauchst du einen neuen Link."
 }

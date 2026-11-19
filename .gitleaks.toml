@@ -7,4 +7,7 @@ description = "Public-by-design values"
 regexes = [
   # Supabase publishable (anon) keys ship to every client; RLS protects the data (docs/fuel-prices-api.md).
   '''sb_publishable_[A-Za-z0-9_-]+''',
+  # Made-up invite token of a share sheet golden fixture (P6-T14a, #200); it was in the history of
+  # that PR before it was replaced by a low-entropy placeholder. Not a real token.
+  '''abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG''',
 ]
