@@ -281,6 +281,33 @@ class _MembersTab extends StatelessWidget {
                             );
                           }
                         },
+                        onDisconnect: () {
+                          // Nothing is sent until the bar closes without
+                          // undo; the app-level messenger keeps the bar (and
+                          // the commit) alive when the screen is left.
+                          final messenger = ScaffoldMessenger.of(context);
+                          final id = item.member.id;
+                          final name = vm.beginDisconnect(id);
+                          if (name == null) return;
+                          showDeferredUndoSnackBar(
+                            context,
+                            message: l10n.memberDisconnected(name),
+                            onUndo: () => vm.undoDisconnect(id),
+                            onCommit: () async {
+                              final problem = await vm.commitDisconnect(id);
+                              if (problem != null) {
+                                _showText(messenger, problem.text(l10n));
+                              }
+                            },
+                          );
+                        },
+                        onClaim: () async {
+                          final messenger = ScaffoldMessenger.of(context);
+                          final problem = await vm.connectMe(item.member.id);
+                          if (problem != null) {
+                            _showText(messenger, problem.text(l10n));
+                          }
+                        },
                         onRemove: () async {
                           final messenger = ScaffoldMessenger.of(
                             context,
@@ -322,6 +349,12 @@ class _MembersTab extends StatelessWidget {
       ],
     );
   }
+}
+
+void _showText(ScaffoldMessengerState messenger, String text) {
+  messenger
+    ..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(content: Text(text)));
 }
 
 class _InlineNotice extends StatelessWidget {
@@ -369,6 +402,8 @@ class _MemberTile extends StatefulWidget {
     required this.index,
     required this.onRename,
     required this.onRemove,
+    required this.onDisconnect,
+    required this.onClaim,
     super.key,
   });
 
@@ -376,6 +411,8 @@ class _MemberTile extends StatefulWidget {
   final int index;
   final ValueChanged<String> onRename;
   final VoidCallback onRemove;
+  final VoidCallback onDisconnect;
+  final VoidCallback onClaim;
 
   @override
   State<_MemberTile> createState() => _MemberTileState();
@@ -418,71 +455,156 @@ class _MemberTileState extends State<_MemberTile> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final member = widget.item.member;
+    final item = widget.item;
+    final member = item.member;
     return Padding(
       padding: const EdgeInsets.only(bottom: Spacing.sm),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.only(left: Spacing.md),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              MemberAvatar(memberId: member.id, name: member.name),
-              const SizedBox(width: Spacing.md),
-              Expanded(
-                child: _editing
-                    ? TextField(
-                        controller: _controller,
-                        focusNode: _focus,
-                        autofocus: true,
-                        textInputAction: TextInputAction.done,
-                        textCapitalization: TextCapitalization.words,
-                        onSubmitted: (_) => _commit(),
-                        decoration: InputDecoration(
-                          labelText: l10n.memberNameLabel,
-                        ),
-                      )
-                    : InkWell(
-                        onTap: _startEditing,
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            minHeight: Sizes.tapTarget,
+              Row(
+                children: [
+                  MemberAvatar(memberId: member.id, name: member.name),
+                  const SizedBox(width: Spacing.md),
+                  Expanded(
+                    child: _editing
+                        ? TextField(
+                            controller: _controller,
+                            focusNode: _focus,
+                            autofocus: true,
+                            textInputAction: TextInputAction.done,
+                            textCapitalization: TextCapitalization.words,
+                            onSubmitted: (_) => _commit(),
+                            decoration: InputDecoration(
+                              labelText: l10n.memberNameLabel,
+                            ),
+                          )
+                        : InkWell(
+                            onTap: _startEditing,
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                minHeight: Sizes.tapTarget,
+                              ),
+                              child: Align(
+                                alignment: AlignmentDirectional.centerStart,
+                                child: Text(member.name),
+                              ),
+                            ),
                           ),
-                          child: Align(
-                            alignment: AlignmentDirectional.centerStart,
-                            child: Text(member.name),
-                          ),
-                        ),
+                  ),
+                  IconButton(
+                    tooltip: l10n.paymentOpen(member.name),
+                    icon: const Icon(Icons.account_balance_wallet_outlined),
+                    onPressed: () => unawaited(
+                      showMemberPaymentSheet(
+                        context,
+                        memberId: member.id,
+                        memberName: member.name,
                       ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: l10n.memberRemove(member.name),
+                    icon: const Icon(Icons.close),
+                    onPressed: widget.onRemove,
+                  ),
+                  ExcludeSemantics(
+                    child: ReorderableDragStartListener(
+                      index: widget.index,
+                      child: const SizedBox.square(
+                        dimension: Sizes.tapTarget,
+                        child: Icon(Icons.drag_indicator),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              IconButton(
-                tooltip: l10n.paymentOpen(member.name),
-                icon: const Icon(Icons.account_balance_wallet_outlined),
-                onPressed: () => unawaited(
-                  showMemberPaymentSheet(
-                    context,
-                    memberId: member.id,
-                    memberName: member.name,
+              if (item.connected || item.canDisconnect || item.canClaim)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: Sizes.avatar + Spacing.md,
+                    bottom: Spacing.sm,
+                  ),
+                  child: _ConnectionRow(
+                    item: item,
+                    onDisconnect: widget.onDisconnect,
+                    onClaim: widget.onClaim,
                   ),
                 ),
-              ),
-              IconButton(
-                tooltip: l10n.memberRemove(member.name),
-                icon: const Icon(Icons.close),
-                onPressed: widget.onRemove,
-              ),
-              ExcludeSemantics(
-                child: ReorderableDragStartListener(
-                  index: widget.index,
-                  child: const SizedBox.square(
-                    dimension: Sizes.tapTarget,
-                    child: Icon(Icons.drag_indicator),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Shared groups only: the "verbunden" badge, and the owner's "Verbindung
+/// trennen" or the "Das bin ich" of a member not connected to anyone yet.
+class _ConnectionRow extends StatelessWidget {
+  const _ConnectionRow({
+    required this.item,
+    required this.onDisconnect,
+    required this.onClaim,
+  });
+
+  final MemberItem item;
+  final VoidCallback onDisconnect;
+  final VoidCallback onClaim;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final name = item.member.name;
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: Spacing.sm,
+      children: [
+        if (item.connected)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ExcludeSemantics(
+                child: Icon(
+                  Icons.link,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(width: Spacing.xs),
+              Text(
+                l10n.joinConnected,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        if (item.canDisconnect)
+          Semantics(
+            label: l10n.memberDisconnectFor(name),
+            excludeSemantics: true,
+            button: true,
+            child: TextButton(
+              onPressed: onDisconnect,
+              child: Text(l10n.memberDisconnect),
+            ),
+          ),
+        if (item.canClaim)
+          Semantics(
+            label: l10n.memberThatsMeFor(name),
+            excludeSemantics: true,
+            button: true,
+            child: TextButton(
+              onPressed: onClaim,
+              child: Text(l10n.memberThatsMe),
+            ),
+          ),
+      ],
     );
   }
 }

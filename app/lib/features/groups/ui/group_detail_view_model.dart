@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/json_map.dart';
+import 'package:mitlio/core/remote/remote_error.dart';
+import 'package:mitlio/core/remote/remote_error_text.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
@@ -9,17 +11,71 @@ import 'package:mitlio/features/groups/data/repositories/groups_repository.dart'
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
+import 'package:mitlio/features/sync/data/repositories/connections_repository.dart';
 import 'package:mitlio/features/sync/data/sync_coordinator.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
+import 'package:mitlio/features/sync/ui/join_view_model.dart'
+    show JoinProblemConnect;
+import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 /// A member row: the member and whether expenses or settlements refer to
 /// them (then they cannot be removed).
 final class MemberItem {
-  const MemberItem({required this.member, required this.inUse});
+  const MemberItem({
+    required this.member,
+    required this.inUse,
+    this.connected = false,
+    this.isMe = false,
+    this.canDisconnect = false,
+    this.canClaim = false,
+  });
 
   final GroupMember member;
   final bool inUse;
+
+  /// Shared group only: an account is connected to this person ("verbunden").
+  /// False at once while a disconnect waits for its undo window.
+  final bool connected;
+
+  /// This phone's account is the connected one.
+  final bool isMe;
+
+  /// Owner only: "Verbindung trennen" is offered (never for yourself).
+  final bool canDisconnect;
+
+  /// "Das bin ich" is offered: you are in the shared group but not connected
+  /// to anyone yet, and nobody is connected to this person.
+  final bool canClaim;
+}
+
+/// A disconnect that failed; [text] says what happened and that nothing
+/// changed (plan §2.6 #9).
+final class DisconnectProblem {
+  const DisconnectProblem(this.error, {this.personName});
+
+  final RemoteError error;
+  final String? personName;
+
+  String text(AppLocalizations l10n) {
+    final name = personName ?? '';
+    return switch (error) {
+      Offline() => l10n.memberDisconnectOffline(name),
+      ServerDown() => l10n.memberDisconnectServerDown(name),
+      _ =>
+        '${remoteErrorText(l10n, error, personName: personName)} '
+            '${l10n.memberDisconnectNothingChanged}',
+    };
+  }
+}
+
+class _PendingDisconnect {
+  _PendingDisconnect(this.name, this.repo);
+
+  final String name;
+
+  /// Kept so the commit still works after the screen is gone.
+  final ConnectionsRepository repo;
 }
 
 /// Calm inline message: removal was refused because [name] has entries.
@@ -78,6 +134,10 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
   Set<String>? _settlementMemberIds;
   MemberInUse? _notice;
   RepositoryError? _failure;
+  GroupConnections _connections = GroupConnections.localOnly;
+
+  /// Disconnects waiting for their undo window, by person.
+  final _pending = <String, _PendingDisconnect>{};
 
   bool get _hasEntries =>
       (_expenseMemberIds?.isNotEmpty ?? false) ||
@@ -92,6 +152,8 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
     _settlementMemberIds = null;
     _notice = null;
     _failure = null;
+    _connections = GroupConnections.localOnly;
+    _pending.clear();
     final subs = [
       _listen(ref.watch(groupsRepositoryProvider).watchGroups(), (groups) {
         _group = groups.where((g) => g.id == groupId).firstOrNull;
@@ -108,6 +170,11 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
           for (final e in entries) ...e.expense.shares.keys,
         },
       ),
+      _listen(ref.watch(connectionsRepositoryProvider).watch(groupId), (c) {
+        _connections = c;
+        // A finished disconnect is done once the person is not connected.
+        _pending.removeWhere((id, _) => !c.connectedIds.contains(id));
+      }),
       _listen(
         ref.watch(settlementsRepositoryProvider).watchSettlements(groupId),
         (entries) => _settlementMemberIds = {
@@ -162,16 +229,33 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
       state = GroupDetailLoaded(
         group: _group!,
         members: [
-          for (final m in members)
-            MemberItem(
-              member: m,
-              inUse: expenseIds.contains(m.id) || settlementIds.contains(m.id),
-            ),
+          for (final m in members) _item(m, expenseIds, settlementIds),
         ],
         hasEntries: _hasEntries,
         notice: _notice,
       );
     }
+  }
+
+  MemberItem _item(
+    GroupMember m,
+    Set<String> expenseIds,
+    Set<String> settlementIds,
+  ) {
+    final c = _connections;
+    final connected =
+        c.shared &&
+        c.connectedIds.contains(m.id) &&
+        !_pending.containsKey(m.id);
+    final isMe = c.shared && c.myMemberId == m.id;
+    return MemberItem(
+      member: m,
+      inUse: expenseIds.contains(m.id) || settlementIds.contains(m.id),
+      connected: connected,
+      isMe: isMe,
+      canDisconnect: connected && c.isOwner && !isMe,
+      canClaim: c.canClaimSelf && !c.connectedIds.contains(m.id),
+    );
   }
 
   void retry() {
@@ -257,6 +341,97 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
     );
   }
 
+  /// Owner: starts "Verbindung trennen". The person shows as not connected
+  /// at once; nothing is sent until [commitDisconnect]. Returns the person's
+  /// name for the snack bar, or null when this is not allowed (not the
+  /// owner, not connected, yourself). [undoDisconnect] takes it back.
+  String? beginDisconnect(String memberId) {
+    final loaded = state;
+    final item = loaded is GroupDetailLoaded
+        ? loaded.members.where((m) => m.member.id == memberId).firstOrNull
+        : null;
+    if (item == null || !item.canDisconnect) return null;
+    _pending[memberId] = _PendingDisconnect(
+      item.member.name,
+      ref.read(connectionsRepositoryProvider),
+    );
+    _emit();
+    return item.member.name;
+  }
+
+  /// "Rückgängig": no call was made, the badge is back.
+  void undoDisconnect(String memberId) {
+    if (_pending.remove(memberId) != null) _emit();
+  }
+
+  /// The undo window closed without undo: ends the connection on the server.
+  /// Null: done. A problem brings the badge back; nothing changed. Works
+  /// after the screen is closed (the repository is kept by
+  /// `beginDisconnect`).
+  Future<DisconnectProblem?> commitDisconnect(String memberId) async {
+    final p = _pending[memberId];
+    if (p == null) return null;
+    return _disconnect(p.repo, memberId, p.name);
+  }
+
+  /// The same command without the undo window (DebugDrive, scripts).
+  Future<DisconnectProblem?> disconnectNow(String memberId) {
+    final name = _members?.where((m) => m.id == memberId).firstOrNull?.name;
+    return _disconnect(
+      ref.read(connectionsRepositoryProvider),
+      memberId,
+      name,
+    );
+  }
+
+  Future<DisconnectProblem?> _disconnect(
+    ConnectionsRepository repo,
+    String memberId,
+    String? name,
+  ) async {
+    final result = await repo.disconnect(groupId, memberId);
+    switch (result) {
+      case Ok():
+        // The pending mark goes when the connections stream shows the
+        // person as not connected, so the badge does not flash back.
+        return null;
+      case Err(:final error):
+        _pending.remove(memberId);
+        _emit();
+        return DisconnectProblem(error, personName: name);
+    }
+  }
+
+  /// "Das bin ich": connects this account to [memberId] with the same
+  /// command and the same error texts as the join flow. Null: connected (or
+  /// not offered).
+  Future<JoinProblemConnect?> connectMe(String memberId) async {
+    final loaded = state;
+    final item = loaded is GroupDetailLoaded
+        ? loaded.members.where((m) => m.member.id == memberId).firstOrNull
+        : null;
+    if (item == null || !item.canClaim) return null;
+    final repo = ref.read(connectionsRepositoryProvider);
+    final result = await repo.connectMe(groupId, memberId);
+    switch (result) {
+      case Ok():
+        return null;
+      case Err(:final error):
+        var name = item.member.name;
+        if (error is MemberAlreadyClaimed ||
+            error is MemberGone ||
+            error is AlreadyConnected) {
+          // The list was stale: pull so it shows what the server says.
+          final mine = await repo.refresh(groupId);
+          if (error is AlreadyConnected) name = mine ?? '';
+        }
+        return JoinProblemConnect(
+          error,
+          personName: name.isEmpty ? null : name,
+        );
+    }
+  }
+
   /// Renames and/or changes the currency. The currency is locked once the
   /// group has expenses or settlements (`Err(Conflict)`).
   Future<RepoResult<Group>> updateGroup({
@@ -316,6 +491,12 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
               'name': m.member.name,
               'position': m.member.position,
               'inUse': m.inUse,
+              if (_connections.shared) ...{
+                'connected': m.connected,
+                'isMe': m.isMe,
+                'canDisconnect': m.canDisconnect,
+                'canClaim': m.canClaim,
+              },
             },
         ],
         'notice': notice == null ? null : {'memberInUse': notice.name},

@@ -283,6 +283,40 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get memberDisconnect => 'Disconnect';
+
+  @override
+  String memberDisconnectFor(String name) {
+    return 'Disconnect, $name';
+  }
+
+  @override
+  String memberDisconnected(String name) {
+    return '$name is no longer connected';
+  }
+
+  @override
+  String memberDisconnectOffline(String name) {
+    return 'No connection. Nothing changed: $name stays connected. Try again once you are online.';
+  }
+
+  @override
+  String memberDisconnectServerDown(String name) {
+    return 'The server is not answering right now. Nothing changed: $name stays connected. Try again in a few minutes.';
+  }
+
+  @override
+  String get memberDisconnectNothingChanged => 'Nothing changed.';
+
+  @override
+  String get memberThatsMe => 'That\'s me';
+
+  @override
+  String memberThatsMeFor(String name) {
+    return 'That\'s me, $name';
+  }
+
+  @override
   String get paymentSectionTitle => 'Payment details';
 
   @override
