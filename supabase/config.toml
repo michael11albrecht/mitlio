@@ -57,6 +57,11 @@ enable_signup = true
 enable_anonymous_sign_ins = true
 minimum_password_length = 8
 
+[auth.rate_limit]
+# Local stack only (supabase/config.toml is never pushed). The sync E2E and contract suites
+# (make test-sync-e2e) sign in a fresh anonymous user per test from one IP; the default is 30/h.
+anonymous_users = 10000
+
 [auth.email]
 enable_signup = true
 enable_confirmations = true
