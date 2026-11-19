@@ -1,0 +1,6 @@
+# Signing certificates and profiles live in a private git repo owned by the app owner.
+# Env: MATCH_GIT_URL, MATCH_PASSWORD, MATCH_GIT_BASIC_AUTHORIZATION (see docs/release-ios.md).
+git_url(ENV["MATCH_GIT_URL"])
+storage_mode("git")
+type("appstore")
+team_id("C9B9SUM8W6")
