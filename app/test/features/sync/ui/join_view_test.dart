@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -57,6 +58,56 @@ void main() {
       find.text('Dieser Link gilt nicht mehr. Bitte um einen neuen Link.'),
       findsOneWidget,
     );
+  });
+
+  /// What the OS hands Flutter when a link opens the app (P6-T14c).
+  Future<void> openLink(
+    WidgetTester tester,
+    ProviderContainerHandle h,
+    String link,
+  ) async {
+    final message = const JSONMethodCodec().encodeMethodCall(
+      MethodCall('pushRouteInformation', {'location': link}),
+    );
+    await tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+      'flutter/navigation',
+      message,
+      (_) {},
+    );
+    await h.settle();
+  }
+
+  group('deep links', () {
+    testWidgets('the https app link opens the join flow', (tester) async {
+      final h = await open(tester);
+      await openLink(tester, h, 'https://mitlio.de/join/${w.token}');
+      expect(find.text('Wer bist du?'), findsOneWidget);
+    });
+
+    testWidgets('mitlio://join/<token> opens the join flow', (tester) async {
+      final h = await open(tester);
+      await openLink(tester, h, 'mitlio://join/${w.token}');
+      expect(find.text('Wer bist du?'), findsOneWidget);
+    });
+
+    for (final bad in [
+      'mitlio://join/abc',
+      'mitlio://join/',
+      'https://mitlio.de/join/abc',
+    ]) {
+      testWidgets('a link of the wrong shape ($bad) is refused, no network', (
+        tester,
+      ) async {
+        final h = await open(tester);
+        await openLink(tester, h, bad);
+        expect(
+          find.text('Dieser Link gilt nicht mehr. Bitte um einen neuen Link.'),
+          findsOneWidget,
+        );
+        expect(w.invites.calls, 0);
+        expect(w.auth.signInCalls, 0);
+      });
+    }
   });
 
   testWidgets('rate limit shows the minutes', (tester) async {

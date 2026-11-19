@@ -6,7 +6,7 @@ import 'package:mitlio/features/settle/data/services/payment_link_providers.dart
 /// override at build time with `--dart-define=SITE_URL=...`.
 const siteUrl = String.fromEnvironment(
   'SITE_URL',
-  defaultValue: 'https://mitlio.web.app',
+  defaultValue: 'https://mitlio.de',
 );
 
 /// Override in tests with a fake launcher via `linkLauncherProvider`.

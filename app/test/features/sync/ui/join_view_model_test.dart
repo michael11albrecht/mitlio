@@ -189,6 +189,27 @@ void main() {
       );
     });
 
+    test(
+      'a link of the wrong shape is refused without asking the server',
+      () async {
+        for (final bad in ['abc', 'invalid', 'x' * 44, '${'a' * 42}!']) {
+          final other = c.read(joinViewModelProvider(bad).notifier);
+          c.listen(joinViewModelProvider(bad), (_, _) {});
+          await other.start();
+          final s = c.read(joinViewModelProvider(bad));
+          expect(
+            (s as JoinFailed).problem.text(de),
+            de.remoteErrorInviteInvalid,
+          );
+          expect(s.problem.canRetry, isFalse);
+          expect(s.problem.text(en), en.remoteErrorInviteInvalid);
+        }
+        expect(w.auth.signInCalls, 0);
+        expect(w.invites.calls, 0);
+        expect(await localGroups(), 0);
+      },
+    );
+
     test('rate limited names the minutes from the server', () async {
       w.invites.failNext(const RateLimitedRemote(Duration(minutes: 7)));
       await vm.start();

@@ -7,6 +7,12 @@
       "firebase.json",
       "**/node_modules/**"
     ],
+    "rewrites": [
+      {
+        "source": "/join/**",
+        "destination": "/join/index.html"
+      }
+    ],
     "headers": [
       {
         "source": "**",
@@ -56,6 +62,15 @@
           {
             "key": "Cache-Control",
             "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "/join/**",
+        "headers": [
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex"
           }
         ]
       },

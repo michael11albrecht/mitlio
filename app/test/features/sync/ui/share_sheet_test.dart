@@ -56,7 +56,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(QrImageView), findsOneWidget);
     expect(
-      find.text('mitlio.web.app/join/XXXX…'),
+      find.text('mitlio.de/join/XXXX…'),
       findsOneWidget,
       reason: 'a shortened link, not the whole secret',
     );

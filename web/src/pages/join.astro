@@ -1,0 +1,36 @@
+---
+// Fallback for invite links https://<domain>/join/<token> opened without the app (P6-T14c). firebase.json rewrites
+// every /join/** path to this page. The token is a secret: this page has no script and nothing reads the URL, and the
+// store links carry rel="noreferrer", so the token is never logged, stored or sent anywhere.
+import { APP_STORE_URL, PLAY_STORE_URL } from '../../site.config.mjs';
+import Layout from '../layouts/Layout.astro';
+import { messages } from '../i18n';
+import { calculatorMessages } from '../i18n/calculator';
+
+const t = messages.de;
+const m = calculatorMessages.de;
+const storesLive = APP_STORE_URL !== '' || PLAY_STORE_URL !== '';
+---
+
+<Layout locale="de" title={t.joinTitle} description={t.joinLead} noindex>
+  <h1>{t.joinHeading}</h1>
+  <p class="lead">{t.joinLead}</p>
+  <p>{storesLive ? t.joinNoApp : t.joinStoresSoon}</p>
+  {
+    storesLive && (
+      <p>
+        {APP_STORE_URL && (
+          <a class="btn" href={APP_STORE_URL} rel="noopener noreferrer">
+            {m.ctaAppStore}
+          </a>
+        )}
+        {PLAY_STORE_URL && (
+          <a class="btn" href={PLAY_STORE_URL} rel="noopener noreferrer">
+            {m.ctaPlay}
+          </a>
+        )}
+      </p>
+    )
+  }
+  <p>{t.joinPrivacy}</p>
+</Layout>

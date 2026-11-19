@@ -57,6 +57,24 @@ Status: DRAFT ("Entwurf, vor Veröffentlichung prüfen lassen", e.g. a lawyer or
 - Re-check the text whenever behaviour changes: new network calls, a DSN in release builds (crash reports),
   the hosting provider, the retention intervals (`supabase/retention.json`, `docs/retention.md`).
 
+## Android app links (invite links) — P6-T14c
+
+`https://mitlio.de/join/<token>` opens the app on Android only when `https://mitlio.de/.well-known/assetlinks.json`
+lists the SHA-256 fingerprint of the certificate the installed app is signed with.
+
+- Dev builds: the local debug cert. Get it with
+  `keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android`
+  (line `SHA256:`). It is a public cert, fine to put in the repo variable.
+- TODO(owner): release fingerprint. Play Console > your app > Test and release > App integrity > App signing > "App
+  signing key certificate" > SHA-256 certificate fingerprint (and the upload key's, if you also sideload upload-signed
+  builds). Without it the verified link does not work for store installs; links then open in the browser.
+- Put all fingerprints, comma separated, into the repo variable `ANDROID_SHA256_CERT_FINGERPRINTS`
+  (Settings > Variables) and redeploy the web (`docs/hosting.md`). The file lists both packages `app.mitlio` and
+  `app.mitlio.dev`.
+- Check: `adb shell pm get-app-links app.mitlio` shows `mitlio.de: verified`.
+- iOS needs nothing per release: the AASA is committed (team `C9B9SUM8W6`); the Associated Domains entitlement
+  `applinks:mitlio.de` is in `app/ios/Runner/Runner.entitlements` and needs a paid Apple Developer membership.
+
 ## Version and build number
 
 - `app/pubspec.yaml` holds only the version name (`0.2.0`), bumped by release-please on the
