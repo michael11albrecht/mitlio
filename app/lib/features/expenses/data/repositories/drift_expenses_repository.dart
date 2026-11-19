@@ -9,6 +9,7 @@ import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/daos/expenses_dao.dart';
 import 'package:mitlio/features/expenses/data/expense_revision.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
+import 'package:mitlio/features/sync/data/outbox_writer.dart';
 import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [ExpensesRepository] backed by Drift. Aggregates are rebuilt through
@@ -23,6 +24,11 @@ class DriftExpensesRepository implements ExpensesRepository {
   final AppDatabase _db;
   final Clock _clock;
   final IdGenerator _ids;
+  late final OutboxWriter _outbox = OutboxWriter(
+    db: _db,
+    clock: _clock,
+    ids: _ids,
+  );
 
   ExpensesDao get _dao => _db.expensesDao;
 
@@ -88,25 +94,6 @@ class DriftExpensesRepository implements ExpensesRepository {
     };
   }
 
-  ExpenseSnapshot _snapshotOf(ExpenseWithChildren stored) {
-    final row = stored.expense;
-    return ExpenseSnapshot(
-      title: row.title,
-      amountCents: row.amountCents,
-      currency: row.currency,
-      fxRatePpm: row.fxRatePpm,
-      groupAmountCents: row.groupAmountCents,
-      date: row.date.toUtc(),
-      category: row.category,
-      type: row.type,
-      splitMode: row.splitMode,
-      tripMeta: row.tripMeta,
-      payers: {for (final p in stored.payers) p.memberId: p.paidCents},
-      shares: {for (final s in stored.shares) s.memberId: s.shareCents},
-      weights: {for (final s in stored.shares) s.memberId: s.weight},
-    );
-  }
-
   /// Records the state before a change. Call it inside the transaction of
   /// that change.
   Future<void> _recordRevision(ExpenseWithChildren before) => _dao.addRevision(
@@ -114,7 +101,7 @@ class DriftExpensesRepository implements ExpensesRepository {
     expenseId: before.expense.id,
     groupId: before.expense.groupId,
     changedAt: _clock.now().toUtc(),
-    snapshot: jsonEncode(_snapshotOf(before).toJson()),
+    snapshot: jsonEncode(ExpenseSnapshot.ofStored(before).toJson()),
     keep: expenseRevisionLimit,
   );
 
@@ -243,15 +230,18 @@ class DriftExpensesRepository implements ExpensesRepository {
           case Err<dynamic, RepositoryError>(:final error):
             return Err(error);
           case Ok(:final value):
-            await _dao.insertExpense(
-              value.root.copyWith(
-                id: Value(id),
-                groupId: Value(groupId),
-                createdAt: Value(_clock.now().toUtc()),
-              ),
-              value.payers,
-              value.shares,
-            );
+            await _db.transaction(() async {
+              await _dao.insertExpense(
+                value.root.copyWith(
+                  id: Value(id),
+                  groupId: Value(groupId),
+                  createdAt: Value(_clock.now().toUtc()),
+                ),
+                value.payers,
+                value.shares,
+              );
+              await _outbox.enqueue(OutboxEntity.expense, id);
+            });
             return _load(id);
         }
       });
@@ -268,12 +258,13 @@ class DriftExpensesRepository implements ExpensesRepository {
           case Ok(:final value):
             await _db.transaction(() async {
               await _recordRevision(current);
-              await _dao.replaceExpense(
+              final ok = await _dao.replaceExpense(
                 id,
                 value.root,
                 value.payers,
                 value.shares,
               );
+              if (ok) await _outbox.enqueue(OutboxEntity.expense, id);
             });
             return _load(id);
         }
@@ -285,18 +276,24 @@ class DriftExpensesRepository implements ExpensesRepository {
     if (before == null) return Err(NotFound('expense', id));
     final ok = await _db.transaction(() async {
       await _recordRevision(before);
-      return _dao.softDelete(
+      final ok = await _dao.softDelete(
         id: id,
         deletedAt: _clock.now().toUtc(),
         updatedAt: Hlc.now(_clock),
       );
+      if (ok) await _outbox.enqueue(OutboxEntity.expense, id);
+      return ok;
     });
     return ok ? Ok(Undo(() => restore(id))) : Err(NotFound('expense', id));
   });
 
   @override
   Future<RepoResult<void>> restore(String id) => guardStorage(() async {
-    final ok = await _dao.restore(id: id, updatedAt: Hlc.now(_clock));
+    final ok = await _db.transaction(() async {
+      final ok = await _dao.restore(id: id, updatedAt: Hlc.now(_clock));
+      if (ok) await _outbox.enqueue(OutboxEntity.expense, id);
+      return ok;
+    });
     if (ok) return const Ok(null);
     return await _dao.findById(id) != null
         ? const Err(Conflict('expense is not deleted'))

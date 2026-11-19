@@ -1,10 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mitlio/core/app_version.dart';
+import 'package:mitlio/core/clock.dart';
+import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/daos/sync_state_dao.dart';
 import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/debug/debug_drive.dart';
 import 'package:mitlio/debug/handlers/sync.dart';
+import 'package:mitlio/features/sync/data/services/app_config_remote.dart';
+import 'package:mitlio/features/sync/data/services/fake_app_config_remote.dart';
+import 'package:mitlio/features/sync/data/sync_providers.dart';
 
 import '../db/test_support.dart';
 
@@ -69,5 +75,99 @@ void main() {
 
   test('a missing groupId is invalid_params', () async {
     expect((await h['sync.state']!({}))['error'], 'invalid_params');
+    expect((await h['sync.outbox']!({}))['error'], 'invalid_params');
+  });
+
+  test('outbox lists pending ops in queue order without payloads', () async {
+    expect(await h['sync.outbox']!({'groupId': 'g1'}), {
+      'groupId': 'g1',
+      'ops': <Object?>[],
+    });
+    for (final (i, e) in ['m1', 'e1'].indexed) {
+      await db
+          .into(db.localOutbox)
+          .insert(
+            LocalOutboxCompanion.insert(
+              opId: 'op$i',
+              groupId: 'g1',
+              entity: i == 0 ? 'members' : 'expenses',
+              entityId: e,
+              op: 'upsert',
+              payload: '{"secret":1}',
+              createdAt: DateTime.utc(2026, 3),
+            ),
+          );
+    }
+    final r = await h['sync.outbox']!({'groupId': 'g1'});
+    expect(r['ops'], [
+      {
+        'entity': 'members',
+        'id': 'm1',
+        'opId': 'op0',
+        'op': 'upsert',
+        'attempts': 0,
+        'lastErrorCode': null,
+      },
+      {
+        'entity': 'expenses',
+        'id': 'e1',
+        'opId': 'op1',
+        'op': 'upsert',
+        'attempts': 0,
+        'lastErrorCode': null,
+      },
+    ]);
+  });
+
+  group('sync.versionGate', () {
+    Map<String, DriveHandler> gated({String? current, FakeAppConfigRemote? c}) {
+      final config = c ?? FakeAppConfigRemote();
+      final cont = ProviderContainer(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          appConfigRemoteProvider.overrideWithValue(config),
+          appVersionProvider.overrideWithValue(current),
+          storePlatformProvider.overrideWithValue('android'),
+          clockProvider.overrideWithValue(FixedClock(DateTime.utc(2026, 11))),
+        ],
+      );
+      addTearDown(cont.dispose);
+      return syncDriveHandlers(cont);
+    }
+
+    test('reports current, min, blocked and the store link', () async {
+      final config = FakeAppConfigRemote(
+        rows: {'android': const MinVersionConfig(version: '1.2.0')},
+      );
+      final h = gated(current: '1.0.0', c: config);
+      expect(await h['sync.versionGate']!({}), {
+        'current': '1.0.0',
+        'min': '1.2.0',
+        'blocked': true,
+        'storeUrl': 'https://play.google.com/store/apps/details?id=app.mitlio',
+      });
+    });
+
+    test('force refetches inside the cache window', () async {
+      final config = FakeAppConfigRemote(
+        rows: {'android': const MinVersionConfig(version: '0.0.0')},
+      );
+      final h = gated(current: '1.0.0', c: config);
+      expect((await h['sync.versionGate']!({}))['blocked'], false);
+      config.rows['android'] = const MinVersionConfig(version: '3.0.0');
+      expect((await h['sync.versionGate']!({}))['blocked'], false);
+      expect(
+        (await h['sync.versionGate']!({'force': 'true'}))['blocked'],
+        true,
+      );
+    });
+
+    test('an unreadable answer reports open with min null', () async {
+      final config = FakeAppConfigRemote()..offline = true;
+      final h = gated(current: '1.0.0', c: config);
+      final r = await h['sync.versionGate']!({});
+      expect(r['blocked'], false);
+      expect(r['min'], isNull);
+    });
   });
 }

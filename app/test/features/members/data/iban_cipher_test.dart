@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/features/members/data/repositories/drift_payment_details_repository.dart';
 import 'package:mitlio/features/members/data/services/fake_iban_cipher.dart';
 import 'package:mitlio/features/members/data/services/iban_cipher.dart';
@@ -146,6 +147,7 @@ void main() {
       final repo = DriftPaymentDetailsRepository(
         db: base.db!,
         clock: base.clock,
+        ids: SequentialIdGenerator(),
         cipher: SecureStorageIbanCipher(
           logger: log,
           storage: _BrokenStorage(),

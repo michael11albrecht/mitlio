@@ -1,0 +1,13 @@
+{
+  "rate_limits_days": 1,
+  "join_audit_days": 90,
+  "expired_invites_days_after_expiry": 30,
+  "fx_rates_days": 60,
+  "fuel_cache_days": 2,
+  "sentry_days": 30,
+  "email_months": 12,
+  "privacy_request_years": 3,
+  "platform_logs_max_days": 7,
+  "inactive_account_months": 13,
+  "expense_revisions_per_expense": 50
+}

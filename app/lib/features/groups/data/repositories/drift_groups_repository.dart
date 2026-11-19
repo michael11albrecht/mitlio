@@ -5,6 +5,7 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/daos/groups_dao.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
+import 'package:mitlio/features/sync/data/outbox_writer.dart';
 import 'package:mitlio_domain/mitlio_domain.dart' hide Hlc;
 
 /// [GroupsRepository] backed by Drift.
@@ -13,11 +14,18 @@ class DriftGroupsRepository implements GroupsRepository {
     required AppDatabase db,
     required this._clock,
     required this._ids,
-  }) : _dao = db.groupsDao;
+  }) : _db = db,
+       _dao = db.groupsDao;
 
+  final AppDatabase _db;
   final GroupsDao _dao;
   final Clock _clock;
   final IdGenerator _ids;
+  late final OutboxWriter _outbox = OutboxWriter(
+    db: _db,
+    clock: _clock,
+    ids: _ids,
+  );
 
   RepoResult<Group> _map(GroupRow row) {
     final currency = Currency.tryParse(row.currency);
@@ -78,16 +86,19 @@ class DriftGroupsRepository implements GroupsRepository {
       return const Err(InvalidData('name must not be empty'));
     }
     final id = _ids.newId();
-    await _dao.insertGroup(
-      GroupsCompanion.insert(
-        id: id,
-        name: trimmed,
-        currency: currency.code,
-        createdBy: createdBy,
-        createdAt: _clock.now().toUtc(),
-        updatedAt: Hlc.now(_clock),
-      ),
-    );
+    await _db.transaction(() async {
+      await _dao.insertGroup(
+        GroupsCompanion.insert(
+          id: id,
+          name: trimmed,
+          currency: currency.code,
+          createdBy: createdBy,
+          createdAt: _clock.now().toUtc(),
+          updatedAt: Hlc.now(_clock),
+        ),
+      );
+      await _outbox.enqueue(OutboxEntity.group, id);
+    });
     return get(id);
   });
 
@@ -101,28 +112,40 @@ class DriftGroupsRepository implements GroupsRepository {
     if (trimmed.isEmpty) {
       return const Err(InvalidData('name must not be empty'));
     }
-    final ok = await _dao.updateGroup(
-      id: id,
-      name: trimmed,
-      currency: currency.code,
-      updatedAt: Hlc.now(_clock),
-    );
+    final ok = await _db.transaction(() async {
+      final ok = await _dao.updateGroup(
+        id: id,
+        name: trimmed,
+        currency: currency.code,
+        updatedAt: Hlc.now(_clock),
+      );
+      if (ok) await _outbox.enqueue(OutboxEntity.group, id);
+      return ok;
+    });
     return ok ? get(id) : Err(NotFound('group', id));
   });
 
   @override
   Future<RepoResult<Undo>> softDelete(String id) => guardStorage(() async {
-    final ok = await _dao.softDelete(
-      id: id,
-      deletedAt: _clock.now().toUtc(),
-      updatedAt: Hlc.now(_clock),
-    );
+    final ok = await _db.transaction(() async {
+      final ok = await _dao.softDelete(
+        id: id,
+        deletedAt: _clock.now().toUtc(),
+        updatedAt: Hlc.now(_clock),
+      );
+      if (ok) await _outbox.enqueue(OutboxEntity.group, id);
+      return ok;
+    });
     return ok ? Ok(Undo(() => restore(id))) : Err(NotFound('group', id));
   });
 
   @override
   Future<RepoResult<void>> restore(String id) => guardStorage(() async {
-    final ok = await _dao.restore(id: id, updatedAt: Hlc.now(_clock));
+    final ok = await _db.transaction(() async {
+      final ok = await _dao.restore(id: id, updatedAt: Hlc.now(_clock));
+      if (ok) await _outbox.enqueue(OutboxEntity.group, id);
+      return ok;
+    });
     if (ok) return const Ok(null);
     final live = await _dao.findById(id);
     return live != null

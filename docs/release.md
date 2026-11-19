@@ -29,17 +29,33 @@ Status: DRAFT ("Entwurf, vor Veröffentlichung prüfen lassen", e.g. a lawyer or
   these pages from Settings > Datenschutz (`app/lib/features/settings/data/repositories/legal_links_repository.dart`)
   and shows only a short summary, so there is one text to maintain. The app's `SITE_URL` define must match
   `web/site.config.mjs`.
-- Placeholders the owner must fill (all `[[...]]` in `legal.ts`): `[[STRASSE HAUSNUMMER]]`, `[[PLZ ORT]]`,
-  `[[E-MAIL]]`, `[[ZUSTÄNDIGE LANDESBEHÖRDE FÜR DEN DATENSCHUTZ]]` (the data protection authority of the owner's
-  state).
+- The postal address is never committed (the repo is public). `legal.ts` keeps the placeholders
+  `[[STRASSE HAUSNUMMER]]` and `[[PLZ ORT]]`; `web/src/lib/legal.ts` (`fillAddress`) replaces them at build time from
+  the env vars `LEGAL_STREET` and `LEGAL_CITY`. In CI these are GitHub repo variables (Settings > Variables), passed
+  in the build env of `.github/workflows/web-deploy.yml`. For a local production-like build:
+  `LEGAL_STREET="..." LEGAL_CITY="..." npm run build`. A missing or blank variable keeps the placeholder, so the
+  production gate below fails the build.
+- Contacts: imprint `contact@mitlio.de`, privacy controller `privacy@mitlio.de` (mailboxes with a 12-month
+  auto-delete rule, see `docs/retention.md`). Supervisory authority: BayLDA, Ansbach.
+- Retention periods in the text are interpolated from `supabase/retention.json` (`docs/retention.md`).
 - Gate: `web/src/lib/legal.ts` fails `npm run build` when a `[[` placeholder remains and `SITE_URL` is not the
   stand-in `https://mitlio.web.app` or a local host. To also gate a release build on the stand-in origin, build
-  with `LEGAL_STRICT=1`. Tests: `web/tests/legal.spec.ts`.
-- Sections for features that are not live (anonymous sign-in, group sync, invite links, push via Firebase Cloud
-  Messaging and APNs) are in `futurePrivacySections*` in `legal.ts` and are not rendered. TODO(owner): move them
-  into the live text when sync/push ships, and re-check every sentence.
+  with `LEGAL_STRICT=1`. `.github/workflows/web-deploy.yml` (live deploy and preview channels) always sets
+  `LEGAL_STRICT=1`, because it deploys the stand-in origin live while `SITE_URL` is unset; a missing `LEGAL_STREET` or
+  `LEGAL_CITY` therefore fails that build. Normal CI (`ci.yml`) builds without it. Tests: `web/tests/legal.spec.ts`.
+- Sections for features that are not live (anonymous sign-in, group sync, invite links, the Art. 14 notice for
+  people who do not use mitlio, server-side deletion, push via Firebase Cloud Messaging and APNs) are in
+  `futurePrivacySections*` plus the `changes` of the live sections in `legal.ts` and are not rendered. TODO(owner):
+  when sync ships, set `SYNC_PRIVACY_RENDERED = true` in `legal.ts` (and remove the push section first if push does not
+  ship with it), have the text reviewed, and re-check every sentence against the shipped behaviour.
+- Sync release gate: `web/src/components/Legal.astro` calls `assertSyncDisclosed` (`web/src/lib/legal.ts`) on the
+  privacy page. When `app/config/prod.json` has a non-empty `SUPABASE_URL` but the rendered privacy text lacks any
+  sync section, `npm run build` fails, so `make web-check` and therefore `make check` fail, and so does the web deploy.
+  There is no second check in the Dart gates: the privacy text is built by the web build, and that build runs in
+  `make check`. Release order: flip `SYNC_PRIVACY_RENDERED`, deploy the web text, then set `SUPABASE_URL` in the app
+  release. Tests for both states: `web/tests/legal.spec.ts` ("release gate").
 - Re-check the text whenever behaviour changes: new network calls, a DSN in release builds (crash reports),
-  the hosting provider, the retention interval of `cleanup_fuel_tables()` (migration 0005).
+  the hosting provider, the retention intervals (`supabase/retention.json`, `docs/retention.md`).
 
 ## Version and build number
 

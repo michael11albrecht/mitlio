@@ -2,13 +2,14 @@ export const locales = ['de', 'en'] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = 'de';
 
-export type RouteKey = 'home' | 'imprint' | 'privacy';
+export type RouteKey = 'home' | 'imprint' | 'privacy' | 'contact';
 
 /** Path of every route per locale. Keep in sync with src/pages. */
 export const paths: Record<RouteKey, Record<Locale, string>> = {
   home: { de: '/', en: '/en/' },
   imprint: { de: '/impressum/', en: '/en/imprint/' },
   privacy: { de: '/datenschutz/', en: '/en/privacy/' },
+  contact: { de: '/kontakt/', en: '/en/contact/' },
 };
 
 /** Path of a landing page (or, without slug, the home page) in a locale. */
@@ -29,6 +30,7 @@ export const messages = {
     calculatorLabel: 'Fahrtkostenrechner',
     imprint: 'Impressum',
     privacy: 'Datenschutz',
+    contact: 'Kontakt',
     otherLanguage: 'English',
     otherLanguageLang: 'en',
     notFoundTitle: 'Seite nicht gefunden | mitlio',
@@ -47,6 +49,7 @@ export const messages = {
     calculatorLabel: 'Trip cost calculator',
     imprint: 'Imprint',
     privacy: 'Privacy',
+    contact: 'Contact',
     otherLanguage: 'Deutsch',
     otherLanguageLang: 'de',
     notFoundTitle: 'Page not found | mitlio',

@@ -11,15 +11,18 @@ import 'package:mitlio/debug/debug_snapshots.dart';
 import 'package:mitlio/debug/drive_types.dart';
 import 'package:mitlio/debug/handlers/auth.dart';
 import 'package:mitlio/debug/handlers/balances.dart';
+import 'package:mitlio/debug/handlers/connections.dart';
 import 'package:mitlio/debug/handlers/expense_history.dart';
 import 'package:mitlio/debug/handlers/expenses.dart';
 import 'package:mitlio/debug/handlers/export.dart';
 import 'package:mitlio/debug/handlers/fuel.dart';
 import 'package:mitlio/debug/handlers/groups.dart';
+import 'package:mitlio/debug/handlers/join.dart';
 import 'package:mitlio/debug/handlers/payment.dart';
 import 'package:mitlio/debug/handlers/rides.dart';
 import 'package:mitlio/debug/handlers/routes.dart';
 import 'package:mitlio/debug/handlers/settle.dart';
+import 'package:mitlio/debug/handlers/share.dart';
 import 'package:mitlio/debug/handlers/statistics.dart';
 import 'package:mitlio/debug/handlers/sync.dart';
 import 'package:mitlio/debug/handlers/trips.dart';
@@ -125,6 +128,9 @@ void registerDebugDrive(ProviderContainer container) {
     ...statisticsDriveHandlers(container),
     ...fuelDriveHandlers(container),
     ...syncDriveHandlers(container),
+    ...shareDriveHandlers(container),
+    ...connectionsDriveHandlers(container),
+    ...joinDriveHandlers(container),
     ...authDriveHandlers(container),
     ...routeDriveHandlers(container),
   };

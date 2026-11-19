@@ -118,6 +118,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'This could not be shared. It is only on this phone.';
 
   @override
+  String get remoteErrorPullFailed =>
+      'New changes from the group could not be applied. Your own data is safe. Try again later or update mitlio.';
+
+  @override
   String get errorSettingNotSaved =>
       'The setting could not be saved. Try again.';
 
@@ -276,6 +280,40 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String memberInUse(String name) {
     return '$name has expenses or payments, so they stay in the group.';
+  }
+
+  @override
+  String get memberDisconnect => 'Disconnect';
+
+  @override
+  String memberDisconnectFor(String name) {
+    return 'Disconnect, $name';
+  }
+
+  @override
+  String memberDisconnected(String name) {
+    return '$name is no longer connected';
+  }
+
+  @override
+  String memberDisconnectOffline(String name) {
+    return 'No connection. Nothing changed: $name stays connected. Try again once you are online.';
+  }
+
+  @override
+  String memberDisconnectServerDown(String name) {
+    return 'The server is not answering right now. Nothing changed: $name stays connected. Try again in a few minutes.';
+  }
+
+  @override
+  String get memberDisconnectNothingChanged => 'Nothing changed.';
+
+  @override
+  String get memberThatsMe => 'That\'s me';
+
+  @override
+  String memberThatsMeFor(String name) {
+    return 'That\'s me, $name';
   }
 
   @override
@@ -1918,4 +1956,161 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get routeAttributionFallback =>
       'Map and route data © OpenStreetMap contributors';
+
+  @override
+  String shareUploadPartial(int uploaded, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      total,
+      locale: localeName,
+      other: 'entries',
+      one: 'entry',
+    );
+    return '$uploaded of $total $_temp0 uploaded. Everything on this phone is unchanged. We will keep trying.';
+  }
+
+  @override
+  String get shareGroupMissing =>
+      'This group is no longer on this phone. Reload the group list.';
+
+  @override
+  String get syncStatusUpToDate => 'Up to date';
+
+  @override
+  String get syncStatusSending => 'Sending …';
+
+  @override
+  String syncStatusPending(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count changes waiting',
+      one: '1 change waiting',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncRejectedLine => 'A change could not be shared.';
+
+  @override
+  String get syncRejectedShow => 'Show';
+
+  @override
+  String get syncRejectedSheetTitle => 'Not shared';
+
+  @override
+  String get syncRejectedOk => 'OK';
+
+  @override
+  String get syncUpdateAction => 'Update';
+
+  @override
+  String get syncUpdateOpenFailed =>
+      'Could not open the store. Open it yourself and update mitlio.';
+
+  @override
+  String get syncStatusUploading => 'Uploading …';
+
+  @override
+  String syncStatusUploadingLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Uploading … $count entries left',
+      one: 'Uploading … 1 entry left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get shareMenu => 'Share group';
+
+  @override
+  String get shareSheetTitle => 'Share group';
+
+  @override
+  String get sharePreparing => 'Preparing the link …';
+
+  @override
+  String get shareLinkButton => 'Share link';
+
+  @override
+  String shareQrLabel(String name) {
+    return 'QR code to join the group $name';
+  }
+
+  @override
+  String inviteShareText(String name, String link) {
+    return 'Join the group $name on mitlio: $link';
+  }
+
+  @override
+  String get inviteRotate => 'Create a new link';
+
+  @override
+  String get inviteRotateWarning => 'The old link will stop working.';
+
+  @override
+  String get inviteRotateCancel => 'Cancel';
+
+  @override
+  String get inviteLinkRotated =>
+      'This link no longer works. Ask whoever created the group for the new one.';
+
+  @override
+  String get inviteNoLinkMember =>
+      'No link is saved on this phone. Ask whoever created the group for the link.';
+
+  @override
+  String get inviteStoreUnreadable =>
+      'The saved link could not be read. Restart mitlio and try again.';
+
+  @override
+  String get inviteNotSaved =>
+      'The link could not be saved on this phone. Share it now; later you will need a new link.';
+
+  @override
+  String get joinTitle => 'Who are you?';
+
+  @override
+  String get joinJoining => 'Joining the group …';
+
+  @override
+  String get joinConnected => 'connected';
+
+  @override
+  String get joinNewHere => 'I am new here';
+
+  @override
+  String get joinNameLabel => 'Your name';
+
+  @override
+  String get joinNameRequired => 'What is your name? Enter it first.';
+
+  @override
+  String get joinNameConfirm => 'Join';
+
+  @override
+  String get joinSkip => 'Skip';
+
+  @override
+  String get joinConnecting => 'One moment …';
+
+  @override
+  String get joinOffline =>
+      'No connection. You have not joined the group yet and nothing was created on this phone. Connect to the internet and open the link again.';
+
+  @override
+  String get joinLocalFailed =>
+      'The group could not be saved on this phone. Check your free storage and open the link again.';
+
+  @override
+  String get joinOpenGroup => 'Open group';
+
+  @override
+  String get joinClose => 'Close';
+
+  @override
+  String get joinConnectOffline =>
+      'No connection. You are in the group but not connected to anyone yet. Try again as soon as you are online.';
 }

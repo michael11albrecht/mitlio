@@ -35,6 +35,9 @@ void main() {
         'add_equal_split_expense': 5,
         'mark_transfer_paid': 2,
         'create_group_with_members': 3,
+        'share_group_link': 1,
+        'share_group_system_share': 2,
+        'join_link_claim_self': 1,
         'web_calculator': 0,
       });
     });

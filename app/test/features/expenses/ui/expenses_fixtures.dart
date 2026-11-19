@@ -17,6 +17,9 @@ import 'package:mitlio/features/groups/data/repositories/groups_repository.dart'
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
+import 'package:mitlio/features/sync/data/repositories/fake_connections_repository.dart';
+import 'package:mitlio/features/sync/data/sync_coordinator.dart';
+import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../../../helpers/fake_app.dart';
@@ -88,6 +91,10 @@ class ExpensesApp {
     membersRepositoryProvider.overrideWithValue(base.members),
     settlementsRepositoryProvider.overrideWithValue(base.settlements),
     expensesRepositoryProvider.overrideWithValue(expenses),
+    syncCoordinatorProvider.overrideWithValue(const NoSyncCoordinator()),
+    connectionsRepositoryProvider.overrideWithValue(
+      FakeConnectionsRepository(),
+    ),
   ];
 
   ProviderContainer container({List<Override> extra = const []}) =>
