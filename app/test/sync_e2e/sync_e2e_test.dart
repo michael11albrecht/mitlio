@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/remote/remote_error.dart';
 import 'package:mitlio/db/daos/sync_state_dao.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
+import 'package:mitlio/features/sync/data/repositories/join_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/share_link_repository.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio/features/sync/data/sync_status.dart';
@@ -292,10 +293,11 @@ void main() {
       final late = world.phone('D', 10);
       expect(
         switch (await late.join.join(t.token)) {
-          Err(:final error) => error.toString(),
+          Err(error: JoinRemoteFailure(:final error)) => error,
+          Err(:final error) => fail('unexpected failure $error'),
           Ok() => fail('an old link must not let anyone in'),
         },
-        contains('InviteInvalid'),
+        const InviteInvalid(),
       );
 
       world.tick();

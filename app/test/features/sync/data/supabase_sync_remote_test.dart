@@ -354,14 +354,71 @@ void main() {
     });
 
     test('the groups table is filtered by its own id', () async {
+      await signIn();
+      answers['GET /rest/v1/group_memberships'] = (200, '[{"id":"m"}]');
       await remote().pullChanges(
         groupId: 'g1',
         table: DbTables.groups,
         afterSeq: 0,
         limit: 10,
       );
-      expect(seen.single.uri.queryParameters['id'], 'eq.g1');
+      expect(seen.first.uri.queryParameters['id'], 'eq.g1');
     });
+
+    test('nothing new for a member is an empty page', () async {
+      await signIn();
+      answers['GET /rest/v1/group_memberships'] = (200, '[{"id":"m"}]');
+      final r = await remote().pullChanges(
+        groupId: 'g1',
+        table: DbTables.members,
+        afterSeq: 9,
+        limit: 10,
+      );
+      expect(
+        (r as Ok<List<Map<String, Object?>>, RemoteError>).value,
+        isEmpty,
+      );
+      final check = seen.last.uri;
+      expect(check.path, '/rest/v1/group_memberships');
+      expect(check.queryParameters['group_id'], 'eq.g1');
+      expect(check.queryParameters['user_id'], 'eq.user-42');
+    });
+
+    test(
+      'an empty page for someone who is not in the group is NotMember',
+      () async {
+        // Row level security answers "[]", not an error, to a removed account.
+        await signIn();
+        final r = await remote().pullChanges(
+          groupId: 'g1',
+          table: DbTables.members,
+          afterSeq: 0,
+          limit: 10,
+        );
+        expect(
+          r,
+          const Err<List<Map<String, Object?>>, RemoteError>(NotMember()),
+        );
+      },
+    );
+
+    test(
+      'an empty page without a session is an error, not "nothing new"',
+      () async {
+        final r = await remote().pullChanges(
+          groupId: 'g1',
+          table: DbTables.members,
+          afterSeq: 0,
+          limit: 10,
+        );
+        expect(
+          r,
+          const Err<List<Map<String, Object?>>, RemoteError>(
+            Rejected('not_authenticated'),
+          ),
+        );
+      },
+    );
 
     test('a failure is mapped', () async {
       answers['GET /rest/v1/members'] = (
