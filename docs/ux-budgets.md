@@ -12,6 +12,7 @@ The fenced JSON block below is the single source: the helper parses it. Keys are
 | `create_group_with_members` | Create a group and add its people (typing names and keyboard enter are not taps) | 3 |
 | `share_group_link` | Group detail to the share sheet with link and QR | 1 |
 | `share_group_system_share` | Group detail to the system share sheet with the link | 2 |
+| `join_link_claim_self` | Invite link opened to being in the group as yourself (tap your name) | 1 |
 | `web_calculator` | Web calculator shows the result without pressing any button | 0 |
 
 ```json
@@ -22,6 +23,7 @@ The fenced JSON block below is the single source: the helper parses it. Keys are
   "create_group_with_members": {"maxTaps": 3},
   "share_group_link": {"maxTaps": 1},
   "share_group_system_share": {"maxTaps": 2},
+  "join_link_claim_self": {"maxTaps": 1},
   "web_calculator": {"maxTaps": 0}
 }
 ```

@@ -3402,6 +3402,90 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Der Link konnte auf diesem Handy nicht gespeichert werden. Teile ihn jetzt, später brauchst du einen neuen Link.'**
   String get inviteNotSaved;
+
+  /// No description provided for @joinTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer bist du?'**
+  String get joinTitle;
+
+  /// No description provided for @joinJoining.
+  ///
+  /// In de, this message translates to:
+  /// **'Du trittst der Gruppe bei …'**
+  String get joinJoining;
+
+  /// No description provided for @joinConnected.
+  ///
+  /// In de, this message translates to:
+  /// **'verbunden'**
+  String get joinConnected;
+
+  /// No description provided for @joinNewHere.
+  ///
+  /// In de, this message translates to:
+  /// **'Ich bin neu hier'**
+  String get joinNewHere;
+
+  /// No description provided for @joinNameLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Name'**
+  String get joinNameLabel;
+
+  /// No description provided for @joinNameRequired.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie heißt du? Trag deinen Namen ein.'**
+  String get joinNameRequired;
+
+  /// No description provided for @joinNameConfirm.
+  ///
+  /// In de, this message translates to:
+  /// **'Beitreten'**
+  String get joinNameConfirm;
+
+  /// No description provided for @joinSkip.
+  ///
+  /// In de, this message translates to:
+  /// **'Überspringen'**
+  String get joinSkip;
+
+  /// No description provided for @joinConnecting.
+  ///
+  /// In de, this message translates to:
+  /// **'Einen Moment …'**
+  String get joinConnecting;
+
+  /// No description provided for @joinOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Du bist der Gruppe noch nicht beigetreten und auf diesem Handy wurde nichts angelegt. Verbinde dich mit dem Internet und öffne den Link nochmal.'**
+  String get joinOffline;
+
+  /// No description provided for @joinLocalFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Gruppe konnte auf diesem Handy nicht gespeichert werden. Prüfe den freien Speicher und öffne den Link nochmal.'**
+  String get joinLocalFailed;
+
+  /// No description provided for @joinOpenGroup.
+  ///
+  /// In de, this message translates to:
+  /// **'Zur Gruppe'**
+  String get joinOpenGroup;
+
+  /// No description provided for @joinClose.
+  ///
+  /// In de, this message translates to:
+  /// **'Schließen'**
+  String get joinClose;
+
+  /// No description provided for @joinConnectOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist.'**
+  String get joinConnectOffline;
 }
 
 class _AppLocalizationsDelegate

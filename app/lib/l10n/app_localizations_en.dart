@@ -2034,4 +2034,49 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get inviteNotSaved =>
       'The link could not be saved on this phone. Share it now; later you will need a new link.';
+
+  @override
+  String get joinTitle => 'Who are you?';
+
+  @override
+  String get joinJoining => 'Joining the group …';
+
+  @override
+  String get joinConnected => 'connected';
+
+  @override
+  String get joinNewHere => 'I am new here';
+
+  @override
+  String get joinNameLabel => 'Your name';
+
+  @override
+  String get joinNameRequired => 'What is your name? Enter it first.';
+
+  @override
+  String get joinNameConfirm => 'Join';
+
+  @override
+  String get joinSkip => 'Skip';
+
+  @override
+  String get joinConnecting => 'One moment …';
+
+  @override
+  String get joinOffline =>
+      'No connection. You have not joined the group yet and nothing was created on this phone. Connect to the internet and open the link again.';
+
+  @override
+  String get joinLocalFailed =>
+      'The group could not be saved on this phone. Check your free storage and open the link again.';
+
+  @override
+  String get joinOpenGroup => 'Open group';
+
+  @override
+  String get joinClose => 'Close';
+
+  @override
+  String get joinConnectOffline =>
+      'No connection. You are in the group but not connected to anyone yet. Try again as soon as you are online.';
 }

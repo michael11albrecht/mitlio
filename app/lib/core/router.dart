@@ -18,6 +18,7 @@ import 'package:mitlio/features/settings/ui/licenses_view.dart';
 import 'package:mitlio/features/settings/ui/settings_view.dart';
 import 'package:mitlio/features/settle/ui/settle_view.dart';
 import 'package:mitlio/features/statistics/ui/statistics_view.dart';
+import 'package:mitlio/features/sync/ui/join_view.dart';
 import 'package:mitlio/features/trips/ui/trip_form_view.dart';
 import 'package:mitlio/features/trips/ui/trip_form_view_model.dart'
     show standaloneTripGroupId;
@@ -58,6 +59,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const LicensesView(),
               ),
             ],
+          ),
+          // Invite link (deep links, #166, and DebugDrive land here). Unnamed
+          // on purpose: the token is a secret and must not reach breadcrumbs.
+          GoRoute(
+            path: 'join/:token',
+            builder: (context, state) =>
+                JoinView(token: state.pathParameters['token']!),
           ),
           GoRoute(
             path: 'groups/new',

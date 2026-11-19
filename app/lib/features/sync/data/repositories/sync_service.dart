@@ -177,6 +177,39 @@ class SyncService {
     return status(groupId);
   }
 
+  /// Joining: writes the group's own row (its name and currency) before there
+  /// is a `local_group_sync` row, which [pull] needs and which points at the
+  /// group row. Nothing is written when the server does not answer.
+  Future<Result<void, RemoteError>> fetchGroupRow(String groupId) async {
+    final fetched = await _remote.pullChanges(
+      groupId: groupId,
+      table: DbTables.groups,
+      afterSeq: 0,
+      limit: 1,
+    );
+    final List<Map<String, Object?>> rows;
+    switch (fetched) {
+      case Err(:final error):
+        return Err(error);
+      case Ok(:final value):
+        rows = value;
+    }
+    if (rows.isEmpty) return const Err(PullFailed('group_row_missing'));
+    try {
+      await _applier.applyPage(
+        groupId: groupId,
+        table: DbTables.groups,
+        rows: rows,
+      );
+    } on PullAbort catch (abort) {
+      return Err(abort.error);
+    } on Exception {
+      // Rolled back; the caller shows it, nothing is half written.
+      return const Err(PullFailed('local_apply_failed'));
+    }
+    return const Ok(null);
+  }
+
   Future<void> _pullTables(String groupId) async {
     final sync = await _dao.groupSync(groupId);
     if (sync == null || sync.state == SyncState.removed.name) return;
