@@ -110,12 +110,14 @@ test.describe('URL state', () => {
       price: '0.39',
       persons: '4',
       extras: '8',
+      wear: true,
+      wearRate: '0.08',
       driverPays: false,
       roundTrip: true,
       trip: 'Fahrt nach München',
     };
     expect(stateToParams(s).toString()).toBe(
-      'km=120.5&l100=17&p=0.39&n=4&d=0&rt=1&x=8&ev=1&t=Fahrt+nach+M%C3%BCnchen',
+      'km=120.5&l100=17&p=0.39&n=4&d=0&rt=1&x=8&w=1&wr=0.08&ev=1&t=Fahrt+nach+M%C3%BCnchen',
     );
     expect(paramsToState(stateToParams(s).toString())).toEqual(s);
   });

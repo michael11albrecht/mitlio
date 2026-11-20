@@ -4,7 +4,7 @@ import type { CalculatorMessageKey } from '../i18n/calculator';
 
 export type Locale = 'de' | 'en';
 export type Energy = 'fuel' | 'ev';
-export type FieldKey = 'km' | 'cons' | 'price' | 'persons' | 'extras';
+export type FieldKey = 'km' | 'cons' | 'price' | 'persons' | 'extras' | 'wearRate';
 
 /** Raw field text is kept as typed so the UI never reformats under the cursor. */
 export interface CalcState {
@@ -14,11 +14,23 @@ export interface CalcState {
   price: string;
   persons: string;
   extras: string;
+  /** Wear and running costs on top of fuel are included (opt-in). */
+  wear: boolean;
+  /** Own wear rate in EUR/km, raw as typed; empty means the default. */
+  wearRate: string;
   driverPays: boolean;
   roundTrip: boolean;
   /** Optional trip name ("Wofür?"), raw as typed; sanitised when it leaves the page. */
   trip: string;
 }
+
+/**
+ * Generic wear and running cost per km (tyres, oil, service, repairs), EUR/km. Typical range is
+ * 0.06-0.15; ADAC puts workshop costs of a small car at about 3-5 ct/km before tyres and
+ * running extras. The middle of the range is the default.
+ */
+export const DEFAULT_WEAR_RATE = 0.1;
+export const MAX_WEAR_RATE = 2;
 
 export const MAX_PERSONS = 100;
 export const MAX_TRIP_NAME = 60;
@@ -44,6 +56,8 @@ export function defaultState(energy: Energy = 'fuel'): CalcState {
     price: energyDefaults[energy].price,
     persons: '2',
     extras: '',
+    wear: false,
+    wearRate: '',
     driverPays: true,
     roundTrip: false,
     trip: '',
@@ -107,6 +121,8 @@ export interface TripInput {
   driverPays: boolean;
   roundTrip: boolean;
   tollsEur?: number;
+  /** Wear and running costs, EUR per km. */
+  wearPerKm?: number;
 }
 
 const parseError = (p: Parsed): CalculatorMessageKey | null =>
@@ -137,6 +153,13 @@ export function buildInput(
   const extras = parseDecimal(state.extras);
   const extrasErr = extras.kind === 'empty' ? null : parseError(extras);
   if (extrasErr) errors.extras = extrasErr;
+  let wearPerKm: number | undefined;
+  if (state.wear && !rate) {
+    const w = parseDecimal(state.wearRate);
+    if (w.kind === 'empty') wearPerKm = DEFAULT_WEAR_RATE;
+    else if (w.kind === 'ok' && w.value <= MAX_WEAR_RATE) wearPerKm = w.value;
+    else errors.wearRate = w.kind === 'ok' ? 'errInvalid' : (parseError(w) ?? 'errInvalid');
+  }
   const persons = parsePersons(state.persons);
   if (persons === null) errors.persons = 'errPersons';
   if (persons === null || Object.keys(errors).length > 0) return { errors };
@@ -150,6 +173,7 @@ export function buildInput(
       driverPays: state.driverPays,
       roundTrip: state.roundTrip,
       ...(extras.kind === 'ok' ? { tollsEur: extras.value } : {}),
+      ...(wearPerKm !== undefined ? { wearPerKm } : {}),
     },
   };
 }
@@ -174,6 +198,7 @@ const facadeFieldToKey: Record<string, FieldKey> = {
   consumptionPer100km: 'cons',
   pricePerUnit: 'price',
   tollsEur: 'extras',
+  wearPerKm: 'wearRate',
   extrasEur: 'extras',
   persons: 'persons',
 };
@@ -199,6 +224,7 @@ export interface ResultView {
   driverGetsCents: number | null;
   totalCents: number;
   fuelCents: number;
+  wearCents: number;
   extrasCents: number;
 }
 
@@ -214,7 +240,8 @@ export function buildResultView(res: FacadeResult, driverPays: boolean): ResultV
     rounding: high === low ? null : { high, nHigh, low, nLow: payers.length - nHigh },
     driverGetsCents: driverPays ? null : (res.totalCents ?? 0),
     totalCents: res.totalCents ?? 0,
-    fuelCents: (b?.fuelCents ?? 0) + (b?.wearCents ?? 0) + (b?.kmRateCents ?? 0),
+    fuelCents: (b?.fuelCents ?? 0) + (b?.kmRateCents ?? 0),
+    wearCents: b?.wearCents ?? 0,
     extrasCents: (b?.tollsCents ?? 0) + (b?.ferryCents ?? 0),
   };
 }
@@ -256,6 +283,10 @@ export function stateToParams(state: CalcState): URLSearchParams {
   params.set('d', state.driverPays ? '1' : '0');
   params.set('rt', state.roundTrip ? '1' : '0');
   put('x', state.extras);
+  if (state.wear) {
+    params.set('w', '1');
+    put('wr', state.wearRate);
+  }
   if (state.energy === 'ev') params.set('ev', '1');
   const trip = sanitizeTripName(state.trip);
   if (trip !== '') params.set('t', trip);
@@ -286,6 +317,8 @@ export function paramsToState(search: string, preset: Partial<CalcState> = {}): 
   state.cons = num('l100') ?? state.cons;
   state.price = num('p') ?? state.price;
   state.extras = num('x') ?? preset.extras ?? '';
+  state.wear = q.get('w') === '1';
+  state.wearRate = state.wear ? (num('wr') ?? '') : '';
   const n = q.get('n');
   if (n !== null && parsePersons(n) !== null) state.persons = n.trim();
   if (q.has('d')) state.driverPays = q.get('d') !== '0';
@@ -306,6 +339,7 @@ export function localizeState(state: CalcState, locale: Locale): CalcState {
     cons: loc(state.cons),
     price: loc(state.price, 2),
     extras: state.extras === '' ? '' : loc(state.extras),
+    wearRate: state.wearRate === '' ? '' : loc(state.wearRate, 2),
   };
 }
 
