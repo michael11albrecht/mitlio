@@ -171,6 +171,8 @@
   "membersEmptyTitle": "Noch niemand dabei",
   "membersEmptyMessage": "Füge die Leute hinzu, mit denen du teilst.",
   "memberAddLabel": "Name hinzufügen",
+  "memberNameTaken": "„{name}“ ist schon in der Gruppe. Nimm einen anderen Namen.",
+  "@memberNameTaken": {"placeholders": {"name": {"type": "String"}}},
   "memberAdd": "Hinzufügen",
   "memberNameLabel": "Name",
   "memberRenameSave": "Namen speichern",

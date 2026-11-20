@@ -152,6 +152,12 @@ void main() {
       expect(names(), hasLength(3));
     });
 
+    test('rejects a name already in the group, ignoring case', () async {
+      await open();
+      expect(err(await vm().addMember(' ann ')), isA<Conflict>());
+      expect(names(), hasLength(3));
+    });
+
     test('reports a repository failure', () async {
       await open();
       app.members.failWith = const Storage('x');
@@ -186,6 +192,17 @@ void main() {
       expect(err(await vm().renameMember('nope', 'X')), isA<NotFound>());
       app.members.failWith = const Storage('x');
       expect(err(await vm().renameMember(people[0].id, 'X')), isA<Storage>());
+    });
+  });
+
+  group('renameMember duplicates', () {
+    test('rejects the name of another member, allows own recasing', () async {
+      await open();
+      expect(
+        err(await vm().renameMember(people[1].id, 'ANN')),
+        isA<Conflict>(),
+      );
+      ok(await vm().renameMember(people[0].id, 'ANN'));
     });
   });
 

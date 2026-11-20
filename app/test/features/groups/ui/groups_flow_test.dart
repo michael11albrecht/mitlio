@@ -193,6 +193,75 @@ void main() {
       expect(find.text('Benno'), findsOneWidget);
     });
 
+    testWidgets('renaming while the add field has focus focuses the rename', (
+      tester,
+    ) async {
+      await seed();
+      await pumpMitlio(tester, app, location: '/groups/${trip.id}');
+      await tester.tap(find.widgetWithText(TextField, 'Name hinzufügen'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Ben'));
+      await tester.pumpAndSettle();
+      final rename = tester.widget<TextField>(
+        find.widgetWithText(TextField, 'Name'),
+      );
+      expect(rename.focusNode!.hasFocus, isTrue);
+
+      await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Benno');
+      await submit(tester);
+      expect(find.text('Benno'), findsOneWidget);
+      expect(find.text('Ben'), findsNothing);
+      expect(ok(await app.members.list(trip.id)), hasLength(3));
+    });
+
+    testWidgets('editing a second name commits and closes the first', (
+      tester,
+    ) async {
+      await seed();
+      await pumpMitlio(tester, app, location: '/groups/${trip.id}');
+      await tester.tap(find.widgetWithText(TextField, 'Name hinzufügen'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Ben'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Benno');
+      await tester.tap(find.text('Chiara'));
+      await tester.pumpAndSettle();
+
+      expect(find.widgetWithText(TextField, 'Name'), findsOneWidget);
+      expect(find.text('Benno'), findsOneWidget);
+      expect(
+        ok(await app.members.list(trip.id)).map((m) => m.name),
+        ['Anna', 'Benno', 'Chiara'],
+      );
+    });
+
+    testWidgets('a duplicate name is explained and not added', (tester) async {
+      await seed();
+      await pumpMitlio(tester, app, location: '/groups/${trip.id}');
+      await addMember(tester, 'anna');
+      expect(
+        find.textContaining('„anna“ ist schon in der Gruppe.'),
+        findsOneWidget,
+      );
+      expect(ok(await app.members.list(trip.id)), hasLength(3));
+    });
+
+    testWidgets('renaming to an existing name is explained', (tester) async {
+      await seed();
+      await pumpMitlio(tester, app, location: '/groups/${trip.id}');
+      await tester.tap(find.text('Ben'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.widgetWithText(TextField, 'Name'), 'ANNA');
+      await submit(tester);
+      expect(
+        find.textContaining('„ANNA“ ist schon in der Gruppe.'),
+        findsOneWidget,
+      );
+      expect(find.text('Ben'), findsOneWidget);
+    });
+
     testWidgets('removing offers undo instead of asking', (tester) async {
       await seed();
       await pumpMitlio(tester, app, location: '/groups/${trip.id}');

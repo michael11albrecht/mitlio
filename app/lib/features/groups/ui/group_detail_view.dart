@@ -272,6 +272,13 @@ class _MembersTab extends StatelessWidget {
                             name,
                           );
                           if (result case Err(
+                            error: Conflict(),
+                          )) {
+                            _showText(
+                              messenger,
+                              l10n.memberNameTaken(name.trim()),
+                            );
+                          } else if (result case Err(
                             :final error,
                           )) {
                             showErrorSnackBar(
@@ -441,6 +448,15 @@ class _MemberTileState extends State<_MemberTile> {
   void _startEditing() {
     _controller.text = widget.item.member.name;
     setState(() => _editing = true);
+    // `autofocus` is ignored while another field (the add field) has focus.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_editing) return;
+      _focus.requestFocus();
+      _controller.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _controller.text.length,
+      );
+    });
   }
 
   /// Saves a changed, non-empty name; anything else keeps the old one.
@@ -474,7 +490,6 @@ class _MemberTileState extends State<_MemberTile> {
                         ? TextField(
                             controller: _controller,
                             focusNode: _focus,
-                            autofocus: true,
                             textInputAction: TextInputAction.done,
                             textCapitalization: TextCapitalization.words,
                             onSubmitted: (_) => _commit(),
@@ -635,13 +650,16 @@ class _AddMemberFieldState extends State<_AddMemberField> {
   Future<void> _add() async {
     final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context);
-    final result = await widget.onAdd(_controller.text);
+    final name = _controller.text;
+    final result = await widget.onAdd(name);
     switch (result) {
       case Ok():
         _controller.clear();
       // An empty name is a no-op: the field simply stays focused.
       case Err(error: InvalidData()):
         break;
+      case Err(error: Conflict()):
+        _showText(messenger, l10n.memberNameTaken(name.trim()));
       case Err(:final error):
         showErrorSnackBar(messenger, l10n, error);
     }
