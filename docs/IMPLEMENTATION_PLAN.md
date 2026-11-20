@@ -81,6 +81,7 @@ mitlio web calculator (free, no ads, no popups, no signup, instant result)
 | ADR-25 | Personal profile, personal vehicles, guided setup flows | Profile (name, avatar, PayPal.Me; IBAN local-only) and cars are set up **once per user** and reused in every group (linked copies); optional real-cost calculator → personal ct/km; rare multi-input flows use one-question-per-screen step flows with progress + finish celebration, daily flows stay one screen | Same data typed into every group; wear rate is a guess; long forms overwhelm | If people keep different payment details per group (P5) |
 | ADR-26 | Receipt photo to expense | Platform document scanner + **on-device OCR** (ML Kit / Apple Vision) behind `ReceiptOcrService`; parsing total/merchant/date/category is pure Dart in the domain; result prefills the normal one-screen expense form | No server cost per receipt, photos stay on the device | If fixture accuracy stays below the gate |
 | ADR-27 | Sync go, v1 scope | **Go for app-side sync** (owner 2026-11-15, P5-T04). v1: no realtime (pull on start/resume/open/refresh), anonymous accounts without sign-out, version gate blocks sync only, no conflict UI, one `RemoteError` contract with du-form copy per server error, contract suites vs. fake and local Supabase | Smallest sync that makes a shared group trustworthy (rule #0); fewer moving parts and lower cost (ADR-18) | Users report stale data → realtime; lost edits → per-field merge |
+| ADR-28 | Support the developer | Opt-in only, **never inside a payment**: Settings row, one dismissible line after "all settled" (rate-limited), web footer. Link target per store policy (web: PayPal.Me/Ko-fi; iOS: IAP tip jar or US-only external link; Android: Play Billing or none) | Rule #0 and ADR-09: no nudge at a payment step, no payment intermediary; store rules forbid or tax external tip links | Epic v. Apple outcome, EU steering rules, tips > hosting costs |
 
 Each ADR becomes a file in `docs/adr/NNNN-title.md` in P0.
 
@@ -794,6 +795,7 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 | P7-T06 | Onboarding + empty states + app icon/splash | goldens | safe |
 | P7-T07 | Privacy policy, imprint, in-app data deletion (account + server data via RPC `delete_my_data`) | pgTAP for deletion; legal text reviewed by human | critical |
 | P7-T08 | Crash/error reporting: `sentry_flutter` (EU region DSN per flavor), `beforeSend` scrubber, debug symbols upload in release workflow; opt-in analytics only | test: scrubber removes IBAN/member names/notes from events + breadcrumbs | critical |
+| P7-T09 | Support mitlio (ADR-28): Settings row, rate-limited success-screen line (≤ 1 per 5 settlements, ≥ 30 days apart, permanent "Nicht mehr zeigen"), web footer link; target per ADR-28 §3/§4. **Blocked on §12 #13** | VM tests (rate limit, dismiss, never in settle flow); arch test: no tip code under `features/settle` payment path; goldens; tap budget unchanged | safe |
 
 ### P8 — Delivery pipeline (human + agent, ~3–5 days, can run in parallel with P6/P7)
 
@@ -930,5 +932,6 @@ tool/drive.sh ext.mitlio.balances.get '{"groupId":"<id>"}'
 | 10 | Car cost basis (ADR-25) | **user's choice** (2026-11-15); default running costs only; inline non-blocking PBefG hint when passengers pay more than operating costs, plus plausibility hint | PU-T03/T09/T15; owner reviews hint wording |
 | 11 | Illustrations | **agent draws vector art in code** (2026-11-15); too ugly → new experiment | PU-T06 |
 | 12 | Order | **PU after P4/P3r, before P6-T07** (2026-11-15); PU-T13 photo in backlog; PU-T14/T17 after P6-T07/P6b | §11 |
+| 13 | Tips (ADR-28) | **Open:** (a) accept store-review risk for a web link from the app, or use IAP/Play Billing tip jar? (b) PayPal.Me on a private account OK, or Ko-fi/GitHub Sponsors/business account? (c) tax handling | Blocks P7-T09; agent opens the issue after the answers |
 
 No open owner questions remain for P0–P1.

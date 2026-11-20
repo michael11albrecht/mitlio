@@ -29,3 +29,4 @@ Source of truth for the summary table: `docs/IMPLEMENTATION_PLAN.md` §1. Each A
 | [ADR-25](0025-personal-profile-and-vehicles.md) | Personal profile, personal vehicles and guided setup flows |
 | [ADR-26](0026-receipt-to-expense.md) | Receipt photo to expense, recognised on the device |
 | [ADR-27](0027-sync-go.md) | Sync go, v1 scope |
+| [ADR-28](0028-support-the-developer.md) | Support the developer, opt-in and never in the payment |
