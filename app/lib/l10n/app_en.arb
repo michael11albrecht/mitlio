@@ -545,6 +545,18 @@
   "tripNoParticipants": "Pick at least one person who rides along.",
   "tripTooLarge": "That is too large to calculate. Check the numbers.",
   "tripNumberInvalid": "That is not a valid number",
+  "tripTooFar": "That is further than you can drive in one trip. Max {max} km.",
+  "tripTooHigh": "That seems too high. Max {max}.",
+  "@tripTooFar": {
+    "placeholders": {
+      "max": {"type": "String"}
+    }
+  },
+  "@tripTooHigh": {
+    "placeholders": {
+      "max": {"type": "String"}
+    }
+  },
   "tripDistanceLabel": "Distance (one way)",
   "tripUnitKm": "km",
   "tripRoundTrip": "Round trip",
@@ -871,12 +883,13 @@
     }
   },
   "tripShare": "Share result",
-  "tripShareText": "Trip cost: each person pays {amount}",
+  "tripShareText": "Trip {distance} km: {total} total\nEach pays {amount} to {name}",
   "@tripShareText": {
     "placeholders": {
-      "amount": {
-        "type": "String"
-      }
+      "distance": {"type": "String"},
+      "total": {"type": "String"},
+      "amount": {"type": "String"},
+      "name": {"type": "String"}
     }
   },
   "balancesEmptyAction": "Add an expense",

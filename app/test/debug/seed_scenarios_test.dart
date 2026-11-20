@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/debug/debug_data_control.dart';
+import 'package:mitlio/features/expenses/ui/expenses_view_model.dart'
+    show expenseCategories;
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../features/repo_test_support.dart';
@@ -76,6 +78,38 @@ void main() {
           .watchRides(groupId, const Month(2026, 10))
           .first;
       expect(rides, hasLength(20));
+    });
+
+    test('seeded dates are UTC calendar days (#143)', () async {
+      final seeded = await load('trip_4p');
+      final entries = await r.expenses
+          .watchExpenses(seeded['groupId']! as String)
+          .first;
+      expect(
+        entries.map((e) => e.expense.date),
+        contains(DateTime.utc(2026, 7, 9)),
+      );
+      for (final e in entries) {
+        final d = e.expense.date;
+        expect(
+          d,
+          DateTime.utc(d.year, d.month, d.day),
+          reason: e.expense.title,
+        );
+      }
+    });
+
+    test('seeded categories are keys the app knows (#143)', () async {
+      for (final name in scenarioNames) {
+        final seeded = await load(name);
+        final entries = await r.expenses
+            .watchExpenses(seeded['groupId']! as String)
+            .first;
+        for (final e in entries) {
+          final c = e.category;
+          if (c != null) expect(expenseCategories, contains(c), reason: name);
+        }
+      }
     });
 
     test('large_200_expenses is deterministic', () async {

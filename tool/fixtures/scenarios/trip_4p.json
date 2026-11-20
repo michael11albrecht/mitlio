@@ -67,7 +67,7 @@
           "Dino"
         ]
       },
-      "category": "lodging"
+      "category": "stay"
     },
     {
       "title": "Einkauf",
@@ -85,7 +85,7 @@
           "Dino"
         ]
       },
-      "category": "groceries"
+      "category": "food"
     },
     {
       "title": "Restaurant",
@@ -121,7 +121,7 @@
           "Dino"
         ]
       },
-      "category": "activity"
+      "category": "fun"
     },
     {
       "title": "Eis",
