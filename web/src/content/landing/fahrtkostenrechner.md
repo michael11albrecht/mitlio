@@ -36,9 +36,9 @@ faq:
   - q: "Woher kenne ich den Verbrauch meines Autos?"
     a: "Am genauesten aus deinen Tankbelegen: getankte Liter geteilt durch gefahrene Kilometer, mal 100. Der Bordcomputer liefert meist einen brauchbaren Näherungswert."
   - q: "Sind Verschleiß und Versicherung eingerechnet?"
-    a: "Nein, der Rechner nutzt nur Sprit und das, was du unter „Maut & Sonstiges“ einträgst. Wollt ihr Verschleiß mitzahlen, rechnet einen Betrag dort ein."
+    a: "Standardmäßig nicht: Der Rechner nutzt nur Sprit und das, was du unter „Maut & Sonstiges“ einträgst. Wollt ihr Verschleiß mitzahlen, schalte „Verschleiß & laufende Kosten“ ein (pauschal 0,07 € pro km, oder dein eigener Wert)."
   - q: "Werden meine Eingaben gespeichert?"
-    a: "Nein. Die Berechnung läuft in deinem Browser, es werden keine Daten gesendet. Die Werte stehen nur in der Adresszeile, damit du das Ergebnis teilen kannst."
+    a: "Nein. Die Berechnung läuft in deinem Browser, es werden keine Daten gesendet. Die Werte stehen nur in der Adresszeile, damit du das Ergebnis teilen kannst. Einzige Ausnahme: Schaltest du „Verschleiß & laufende Kosten“ ein, merkt sich dein Browser diese Einstellung (und deinen eigenen Wert) lokal auf deinem Gerät."
 related:
   - spritkosten-teilen
   - mitfahrer-kosten-berechnen

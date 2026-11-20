@@ -50,6 +50,61 @@ test.describe('calculator (de)', () => {
     await expect(amount(page)).toHaveText(/^23,33\s€$/);
   });
 
+  test('wear and running costs are off by default and the details stay hidden', async ({ page }) => {
+    await expect(page.locator('#calc-wear')).not.toBeChecked();
+    await expect(page.locator('#calc-wear-detail')).toBeHidden();
+    await expect(page.locator('#calc-wearRate')).toBeHidden();
+    await expect(page.locator('#calc-b-wear-row')).toBeHidden();
+  });
+
+  test('the wear toggle adds the 0,07 €/km default; the own value is optional and only shown on request', async ({ page }) => {
+    await page.locator('#calc-wear').check();
+    // 100 km: fuel 12.60 + wear 7.00 = 19.60 over 2 people.
+    await expect(amount(page)).toHaveText(/^9,80\s€$/);
+    await expect(page.locator('#calc-wear-detail')).toBeVisible();
+    await expect(page.locator('#calc-wearRate')).toBeHidden();
+    await page.locator('.breakdown summary').click();
+    await expect(page.locator('#calc-b-wear')).toHaveText(/^7,00\s€$/);
+    await expect(page.locator('#calc-b-fuel')).toHaveText(/^12,60\s€$/);
+    await expect.poll(() => new URL(page.url()).searchParams.get('w')).toBe('1');
+    await page.getByRole('button', { name: 'Eigenen Wert eingeben' }).click();
+    await expect(page.locator('#calc-wearRate')).toBeFocused();
+    await page.locator('#calc-wearRate').fill('0,06');
+    await expect(amount(page)).toHaveText(/^9,30\s€$/);
+    await expect.poll(() => new URL(page.url()).searchParams.get('wr')).toBe('0.06');
+    await page.reload();
+    await expect(page.locator('#calc-wear')).toBeChecked();
+    await expect(page.locator('#calc-wearRate')).toHaveValue('0,06');
+    await expect(amount(page)).toHaveText(/^9,30\s€$/);
+    await page.locator('#calc-wear').uncheck();
+    await expect(amount(page)).toHaveText(/^6,30\s€$/);
+    await expect(page.locator('#calc-wear-detail')).toBeHidden();
+  });
+
+  test('wear can be the device default; links without a wear setting follow it, explicit w=0 does not', async ({ page }) => {
+    await page.locator('#calc-wear').check();
+    await page.locator('#calc-wear-own').click();
+    await page.locator('#calc-wearRate').fill('0,08');
+    await page.goto('/?km=100');
+    await expect(page.locator('#calc-wear')).toBeChecked();
+    await expect(page.locator('#calc-wearRate')).toHaveValue('0,08');
+    await page.goto('/?km=100&w=0');
+    await expect(page.locator('#calc-wear')).not.toBeChecked();
+    await expect.poll(() => new URL(page.url()).searchParams.get('w')).toBe('0');
+    await page.goto('/');
+    await page.locator('#calc-wear').uncheck();
+    await page.goto('/?km=100');
+    await expect(page.locator('#calc-wear')).not.toBeChecked();
+    await expect.poll(() => new URL(page.url()).searchParams.has('w')).toBe(false);
+  });
+
+  test('an invalid own wear value is flagged, not ignored', async ({ page }) => {
+    await page.goto('/?w=1');
+    await page.getByRole('button', { name: 'Eigenen Wert eingeben' }).click();
+    await page.locator('#calc-wearRate').fill('abc');
+    await expect(page.locator('#calc-wearRate-error')).toBeVisible();
+  });
+
   test('invalid or partial URL params fall back to defaults', async ({ page }) => {
     await page.goto('/?km=abc&n=0&d=0&x=-4');
     await expect(page.locator('#calc-km')).toHaveValue('100');

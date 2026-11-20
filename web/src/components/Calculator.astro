@@ -62,6 +62,10 @@ const ctaDeepLink = buildDeepLink({
           <dt id="calc-b-fuel-label">{rowLabel}</dt>
           <dd id="calc-b-fuel">–</dd>
         </div>
+        <div id="calc-b-wear-row" hidden>
+          <dt>{m.rowWear}</dt>
+          <dd id="calc-b-wear">–</dd>
+        </div>
         <div id="calc-b-extras-row" hidden>
           <dt>{m.rowExtras}</dt>
           <dd id="calc-b-extras">–</dd>
@@ -117,8 +121,7 @@ const ctaDeepLink = buildDeepLink({
               </button>
             ))}
           </div>
-          <p class="fuel-source" id="calc-fuel-source" hidden />
-          <div class="fuel-where" id="calc-fuel-where">
+          <div class="fuel-where" id="calc-fuel-where" hidden>
             <button type="button" class="chip chip-action" id="calc-fuel-nearby">
               {m.fuelNearby}
             </button>
@@ -130,7 +133,6 @@ const ctaDeepLink = buildDeepLink({
                 {m.fuelPlzGo}
               </button>
             </div>
-            <p class="fuel-note">{m.fuelLocationNote}</p>
           </div>
           <p class="fuel-status" id="calc-fuel-status" role="status" />
         </div>
@@ -187,6 +189,25 @@ const ctaDeepLink = buildDeepLink({
       </label>
     </div>
 
+    <div class="wear" hidden={rate}>
+      <label class="switch">
+        <span>{m.wear}</span>
+        <input id="calc-wear" type="checkbox" role="switch" />
+      </label>
+      <div class="wear-detail" id="calc-wear-detail" hidden>
+        <p class="wear-hint">{m.wearHint}</p>
+        <button type="button" class="wear-own" id="calc-wear-own">{m.wearOwn}</button>
+        <div class="field" id="calc-wear-field" hidden>
+          <label for="calc-wearRate">{m.wearOwnLabel}</label>
+          <div class="control">
+            <input id="calc-wearRate" type="text" inputmode="decimal" autocomplete="off" placeholder="0,07" />
+            <span class="unit" aria-hidden="true">{m.wearUnit}</span>
+          </div>
+          <p class="error" id="calc-wearRate-error" hidden></p>
+        </div>
+      </div>
+    </div>
+
     <div class="field">
       <label for="calc-extras">{m.extras} <span class="optional">({m.extrasOptional})</span></label>
       <div class="control">
@@ -208,6 +229,17 @@ const ctaDeepLink = buildDeepLink({
       />
     </div>
   </form>
+
+  {
+    fuelEnabled && (
+      <div class="fuel-foot" id="calc-fuel-foot" hidden>
+        <p class="fuel-source" id="calc-fuel-source" hidden />
+        <p class="fuel-note" id="calc-fuel-note" hidden>
+          {m.fuelLocationNote}
+        </p>
+      </div>
+    )
+  }
 
   <aside class="cta" id="calc-cta" aria-label="mitlio App">
     <p>{m.ctaText}</p>
@@ -458,6 +490,8 @@ const ctaDeepLink = buildDeepLink({
   .fuel[hidden],
   .chip[hidden],
   .fuel-source[hidden],
+  .fuel-note[hidden],
+  .fuel-foot[hidden],
   .fuel-where[hidden] {
     display: none;
   }
@@ -477,9 +511,11 @@ const ctaDeepLink = buildDeepLink({
 
   .chip {
     display: inline-flex;
-    align-items: baseline;
+    align-items: center;
+    justify-content: center;
     gap: var(--space-2);
     min-height: 2.75rem;
+    line-height: 1.2;
     padding-inline: var(--space-4);
     font: inherit;
     color: var(--color-text);
@@ -525,8 +561,10 @@ const ctaDeepLink = buildDeepLink({
     color: var(--color-text-muted);
   }
 
-  .fuel-note {
-    flex-basis: 100%;
+  .fuel-foot {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-4);
   }
 
   .fuel-status:empty {
@@ -680,6 +718,49 @@ const ctaDeepLink = buildDeepLink({
   .segmented input:focus-visible + span {
     outline: 3px solid var(--color-focus);
     outline-offset: 2px;
+  }
+
+  .wear[hidden],
+  .wear-detail[hidden],
+  .wear .field[hidden] {
+    display: none;
+  }
+
+  .wear {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .wear-detail {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+  }
+
+  .wear-hint {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  .wear-own {
+    min-height: 2.75rem;
+    padding: 0;
+    font: inherit;
+    color: var(--color-primary);
+    text-decoration: underline;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .wear-own:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .wear .field {
+    justify-self: stretch;
   }
 
   .switches {
