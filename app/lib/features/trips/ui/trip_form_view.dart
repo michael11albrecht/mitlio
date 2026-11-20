@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/money_format.dart';
@@ -121,9 +122,18 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
     final l10n = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final currency = s.group.currency;
-    final result = await _vm.shareResult(
-      (cents) => l10n.tripShareText(format.format(cents, currency)),
-    );
+    final standalone = _vm.isStandalone;
+    final result = await _vm.shareResult((e) {
+      final input = e.input!;
+      final driver = s.members.firstWhere((m) => m.id == input.driverId);
+      final meters = input.distanceMeters * (input.roundTrip ? 2 : 1);
+      return l10n.tripShareText(
+        formatMilli(meters, separator: format.decimalSeparator),
+        format.format(e.cost!.totalCents, currency),
+        format.format(e.perPersonCents!, currency),
+        tripMemberName(l10n, standalone, driver),
+      );
+    });
     if (!mounted) return;
     if (result is Err) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.shareFailed)));
@@ -166,10 +176,28 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
     final symbol = format.currencySymbol(s.group.currency);
     final inputs = s.inputs;
     final invalid = s.evaluation.invalid;
+    final tooHigh = s.evaluation.tooHigh;
     final electric = inputs.energy == TripEnergy.electric;
     final vm = _vm;
     final standalone = vm.isStandalone;
     String nameOf(GroupMember m) => tripMemberName(l10n, standalone, m);
+
+    final numberFormat = NumberFormat.decimalPattern(
+      Localizations.localeOf(context).toString(),
+    );
+    // The message under a field: not a number, or above its plausible limit.
+    String? error(TripField field, String unit) {
+      if (invalid.contains(field)) return l10n.tripNumberInvalid;
+      if (!tooHigh.contains(field)) return null;
+      final max = tripFieldMax(field, electric: electric);
+      if (field == TripField.distance) {
+        return l10n.tripTooFar(numberFormat.format(max ~/ kmToMeters));
+      }
+      final shown = field == TripField.tolls || field == TripField.ferry
+          ? format.format(max, s.group.currency)
+          : '${numberFormat.format(max ~/ unitToMilli)} $unit';
+      return l10n.tripTooHigh(shown);
+    }
 
     Widget gap() => const SizedBox(height: Spacing.md);
     Widget label(String text) => Padding(
@@ -196,7 +224,7 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                   controller: _distance,
                   label: l10n.tripDistanceLabel,
                   suffix: l10n.tripUnitKm,
-                  error: invalid.contains(TripField.distance),
+                  error: error(TripField.distance, l10n.tripUnitKm),
                   onChanged: (text) {
                     // Typing is the user's: the route lookup stops
                     // overwriting it.
@@ -278,7 +306,7 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                     controller: _kmRate,
                     label: l10n.tripKmRateLabel,
                     suffix: l10n.tripUnitPerKm(symbol),
-                    error: invalid.contains(TripField.kmRate),
+                    error: error(TripField.kmRate, l10n.tripUnitPerKm(symbol)),
                     onChanged: vm.setKmRate,
                   )
                 else ...[
@@ -304,7 +332,12 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                     suffix: electric
                         ? l10n.tripUnitKwhPer100
                         : l10n.tripUnitLitersPer100,
-                    error: invalid.contains(TripField.consumption),
+                    error: error(
+                      TripField.consumption,
+                      electric
+                          ? l10n.tripUnitKwhPer100
+                          : l10n.tripUnitLitersPer100,
+                    ),
                     onChanged: vm.setConsumption,
                   ),
                   gap(),
@@ -316,7 +349,12 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                     suffix: electric
                         ? l10n.tripUnitPerKwh(symbol)
                         : l10n.tripUnitPerLiter(symbol),
-                    error: invalid.contains(TripField.price),
+                    error: error(
+                      TripField.price,
+                      electric
+                          ? l10n.tripUnitPerKwh(symbol)
+                          : l10n.tripUnitPerLiter(symbol),
+                    ),
                     onChanged: vm.setPrice,
                   ),
                   if (!electric && s.group.currency == Currency.eur)
@@ -334,7 +372,7 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                     controller: _wear,
                     label: l10n.tripWearLabel,
                     suffix: l10n.tripUnitPerKm(symbol),
-                    error: invalid.contains(TripField.wear),
+                    error: error(TripField.wear, l10n.tripUnitPerKm(symbol)),
                     onChanged: vm.setWear,
                   ),
                 ],
@@ -343,7 +381,7 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                   controller: _tolls,
                   label: l10n.tripTollsLabel,
                   suffix: symbol,
-                  error: invalid.contains(TripField.tolls),
+                  error: error(TripField.tolls, symbol),
                   onChanged: vm.setTolls,
                 ),
                 gap(),
@@ -351,7 +389,7 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                   controller: _ferry,
                   label: l10n.tripFerryLabel,
                   suffix: symbol,
-                  error: invalid.contains(TripField.ferry),
+                  error: error(TripField.ferry, symbol),
                   onChanged: vm.setFerry,
                 ),
                 if (!standalone) ...[
@@ -407,14 +445,13 @@ class _NumberField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
   final String suffix;
-  final bool error;
+  final String? error;
   final ValueChanged<String> onChanged;
   final bool autofocus;
   final bool large;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     return NumberPadDone(
       child: TextField(
         controller: controller,
@@ -430,7 +467,7 @@ class _NumberField extends StatelessWidget {
         decoration: InputDecoration(
           labelText: label,
           suffixText: suffix,
-          errorText: error ? l10n.tripNumberInvalid : null,
+          errorText: error,
         ),
       ),
     );

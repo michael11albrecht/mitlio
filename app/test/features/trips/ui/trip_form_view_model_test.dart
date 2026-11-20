@@ -393,12 +393,91 @@ void main() {
       expect(loaded().canSave, isFalse);
     });
 
-    test('a huge trip is too large instead of crashing', () {
+    test('a huge trip is flagged instead of crashing', () {
       vm()
         ..setDistance('999999999')
         ..setConsumption('999999999')
         ..setPrice('999999999');
-      expect(eval().blocker, TripBlocker.tooLarge);
+      expect(eval().cost, isNull);
+      expect(eval().tooHigh, {
+        TripField.distance,
+        TripField.consumption,
+        TripField.price,
+      });
+    });
+
+    test('implausible values are flagged, give no result (#147)', () {
+      fillExample();
+      expect(eval().cost, isNotNull);
+      void expectLimit(void Function() set, TripField f, void Function() ok) {
+        set();
+        expect(eval().cost, isNull, reason: '$f over');
+        expect(eval().tooHigh, {f}, reason: '$f over');
+        expect(eval().invalid, isEmpty);
+        expect(loaded().canSave, isFalse);
+        ok();
+        expect(eval().cost, isNotNull, reason: '$f at limit');
+        expect(eval().tooHigh, isEmpty);
+      }
+
+      expectLimit(
+        () => vm().setDistance('20000.1'),
+        TripField.distance,
+        () => vm().setDistance('20000'),
+      );
+      expectLimit(
+        () => vm().setConsumption('50.1'),
+        TripField.consumption,
+        () => vm().setConsumption('50'),
+      );
+      expectLimit(
+        () => vm().setPrice('10.1'),
+        TripField.price,
+        () => vm().setPrice('10'),
+      );
+      expectLimit(
+        () => vm().setTolls('10000.01'),
+        TripField.tolls,
+        () => vm().setTolls('10000'),
+      );
+      expectLimit(
+        () => vm().setFerry('10000.01'),
+        TripField.ferry,
+        () => vm().setFerry('10000'),
+      );
+      expectLimit(
+        () => vm().setWear('10.1'),
+        TripField.wear,
+        () => vm().setWear('10'),
+      );
+    });
+
+    test('electric allows up to 100 kWh per 100 km (#147)', () {
+      fillExample();
+      vm()
+        ..setEnergy(TripEnergy.electric)
+        ..setConsumption('100');
+      expect(eval().cost, isNotNull);
+      vm().setConsumption('100.1');
+      expect(eval().tooHigh, {TripField.consumption});
+    });
+
+    test('the km rate has a limit too (#147)', () {
+      vm()
+        ..setDistance('100')
+        ..setUseKmRate(value: true)
+        ..setKmRate('10');
+      expect(eval().cost, isNotNull);
+      vm().setKmRate('10.1');
+      expect(eval().tooHigh, {TripField.kmRate});
+      expect(vm().debugSnapshot()['tooHigh'], ['kmRate']);
+    });
+
+    test('599,999,999 km is not a result (#147)', () {
+      fillExample();
+      vm().setDistance('599999999');
+      expect(eval().cost, isNull);
+      expect(eval().tooHigh, {TripField.distance});
     });
 
     test('driver and passenger commands keep the sets consistent', () {
@@ -628,7 +707,7 @@ void main() {
         ..setDistance('250')
         ..setConsumption('6,5')
         ..setPrice('1.799');
-      final result = await vm(id).shareResult((perPerson) => 'pp $perPerson');
+      final result = await vm(id).shareResult((e) => 'pp ${e.perPersonCents}');
       expect(result, isA<Ok<void, RepositoryError>>());
       expect(app.share.shared, ['pp 1462']);
     });

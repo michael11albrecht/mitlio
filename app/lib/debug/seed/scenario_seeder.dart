@@ -114,7 +114,7 @@ class ScenarioSeeder {
       final driver = member(r['driver'] ?? t['driver']);
       final ride = Ride(
         id: ids.newId(),
-        date: DateTime.parse(r['date'] as String),
+        date: _utcDay(r['date'] as String),
         distanceMeters: t['distanceMeters'] as int,
         roundTrip: t['roundTrip'] as bool? ?? false,
         tollsCents: t['tollsCents'] as int? ?? 0,
@@ -156,7 +156,7 @@ class ScenarioSeeder {
       title: e['title'] as String,
       amountCents: e['amountCents'] as int,
       currency: currency,
-      date: DateTime.parse(e['date'] as String),
+      date: _utcDay(e['date'] as String),
       payers: {
         for (final p in (e['payers'] as _Json).entries)
           member(p.key): p.value as int,
@@ -201,7 +201,7 @@ class ScenarioSeeder {
       title: t['title'] as String,
       amountCents: cost.totalCents,
       currency: currency,
-      date: DateTime.parse(t['date'] as String),
+      date: _utcDay(t['date'] as String),
       payers: {input.driverId: cost.totalCents},
       split: ExactSplit(cost.shares),
       tripMeta: TripMeta(
@@ -232,7 +232,7 @@ class ScenarioSeeder {
       return (state >> 8) % bound;
     }
 
-    final from = DateTime.parse(g['from'] as String);
+    final from = _utcDay(g['from'] as String);
     final days = g['days'] as int;
     return [
       for (var i = 0; i < (g['count'] as int); i++)
@@ -259,4 +259,11 @@ class ScenarioSeeder {
         }(),
     ];
   }
+}
+
+/// `YYYY-MM-DD` as the UTC calendar day, like the expense form stores it
+/// (`DateTime.parse` would give local midnight, a day early east of UTC).
+DateTime _utcDay(String text) {
+  final d = DateTime.parse(text);
+  return DateTime.utc(d.year, d.month, d.day);
 }

@@ -738,6 +738,18 @@
   "tripNoParticipants": "Wähle mindestens eine Person, die mitfährt.",
   "tripTooLarge": "Das ist zu viel zum Rechnen. Prüf die Zahlen.",
   "tripNumberInvalid": "Das ist keine gültige Zahl",
+  "tripTooFar": "Das ist weiter, als eine Fahrt sein kann. Maximal {max} km.",
+  "tripTooHigh": "Das ist unwahrscheinlich hoch. Maximal {max}.",
+  "@tripTooFar": {
+    "placeholders": {
+      "max": {"type": "String"}
+    }
+  },
+  "@tripTooHigh": {
+    "placeholders": {
+      "max": {"type": "String"}
+    }
+  },
   "tripDistanceLabel": "Strecke (einfach)",
   "tripUnitKm": "km",
   "tripRoundTrip": "Hin- und Rückfahrt",
@@ -1340,12 +1352,13 @@
     }
   },
   "tripShare": "Ergebnis teilen",
-  "tripShareText": "Fahrtkosten: jede Person zahlt {amount}",
+  "tripShareText": "Fahrt {distance} km: {total} gesamt\nJede Person zahlt {amount} an {name}",
   "@tripShareText": {
     "placeholders": {
-      "amount": {
-        "type": "String"
-      }
+      "distance": {"type": "String"},
+      "total": {"type": "String"},
+      "amount": {"type": "String"},
+      "name": {"type": "String"}
     }
   },
   "balancesEmptyAction": "Ausgabe eintragen",

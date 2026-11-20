@@ -150,6 +150,40 @@ void main() {
     expect(find.textContaining('Verbrauch'), findsNothing);
   });
 
+  tripTest('the shared text names the total and who to pay (#146)', (
+    tester,
+  ) async {
+    await pumpMitlio(tester, app, location: '/trip');
+    await type(tester, 'Strecke (einfach)', '120');
+    await type(tester, 'Verbrauch', '7');
+    await type(tester, 'Preis pro Liter', '1,80');
+    await tester.tap(find.text('Ergebnis teilen'));
+    await tester.pump();
+    expect(app.share.shared, hasLength(1));
+    final text = app.share.shared.single;
+    expect(text, contains('120 km'));
+    expect(text, contains('15,12'));
+    expect(text, contains('7,56'));
+    expect(text, endsWith('an Person 1'));
+  });
+
+  tripTest('implausible numbers are flagged and cannot be shared (#147)', (
+    tester,
+  ) async {
+    await pumpMitlio(tester, app, location: '/trip');
+    await type(tester, 'Strecke (einfach)', '599999999');
+    await type(tester, 'Verbrauch', '7');
+    await type(tester, 'Preis pro Liter', '1,80');
+    expect(
+      find.text('Das ist weiter, als eine Fahrt sein kann. Maximal 20.000 km.'),
+      findsOneWidget,
+    );
+    expect(find.text('Jede Person zahlt'), findsNothing);
+    await tester.tap(find.text('Ergebnis teilen'), warnIfMissed: false);
+    await tester.pump();
+    expect(app.share.shared, isEmpty);
+  });
+
   tripTest('wrong numbers are flagged, not guessed', (tester) async {
     await pumpMitlio(tester, app, location: '/groups/${group.id}/trip');
     await type(tester, 'Strecke (einfach)', '2,5,0');

@@ -1435,6 +1435,18 @@ abstract class AppLocalizations {
   /// **'Das ist keine gültige Zahl'**
   String get tripNumberInvalid;
 
+  /// No description provided for @tripTooFar.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist weiter, als eine Fahrt sein kann. Maximal {max} km.'**
+  String tripTooFar(String max);
+
+  /// No description provided for @tripTooHigh.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist unwahrscheinlich hoch. Maximal {max}.'**
+  String tripTooHigh(String max);
+
   /// No description provided for @tripDistanceLabel.
   ///
   /// In de, this message translates to:
@@ -2794,8 +2806,13 @@ abstract class AppLocalizations {
   /// No description provided for @tripShareText.
   ///
   /// In de, this message translates to:
-  /// **'Fahrtkosten: jede Person zahlt {amount}'**
-  String tripShareText(String amount);
+  /// **'Fahrt {distance} km: {total} gesamt\nJede Person zahlt {amount} an {name}'**
+  String tripShareText(
+    String distance,
+    String total,
+    String amount,
+    String name,
+  );
 
   /// No description provided for @balancesEmptyAction.
   ///

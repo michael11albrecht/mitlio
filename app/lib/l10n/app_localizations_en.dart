@@ -860,6 +860,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tripNumberInvalid => 'That is not a valid number';
 
   @override
+  String tripTooFar(String max) {
+    return 'That is further than you can drive in one trip. Max $max km.';
+  }
+
+  @override
+  String tripTooHigh(String max) {
+    return 'That seems too high. Max $max.';
+  }
+
+  @override
   String get tripDistanceLabel => 'Distance (one way)';
 
   @override
@@ -1662,8 +1672,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tripShare => 'Share result';
 
   @override
-  String tripShareText(String amount) {
-    return 'Trip cost: each person pays $amount';
+  String tripShareText(
+    String distance,
+    String total,
+    String amount,
+    String name,
+  ) {
+    return 'Trip $distance km: $total total\nEach pays $amount to $name';
   }
 
   @override

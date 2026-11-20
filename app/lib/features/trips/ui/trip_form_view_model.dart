@@ -32,6 +32,18 @@ const _standaloneSeats = 5;
 /// Form fields that can hold a number the user typed.
 enum TripField { distance, consumption, price, wear, kmRate, tolls, ferry }
 
+/// The largest plausible value of [field], in the units the domain computes
+/// with (metres, thousandths, or minor currency units for tolls and ferry).
+/// Above it the form asks for a check instead of showing a result: 20,000 km
+/// one way, 50 l or 100 kWh per 100 km, 10 per l or kWh, 10 per km, and
+/// 10,000 of tolls or ferry.
+int tripFieldMax(TripField field, {required bool electric}) => switch (field) {
+  TripField.distance => 20000 * kmToMeters,
+  TripField.consumption => (electric ? 100 : 50) * unitToMilli,
+  TripField.price || TripField.wear || TripField.kmRate => 10 * unitToMilli,
+  TripField.tolls || TripField.ferry => 10000 * 100,
+};
+
 /// Why there is no result yet.
 enum TripBlocker {
   /// A required number is missing or unreadable.
@@ -148,11 +160,13 @@ final class TripInputs {
 final class TripEvaluation {
   const TripEvaluation._ok(TripInput this.input, TripCost this.cost)
     : blocker = null,
-      invalid = const {};
+      invalid = const {},
+      tooHigh = const {};
 
   const TripEvaluation._blocked(
     TripBlocker this.blocker, [
     this.invalid = const {},
+    this.tooHigh = const {},
   ]) : input = null,
        cost = null;
 
@@ -162,6 +176,9 @@ final class TripEvaluation {
 
   /// Fields with text that is not a valid number (blank is not invalid).
   final Set<TripField> invalid;
+
+  /// Fields with a number above [tripFieldMax].
+  final Set<TripField> tooHigh;
 
   /// Share of every participant, `null` without a result.
   Map<String, int>? get participantShares {
@@ -204,7 +221,15 @@ TripEvaluation evaluateTrip(
   List<Member> members,
 ) {
   final invalid = <TripField>{};
+  final tooHigh = <TripField>{};
   var missing = false;
+  final electric = inputs.energy == TripEnergy.electric;
+
+  void checkMax(TripField field, int? value) {
+    if (value != null && value > tripFieldMax(field, electric: electric)) {
+      tooHigh.add(field);
+    }
+  }
 
   // Decimal text to domain units. Blank is missing (or [orZero]).
   int? units(TripField field, String text, int scale, {bool orZero = false}) {
@@ -215,6 +240,7 @@ TripEvaluation evaluateTrip(
     final value = parseDecimal(text);
     final scaled = value == null ? null : scaleDecimal(value, scale).units;
     if (scaled == null) invalid.add(field);
+    checkMax(field, scaled);
     return scaled;
   }
 
@@ -222,6 +248,7 @@ TripEvaluation evaluateTrip(
     if (text.trim().isEmpty) return 0;
     final cents = parseAmountCents(text, currency);
     if (cents == null) invalid.add(field);
+    checkMax(field, cents);
     return cents;
   }
 
@@ -261,8 +288,9 @@ TripEvaluation evaluateTrip(
       ferry == null ||
       driver == null ||
       missing ||
-      invalid.isNotEmpty) {
-    return TripEvaluation._blocked(TripBlocker.needsInput, invalid);
+      invalid.isNotEmpty ||
+      tooHigh.isNotEmpty) {
+    return TripEvaluation._blocked(TripBlocker.needsInput, invalid, tooHigh);
   }
   final input = TripInput(
     distanceMeters: meters,
@@ -651,15 +679,16 @@ class TripFormViewModel extends Notifier<TripFormState> {
     };
   }
 
-  /// Opens the share sheet with [text] for the per-person amount. Null
-  /// without a result.
+  /// Opens the share sheet with [text] for the current result. Null without
+  /// a result.
   Future<RepoResult<void>?> shareResult(
-    String Function(int perPersonCents) text,
+    String Function(TripEvaluation result) text,
   ) async {
     final s = state;
-    final cents = s is TripFormLoaded ? s.evaluation.perPersonCents : null;
-    if (cents == null) return null;
-    return ref.read(settleActionsRepositoryProvider).shareText(text(cents));
+    if (s is! TripFormLoaded || s.evaluation.cost == null) return null;
+    return ref
+        .read(settleActionsRepositoryProvider)
+        .shareText(text(s.evaluation));
   }
 
   static TripMeta _meta(TripInput i, TripEnergy energy) => TripMeta(
@@ -688,6 +717,7 @@ class TripFormViewModel extends Notifier<TripFormState> {
       'inputs': inputs.toJson(),
       'blocker': evaluation.blocker?.name,
       'invalid': [for (final f in evaluation.invalid) f.name],
+      'tooHigh': [for (final f in evaluation.tooHigh) f.name],
       'result': evaluation.cost == null
           ? null
           : {
