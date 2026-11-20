@@ -32,6 +32,12 @@ def ensure_associated_domains(api_key, bundle_id)
 end
 
 platform :ios do
+  # CI runners have no unlocked login keychain: without this, codesign blocks forever on a
+  # keychain permission prompt. setup_ci creates a temporary keychain that match writes to.
+  before_all do
+    setup_ci if ENV["CI"]
+  end
+
   desc "Fetch (or create, with create:true) App Store signing assets for a flavor"
   lane :signing do |options|
     flavor = options.fetch(:flavor, "prod")
