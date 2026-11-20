@@ -46,6 +46,8 @@ touches money, no PSP) limit the options.
 
 ## Consequences
 
+- **Order (owner 2026-11-20): one of the last steps.** Nothing here is built before the app is great
+  (P5 validation done, P7 polish done, store release P8 live). Users must love the app before it asks for anything.
 - No change to ADR-09; payments stay link-only.
 - New settings flag `supportPromptState` (local only: last shown, count, dismissed), no analytics.
 - Task P7-T09 builds everything behind a remote flag (off); switching it on waits for the tax answer (§12 #13c).

@@ -795,7 +795,7 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 | P7-T06 | Onboarding + empty states + app icon/splash | goldens | safe |
 | P7-T07 | Privacy policy, imprint, in-app data deletion (account + server data via RPC `delete_my_data`) | pgTAP for deletion; legal text reviewed by human | critical |
 | P7-T08 | Crash/error reporting: `sentry_flutter` (EU region DSN per flavor), `beforeSend` scrubber, debug symbols upload in release workflow; opt-in analytics only | test: scrubber removes IBAN/member names/notes from events + breadcrumbs | critical |
-| P7-T09 | Support mitlio (ADR-28): Settings row, rate-limited success-screen line (≤ 1 per 5 settlements, ≥ 30 days apart, permanent "Nicht mehr zeigen"), tip jar sheet (3 sizes, StoreKit / Play Billing consumables via `in_app_purchase`, thank-you state, purchase errors per §2.6 #9), web footer link to PayPal.Me; all behind remote flag `support_tips_enabled` (default off) | VM tests (rate limit, dismiss, purchase success/cancel/failure, flag off = nothing visible); arch test: no tip code on the settle payment path; goldens; tap budget unchanged | safe |
+| P7-T09 | **Do last, once the app is great (after P5 validation, P7-T01..T08 and the P8 store release; not before):** Support mitlio (ADR-28): Settings row, rate-limited success-screen line (≤ 1 per 5 settlements, ≥ 30 days apart, permanent "Nicht mehr zeigen"), tip jar sheet (3 sizes, StoreKit / Play Billing consumables via `in_app_purchase`, thank-you state, purchase errors per §2.6 #9), web footer link to PayPal.Me; all behind remote flag `support_tips_enabled` (default off) | VM tests (rate limit, dismiss, purchase success/cancel/failure, flag off = nothing visible); arch test: no tip code on the settle payment path; goldens; tap budget unchanged | safe |
 
 ### P8 — Delivery pipeline (human + agent, ~3–5 days, can run in parallel with P6/P7)
 
@@ -932,6 +932,6 @@ tool/drive.sh ext.mitlio.balances.get '{"groupId":"<id>"}'
 | 10 | Car cost basis (ADR-25) | **user's choice** (2026-11-15); default running costs only; inline non-blocking PBefG hint when passengers pay more than operating costs, plus plausibility hint | PU-T03/T09/T15; owner reviews hint wording |
 | 11 | Illustrations | **agent draws vector art in code** (2026-11-15); too ugly → new experiment | PU-T06 |
 | 12 | Order | **PU after P4/P3r, before P6-T07** (2026-11-15); PU-T13 photo in backlog; PU-T14/T17 after P6-T07/P6b | §11 |
-| 13 | Tips (ADR-28) | **Decided 2026-11-20:** (a) IAP/Play Billing tip jar in the app, no external link; (b) PayPal.Me on the web is fine; **(c) open, owner:** Steuerberater session on tax treatment, then flip `support_tips_enabled` | P7-T09 can be built now, goes live only after (c) |
+| 13 | Tips (ADR-28) | **Decided 2026-11-20:** (a) IAP/Play Billing tip jar in the app, no external link; (b) PayPal.Me on the web is fine; **(c) open, owner:** Steuerberater session on tax treatment, then flip `support_tips_enabled` | **Order (owner 2026-11-20): tipping is one of the last steps**, built only after the app is great; goes live after (c) |
 
 No open owner questions remain for P0–P1.
