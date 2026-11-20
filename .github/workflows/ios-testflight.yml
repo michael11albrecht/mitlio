@@ -53,6 +53,16 @@ jobs:
             echo "skip=true" >> "$GITHUB_OUTPUT"
             echo "main unchanged since $last, skipping" | tee -a "$GITHUB_STEP_SUMMARY"
           fi
+      - name: Select Xcode 26 (App Store requires the iOS 26 SDK)
+        if: steps.changed.outputs.skip != 'true'
+        run: |
+          xcode="$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)"
+          if [ -z "$xcode" ]; then
+            echo "No Xcode 26 on this runner image; installed:"; ls -d /Applications/Xcode*.app
+            exit 1
+          fi
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version
       - uses: subosito/flutter-action@v2
         if: steps.changed.outputs.skip != 'true'
         with:
