@@ -49,6 +49,8 @@ export function initFuel(hooks: FuelHooks): { sync: () => void } | null {
   const sourceEl = document.getElementById('calc-fuel-source') as HTMLElement;
   const statusEl = document.getElementById('calc-fuel-status') as HTMLElement;
   const whereEl = document.getElementById('calc-fuel-where') as HTMLElement;
+  const footEl = document.getElementById('calc-fuel-foot') as HTMLElement;
+  const noteEl = document.getElementById('calc-fuel-note') as HTMLElement;
   const nearbyBtn = document.getElementById('calc-fuel-nearby') as HTMLButtonElement;
   const plzGo = document.getElementById('calc-fuel-plz-go') as HTMLButtonElement;
   const plzInput = document.getElementById('calc-fuel-plz') as HTMLInputElement;
@@ -59,6 +61,9 @@ export function initFuel(hooks: FuelHooks): { sync: () => void } | null {
   // The national average could not be loaded: keep the block visible to show why, without chips.
   let nationalFailed = false;
   let generation = 0;
+  // Nearby/PLZ only work when the server has a provider key; offer them only once the national
+  // answer proves it (source "tankerkoenig"). The bulletin fallback means regional lookups are off.
+  let regionalOn = false;
 
   const status = (msg: CalculatorMessageKey | '') => {
     statusEl.textContent = msg === '' ? '' : m[msg];
@@ -174,7 +179,8 @@ export function initFuel(hooks: FuelHooks): { sync: () => void } | null {
     }
     status(failureKey(failure ?? 'unavailable'));
     // The server has no provider key: regional lookups cannot work, so stop offering them.
-    if (failure === 'provider_unconfigured') whereEl.hidden = true;
+    if (failure === 'provider_unconfigured') regionalOn = false;
+    sync();
   };
 
   nearbyBtn.addEventListener('click', () => {
@@ -229,6 +235,7 @@ export function initFuel(hooks: FuelHooks): { sync: () => void } | null {
     // A regional answer that arrived first wins.
     if (gen !== generation) return;
     if (got.length > 0) {
+      regionalOn = got.some((p) => p.source === 'tankerkoenig');
       show(got);
       return;
     }
@@ -236,7 +243,7 @@ export function initFuel(hooks: FuelHooks): { sync: () => void } | null {
     // everything else map to their own text and "unconfigured" to the generic one.
     nationalFailed = true;
     titleEl.hidden = true;
-    whereEl.hidden = true;
+    regionalOn = false;
     status(failure === 'rate_limited' || failure === 'no_data' ? failureKey(failure) : 'fuelUnavailable');
     sync();
   };
@@ -244,6 +251,9 @@ export function initFuel(hooks: FuelHooks): { sync: () => void } | null {
   function sync() {
     const visible = hooks.active() && (hasChips || nationalFailed);
     root!.hidden = !visible;
+    whereEl.hidden = !regionalOn;
+    noteEl.hidden = !regionalOn;
+    footEl.hidden = !visible || !(hasChips || regionalOn);
     if (hooks.active() && !started) {
       started = true;
       void loadNational();

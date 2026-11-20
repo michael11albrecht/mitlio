@@ -47,6 +47,17 @@ const defaultHandler: Handler = (url) => {
   return { status: 200, body: nationalBody(type, milli, type === 'e10') };
 };
 
+/** Server with a provider key: national comes from Tankerkönig, so nearby/PLZ are offered. */
+const providerHandler: Handler = (url) => {
+  const reply = defaultHandler(url);
+  if (url.searchParams.has('lat') || url.searchParams.has('plz')) return reply;
+  const type = url.searchParams.get('type') ?? '';
+  return {
+    status: 200,
+    body: { ...nationalBody(type, type === 'diesel' ? 1689 : 1799), source: 'tankerkoenig', attribution: 'Daten: MTS-K via Tankerkönig (CC BY 4.0)' },
+  };
+};
+
 /** Mocks the API; returns the list of requests it served. */
 async function mockApi(page: Page, handler: Handler = defaultHandler) {
   const seen: { url: URL; headers: Record<string, string> }[] = [];
@@ -132,6 +143,26 @@ test.describe('fuel chips (de)', () => {
       expect(s.url.searchParams.has('plz')).toBe(false);
       expect(s.headers['apikey']).toBe('test-anon-key');
     }
+  });
+
+  test('without a provider key (bulletin only) no location controls are offered; source and note sit below the form', async ({ page }) => {
+    await mockApi(page);
+    await open(page);
+    await expect(chip(page, 'e5')).toBeVisible();
+    await expect(page.locator('#calc-fuel-where')).toBeHidden();
+    await expect(page.locator('#calc-fuel-note')).toBeHidden();
+    const source = page.locator('#calc-fuel-source');
+    await expect(source).toBeVisible();
+    const price = await page.locator('#calc-price').boundingBox();
+    const src = await source.boundingBox();
+    expect(src!.y).toBeGreaterThan(price!.y);
+  });
+
+  test('with a provider key the location controls and the privacy note show', async ({ page }) => {
+    await mockApi(page, providerHandler);
+    await open(page);
+    await expect(page.locator('#calc-fuel-where')).toBeVisible();
+    await expect(page.locator('#calc-fuel-note')).toContainText('nur auf ca. 1 km gerundet');
   });
 
   test('tapping a chip fills the price and the result updates live', async ({ page }) => {
@@ -251,9 +282,10 @@ test.describe('fuel chips (de)', () => {
   });
 
   test('is axe clean with chips and location controls shown', async ({ page }) => {
-    await mockApi(page);
+    await mockApi(page, providerHandler);
     await open(page);
     await expect(chip(page, 'e5')).toBeVisible();
+    await expect(page.locator('#calc-fuel-where')).toBeVisible();
     await chip(page, 'e5').click();
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
@@ -275,7 +307,7 @@ test.describe('fuel chips, nearby (geolocation granted)', () => {
   test.use({ permissions: ['geolocation'], geolocation: { latitude: 48.13743, longitude: 11.57549 } });
 
   test('asks for the location only after the tap and sends rounded coordinates', async ({ page }) => {
-    const seen = await mockApi(page);
+    const seen = await mockApi(page, providerHandler);
     await open(page);
     await expect(chip(page, 'e5')).toBeVisible();
     const before = seen.length;
@@ -298,11 +330,12 @@ test.describe('fuel chips, nearby (geolocation granted)', () => {
     await mockApi(page, (url) =>
       url.searchParams.has('lat') || url.searchParams.has('plz')
         ? { status: 503, body: { error: 'provider_unconfigured' } }
-        : defaultHandler(url),
+        : providerHandler(url),
     );
     await open(page);
     await page.getByRole('button', { name: 'In meiner Nähe' }).click();
     await expect(page.locator('#calc-fuel-where')).toBeHidden();
+    await expect(page.locator('#calc-fuel-note')).toBeHidden();
     await expect(page.locator('#calc-fuel-status')).toHaveText('Regionale Preise sind noch nicht verfügbar.');
     // National chips stay usable.
     await expect(chip(page, 'e5')).toBeVisible();
@@ -310,7 +343,7 @@ test.describe('fuel chips, nearby (geolocation granted)', () => {
 
   test('shows a message on 404 and keeps the national chips', async ({ page }) => {
     await mockApi(page, (url) =>
-      url.searchParams.has('lat') ? { status: 404, body: { error: 'no_data' } } : defaultHandler(url),
+      url.searchParams.has('lat') ? { status: 404, body: { error: 'no_data' } } : providerHandler(url),
     );
     await open(page);
     await page.getByRole('button', { name: 'In meiner Nähe' }).click();
@@ -319,7 +352,7 @@ test.describe('fuel chips, nearby (geolocation granted)', () => {
   });
 
   test('a postcode works as the alternative and is validated', async ({ page }) => {
-    const seen = await mockApi(page);
+    const seen = await mockApi(page, providerHandler);
     await open(page);
     await expect(chip(page, 'e5')).toBeVisible();
     await page.locator('#calc-fuel-plz').fill('803');
@@ -338,7 +371,7 @@ test.describe('fuel chips, nearby (geolocation denied)', () => {
   test.use({ permissions: [] });
 
   test('explains the denial and offers the postcode instead', async ({ page }) => {
-    const seen = await mockApi(page);
+    const seen = await mockApi(page, providerHandler);
     await open(page);
     await expect(chip(page, 'e5')).toBeVisible();
     await page.getByRole('button', { name: 'In meiner Nähe' }).click();
