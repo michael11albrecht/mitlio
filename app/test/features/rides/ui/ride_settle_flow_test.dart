@@ -55,10 +55,10 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Ansehen'));
     await tester.pumpAndSettle();
     expect(
-      find.text('Ann bekommt 9,36$_nbsp€ für 2 Fahrten'),
+      find.text('Ann bekommt 5,46$_nbsp€ für 2 Fahrten'),
       findsOneWidget,
     );
-    expect(find.text('Ben bekommt 4,57$_nbsp€ für 1 Fahrt'), findsOneWidget);
+    expect(find.text('Ben bekommt 3,05$_nbsp€ für 1 Fahrt'), findsOneWidget);
     expect(find.text('Ben zahlt 3,90$_nbsp€'), findsOneWidget);
 
     await tester.tap(find.widgetWithText(FilledButton, 'Abrechnen'));
@@ -96,7 +96,7 @@ void main() {
     await tester.tap(find.text('Monat abrechnen'));
     await tester.pumpAndSettle();
     expect(find.text('März abrechnen'), findsOneWidget);
-    expect(find.text('Ann bekommt 4,55$_nbsp€ für 1 Fahrt'), findsOneWidget);
+    expect(find.text('Ann bekommt 2,27$_nbsp€ für 1 Fahrt'), findsOneWidget);
   });
 
   testWidgets('the menu entry is disabled without rides to settle', (

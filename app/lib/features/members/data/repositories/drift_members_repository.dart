@@ -36,9 +36,16 @@ class DriftMembersRepository implements MembersRepository {
   );
 
   @override
-  Stream<List<GroupMember>> watchMembers(String groupId) => _db.membersDao
-      .watchByGroup(groupId)
-      .map((rows) => List.unmodifiable(rows.map(_map)));
+  Stream<List<GroupMember>> watchMembers(
+    String groupId, {
+    bool includeDeleted = false,
+  }) =>
+      (includeDeleted
+              ? _db.membersDao.watchAllByGroup(groupId)
+              : _db.membersDao.watchByGroup(groupId))
+          .map(
+            (rows) => List.unmodifiable(rows.map(_map)),
+          );
 
   @override
   Future<RepoResult<List<GroupMember>>> list(

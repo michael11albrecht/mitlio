@@ -174,7 +174,7 @@ class RideSettleSheet extends ConsumerWidget {
                 _DriverBlock(
                   line: l10n.ridesSettleDriverLine(
                     state.member(driver.driverId)?.name ?? '',
-                    money.format(driver.totalCents, state.group.currency),
+                    money.format(driver.getsCents, state.group.currency),
                     driver.rideCount,
                   ),
                   driverId: driver.driverId,

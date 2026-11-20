@@ -22,13 +22,19 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
   /// All members of [groupId] including soft-deleted ones: expenses keep
   /// referencing deleted members.
   Future<List<MemberRow>> listAllByGroup(String groupId) =>
-      (select(members)
-            ..where((m) => m.groupId.equals(groupId))
-            ..orderBy([
-              (m) => OrderingTerm.asc(m.position),
-              (m) => OrderingTerm.asc(m.id),
-            ]))
-          .get();
+      _allByGroup(groupId).get();
+
+  /// Like [listAllByGroup], live.
+  Stream<List<MemberRow>> watchAllByGroup(String groupId) =>
+      _allByGroup(groupId).watch();
+
+  SimpleSelectStatement<$MembersTable, MemberRow> _allByGroup(String groupId) =>
+      select(members)
+        ..where((m) => m.groupId.equals(groupId))
+        ..orderBy([
+          (m) => OrderingTerm.asc(m.position),
+          (m) => OrderingTerm.asc(m.id),
+        ]);
 
   Stream<List<MemberRow>> watchByGroup(String groupId) =>
       _byGroup(groupId).watch();

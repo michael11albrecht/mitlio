@@ -76,6 +76,11 @@ void runMembersRepositoryContract(
         final undo = ok(await r.members.softDelete(b.id));
         expect(ok(await r.members.list(groupId)), [a]);
         expect(ok(await r.members.list(groupId, includeDeleted: true)), [a, b]);
+        expect(
+          await r.members.watchMembers(groupId, includeDeleted: true).first,
+          [a, b],
+        );
+        expect(await r.members.watchMembers(groupId).first, [a]);
 
         final c = ok(await r.members.add(groupId, name: 'Cy'));
         expect(c.position, 2);
