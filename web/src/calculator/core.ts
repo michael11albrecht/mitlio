@@ -27,9 +27,9 @@ export interface CalcState {
 /**
  * Generic wear and running cost per km (tyres, oil, service, repairs), EUR/km. Typical range is
  * 0.06-0.15; ADAC puts workshop costs of a small car at about 3-5 ct/km before tyres and
- * running extras. The middle of the range is the default.
+ * running extras. A value in the lower half of the range is the default.
  */
-export const DEFAULT_WEAR_RATE = 0.1;
+export const DEFAULT_WEAR_RATE = 0.07;
 export const MAX_WEAR_RATE = 2;
 
 export const MAX_PERSONS = 100;
@@ -269,7 +269,11 @@ export function fill(template: string, values: Record<string, string | number>):
 
 // ---- URL state: ?km=&l100=&p=&n=&d=&rt=&x=&ev=&t= (numbers use "." as decimal separator) ----
 
-export function stateToParams(state: CalcState): URLSearchParams {
+/**
+ * `wearDefault`: this device remembers "wear on". Then an explicit w=0 is written when it is off, so a
+ * shared link of someone without wear does not pick up the viewer's own default.
+ */
+export function stateToParams(state: CalcState, wearDefault = false): URLSearchParams {
   const params = new URLSearchParams();
   const put = (name: string, raw: string) => {
     const p = parseDecimal(raw);
@@ -286,6 +290,8 @@ export function stateToParams(state: CalcState): URLSearchParams {
   if (state.wear) {
     params.set('w', '1');
     put('wr', state.wearRate);
+  } else if (wearDefault) {
+    params.set('w', '0');
   }
   if (state.energy === 'ev') params.set('ev', '1');
   const trip = sanitizeTripName(state.trip);

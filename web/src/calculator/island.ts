@@ -98,7 +98,41 @@ if (root) {
   let nativeFailed = false;
   let statusTimer: number | undefined;
 
-  let state: CalcState = localizeState(paramsToState(location.search, preset), locale);
+  // "Use wear by default" is a per-device preference. Storage can be blocked (private mode, policy);
+  // then the choice just is not remembered and the calculator works as before.
+  const WEAR_PREF = 'mitlio.wear';
+  const readWearPref = (): { rate: string } | null => {
+    try {
+      const raw = localStorage.getItem(WEAR_PREF);
+      if (raw === null) return null;
+      const v: unknown = JSON.parse(raw);
+      const rate = typeof v === 'object' && v !== null ? (v as Record<string, unknown>)['rate'] : '';
+      return { rate: typeof rate === 'string' ? rate : '' };
+    } catch {
+      return null;
+    }
+  };
+  let wearDefault = readWearPref() !== null;
+  const rememberWear = () => {
+    try {
+      if (state.wear) localStorage.setItem(WEAR_PREF, JSON.stringify({ rate: state.wearRate }));
+      else localStorage.removeItem(WEAR_PREF);
+      wearDefault = state.wear;
+    } catch {
+      // Not remembered; nothing the user can act on.
+    }
+  };
+  const fromUrl = (): CalcState => {
+    const s = paramsToState(location.search, preset);
+    const pref = readWearPref();
+    // A link that says nothing about wear gets this device's default; an explicit w=0/1 always wins.
+    if (!rate && pref && !new URLSearchParams(location.search).has('w')) {
+      return { ...s, wear: true, wearRate: pref.rate };
+    }
+    return s;
+  };
+
+  let state: CalcState = localizeState(fromUrl(), locale);
   const touched = new Set<FieldKey>();
 
   // The own-value field stays out of sight until asked for (or already filled from the URL).
@@ -254,7 +288,7 @@ if (root) {
     out.extras.textContent = formatMoney(view.extrasCents, locale);
     out.total.textContent = formatMoney(view.totalCents, locale);
 
-    shareUrl = `${location.origin}${location.pathname}?${stateToParams(state).toString()}`;
+    shareUrl = `${location.origin}${location.pathname}?${stateToParams(state, wearDefault).toString()}`;
     shareText = buildShareText({
       locale,
       payers: payers(),
@@ -272,7 +306,7 @@ if (root) {
 
   const commit = () => {
     render();
-    history.replaceState(null, '', `${location.pathname}?${stateToParams(state).toString()}${location.hash}`);
+    history.replaceState(null, '', `${location.pathname}?${stateToParams(state, wearDefault).toString()}${location.hash}`);
   };
 
   // Enter must not submit (no inline onsubmit handler: the CSP forbids it, PW-T10).
@@ -281,6 +315,7 @@ if (root) {
   for (const k of fields) {
     input[k].addEventListener('input', () => {
       state = { ...state, [k]: input[k].value };
+      if (k === 'wearRate' && state.wear) rememberWear();
       commit();
     });
     input[k].addEventListener('blur', () => {
@@ -319,6 +354,7 @@ if (root) {
   wear.addEventListener('change', () => {
     state = { ...state, wear: wear.checked };
     syncWearUi(false);
+    rememberWear();
     commit();
   });
   wearOwn.addEventListener('click', () => {
@@ -364,7 +400,7 @@ if (root) {
   // Restore state after bfcache / back navigation.
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) {
-      state = localizeState(paramsToState(location.search, preset), locale);
+      state = localizeState(fromUrl(), locale);
       writeStateToDom();
       render();
     }
