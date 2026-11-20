@@ -31,7 +31,7 @@ jobs:
       - uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb
         with:
           version: 2.70.0
-      - name: Link staging project
+      - name: Link production project
         run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
       - name: Dry run (pending migrations)
         run: |
@@ -67,7 +67,7 @@ jobs:
           # Rows are "local | remote | time"; a row with a version in only one column is drift.
           bad="$(awk -F'|' '$0 ~ /[0-9]/ && NF >= 3 { l=$1; r=$2; gsub(/[ \t]/, "", l); gsub(/[ \t]/, "", r); if (l != r) print }' migrations.txt)"
           if [ -n "$bad" ]; then
-            echo "Migration drift between repo and staging:"
+            echo "Migration drift between repo and production:"
             echo "$bad"
             exit 1
           fi
