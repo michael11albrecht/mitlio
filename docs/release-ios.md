@@ -8,10 +8,9 @@ Bundle ids come from `app/app_identity.yaml`: `app.mitlio` (prod), `app.mitlio.d
 1. App Store Connect: create the app (name `mitlio`, bundle id `app.mitlio`, SKU any). Repeat for `app.mitlio.dev` if you want dev builds in TestFlight.
 2. Developer portal: register App IDs `app.mitlio` and `app.mitlio.dev`.
 3. App Store Connect -> Users and Access -> Integrations -> Keys: create an API key (role App Manager). Keep the `.p8`, Key ID, Issuer ID.
-4. Create an empty **private** git repo for match. Create a token that can push to it.
+4. Create an empty **private** git repo for match (`mitlio-certs`) and add an SSH deploy key with write access (no personal token needed).
 5. GitHub -> Settings -> Environments -> new environment `ios-release` with secrets:
-   `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8` (full file contents), `MATCH_GIT_URL`, `MATCH_PASSWORD` (new passphrase),
-   `MATCH_GIT_BASIC_AUTHORIZATION` (`base64("<user>:<token>")`).
+   `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8` (full file contents), `MATCH_GIT_URL` (ssh url), `MATCH_GIT_PRIVATE_KEY` (deploy key, private half), `MATCH_PASSWORD` (passphrase that encrypts the certs).
 6. Actions -> ios-testflight -> Run workflow, flavor `prod`, **create_signing = true** (first run only). Later runs use readonly match.
 
 ## Notes
