@@ -2875,6 +2875,30 @@ abstract class AppLocalizations {
   /// **'Daten und Schriften, die mitlio nutzt'**
   String get licensesEntryHint;
 
+  /// No description provided for @creditLead.
+  ///
+  /// In de, this message translates to:
+  /// **'Mit'**
+  String get creditLead;
+
+  /// No description provided for @creditMid.
+  ///
+  /// In de, this message translates to:
+  /// **'gemacht von'**
+  String get creditMid;
+
+  /// No description provided for @creditName.
+  ///
+  /// In de, this message translates to:
+  /// **'Michael Albrecht'**
+  String get creditName;
+
+  /// No description provided for @creditOpenFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Link ließ sich nicht öffnen. Wir haben ihn kopiert, du kannst ihn in deinen Browser einfügen.'**
+  String get creditOpenFailed;
+
   /// No description provided for @licensesTitle.
   ///
   /// In de, this message translates to:

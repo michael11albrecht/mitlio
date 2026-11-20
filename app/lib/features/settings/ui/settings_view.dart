@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/theme/theme.dart';
+import 'package:mitlio/features/settings/ui/author_credit_view_model.dart';
 import 'package:mitlio/features/settings/ui/crash_reporting_view_model.dart';
 import 'package:mitlio/features/settings/ui/legal_links_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
@@ -68,6 +69,8 @@ class SettingsView extends ConsumerWidget {
             subtitle: Text(l10n.deleteMyDataEntryHint),
             onTap: () => unawaited(context.push('/settings/delete-data')),
           ),
+          const SizedBox(height: Spacing.lg),
+          const _AuthorCredit(),
         ],
       ),
     );
@@ -89,6 +92,47 @@ class SettingsView extends ConsumerWidget {
       messenger
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text(copied)));
+    }
+  }
+}
+
+/// "Made with ♥ by Michael Albrecht": discreet credit at the end of Settings.
+class _AuthorCredit extends ConsumerWidget {
+  const _AuthorCredit();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final style = Theme.of(
+      context,
+    ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant);
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: Spacing.xs,
+      children: [
+        Text(l10n.creditLead, style: style),
+        ExcludeSemantics(
+          child: Text('♥', style: style?.copyWith(color: scheme.primary)),
+        ),
+        Text(l10n.creditMid, style: style),
+        TextButton(
+          onPressed: () => unawaited(_open(context, ref)),
+          child: Text(l10n.creditName),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _open(BuildContext context, WidgetRef ref) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final failed = AppLocalizations.of(context).creditOpenFailed;
+    final opened = await ref.read(authorCreditViewModelProvider).openProfile();
+    if (!opened) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(failed)));
     }
   }
 }

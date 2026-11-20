@@ -1709,6 +1709,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get licensesEntryHint => 'Data and fonts mitlio uses';
 
   @override
+  String get creditLead => 'Made with';
+
+  @override
+  String get creditMid => 'by';
+
+  @override
+  String get creditName => 'Michael Albrecht';
+
+  @override
+  String get creditOpenFailed =>
+      'The link could not be opened. We copied it, so you can paste it into your browser.';
+
+  @override
   String get licensesTitle => 'Sources and licences';
 
   @override
