@@ -17,16 +17,34 @@ def asc_api_key
   )
 end
 
+# Runner.entitlements declares Associated Domains (universal links). The App ID must have the
+# capability, or the match profile lacks the entitlement and the archive fails to sign.
+def ensure_associated_domains(api_key, bundle_id)
+  Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: api_key)
+  app_id = Spaceship::ConnectAPI::BundleId.find(bundle_id)
+  UI.user_error!("App ID #{bundle_id} not found in the developer portal") if app_id.nil?
+  type = Spaceship::ConnectAPI::BundleIdCapability::Type::ASSOCIATED_DOMAINS
+  return false if app_id.get_capabilities.any? { |c| c.capability_type == type }
+
+  app_id.create_capability(type)
+  UI.success("Enabled Associated Domains on #{bundle_id}")
+  true
+end
+
 platform :ios do
   desc "Fetch (or create, with create:true) App Store signing assets for a flavor"
   lane :signing do |options|
     flavor = options.fetch(:flavor, "prod")
     api_key = asc_api_key
+    bundle_id = bundle_id_for(flavor)
+    capability_added = options[:create] ? ensure_associated_domains(api_key, bundle_id) : false
     match(
       type: "appstore",
-      app_identifier: bundle_id_for(flavor),
+      app_identifier: bundle_id,
       api_key: api_key,
-      readonly: !options[:create]
+      readonly: !options[:create],
+      # A new capability invalidates the existing profile; regenerate it.
+      force: capability_added
     )
   end
 
