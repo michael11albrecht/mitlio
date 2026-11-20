@@ -69,9 +69,11 @@ jobs:
         run: make bootstrap
       - name: Create signing assets (first run only)
         if: steps.changed.outputs.skip != 'true' && inputs.create_signing
+        timeout-minutes: 10
         working-directory: app/ios
         run: bundle exec fastlane signing flavor:"$FLAVOR" create:true
       - name: Build and upload to TestFlight
         if: steps.changed.outputs.skip != 'true'
+        timeout-minutes: 25
         working-directory: app/ios
         run: bundle exec fastlane beta flavor:"$FLAVOR"
