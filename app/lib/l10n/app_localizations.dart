@@ -458,6 +458,12 @@ abstract class AppLocalizations {
   /// **'Name hinzufügen'**
   String get memberAddLabel;
 
+  /// No description provided for @memberNameTaken.
+  ///
+  /// In de, this message translates to:
+  /// **'„{name}“ ist schon in der Gruppe. Nimm einen anderen Namen.'**
+  String memberNameTaken(String name);
+
   /// No description provided for @memberAdd.
   ///
   /// In de, this message translates to:

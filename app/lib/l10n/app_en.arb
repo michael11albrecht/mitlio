@@ -116,6 +116,8 @@
   "membersEmptyTitle": "Nobody here yet",
   "membersEmptyMessage": "Add the people you share with.",
   "memberAddLabel": "Add a name",
+  "memberNameTaken": "“{name}” is already in this group. Pick another name.",
+  "@memberNameTaken": {"placeholders": {"name": {"type": "String"}}},
   "memberAdd": "Add",
   "memberNameLabel": "Name",
   "memberRenameSave": "Save name",

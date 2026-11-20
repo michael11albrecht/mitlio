@@ -255,6 +255,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get memberAddLabel => 'Add a name';
 
   @override
+  String memberNameTaken(String name) {
+    return '“$name” is already in this group. Pick another name.';
+  }
+
+  @override
   String get memberAdd => 'Add';
 
   @override

@@ -257,6 +257,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get memberAddLabel => 'Name hinzufügen';
 
   @override
+  String memberNameTaken(String name) {
+    return '„$name“ ist schon in der Gruppe. Nimm einen anderen Namen.';
+  }
+
+  @override
   String get memberAdd => 'Hinzufügen';
 
   @override

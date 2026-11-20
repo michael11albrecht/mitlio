@@ -273,8 +273,17 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
     if (name.trim().isEmpty) {
       return const Err(InvalidData('name must not be empty'));
     }
+    if (_nameTaken(name)) return const Err(Conflict('name already in group'));
     return _clearNotice(
       await ref.read(membersRepositoryProvider).add(groupId, name: name),
+    );
+  }
+
+  /// Whether another member already has [name] (trimmed, case-insensitive).
+  bool _nameTaken(String name, {String? exceptId}) {
+    final wanted = name.trim().toLowerCase();
+    return (_members ?? const <GroupMember>[]).any(
+      (m) => m.id != exceptId && m.name.trim().toLowerCase() == wanted,
     );
   }
 
@@ -284,6 +293,9 @@ class GroupDetailViewModel extends Notifier<GroupDetailState> {
     }
     final current = _members?.where((m) => m.id == id).firstOrNull;
     if (current == null) return Err(NotFound('member', id));
+    if (_nameTaken(name, exceptId: id)) {
+      return const Err(Conflict('name already in group'));
+    }
     return _clearNotice(
       await ref
           .read(membersRepositoryProvider)
