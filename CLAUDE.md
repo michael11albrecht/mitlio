@@ -80,8 +80,9 @@ Read `docs/known-issues.md` before writing app code (e.g. a Linux release AOT cr
 ## Workflow for an issue
 
 1. Read the issue and the referenced plan section/task ID.
-2. Branch `agent/<issue>-<slug>`.
+2. **Own worktree, own branch.** Never work in the main checkout or in another agent's worktree. Create a fresh one off the latest `origin/main`: `git fetch origin main && git worktree add .claude/worktrees/<slug> -b agent/<issue>-<slug> origin/main`. Work, test and commit only there (`.claude/worktrees/` is git-ignored). Run `make bootstrap` in it if dependencies are needed.
 3. Write failing tests, implement, `make check-fast` in the loop.
 4. `make check` before pushing.
 5. `gh pr create` using the PR template; link the issue; list the task ID.
-6. If the task is ambiguous or blocked: comment on the issue and stop. Do not guess at product decisions.
+6. **Clean up your worktree when done** (PR merged or work abandoned): from the main checkout run `git worktree remove .claude/worktrees/<slug>` (`--force` only for your own discarded changes), then `git branch -d agent/<issue>-<slug>` once merged, then `git worktree prune`. Do not remove worktrees you did not create. Never leave unpushed work behind: push it or say so in the PR/issue first.
+7. If the task is ambiguous or blocked: comment on the issue and stop. Do not guess at product decisions.
