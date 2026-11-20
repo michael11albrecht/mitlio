@@ -1,6 +1,6 @@
 # ADR-28: Support the developer, opt-in and never in the payment
 
-- **Status:** proposed (owner idea 2026-11-20; store-policy research below must be re-checked before P7-T09)
+- **Status:** accepted (owner 2026-11-20); store-policy research below must be re-checked before P7-T09 ships; tax handling open
 - **Date:** 2026-11-20
 
 ## Context
@@ -31,20 +31,24 @@ touches money, no PSP) limit the options.
    - **Android app:** Google Play Payments policy allows external donation links only for
      verified tax-exempt nonprofits; a private PayPal.Me link in the app is a removal risk. Default
      for Android: **Play Billing consumable** or no in-app link.
-4. **Recommendation:** v1 = web footer link + Settings row that opens the **web page**
-   `mitlio.de/unterstuetzen` (PayPal.Me, Ko-fi) in the system browser **only if** the owner accepts
-   the review risk; otherwise IAP / Play Billing tip jar (`in_app_purchase` package, rationale in PR).
-   Decide with a review submission to TestFlight/internal track first, not by guessing.
-5. **PayPal.Me for tips to a private account:** friends-and-family style transfers are free in
-   Germany, but PayPal treats tips/donations as commercial use of a private account; they can be
-   limited or fee-bearing. Regular income also needs tax handling (Kleingewerbe/Steuerberater).
-   Owner to clarify before launch; not an agent decision.
+4. **Owner decision 2026-11-20:** a tip must be one tap (Face ID / Apple Pay) or people do not tip, and
+   the "Offers In-App Purchases" label is judged a small risk (measure install rate before/after).
+   So: **iOS = IAP consumable tip jar (3 sizes, e.g. 1/3/5 €), Android = Play Billing consumable
+   (same sizes), web = PayPal.Me link.** The app itself never links out to PayPal, which avoids the
+   rejection/removal risk above. Dependency `in_app_purchase` (rationale in the PR). No ad, tracking
+   or attribution SDK; purchase state is not synced and not analysed.
+5. **PayPal.Me for the web page:** owner is fine with it. Before launch the owner checks how PayPal
+   treats tips/donations on a private account.
+6. **Tax is open (owner action):** tip income is probably taxable; whether it is a trade (Gewerbe),
+   whether Kleinunternehmerregelung applies and how Apple/Google payouts are booked needs one session
+   with a Steuerberater. Same answer for IAP and PayPal. Until then the feature ships **behind a
+   remote flag, off**; it is switched on only after the owner confirms.
 
 ## Consequences
 
 - No change to ADR-09; payments stay link-only.
 - New settings flag `supportPromptState` (local only: last shown, count, dismissed), no analytics.
-- Task P7-T09 (below in the plan) is blocked on the owner decisions in §12 #13.
+- Task P7-T09 builds everything behind a remote flag (off); switching it on waits for the tax answer (§12 #13c).
 
 ## Revisit when
 
