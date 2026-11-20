@@ -805,7 +805,7 @@ App B: tap → deep link mitlio://group/<gid>/expense/<eid> → SyncService.pull
 | P8-T04 | `release.yml`: tag → `production` environment approval → prod migrations → smoke drive scenario vs staging → store submission (phased) | dry run on a `v0.0.1-rc` tag | critical |
 | P8-T05 | `release-please` for changelog + version bump from conventional commits | release PR generated | critical |
 | P8-T06 | `check_release_strip.sh`: build release, assert no `ext.mitlio` strings / debug symbols in binary | fails if `kDebugMode` guard removed | critical |
-| P8-T07 | Enable `automerge.yml` for `safe` PRs after ≥ 20 agent PRs reviewed manually with < 10 % rework | metrics recorded in `docs/agent-metrics.md` | critical |
+| P8-T07 | Enable `automerge.yml` for `safe` PRs after ≥ 20 agent PRs reviewed manually with < 10 % rework **Enabled early by the owner 2026-11-20** (required checks still gate the merge; critical PRs never auto-merge) | metrics recorded in `docs/agent-metrics.md` | critical |
 | P8-T08 | `agent-fix-ci.yml` (auto-retry on CI failure, max 2) + `mutation-nightly.yml` that files `agent-implement` issues for surviving mutants | loop observed on a sample | critical |
 
 ### P9 — Later / backlog (agent-ready issues)
