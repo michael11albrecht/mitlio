@@ -59,6 +59,20 @@ void main() {
       );
       expect(r.error.toString(), 'SemVerInvalid(nope)');
       expect(r.error.hashCode, const SemVerInvalid('nope').hashCode);
+      expect(r.error.hashCode, Object.hash(SemVerInvalid, 'nope'));
+    });
+
+    test('build suffix accepts letters, digits, dots and dashes', () {
+      for (final build in ['B', 'Y', 'b', 'y', '09', 'rc-1', 'a.b', 'x-y.z']) {
+        expect(_v('1.2.3+$build'), const SemVer(1, 2, 3), reason: build);
+      }
+      for (final build in ['a+b', 'a_b', 'a b', '@', '[', '`', '{']) {
+        expect(
+          SemVer.parse('1.2.3+$build'),
+          isA<Err<SemVer, SemVerInvalid>>(),
+          reason: build,
+        );
+      }
     });
   });
 
@@ -76,6 +90,26 @@ void main() {
       expect(_v('1.2.3') < _v('1.2.3'), isFalse);
       expect(_v('1.2.3') > _v('1.2.3'), isFalse);
       expect(_v('1.2.3').hashCode, _v('1.2.3').hashCode);
+    });
+
+    test('<= and >= are strict on the unequal side', () {
+      expect(_v('1.2.3') <= _v('1.2.4'), isTrue);
+      expect(_v('1.2.4') <= _v('1.2.3'), isFalse);
+      expect(_v('1.2.4') >= _v('1.2.3'), isTrue);
+      expect(_v('1.2.3') >= _v('1.2.4'), isFalse);
+    });
+
+    test('hashCode depends on the order of the parts', () {
+      expect(const SemVer(1, 2, 3).hashCode, Object.hash(1, 2, 3));
+    });
+
+    test('negative parts are rejected', () {
+      expect(() => SemVer(-1, 0, 0), throwsA(isA<AssertionError>()));
+      expect(() => SemVer(0, -1, 0), throwsA(isA<AssertionError>()));
+      expect(() => SemVer(0, 0, -1), throwsA(isA<AssertionError>()));
+      expect(() => SemVer(1, -1, 0), throwsA(isA<AssertionError>()));
+      expect(() => SemVer(-1, 1, 1), throwsA(isA<AssertionError>()));
+      expect(() => SemVer(-1, 0, 1), throwsA(isA<AssertionError>()));
     });
 
     test('each part decides alone', () {
