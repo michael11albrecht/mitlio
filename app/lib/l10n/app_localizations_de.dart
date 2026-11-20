@@ -1737,6 +1737,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get licensesEntryHint => 'Daten und Schriften, die mitlio nutzt';
 
   @override
+  String get creditLead => 'Mit';
+
+  @override
+  String get creditMid => 'gemacht von';
+
+  @override
+  String get creditName => 'Michael Albrecht';
+
+  @override
+  String get creditOpenFailed =>
+      'Der Link ließ sich nicht öffnen. Wir haben ihn kopiert, du kannst ihn in deinen Browser einfügen.';
+
+  @override
   String get licensesTitle => 'Quellen und Lizenzen';
 
   @override

@@ -1,5 +1,8 @@
 import 'package:mitlio/features/settle/data/services/payment_link_service.dart';
 
+/// The author's public profile, linked from the credit line in Settings.
+const authorProfileUrl = 'https://github.com/michael11albrecht';
+
 /// The two legal pages that live on the website.
 enum LegalPage { privacy, imprint }
 
@@ -21,6 +24,15 @@ class LegalLinksRepository {
       LegalPage.imprint => de ? '/impressum/' : '/en/imprint/',
     };
     return Uri.parse('$siteUrl$path');
+  }
+
+  /// Opens the author's public profile (credit line in Settings). Same
+  /// fallback as [open].
+  Future<bool> openAuthorProfile() async {
+    final uri = Uri.parse(authorProfileUrl);
+    if (await launcher.launchExternal(uri)) return true;
+    await launcher.copyToClipboard(authorProfileUrl);
+    return false;
   }
 
   /// True if the page opened; otherwise the link is copied and false returned.
