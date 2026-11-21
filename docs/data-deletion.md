@@ -30,6 +30,9 @@ cleanup of inactive anonymous accounts (`docs/retention.md`) uses as well. For t
   account),
 - push tokens and notification settings, once those tables exist,
 - the account itself, including invites the user created, their entries in the join audit and login sessions,
+- the user's rows in Supabase Auth's audit log (`auth.audit_log_entries`, migration `0017`): Auth writes one per token
+  refresh and logout, with no link to the account, so they are removed by user id. The owner also switches the
+  database audit log off (`supabase/README.md`); a daily job purges leftovers older than 7 days,
 - ownership: a group the user owned passes to its oldest remaining membership.
 
 Calling it twice is harmless.
@@ -52,7 +55,11 @@ shared messages) are outside our reach.
 - `groups.created_by` keeps the id of the deleted user. It no longer points to any account.
 - `delete_account_data(uid)` is internal: execute is revoked from `public`, `anon` and `authenticated`; only
   `delete_my_data()` and the cleanup job (both `security definer`) call it.
+- Audit rows: skipped when `auth.audit_log_entries` does not exist; when it is not accessible the function raises a
+  warning and the rest of the deletion still runs. The purge `cleanup_auth_audit_log()` (cron `auth-audit-cleanup`)
+  follows `auth_audit_days` in `supabase/retention.json`.
 - pgTAP: `supabase/tests/database/rpc_delete_my_data.sql` (own data only, others untouched, anon denied,
-  idempotent), `retention.sql` (automatic path: threshold, shared groups, orphan groups, dependent rows).
+  idempotent), `retention.sql` (automatic path: threshold, shared groups, orphan groups, dependent rows, audit purge threshold),
+  `auth_audit_log.sql` (audit rows removed with the account, others kept, empty table no-op).
 - App: `features/settings/` (`DeleteMyDataViewModel`, `DataDeletionRepository`). `ServerDataService` is inert
   until accounts exist; wire the RPC there.
