@@ -13,6 +13,8 @@ import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/debug/debug_drive.dart';
 import 'package:mitlio/debug/handlers/setup.dart';
+import 'package:mitlio/features/members/data/repositories/payment_details_providers.dart';
+import 'package:mitlio/features/members/data/services/iban_cipher.dart';
 import 'package:mitlio/features/profile/data/repositories/profile_bank_repository.dart';
 import 'package:mitlio/features/profile/data/repositories/profile_providers.dart';
 import 'package:mitlio/features/profile/data/repositories/profile_repository.dart';
@@ -42,6 +44,9 @@ void main() {
     container = ProviderContainer(
       overrides: [
         appDatabaseProvider.overrideWithValue(db),
+        // The CI desktop has no keyring: skip the key store here, it is
+        // covered by unit tests (fallback to plaintext, logged once).
+        ibanCipherProvider.overrideWithValue(const PlaintextIbanCipher()),
         setupFlowConfigsProvider.overrideWithValue({
           profileSetupFlow.id: profileSetupFlow,
         }),
