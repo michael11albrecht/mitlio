@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/db/daos/sync_state_dao.dart';
 import 'package:mitlio/debug/debug_data_control.dart';
+import 'package:mitlio/features/setup/data/drift_setup_state_repository.dart';
 
 import '../features/repo_test_support.dart';
 
@@ -71,4 +72,16 @@ void main() {
     expect(await dao.cursorsOf(seeded.groupId), isEmpty);
     expect(await dao.setting(hlcNodeIdKey), nodeId);
   });
+
+  test(
+    'wipe starts the guided setup flows over, keeps other settings',
+    () async {
+      final dao = r.db!.syncStateDao;
+      await dao.putSetting('${setupFlowKeyPrefix}profile', '{}');
+      await dao.putSetting('other', 'kept');
+      await control.wipe();
+      expect(await dao.setting('${setupFlowKeyPrefix}profile'), isNull);
+      expect(await dao.setting('other'), 'kept');
+    },
+  );
 }
