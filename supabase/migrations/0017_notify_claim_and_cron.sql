@@ -66,7 +66,7 @@ begin
   -- Only rows that were claimed and have not failed for good.
   update public.notification_outbox o
   set processed_at = null,
-      next_attempt_at = now() + make_interval(mins => o.attempts * 2),
+      next_attempt_at = now() + make_interval(mins => (o.attempts * 2)::integer),
       last_error = left(p_error, 200)
   where o.id = any (p_ids) and o.processed_at is not null and o.failed_at is null
     and o.attempts < p_max_attempts;
