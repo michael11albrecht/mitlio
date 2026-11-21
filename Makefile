@@ -184,7 +184,7 @@ db-lint: ## Lint migrations with squawk (no Docker)
 .PHONY: db-types
 db-types: ## Regenerate supabase/types/database.ts (needs Docker + db-up) and the Dart DB contract
 	$(call need_docker)
-	$(SUPABASE) gen types typescript --local > supabase/types/database.ts
+	$(SUPABASE) gen types typescript --local | npx --yes prettier@3.3.3 --no-semi --parser typescript --stdin-filepath database.ts > supabase/types/database.ts
 	$(DART) tool/gen_db_contract.dart
 
 .PHONY: test-sync-e2e

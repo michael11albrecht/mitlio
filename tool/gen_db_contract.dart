@@ -61,7 +61,8 @@ String _mapType(String ts) => switch (ts) {
   'string' => 'string',
   'number' => 'number',
   'boolean' => 'boolean',
-  'Json' => 'json',
+  // CLI 3.x emits `NonNullable<Json>` for a NOT NULL json column.
+  'Json' || 'NonNullable<Json>' => 'json',
   _ => throw FormatException('Unmapped TypeScript type: $ts'),
 };
 
