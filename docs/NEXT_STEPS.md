@@ -1,60 +1,34 @@
-# Next steps — task list (status 2026-11-20)
+# Next steps — task list (status 2026-11-21)
 
-Source of truth for scope stays `docs/IMPLEMENTATION_PLAN.md`. This file is the working queue: what is done, what is next, what waits on a human. Update it in every PR that finishes an item.
+Source of truth for scope stays `docs/IMPLEMENTATION_PLAN.md`. This file is the working queue: what is done, what is next, what waits on a human. Update it in every PR that finishes an item. Human-only items: `docs/BLOCKERS.md`.
 
 ## Status snapshot
 
 | Phase | State |
 |---|---|
-| P0–P4 (foundation, domain, local app, rides, settle) | done |
-| PW (SEO web calculator), P6c (fuel prices) | done; open polish: #186, #207, PR #211/#212 |
-| P6 (backend, sync, share, join, version gate) | done (T01–T16); sync E2E on local Supabase green |
-| P7 | T01–T03, T07 done; T04–T06 present; T08 (Sentry scrubber) done in app, release wiring owner-only (BLOCKERS #23); T09 (support tip, ADR-28) in PR #217 |
-| P8 | T01–T03 done (iOS TestFlight signing fixed in #216); T04–T08 open |
-| PU (personal profile, cars, guided setup) | **not started** (ADR-25) |
-| P6b (push) | **not started** (needs Firebase accounts) |
-| P9r (receipt OCR), P9-T01..T07 | not started |
+| P0–P4, P3r | done |
+| PW, P6c | done; #207 route field waits on owner (ORS origins, Datenschutz) |
+| P6 sync | done (T01–T16) |
+| P7 | T01–T08 done; T09 tip jar waits on ADR-28 owner decision (#219); T10 feedback form waits on ADR-29 (#229, #230) |
+| P8 | T01–T03, T07 done, T04 prod deploy workflow done (#233); T06 (#242), T08 (#243) in owner review |
+| PU | T02, T03, T15 done (#235); T04 (#239), T05 (#245), T06 (#247) in review; T07–T09 in progress (stacked) |
+| P6b | T02–T04 in review (#246); T05 notify function, app-side T06–T09 in progress; T01 needs Firebase (owner) |
+| P9r, P9-T01..T07 | not started |
 
-## Queue (agent-doable, in order)
+## Done since 2026-11-20
+Bug fixes #136–#147 (closed), credits #186/#187, mutation survivors #118–#120/#178/#210, Sentry scrubber, prod deploy workflow, auto-merge for safe PRs, wear toggle and fuel footer on the web.
 
-### Q1 — Open PRs to land (no new code)
-- [ ] #211 web fuel footer, #212 wear toggle, #217 ADR-28: get CI green, merge.
+## In flight (agents)
+- PU-T07 profile flow, PU-T08/T09 car + cost calculator (stacked on #239, #245)
+- P6b-T05 `notify` function (stacked on #246), P6b app-side push with fakes
+- #206 audit-log purge follow-up (migration)
+- UX nits #236, #237; #247 CI fix
 
-### Q2 — Open bugs from field test / ux-review (small, test-first)
-Each: failing test first, then fix. Some may already be fixed on main; verify with a repro test before coding.
-- [ ] #136 balances break in a group with a removed member
-- [ ] #139 "Up next" / default driver stuck on first driver
-- [ ] #138 member rename: inline field gets no focus
-- [ ] #141 settle month sheet shows total ride cost instead of what others owe
-- [ ] #143 seed scenarios shift a day outside UTC; fixture category keys unknown
-- [ ] #144 duplicate member names accepted silently
-- [ ] #145 balances empty state says "nothing to settle" while rides are unsettled
-- [ ] #146 trip share text does not say who to pay
-- [ ] #147 trip calculator accepts implausible values
-- [ ] #137, #140, #142: closed by earlier PRs? Verify on the simulator, close or fix.
-
-### Q3 — Small features
-- [ ] #186 web footer credit, #187 app credit in About
-- [ ] #207 web from-to route field (fills km)
-- [ ] #206 Supabase: stop writing Auth audit logs to the DB (config only, `critical`, owner review)
-- [ ] Mutation survivors: #210 semver, #178 car_catalog, #120 ride_period, #119 split_error, #118 expense_error
-
-### Q4 — PU personal profile, cars, guided setup (ADR-25) — biggest product gap
-Order: PU-T02 → T03 → T04 → T05 → T06 → T07 → T08 → T09 → T10 → T11 → T15 → T16 → T12.
-PU-T13 (photo), T14 (needs P6-T07 account tie), T17 (needs P6b) stay later.
-
-### Q5 — Release hardening (P8)
-- [ ] P8-T06 `check_release_strip.sh` wired into the release workflow (script exists; verify gate)
-- [ ] P8-T04 `release.yml` with prod approval + smoke drive (needs prod project, see blockers)
-- [ ] P8-T08 `agent-fix-ci.yml`
-- [x] P7-T08 Sentry: scrubber test, `beforeSend`, opt-in only
-- [ ] P7-T09 support the developer (after #217, ADR-28: opt-in, never in payment flow, App Store 3.1.1)
-
-### Q6 — Later
-P6b push (T02–T05, T09 backend/agent parts doable with stubs; T01 needs Firebase), P9r receipt OCR, P9-T01..T07.
+## Next up (agent-doable)
+1. PU-T10 group integration, PU-T11 entry points and cards, PU-T16 share my QR code, PU-T12 move rare flows onto step flow — after PU-T07/T08 merge
+2. P9-T03 recurring expenses (domain-first), P9-T04/T05 reminders and digest (after P6b)
+3. P9r receipt OCR: T03 domain parser and T04 interface can start with synthetic fixtures; T01 spike and T02 real receipts need the owner
+4. P9-T06 read-only web share link (ADR first)
 
 ## Verification rule
-Every UI-visible item is also checked on the iOS simulator through DebugDrive (`make drive-up`, `tool/drive.sh`), with the flow's tap budget (`docs/ux-budgets.md`) respected. Findings that are not fixed in the same PR become issues.
-
-## Blockers needing a human
-See `docs/BLOCKERS.md`.
+Every UI-visible item is also checked on the iOS simulator through DebugDrive (`flutter run -d <sim> --flavor dev --vmservice-out-file=.drive/uri`, `tool/drive.sh`), respecting the tap budgets in `docs/ux-budgets.md`. Findings that are not fixed in the same PR become issues.
