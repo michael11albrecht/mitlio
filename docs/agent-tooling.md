@@ -4,7 +4,7 @@
 
 - GitHub Copilot (Student plan) is credit-metered: 200 credits (~$2) per month, then paid per token. Do not use Copilot chat/agent/CLI for this repo. Inline completions only. Keep the Copilot spending limit at $0.
 - Actions minutes are free (public repo). Nothing to optimise there.
-- CI agents (`agent-plan`, `agent-implement`, `agent-review`) run Claude. Keep repo variable `CLAUDE_AUTH` unset or `oauth` (subscription token), not `api` (per-token billing).
+- CI agents (`agent-plan`, `agent-implement`, `agent-review`, `agent-fix-ci`) run Claude. `agent-fix-ci` and the nightly mutation issues never spend by default: the first needs `AGENT_FIX_CI=true`, the second only files `agent-ready` issues (the owner adds `agent-implement`). Keep repo variable `CLAUDE_AUTH` unset or `oauth` (subscription token), not `api` (per-token billing).
 
 ## Claude Code
 
