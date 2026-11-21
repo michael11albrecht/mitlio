@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Integration test for the fuel-prices (P6c) and fx-rates (P7-T02) Edge Functions. Needs a running local stack
+# Integration test for the fuel-prices (P6c), fx-rates (P7-T02) and notify (P6b-T05) Edge Functions. Needs a running local stack
 # (`supabase start`), `supabase` and `deno` on PATH. Run from anywhere; CI: .github/workflows/db.yml.
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
@@ -8,6 +8,7 @@ eval "$(supabase status -o env)"
 export API_URL ANON_KEY SERVICE_ROLE_KEY
 export FUNCTION_URL="$API_URL/functions/v1/fuel-prices"
 export STUB_URL="http://127.0.0.1:8787"
+export NOTIFY_TOKEN="notify-secret"
 tmp="$(mktemp -d)"
 serve_pid=""
 stub_pid=""
@@ -22,6 +23,10 @@ trap cleanup EXIT
 deno run --allow-net=0.0.0.0:8787 --allow-read=supabase/functions/_shared/testdata \
   supabase/functions/tests/stub_provider.ts > "$tmp/stub.log" 2>&1 &
 stub_pid=$!
+
+# Throw-away RSA key for the stub OAuth flow of notify. PEM newlines become the two characters \n so
+# the JSON service account fits on one env-file line. Never leaves this run.
+fcm_key="$(openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 2>/dev/null | awk 'BEGIN{ORS="\\n"} {print}')"
 
 base_env() {
   cat <<EOF
@@ -38,6 +43,9 @@ FX_RATE_LIMIT_CAPACITY=6
 FX_RATE_LIMIT_PER_MIN=1
 FX_RATE_LIMIT_SALT=integration-test-salt
 FX_WARM_TOKEN=fx-warm-secret
+NOTIFY_TOKEN=$NOTIFY_TOKEN
+FCM_ENDPOINT=http://host.docker.internal:8787/fcm/v1/projects/stub/messages:send
+FCM_SERVICE_ACCOUNT='{"client_email":"stub@stub.iam.gserviceaccount.com","private_key":"$fcm_key","token_uri":"http://host.docker.internal:8787/oauth/token"}'
 EOF
 }
 
@@ -68,6 +76,16 @@ run_phase() {
     FX_FUNCTION_URL="$API_URL/functions/v1/fx-rates" \
       deno test --allow-net --allow-env \
       supabase/functions/tests/fx_integration_test.ts
+    # The notify function too: wait until it answers (401 without the cron token).
+    for _ in $(seq 1 30); do
+      code="$(curl -s -o /dev/null -w '%{http_code}' -X POST "$API_URL/functions/v1/notify" \
+        -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANON_KEY" || true)"
+      [ "$code" = 401 ] && break
+      sleep 2
+    done
+    NOTIFY_FUNCTION_URL="$API_URL/functions/v1/notify" \
+      deno test --allow-net --allow-env \
+      supabase/functions/tests/notify_integration_test.ts
   fi
   kill "$serve_pid" 2>/dev/null || true
   wait "$serve_pid" 2>/dev/null || true

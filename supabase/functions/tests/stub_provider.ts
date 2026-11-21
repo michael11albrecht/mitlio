@@ -15,6 +15,12 @@ interface Seen {
 let listCalls: Seen[] = [];
 let oilCalls = 0;
 let fxCalls: { path: string; headers: Record<string, string> }[] = [];
+// FCM v1 + Google OAuth imitation for the notify test (P6b-T05). Records every request. The token
+// of a message decides the answer: *-unregistered -> 404 UNREGISTERED, *-invalid -> 400
+// INVALID_ARGUMENT, *-flaky -> 503 until /__fcm_heal is called, everything else 200.
+let fcmCalls: { authorization: string | null; body: { message: Record<string, unknown> } }[] = [];
+let oauthCalls: { grant_type: string | null; assertion: string | null }[] = [];
+let fcmHealed = false;
 
 // Frankfurter imitation: rates per 1 unit of `from`. Dated requests answer the last working day.
 const fxRates: Record<string, Record<string, number>> = {
@@ -47,8 +53,38 @@ const stations = [
   { id: "d", e5: 1.2, e10: 1.2, diesel: 1.2, isOpen: false },
 ];
 
-Deno.serve({ hostname: "0.0.0.0", port: 8787 }, (req) => {
+Deno.serve({ hostname: "0.0.0.0", port: 8787 }, async (req) => {
   const url = new URL(req.url);
+  if (url.pathname === "/oauth/token" && req.method === "POST") {
+    const form = new URLSearchParams(await req.text());
+    oauthCalls.push({ grant_type: form.get("grant_type"), assertion: form.get("assertion") });
+    return Response.json({ access_token: "stub-access-token", expires_in: 3600 });
+  }
+  if (url.pathname === "/fcm/v1/projects/stub/messages:send" && req.method === "POST") {
+    const authorization = req.headers.get("authorization");
+    const body = await req.json();
+    fcmCalls.push({ authorization, body });
+    const token = String(body.message?.token ?? "");
+    if (authorization !== "Bearer stub-access-token") {
+      return Response.json({ error: { status: "UNAUTHENTICATED" } }, { status: 401 });
+    }
+    if (token.endsWith("-unregistered")) {
+      return Response.json({
+        error: { status: "NOT_FOUND", details: [{ errorCode: "UNREGISTERED" }] },
+      }, { status: 404 });
+    }
+    if (token.endsWith("-invalid")) {
+      return Response.json({ error: { status: "INVALID_ARGUMENT" } }, { status: 400 });
+    }
+    if (token.endsWith("-flaky") && !fcmHealed) {
+      return Response.json({ error: { status: "UNAVAILABLE" } }, { status: 503 });
+    }
+    return Response.json({ name: `projects/stub/messages/${fcmCalls.length}` });
+  }
+  if (url.pathname === "/__fcm_heal") {
+    fcmHealed = true;
+    return Response.json({});
+  }
   if (url.pathname === "/json/list.php") {
     const p = url.searchParams;
     const headers: Record<string, string> = {};
@@ -79,12 +115,21 @@ Deno.serve({ hostname: "0.0.0.0", port: 8787 }, (req) => {
     return fxResponse(url, headers);
   }
   if (url.pathname === "/__stats") {
-    return Response.json({ list: listCalls, oil: oilCalls, fx: fxCalls });
+    return Response.json({
+      list: listCalls,
+      oil: oilCalls,
+      fx: fxCalls,
+      fcm: fcmCalls,
+      oauth: oauthCalls,
+    });
   }
   if (url.pathname === "/__reset") {
     listCalls = [];
     oilCalls = 0;
     fxCalls = [];
+    fcmCalls = [];
+    oauthCalls = [];
+    fcmHealed = false;
     return Response.json({});
   }
   return new Response("not found", { status: 404 });
