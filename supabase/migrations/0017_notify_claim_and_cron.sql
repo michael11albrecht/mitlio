@@ -23,7 +23,7 @@ set lock_timeout = '1s';
 set statement_timeout = '5s';
 
 alter table public.notification_outbox
-  add column attempts integer not null default 0,
+  add column attempts bigint not null default 0,
   add column next_attempt_at timestamptz not null default now(),
   add column last_error text check (char_length(last_error) <= 200),
   add column failed_at timestamptz;
@@ -31,7 +31,7 @@ alter table public.notification_outbox
 create function public.claim_notification_outbox(p_limit integer default 200)
 returns table (
   id uuid, group_id uuid, actor_user_id uuid, event text, entity_id uuid, payload jsonb,
-  created_at timestamptz, attempts integer
+  created_at timestamptz, attempts bigint
 )
 language sql
 security definer
