@@ -2,7 +2,7 @@
 -- the last hour; only service_role may read it.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(8);
+select plan(7);
 
 reset role;
 select is((select oldest_due_age_seconds from public.notification_outbox_health()), 0::bigint,
