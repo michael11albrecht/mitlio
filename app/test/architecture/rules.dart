@@ -159,14 +159,16 @@ List<Rule> buildRules({required List<String> showDialogAllowlist}) => [
     id: 'sync-no-local-bank',
     description:
         'sync code (app/lib/features/sync/ or any *sync* file) must not '
-        'import the local bank DAO or the payment details repository '
+        'import the local bank DAOs, the profile bank repository or the '
+        'payment details repository '
         '(IBAN data never leaves the device, plan §8)',
     appliesTo: (p) =>
         _isLib(p) &&
         (_inDir(p, 'app/lib/features/sync/') ||
             p.split('/').last.contains('sync')),
     forbidden: (d) => RegExp(
-      'local_member_bank|payment_details|iban_cipher',
+      'local_member_bank|local_profile_bank|profile_bank|'
+      'payment_details|iban_cipher',
     ).hasMatch(d.target),
   ),
   codeRule(

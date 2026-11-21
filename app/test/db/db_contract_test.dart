@@ -15,6 +15,10 @@ const _localOnlyTables = {
   'local_sync_cursor',
   'local_settings',
   'local_places',
+  'profile',
+  'local_profile_bank',
+  'user_vehicles',
+  'user_vehicle_costs',
   'expense_revisions',
 };
 
@@ -39,6 +43,14 @@ const _serverOnlyTables = {
 /// Server-only columns on synced tables. `server_seq` is the pull cursor
 /// assigned by a trigger; the client never stores it (tables.dart).
 const _serverOnlyColumns = {'server_seq'};
+
+/// Client-only columns on synced tables. `vehicles.source_user_vehicle_id`
+/// links a group copy to the user's personal car (ADR-25); it is never sent
+/// (the outbox payload lists server columns only) so other members never see
+/// private ids.
+const _clientOnlyColumns = {
+  'vehicles': {'source_user_vehicle_id'},
+};
 
 /// Drift type -> server types it may map to. Text columns may hold jsonb
 /// server-side (SQLite has no jsonb); DateTime is serialised as an ISO string.
@@ -66,6 +78,9 @@ void main() {
     for (final t in synced) {
       final server = dbContract[t.actualTableName]!;
       for (final c in t.$columns) {
+        if (_clientOnlyColumns[t.actualTableName]?.contains(c.$name) ?? false) {
+          continue;
+        }
         final s = server[c.$name];
         final where = '${t.actualTableName}.${c.$name}';
         expect(s, isNotNull, reason: '$where missing on server');
@@ -94,6 +109,18 @@ void main() {
       );
     }
   });
+
+  test(
+    'client-only columns are exactly the justified ones and not on server',
+    () {
+      for (final e in _clientOnlyColumns.entries) {
+        final table = synced.singleWhere((t) => t.actualTableName == e.key);
+        final clientCols = table.$columns.map((c) => c.$name).toSet();
+        expect(clientCols, containsAll(e.value));
+        expect(dbContract[e.key]!.keys.toSet().intersection(e.value), isEmpty);
+      }
+    },
+  );
 
   test('no IBAN column on the server', () {
     for (final cols in dbContract.values) {
