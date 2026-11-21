@@ -53,8 +53,9 @@ async function createUser(email: string): Promise<string> {
     headers: svc,
     body: JSON.stringify({ email, email_confirm: true }),
   });
-  assert(res.ok, `create user: ${res.status} ${await res.text()}`);
-  return (await res.json()).id;
+  const body = await res.text();
+  assert(res.ok, `create user: ${res.status} ${body}`);
+  return JSON.parse(body).id;
 }
 
 function callNotify(headers: Record<string, string> = {}) {

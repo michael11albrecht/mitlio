@@ -52,7 +52,7 @@ update public.notification_outbox set next_attempt_at = now()
   where id = '00000000-0000-0000-0004-000000000001';
 select is((select attempts from public.claim_notification_outbox(10)
            where id = '00000000-0000-0000-0004-000000000001'),
-  2, 'the second claim counts attempts = 2');
+  2::bigint, 'the second claim counts attempts = 2');
 select is(
   public.retry_notification_outbox(array['00000000-0000-0000-0004-000000000001']::uuid[], 'HTTP_500', 2),
   0, 'at the max attempts nothing is re-queued');
