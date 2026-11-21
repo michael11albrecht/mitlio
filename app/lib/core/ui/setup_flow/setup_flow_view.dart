@@ -102,7 +102,7 @@ class SetupFlowView extends ConsumerWidget {
           context,
           SetupStepContext(
             step: step,
-            current: state.stepIndex + 1,
+            current: state.position,
             total: state.total,
             answer: state.answerOf(step.id),
             onAnswer: vm.answer,

@@ -2172,4 +2172,151 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setupCelebration => 'All set';
+
+  @override
+  String get profileSettingsEntry => 'My profile';
+
+  @override
+  String get profileSettingsEntryHint =>
+      'Name, picture, PayPal.Me and IBAN, only on your device';
+
+  @override
+  String get profileNameTitle => 'What is your name?';
+
+  @override
+  String get profileNameLabel => 'Your name';
+
+  @override
+  String get profileNameRequired => 'What is your name? Enter it to continue.';
+
+  @override
+  String get profileAvatarTitle => 'Pick your picture';
+
+  @override
+  String profileAvatarColor(int number) {
+    return 'Colour $number';
+  }
+
+  @override
+  String get profileAvatarInitials => 'Initials only';
+
+  @override
+  String profileAvatarEmoji(String emoji) {
+    return 'Symbol $emoji';
+  }
+
+  @override
+  String get profilePaypalAskTitle => 'Do you want to get money via PayPal?';
+
+  @override
+  String get profilePaypalTitle => 'What is your PayPal.Me link?';
+
+  @override
+  String get profilePaypalLabel => 'PayPal.Me link or name';
+
+  @override
+  String get profilePaypalHint => 'e.g. paypal.me/anna';
+
+  @override
+  String profilePaypalResult(String link) {
+    return 'Your link: $link';
+  }
+
+  @override
+  String get profilePaypalInvalid =>
+      'That is not a PayPal.Me name. Letters and digits only, up to 20 characters.';
+
+  @override
+  String get profilePaypalTest => 'Test link';
+
+  @override
+  String get profilePaypalCreate => 'No PayPal.Me yet? Create one now';
+
+  @override
+  String get profilePaypalLinkCopied =>
+      'The link would not open. We copied it, paste it into your browser.';
+
+  @override
+  String get profilePaypalHelpTitle => 'How to find your link';
+
+  @override
+  String get profilePaypalHelp1 => 'Open the PayPal app and tap your profile.';
+
+  @override
+  String get profilePaypalHelp2 => 'Choose “PayPal.Me” or “Receive money”.';
+
+  @override
+  String get profilePaypalHelp3 =>
+      'Your link looks like this: paypal.me/yourname';
+
+  @override
+  String get profilePaypalHelp4 => 'Copy it and paste it above.';
+
+  @override
+  String get profileBankAskTitle => 'Prefer a bank transfer (QR code)?';
+
+  @override
+  String get profileIbanTitle => 'Your IBAN';
+
+  @override
+  String get profileIbanLabel => 'IBAN';
+
+  @override
+  String get profileIbanHolderLabel => 'Account holder';
+
+  @override
+  String get profileIbanHolderRequired =>
+      'Who is the account holder? Enter the name.';
+
+  @override
+  String get profileIbanPaste => 'Paste';
+
+  @override
+  String get profileIbanPasteEmpty =>
+      'There is no text on the clipboard. Copy your IBAN and tap Paste again.';
+
+  @override
+  String get profileIbanLocalOnly =>
+      'Your IBAN stays on your device only. It is never uploaded.';
+
+  @override
+  String get profileIbanTyping => 'Keep typing, it is checked as you go.';
+
+  @override
+  String get profileIbanValid => 'IBAN is valid';
+
+  @override
+  String get profileIbanBadFormat =>
+      'That is not an IBAN. It starts with two letters and two digits, e.g. DE89.';
+
+  @override
+  String get profileIbanBadChecksum =>
+      'The check digits do not match. Compare the IBAN with your bank card or app.';
+
+  @override
+  String get profileIbanQrPreview =>
+      'This is the QR code your friends scan (example: €10.00)';
+
+  @override
+  String get profileIbanQrSemantics => 'Example QR code for a transfer to you';
+
+  @override
+  String get profileIbanQrFailed =>
+      'No QR code can be made from these details. Check that the account holder is shorter than 70 characters.';
+
+  @override
+  String get profileFinishTitle => 'Your profile is ready';
+
+  @override
+  String profileCardPaypal(String handle) {
+    return 'PayPal.Me: $handle';
+  }
+
+  @override
+  String profileCardIban(String tail) {
+    return 'IBAN ···· $tail, only on this device';
+  }
+
+  @override
+  String get profileCardNoPayment => 'No payment details yet';
 }

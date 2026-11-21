@@ -3629,6 +3629,258 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Geschafft'**
   String get setupCelebration;
+
+  /// No description provided for @profileSettingsEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Mein Profil'**
+  String get profileSettingsEntry;
+
+  /// No description provided for @profileSettingsEntryHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Name, Bild, PayPal.Me und IBAN, nur auf deinem Gerät'**
+  String get profileSettingsEntryHint;
+
+  /// No description provided for @profileNameTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie heißt du?'**
+  String get profileNameTitle;
+
+  /// No description provided for @profileNameLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Name'**
+  String get profileNameLabel;
+
+  /// No description provided for @profileNameRequired.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie heißt du? Trag deinen Namen ein.'**
+  String get profileNameRequired;
+
+  /// No description provided for @profileAvatarTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Such dir ein Bild aus'**
+  String get profileAvatarTitle;
+
+  /// No description provided for @profileAvatarColor.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe {number}'**
+  String profileAvatarColor(int number);
+
+  /// No description provided for @profileAvatarInitials.
+  ///
+  /// In de, this message translates to:
+  /// **'Nur Initialen'**
+  String get profileAvatarInitials;
+
+  /// No description provided for @profileAvatarEmoji.
+  ///
+  /// In de, this message translates to:
+  /// **'Symbol {emoji}'**
+  String profileAvatarEmoji(String emoji);
+
+  /// No description provided for @profilePaypalAskTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Möchtest du per PayPal Geld bekommen?'**
+  String get profilePaypalAskTitle;
+
+  /// No description provided for @profilePaypalTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie lautet dein PayPal.Me-Link?'**
+  String get profilePaypalTitle;
+
+  /// No description provided for @profilePaypalLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'PayPal.Me-Link oder Name'**
+  String get profilePaypalLabel;
+
+  /// No description provided for @profilePaypalHint.
+  ///
+  /// In de, this message translates to:
+  /// **'z. B. paypal.me/anna'**
+  String get profilePaypalHint;
+
+  /// No description provided for @profilePaypalResult.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Link: {link}'**
+  String profilePaypalResult(String link);
+
+  /// No description provided for @profilePaypalInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist kein PayPal.Me-Name. Erlaubt sind Buchstaben und Ziffern, bis 20 Zeichen.'**
+  String get profilePaypalInvalid;
+
+  /// No description provided for @profilePaypalTest.
+  ///
+  /// In de, this message translates to:
+  /// **'Link testen'**
+  String get profilePaypalTest;
+
+  /// No description provided for @profilePaypalCreate.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch kein PayPal.Me? Jetzt erstellen'**
+  String get profilePaypalCreate;
+
+  /// No description provided for @profilePaypalLinkCopied.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Link ließ sich nicht öffnen. Wir haben ihn kopiert, füge ihn in deinen Browser ein.'**
+  String get profilePaypalLinkCopied;
+
+  /// No description provided for @profilePaypalHelpTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'So findest du deinen Link'**
+  String get profilePaypalHelpTitle;
+
+  /// No description provided for @profilePaypalHelp1.
+  ///
+  /// In de, this message translates to:
+  /// **'Öffne die PayPal-App und tippe auf dein Profil.'**
+  String get profilePaypalHelp1;
+
+  /// No description provided for @profilePaypalHelp2.
+  ///
+  /// In de, this message translates to:
+  /// **'Wähle „PayPal.Me“ oder „Geld erhalten“.'**
+  String get profilePaypalHelp2;
+
+  /// No description provided for @profilePaypalHelp3.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Link sieht so aus: paypal.me/deinname'**
+  String get profilePaypalHelp3;
+
+  /// No description provided for @profilePaypalHelp4.
+  ///
+  /// In de, this message translates to:
+  /// **'Kopiere ihn und füge ihn oben ein.'**
+  String get profilePaypalHelp4;
+
+  /// No description provided for @profileBankAskTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Lieber per Überweisung (QR-Code)?'**
+  String get profileBankAskTitle;
+
+  /// No description provided for @profileIbanTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Deine IBAN'**
+  String get profileIbanTitle;
+
+  /// No description provided for @profileIbanLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'IBAN'**
+  String get profileIbanLabel;
+
+  /// No description provided for @profileIbanHolderLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Kontoinhaber'**
+  String get profileIbanHolderLabel;
+
+  /// No description provided for @profileIbanHolderRequired.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer ist Kontoinhaber? Trag den Namen ein.'**
+  String get profileIbanHolderRequired;
+
+  /// No description provided for @profileIbanPaste.
+  ///
+  /// In de, this message translates to:
+  /// **'Einfügen'**
+  String get profileIbanPaste;
+
+  /// No description provided for @profileIbanPasteEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'In der Zwischenablage ist kein Text. Kopiere deine IBAN und tippe nochmal auf Einfügen.'**
+  String get profileIbanPasteEmpty;
+
+  /// No description provided for @profileIbanLocalOnly.
+  ///
+  /// In de, this message translates to:
+  /// **'Deine IBAN bleibt nur auf deinem Gerät. Sie wird nie hochgeladen.'**
+  String get profileIbanLocalOnly;
+
+  /// No description provided for @profileIbanTyping.
+  ///
+  /// In de, this message translates to:
+  /// **'Tippe weiter, die Prüfung läuft mit.'**
+  String get profileIbanTyping;
+
+  /// No description provided for @profileIbanValid.
+  ///
+  /// In de, this message translates to:
+  /// **'IBAN stimmt'**
+  String get profileIbanValid;
+
+  /// No description provided for @profileIbanBadFormat.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist keine IBAN. Sie beginnt mit zwei Buchstaben und zwei Ziffern, z. B. DE89.'**
+  String get profileIbanBadFormat;
+
+  /// No description provided for @profileIbanBadChecksum.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Prüfziffer stimmt nicht. Vergleiche die IBAN mit deiner Bankkarte oder App.'**
+  String get profileIbanBadChecksum;
+
+  /// No description provided for @profileIbanQrPreview.
+  ///
+  /// In de, this message translates to:
+  /// **'So sieht der QR-Code aus, den deine Freunde scannen (Beispiel: 10,00 €)'**
+  String get profileIbanQrPreview;
+
+  /// No description provided for @profileIbanQrSemantics.
+  ///
+  /// In de, this message translates to:
+  /// **'Beispiel-QR-Code für eine Überweisung an dich'**
+  String get profileIbanQrSemantics;
+
+  /// No description provided for @profileIbanQrFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Aus diesen Angaben lässt sich kein QR-Code bauen. Prüfe, ob der Kontoinhaber kürzer als 70 Zeichen ist.'**
+  String get profileIbanQrFailed;
+
+  /// No description provided for @profileFinishTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Profil ist fertig'**
+  String get profileFinishTitle;
+
+  /// No description provided for @profileCardPaypal.
+  ///
+  /// In de, this message translates to:
+  /// **'PayPal.Me: {handle}'**
+  String profileCardPaypal(String handle);
+
+  /// No description provided for @profileCardIban.
+  ///
+  /// In de, this message translates to:
+  /// **'IBAN ···· {tail}, nur auf diesem Gerät'**
+  String profileCardIban(String tail);
+
+  /// No description provided for @profileCardNoPayment.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Zahlungsdaten'**
+  String get profileCardNoPayment;
 }
 
 class _AppLocalizationsDelegate

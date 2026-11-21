@@ -16,6 +16,7 @@ class FinishStep extends StatefulWidget {
     required this.actionLabel,
     required this.onAction,
     this.summary = const [],
+    this.preview,
     this.onBack,
     super.key,
   });
@@ -26,6 +27,9 @@ class FinishStep extends StatefulWidget {
   final List<String> summary;
   final String actionLabel;
   final VoidCallback onAction;
+
+  /// What the flow made, shown as it will look (the profile card).
+  final Widget? preview;
 
   /// Back to the last step.
   final VoidCallback? onBack;
@@ -95,6 +99,10 @@ class _FinishStepState extends State<FinishStep>
                           style: theme.textTheme.headlineSmall,
                         ),
                       ),
+                      if (widget.preview != null) ...[
+                        const SizedBox(height: Spacing.lg),
+                        widget.preview!,
+                      ],
                       if (widget.summary.isNotEmpty) ...[
                         const SizedBox(height: Spacing.lg),
                         for (final line in widget.summary)

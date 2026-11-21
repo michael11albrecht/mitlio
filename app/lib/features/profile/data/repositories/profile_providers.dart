@@ -6,8 +6,10 @@ import 'package:mitlio/features/profile/data/repositories/drift_profile_bank_rep
 import 'package:mitlio/features/profile/data/repositories/drift_profile_repository.dart';
 import 'package:mitlio/features/profile/data/repositories/drift_user_vehicles_repository.dart';
 import 'package:mitlio/features/profile/data/repositories/profile_bank_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/profile_links_repository.dart';
 import 'package:mitlio/features/profile/data/repositories/profile_repository.dart';
 import 'package:mitlio/features/profile/data/repositories/user_vehicles_repository.dart';
+import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
 
 /// Drift by default; override with `FakeProfileRepository` in tests.
 final profileRepositoryProvider = Provider<ProfileRepository>(
@@ -33,4 +35,9 @@ final userVehiclesRepositoryProvider = Provider<UserVehiclesRepository>(
     clock: ref.watch(clockProvider),
     ids: ref.watch(idGeneratorProvider),
   ),
+);
+
+/// Override the launcher (`linkLauncherProvider`) in tests.
+final profileLinksRepositoryProvider = Provider<ProfileLinksRepository>(
+  (ref) => ProfileLinksRepository(launcher: ref.watch(linkLauncherProvider)),
 );

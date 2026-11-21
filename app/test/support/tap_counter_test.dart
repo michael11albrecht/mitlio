@@ -44,6 +44,7 @@ void main() {
         'setup_step_input': 1,
         'setup_step_skip': 1,
         'setup_finish_action': 1,
+        'profile_setup': 8,
       });
     });
   });

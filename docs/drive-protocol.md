@@ -45,7 +45,7 @@ real database and repositories.
 `ext.mitlio.state` screens registered so far (wired in `app/lib/debug/debug_snapshots.dart`, ViewModels never import `debug/`): `groups` (home list) and `group` (detail of the group in the current route, `{"status":"not_open"}` otherwise). Both report
 `status` (`loading`, `error`, `empty`, `data`).
 
-Progress of a setup flow survives an app restart (it is stored in `local_settings`, key `setup_flow.<flowId>`) and `ext.mitlio.reset` clears it. Flows are registered by their feature in `setupFlowConfigsProvider` (`app/lib/core/ui/setup_flow/`); the framework ships none, the profile and car flows (PU-T07, PU-T08) add theirs.
+Progress of a setup flow survives an app restart (it is stored in `local_settings`, key `setup_flow.<flowId>`) and `ext.mitlio.reset` clears it. Flows are registered by their feature in `setupFlowConfigsProvider` (`app/lib/core/ui/setup_flow/`); the framework ships none. `main.dart` registers the profile flow (`flowId` `profile`, PU-T07; steps `name`, `avatar`, `paypal_wanted`, `paypal_me`, `bank_wanted`, `iban`); the car flow (PU-T08) adds its own. Profile answers: the name and the PayPal.Me link are strings, `avatar` is `{"color": <ARGB int or null>, "emoji": <string or null>}`, the two yes/no steps are `true`/`false`, `iban` is `{"iban": "...", "holder": "..."}`. The IBAN goes to the local bank table only: the snapshot and the saved progress show `true` for the `iban` step, never the IBAN. `paypal_me` is only a step after `paypal_wanted` is `true`, `iban` only after `bank_wanted` is `true` (`total` counts the visible steps).
 
 Feature handlers (`groups.create`, `expenses.add`, ...) are added with each slice and must be listed here.
 

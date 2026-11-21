@@ -1607,5 +1607,72 @@
   "setupYes": "Ja",
   "setupNo": "Nein",
   "setupFinishDone": "Fertig",
-  "setupCelebration": "Geschafft"
+  "setupCelebration": "Geschafft",
+  "profileSettingsEntry": "Mein Profil",
+  "profileSettingsEntryHint": "Name, Bild, PayPal.Me und IBAN, nur auf deinem Gerät",
+  "profileNameTitle": "Wie heißt du?",
+  "profileNameLabel": "Dein Name",
+  "profileNameRequired": "Wie heißt du? Trag deinen Namen ein.",
+  "profileAvatarTitle": "Such dir ein Bild aus",
+  "profileAvatarColor": "Farbe {number}",
+  "@profileAvatarColor": {
+    "placeholders": {
+      "number": {"type": "int"}
+    }
+  },
+  "profileAvatarInitials": "Nur Initialen",
+  "profileAvatarEmoji": "Symbol {emoji}",
+  "@profileAvatarEmoji": {
+    "placeholders": {
+      "emoji": {"type": "String"}
+    }
+  },
+  "profilePaypalAskTitle": "Möchtest du per PayPal Geld bekommen?",
+  "profilePaypalTitle": "Wie lautet dein PayPal.Me-Link?",
+  "profilePaypalLabel": "PayPal.Me-Link oder Name",
+  "profilePaypalHint": "z. B. paypal.me/anna",
+  "profilePaypalResult": "Dein Link: {link}",
+  "@profilePaypalResult": {
+    "placeholders": {
+      "link": {"type": "String"}
+    }
+  },
+  "profilePaypalInvalid": "Das ist kein PayPal.Me-Name. Erlaubt sind Buchstaben und Ziffern, bis 20 Zeichen.",
+  "profilePaypalTest": "Link testen",
+  "profilePaypalCreate": "Noch kein PayPal.Me? Jetzt erstellen",
+  "profilePaypalLinkCopied": "Der Link ließ sich nicht öffnen. Wir haben ihn kopiert, füge ihn in deinen Browser ein.",
+  "profilePaypalHelpTitle": "So findest du deinen Link",
+  "profilePaypalHelp1": "Öffne die PayPal-App und tippe auf dein Profil.",
+  "profilePaypalHelp2": "Wähle „PayPal.Me“ oder „Geld erhalten“.",
+  "profilePaypalHelp3": "Dein Link sieht so aus: paypal.me/deinname",
+  "profilePaypalHelp4": "Kopiere ihn und füge ihn oben ein.",
+  "profileBankAskTitle": "Lieber per Überweisung (QR-Code)?",
+  "profileIbanTitle": "Deine IBAN",
+  "profileIbanLabel": "IBAN",
+  "profileIbanHolderLabel": "Kontoinhaber",
+  "profileIbanHolderRequired": "Wer ist Kontoinhaber? Trag den Namen ein.",
+  "profileIbanPaste": "Einfügen",
+  "profileIbanPasteEmpty": "In der Zwischenablage ist kein Text. Kopiere deine IBAN und tippe nochmal auf Einfügen.",
+  "profileIbanLocalOnly": "Deine IBAN bleibt nur auf deinem Gerät. Sie wird nie hochgeladen.",
+  "profileIbanTyping": "Tippe weiter, die Prüfung läuft mit.",
+  "profileIbanValid": "IBAN stimmt",
+  "profileIbanBadFormat": "Das ist keine IBAN. Sie beginnt mit zwei Buchstaben und zwei Ziffern, z. B. DE89.",
+  "profileIbanBadChecksum": "Die Prüfziffer stimmt nicht. Vergleiche die IBAN mit deiner Bankkarte oder App.",
+  "profileIbanQrPreview": "So sieht der QR-Code aus, den deine Freunde scannen (Beispiel: 10,00 €)",
+  "profileIbanQrSemantics": "Beispiel-QR-Code für eine Überweisung an dich",
+  "profileIbanQrFailed": "Aus diesen Angaben lässt sich kein QR-Code bauen. Prüfe, ob der Kontoinhaber kürzer als 70 Zeichen ist.",
+  "profileFinishTitle": "Dein Profil ist fertig",
+  "profileCardPaypal": "PayPal.Me: {handle}",
+  "@profileCardPaypal": {
+    "placeholders": {
+      "handle": {"type": "String"}
+    }
+  },
+  "profileCardIban": "IBAN ···· {tail}, nur auf diesem Gerät",
+  "@profileCardIban": {
+    "placeholders": {
+      "tail": {"type": "String"}
+    }
+  },
+  "profileCardNoPayment": "Noch keine Zahlungsdaten"
 }
