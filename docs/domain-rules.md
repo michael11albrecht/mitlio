@@ -504,6 +504,19 @@ Check: 40 km × 6.5 l/100 km = 2.6 l. At 1.799 € that is 4.6774 € → 468 ct
 - So A gets 234 + 156 = 390 for the driver-A aggregate.
 - r2 (B, A, C in tie order A, B, C): 153/152/152.
 
+## Recurring expenses (P9-T03)
+
+`RecurrenceRule` (`packages/domain/lib/src/recurring/recurrence_rule.dart`) is the pure date engine for recurring
+expenses. It only produces dates; creating the expense from a due date is the caller's job.
+
+- Rule = `start`, `frequency` (daily, weekly, monthly, yearly), `interval` (>= 1, every N units), optional inclusive
+  `end` (not before `start`). Only the calendar date counts; results are UTC midnight.
+- Monthly/yearly keep the day of `start` and clamp to the month end. Every date is computed from `start`, not from the
+  previous date, so 31 Jan -> 28 Feb -> 31 Mar -> 30 Apr; 29 Feb yearly -> 28 Feb in non-leap years.
+- `dueOccurrences(lastGenerated, today, maxCount = 12)`: dates after `lastGenerated` (exclusive; `null` = none yet) up to
+  `today` (inclusive). If more than `maxCount` are due (long offline time) only the newest `maxCount` are returned.
+- Errors: `InvalidInterval`, `EndBeforeStart`.
+
 ## Car catalog (P9-T09)
 
 The vehicle form suggests cars from a bundled catalog built offline from the EEA CO2 monitoring data
