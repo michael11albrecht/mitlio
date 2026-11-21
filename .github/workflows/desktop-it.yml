@@ -57,6 +57,7 @@ jobs:
           cd .. && tool/check_release_strip.sh
       # P8-T06 proof that the gate bites: remove the kDebugMode guard, rebuild, the check must fail.
       - name: Release build without the kDebugMode guard is caught
+        # Edits app/lib/main.dart in this checkout: must stay the last step that touches the source tree.
         run: |
           grep -q '^  if (kDebugMode) registerDebugDrive(container);$' app/lib/main.dart
           sed -i 's/^  if (kDebugMode) registerDebugDrive(container);$/  registerDebugDrive(container);/' app/lib/main.dart

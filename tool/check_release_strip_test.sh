@@ -42,16 +42,22 @@ expect "build without AOT snapshot is rejected, not passed" 2 "$tmp/no_snapshot"
 expect "debug build (kernel blob only) is rejected" 2 "$tmp/debug_kernel"
 expect "missing path is rejected" 2 "$tmp/does_not_exist"
 
-if command -v zip >/dev/null 2>&1; then
-  (cd "$tmp/linux_ok" && zip -qr "$tmp/ok.apk" lib)
-  (cd "$tmp/linux_leak" && zip -qr "$tmp/leak.apk" lib)
-  (cd "$tmp/ios_leak" && zip -qr "$tmp/leak.ipa" Runner.app)
-  expect "apk without prefix passes" 0 "$tmp/ok.apk"
-  expect "apk with prefix fails" 1 "$tmp/leak.apk"
-  expect "ipa with prefix fails" 1 "$tmp/leak.ipa"
-else
-  echo "skip archive cases: zip not installed"
+if ! command -v zip >/dev/null 2>&1; then
+  echo "FAIL: zip is not installed, the apk/aab/ipa cases cannot run (install zip, e.g. apt-get install zip)" >&2
+  exit 1
 fi
+(cd "$tmp/linux_ok" && zip -qr "$tmp/ok.apk" lib)
+(cd "$tmp/linux_leak" && zip -qr "$tmp/leak.apk" lib)
+(cd "$tmp/ios_leak" && zip -qr "$tmp/leak.ipa" Runner.app)
+mk "$tmp/aab_ok/base/lib/arm64-v8a/libapp.so" "$clean"
+mk "$tmp/aab_leak/base/lib/arm64-v8a/libapp.so" "$leaky"
+(cd "$tmp/aab_ok" && zip -qr "$tmp/ok.aab" base)
+(cd "$tmp/aab_leak" && zip -qr "$tmp/leak.aab" base)
+expect "apk without prefix passes" 0 "$tmp/ok.apk"
+expect "apk with prefix fails" 1 "$tmp/leak.apk"
+expect "ipa with prefix fails" 1 "$tmp/leak.ipa"
+expect "aab without prefix passes" 0 "$tmp/ok.aab"
+expect "aab with prefix fails" 1 "$tmp/leak.aab"
 mk "$tmp/notes.txt" "$clean"
 expect "unsupported file type is rejected" 2 "$tmp/notes.txt"
 
