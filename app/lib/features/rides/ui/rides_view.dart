@@ -161,7 +161,8 @@ class _RidesBodyState extends State<_RidesBody> {
           const SizedBox(height: Spacing.md),
           SettleCard(
             plan: plan,
-            onOpen: () => unawaited(showRideSettleSheet(context, groupId)),
+            onOpen: () =>
+                unawaited(context.push('/groups/$groupId/rides/settle')),
           ),
         ],
         const SizedBox(height: Spacing.md),
@@ -169,7 +170,7 @@ class _RidesBodyState extends State<_RidesBody> {
           state: state,
           onSettle: plan == null
               ? null
-              : () => unawaited(showRideSettleSheet(context, groupId)),
+              : () => unawaited(context.push('/groups/$groupId/rides/settle')),
           onPreviousMonth: () => vm.shiftMonth(-1),
           onNextMonth: () => vm.shiftMonth(1),
           onDay: (day) => unawaited(_openDay(context, day)),

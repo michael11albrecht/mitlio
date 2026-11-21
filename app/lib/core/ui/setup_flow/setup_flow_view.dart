@@ -77,8 +77,12 @@ class SetupFlowView extends ConsumerWidget {
       }
     }
 
-    void run(Future<RepoResult<void>> Function() command) =>
-        unawaited(command().then(show));
+    void run(Future<RepoResult<void>> Function() command) {
+      // The step moves on: its keyboard (a number pad has no "Done") goes with
+      // it instead of hanging over the next step.
+      FocusManager.instance.primaryFocus?.unfocus();
+      unawaited(command().then(show));
+    }
 
     final step = state.step;
     final body = switch (state.status) {

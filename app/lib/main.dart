@@ -25,11 +25,14 @@ import 'package:mitlio/features/fuel/data/services/fuel_price_service.dart';
 import 'package:mitlio/features/fuel/data/services/geolocator_location_service.dart';
 import 'package:mitlio/features/fx/data/repositories/fx_providers.dart';
 import 'package:mitlio/features/fx/data/services/fx_rate_service.dart';
+import 'package:mitlio/features/onboarding/ui/first_group_view_model.dart';
 import 'package:mitlio/features/profile/ui/car_setup_view_model.dart'
     show carFlowConfigs;
 import 'package:mitlio/features/profile/ui/profile_setup_view_model.dart';
 import 'package:mitlio/features/push/data/push_providers.dart';
 import 'package:mitlio/features/push/data/push_state_store.dart';
+import 'package:mitlio/features/rides/ui/commute_template_view_model.dart';
+import 'package:mitlio/features/rides/ui/month_settle_flow_view_model.dart';
 import 'package:mitlio/features/routes/data/repositories/route_providers.dart';
 import 'package:mitlio/features/routes/data/services/route_distance_service.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
@@ -102,6 +105,9 @@ Future<void> main() async {
       // The guided flows DebugDrive can drive (`ext.mitlio.setup.*`).
       setupFlowConfigsProvider.overrideWithValue({
         profileSetupFlow.id: profileSetupFlow,
+        firstGroupFlow.id: firstGroupFlow,
+        commuteTemplateFlow.id: commuteTemplateFlow,
+        monthSettleFlow.id: monthSettleFlow,
         ...carFlowConfigs,
       }),
       appDatabaseProvider.overrideWithValue(db),

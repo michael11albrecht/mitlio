@@ -50,6 +50,12 @@ final class SetupFlowConfig {
   final String id;
   final List<SetupStepSpec> steps;
 
+  /// The same steps with their own progress for [scope] (a group id, a
+  /// month): `commute_template:<groupId>`. DebugDrive finds the base flow by
+  /// the part before the first colon.
+  SetupFlowConfig scopedTo(String scope) =>
+      SetupFlowConfig(id: '$id:$scope', steps: steps);
+
   @override
   bool operator ==(Object other) => other is SetupFlowConfig && other.id == id;
 

@@ -1,8 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:mitlio/core/id_generator.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/debug/fakes/fake_route_distance_service.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/fake_ride_templates_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
 import 'package:mitlio/features/routes/data/route_models.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -14,7 +17,7 @@ const _toggle = 'Start und Ziel eingeben, Strecke berechnen';
 const _credit =
     'Karten- und Routendaten © OpenStreetMap-Mitwirkende, via openrouteservice';
 
-/// "Strecke berechnen" in the ride template form and the trip form, on the
+/// "Strecke berechnen" in the commute template flow and the trip form, on the
 /// real app with the fake route backend (German).
 void main() {
   late FakeApp app;
@@ -43,15 +46,36 @@ void main() {
         await body(tester);
       });
 
+  /// The route step of the commute template flow (name answered).
   Future<void> openTemplateForm(
     WidgetTester tester, {
     bool backend = true,
-  }) => pumpMitlio(
-    tester,
-    app,
-    location: '/groups/${pendeln.id}/rides/templates/new',
-    extra: backend ? app.routeOverrides : const [],
-  );
+  }) async {
+    await pumpMitlio(
+      tester,
+      app,
+      location: '/groups/${pendeln.id}/rides/templates/new',
+      extra: [
+        // The flow reads the group's routes (the helper app has none).
+        rideTemplatesRepositoryProvider.overrideWithValue(
+          FakeRideTemplatesRepository(
+            groups: app.groups,
+            members: app.members,
+            vehicles: app.vehicles,
+            ids: SequentialIdGenerator(),
+          ),
+        ),
+        if (backend) ...app.routeOverrides,
+      ],
+    );
+    // A second visit resumes on the route step: the name is already answered.
+    final name = find.widgetWithText(TextField, 'Name');
+    if (name.evaluate().isNotEmpty) {
+      await tester.enterText(name, 'Arbeit');
+      await tester.tap(find.text('Weiter'));
+      await tester.pumpAndSettle();
+    }
+  }
 
   Future<void> openTripForm(WidgetTester tester) async {
     await pumpMitlio(

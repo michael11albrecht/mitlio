@@ -96,11 +96,12 @@ void main() {
     );
   });
 
-  testWidgets('expense path opens the regular group form', (tester) async {
+  testWidgets('expense path opens the first-group step flow', (tester) async {
     await pumpMitlio(tester, app);
     await tester.tap(find.text('Gruppe für Ausgaben anlegen'));
     await tester.pumpAndSettle();
-    expect(find.text('Neue Gruppe'), findsOneWidget);
+    expect(find.text('Wie heißt deine Gruppe?'), findsOneWidget);
+    expect(find.text('Schritt 1 von 3'), findsOneWidget);
     expect(
       await tester.runAsync(() => app.groups.watchGroups().first),
       isEmpty,

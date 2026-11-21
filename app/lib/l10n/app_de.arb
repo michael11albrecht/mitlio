@@ -1078,6 +1078,68 @@
   "templateDriverNone": "Wechselt",
   "templatePassengersSection": "Fährt mit",
   "templateTollsLabel": "Maut (optional)",
+  "commuteNameTitle": "Wie heißt die Strecke?",
+  "commuteRouteTitle": "Wie weit ist es?",
+  "commuteVehicleTitle": "Mit welchem Auto?",
+  "commutePeopleTitle": "Wer fährt, wer fährt mit?",
+  "commuteTollsTitle": "Gibt es Maut?",
+  "commuteFinishTitle": "Deine Strecke „{name}“",
+  "@commuteFinishTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSummaryRoundTrip": "{km} km, hin und zurück",
+  "@commuteSummaryRoundTrip": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSummaryOneWay": "{km} km, einfach",
+  "@commuteSummaryOneWay": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSummaryVehicle": "Auto: {name}",
+  "@commuteSummaryVehicle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSummaryDriver": "Fährt meistens: {name}",
+  "@commuteSummaryDriver": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSummaryPassengers": "Fährt mit: {names}",
+  "@commuteSummaryPassengers": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSummaryTolls": "Maut: {amount}",
+  "@commuteSummaryTolls": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSave": "Strecke speichern",
   "templateErrorName": "Gib einen Namen ein",
   "templateErrorDistance": "Gib die Entfernung ein",
   "templateNoVehicle": "Lege zuerst ein Fahrzeug an.",
@@ -1123,6 +1185,31 @@
   },
   "ridesSettleNote": "Die Fahrten zählen schon im Saldo. Beim Abrechnen werden sie gesperrt und pro Fahrer zu einer Ausgabe. Du kannst das gleich rückgängig machen.",
   "ridesSettleAction": "Abrechnen",
+  "monthSettleRidesTitle": "Das war im {month} los",
+  "@monthSettleRidesTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "monthSettleAmountsTitle": "Wer bekommt was?",
+  "monthSettleSummaryRides": "{count, plural, =1{1 Fahrt wird gesperrt} other{{count} Fahrten werden gesperrt}}",
+  "@monthSettleSummaryRides": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthSettleSummaryExpenses": "{count, plural, =1{Daraus wird 1 Ausgabe} other{Daraus werden {count} Ausgaben}}",
+  "@monthSettleSummaryExpenses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "ridesSettleDone": "{month} abgerechnet",
   "@ridesSettleDone": {
     "placeholders": {
@@ -1344,6 +1431,46 @@
   "onboardingCommuteGroupName": "Fahrgemeinschaft",
   "onboardingGroup": "Gruppe für Ausgaben anlegen",
   "onboardingGroupHint": "Für Reisen, die WG oder einen Abend zu mehreren.",
+  "firstGroupNameTitle": "Wie heißt deine Gruppe?",
+  "firstGroupPeopleTitle": "Wer ist dabei?",
+  "firstGroupPeopleLabel": "Name",
+  "firstGroupPeopleAdd": "Hinzufügen",
+  "firstGroupPeopleHint": "Trag die anderen ein. Du kannst später jederzeit weitere hinzufügen.",
+  "firstGroupPeopleRemove": "{name} entfernen",
+  "@firstGroupPeopleRemove": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "firstGroupCurrencyTitle": "In welcher Währung?",
+  "firstGroupFinishTitle": "„{name}“ ist startklar",
+  "@firstGroupFinishTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "firstGroupSummaryPeople": "Dabei: {people}",
+  "@firstGroupSummaryPeople": {
+    "placeholders": {
+      "people": {
+        "type": "String"
+      }
+    }
+  },
+  "firstGroupSummaryAlone": "Erstmal nur du",
+  "firstGroupSummaryCurrency": "Währung: {currency}",
+  "@firstGroupSummaryCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "firstGroupCreate": "Los geht’s",
   "onboardingTripOnly": "Nur eine Fahrt berechnen",
   "tripSeatName": "Person {number}",
   "@tripSeatName": {

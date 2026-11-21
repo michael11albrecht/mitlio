@@ -21,6 +21,8 @@ The fenced JSON block below is the single source: the helper parses it. Keys are
 | `setup_finish_action` | Finish screen to its one next action | 1 |
 | `car_setup` | Whole car flow with the flat extra cost: "Ja", name + "Weiter", fuel card, consumption + "Weiter", "Pauschale", "Auto speichern" (typing is not a tap; PU-T08) | 6 |
 | `profile_setup` | Whole profile flow, every step answered: name, avatar (pick + "Weiter"), PayPal yes, PayPal.Me, bank yes, IBAN, finish action. Typing is not a tap; the minimal path (name, skip, no, no, finish) is 5 (PU-T07) | 8 |
+| `first_group` | First group with people on the step flow (from the first-run screen, PU-T12): name + "Weiter", people + "Weiter", currency "Überspringen", finish action. Typing is not a tap; the entry tap on the first-run screen is not counted | 4 |
+| `commute_template` | New commute route on the step flow (PU-T12): name + "Weiter", distance + "Weiter", car (preselected) "Weiter", driver pick, passenger pick, "Weiter", tolls + "Weiter", finish action. Typing is not a tap; the shortest path (car, skip people, skip tolls) is 6 | 8 |
 
 ```json
 {
@@ -38,7 +40,9 @@ The fenced JSON block below is the single source: the helper parses it. Keys are
   "setup_step_skip": {"maxTaps": 1},
   "setup_finish_action": {"maxTaps": 1},
   "car_setup": {"maxTaps": 6},
-  "profile_setup": {"maxTaps": 8}
+  "profile_setup": {"maxTaps": 8},
+  "first_group": {"maxTaps": 4},
+  "commute_template": {"maxTaps": 8}
 }
 ```
 

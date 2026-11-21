@@ -735,6 +735,68 @@
   "templateDriverNone": "Alternates",
   "templatePassengersSection": "Rides along",
   "templateTollsLabel": "Tolls (optional)",
+  "commuteNameTitle": "What is the route called?",
+  "commuteRouteTitle": "How far is it?",
+  "commuteVehicleTitle": "Which car?",
+  "commutePeopleTitle": "Who drives, who rides along?",
+  "commuteTollsTitle": "Are there tolls?",
+  "commuteFinishTitle": "Your route “{name}”",
+  "@commuteFinishTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSummaryRoundTrip": "{km} km, there and back",
+  "@commuteSummaryRoundTrip": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSummaryOneWay": "{km} km, one way",
+  "@commuteSummaryOneWay": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSummaryVehicle": "Car: {name}",
+  "@commuteSummaryVehicle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSummaryDriver": "Usually drives: {name}",
+  "@commuteSummaryDriver": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSummaryPassengers": "Rides along: {names}",
+  "@commuteSummaryPassengers": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSummaryTolls": "Tolls: {amount}",
+  "@commuteSummaryTolls": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "commuteSave": "Save route",
   "templateErrorName": "Enter a name",
   "templateErrorDistance": "Enter the distance",
   "templateNoVehicle": "Add a car first.",
@@ -750,6 +812,31 @@
   "ridesSettleDriverLine": "{name} gets {amount} for {count, plural, =1{1 ride} other{{count} rides}}",
   "ridesSettleNote": "The rides already count in the balances. Settling locks them and creates one expense per driver. You can undo it right away.",
   "ridesSettleAction": "Settle",
+  "monthSettleRidesTitle": "What happened in {month}",
+  "@monthSettleRidesTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "monthSettleAmountsTitle": "Who gets what?",
+  "monthSettleSummaryRides": "{count, plural, =1{1 ride gets locked} other{{count} rides get locked}}",
+  "@monthSettleSummaryRides": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthSettleSummaryExpenses": "{count, plural, =1{It becomes 1 expense} other{It becomes {count} expenses}}",
+  "@monthSettleSummaryExpenses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "ridesSettleDone": "{month} settled",
   "ridesSettleExpenseTitle": "Rides {period} · {name}",
   "ridesFairnessTitle": "Fairness",
@@ -875,6 +962,46 @@
   "onboardingCommuteGroupName": "Carpool",
   "onboardingGroup": "Create a group for expenses",
   "onboardingGroupHint": "For trips, your flat or a night out together.",
+  "firstGroupNameTitle": "What is your group called?",
+  "firstGroupPeopleTitle": "Who is in?",
+  "firstGroupPeopleLabel": "Name",
+  "firstGroupPeopleAdd": "Add",
+  "firstGroupPeopleHint": "Add the others. You can add more at any time.",
+  "firstGroupPeopleRemove": "Remove {name}",
+  "@firstGroupPeopleRemove": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "firstGroupCurrencyTitle": "Which currency?",
+  "firstGroupFinishTitle": "“{name}” is ready",
+  "@firstGroupFinishTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "firstGroupSummaryPeople": "In: {people}",
+  "@firstGroupSummaryPeople": {
+    "placeholders": {
+      "people": {
+        "type": "String"
+      }
+    }
+  },
+  "firstGroupSummaryAlone": "Just you for now",
+  "firstGroupSummaryCurrency": "Currency: {currency}",
+  "@firstGroupSummaryCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "firstGroupCreate": "Let’s go",
   "onboardingTripOnly": "Just calculate one trip",
   "tripSeatName": "Person {number}",
   "@tripSeatName": {
