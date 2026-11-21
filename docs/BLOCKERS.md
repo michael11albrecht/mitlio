@@ -28,11 +28,19 @@
 
 ## Owner review queue (critical PRs, code-owner review required)
 
-Updated 2026-11-21. Agents cannot merge these; they are otherwise green or waiting on CI.
+Updated 2026-11-21. Agents cannot merge these. Merge order matters where marked.
 
-| PR | What | Why critical |
+| PR | What | Why critical / what you decide |
 |---|---|---|
-| #239 | PU-T04 profile, personal vehicles tables, schema v7 | schema, PII (IBAN stays local) |
-| #242 | P8-T06 release-strip gate verified on real builds | `.github/**`, release gate |
+| #229 | ADR-29 in-app feedback | accept or reject; blocks #230 |
+| #239 | PU-T04 profile + personal vehicles tables, schema v7 | schema, PII (IBAN stays local) |
+| #245 | PU-T05 guided setup step-flow framework | ux-review, golden look |
+| #247 | PU-T06 illustrations (CustomPainter) | owner judges goldens (decision #11) |
+| #249 | PU-T07 profile flow | stacked: merge after #239, #245 |
+| #254 | PU-T08/T09 car + cost-calculator flows | stacked: merge after #239, #245. Confirm: PBefG hint wording, flat rate, typical-consumption table, default fuel prices; personal cars EUR only for now |
+| #246 | P6b-T02..T04 push tables, outbox trigger, notify logic | migrations 0015/0016, RLS |
+| #253 | P6b-T05 `notify` function + FCM stub | stacked on #246 |
+| #252 | P6b app-side push with fakes | ux-review; no Firebase yet (T01 is item 6) |
+| #251 | #206 audit-log delete + purge | migration 0017, renumber if merge order changes; check CI `db` first |
+| #242 | P8-T06 release-strip gate | `.github/**` |
 | #243 | P8-T08 `agent-fix-ci` workflow | `.github/**` |
-| #229 | ADR-29 in-app feedback (decision: accept?) | owner decision, blocks #230 |
