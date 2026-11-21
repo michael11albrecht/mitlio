@@ -52,6 +52,7 @@ Map<String, DriveHandler> groupsDriveHandlers(ProviderContainer c) {
         name: name,
         currency: currency,
         memberNames: members,
+        withProfile: p['withProfile'] == 'true',
       );
       return _result(created, _group);
     },

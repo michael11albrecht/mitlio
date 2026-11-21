@@ -57,7 +57,12 @@ class InlineSetupCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: Spacing.sm),
-                  FilledButton.tonal(
+                  // Inverse colours: a tonal button would vanish in the card.
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: scheme.onSecondaryContainer,
+                      foregroundColor: scheme.secondaryContainer,
+                    ),
                     onPressed: onAction,
                     child: Text(actionLabel),
                   ),
@@ -65,7 +70,7 @@ class InlineSetupCard extends StatelessWidget {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.close),
+              icon: Icon(Icons.close, color: scheme.onSecondaryContainer),
               tooltip: dismissLabel,
               onPressed: onDismiss,
             ),

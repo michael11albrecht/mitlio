@@ -22,7 +22,7 @@ Contract for driving a running **debug** build of the app through the same ViewM
 | `ext.mitlio.state` | `screen` (optional) | without `screen`: `{"route": "/", "screens": [...]}`; with: `{"route", "screen", "state": {...}}` from the registered `debugSnapshot()` |
 | `ext.mitlio.navigate` | `route` (required, starts with `/`) | `{"route": "<resulting location>"}` |
 | `ext.mitlio.errors` | none | `{"errors": [{"time", "source", "error", "stackTrace"}]}`; returns and clears the captured errors |
-| `ext.mitlio.groups.create` | `name` (required), `currency` (ISO code, default `EUR`), `members` (JSON list of names, default none) | `{"id", "name", "currency"}`; calls `GroupsViewModel.create` |
+| `ext.mitlio.groups.create` | `name` (required), `currency` (ISO code, default `EUR`), `members` (JSON list of names, default none), `withProfile` (`true`: add the profile as first member and mark it as own, like the group form) | `{"id", "name", "currency"}`; calls `GroupsViewModel.create` |
 | `ext.mitlio.groups.list` | none | `{"groups": [{"id", "name", "currency"}]}`; calls `GroupsViewModel.list` |
 | `ext.mitlio.groups.archived` | none | `{"groups": [{"id", "name", "currency"}]}` (archived groups); calls `ArchivedGroupsViewModel.list` |
 | `ext.mitlio.groups.restore` | `id` (required) | `{"id"}`; calls `ArchivedGroupsViewModel.restore` (`not_found` unknown, `conflict` if not archived) |
@@ -37,6 +37,17 @@ Contract for driving a running **debug** build of the app through the same ViewM
 | `ext.mitlio.setup.next` | `flowId` (required), `answer` (optional; JSON-decoded when it parses, else a string) | the same snapshot after moving on; calls `SetupFlowViewModel.next`: checks the answer, saves, advances, finishes after the last step (`invalid_params` for a missing or rejected answer, `conflict` when there is no step, `internal` when saving fails; nothing moves on an error) |
 | `ext.mitlio.setup.skip` | `flowId` (required) | the same snapshot; calls `SetupFlowViewModel.skip` (`invalid_params` for a step that cannot be skipped) |
 | `ext.mitlio.setup.back` | `flowId` (required) | the same snapshot; calls `SetupFlowViewModel.back`, also from the finish screen to the last step (`conflict` on the first step) |
+| `ext.mitlio.cars.list` | none | `{"cars": [{"id", "name", "fuelType", "consumptionMilliPer100km", "wearMilliPerKm"}]}`; the personal cars ("Meine Autos", PU-T10) |
+| `ext.mitlio.cars.add` | none | the saved car `{"id", "name", ...}`; the finish action of the car flow (`CarSetupViewModel.save`): stores the car answered through `setup.*` (`car_setup`, plus `car_cost` for own costs) in "Meine Autos" and resets both flows (`conflict` while the answers are incomplete) |
+| `ext.mitlio.cars.edit` | `id` (required), `name`, `fuelType`, `consumptionMilli`, `wearMilli` (all optional) | `{"car", "groups"}`; calls `CarEditViewModel.save`: saves the personal car and carries it to every linked group copy, `groups` = groups updated (`not_found` unknown car, `invalid_params` blank name or no consumption). The undo is kept for `cars.undoEdit` |
+| `ext.mitlio.cars.undoEdit` | none | `{"ok": true}`; runs the undo of the last `cars.edit` (the snackbar's "Rückgängig"); `conflict` if there is none |
+| `ext.mitlio.cars.use` | `groupId`, `carId` (both required) | the group copy `{"id", "name", ...}`; calls `GroupCarPickerViewModel.use`: creates the linked copy, or returns the one the group already has (`not_found` unknown car or group) |
+| `ext.mitlio.cars.linked` | `vehicleId` (required) | `{"vehicleId", "linked"}`; reads `VehicleLinkViewModel`: is the group vehicle a copy of a personal car |
+| `ext.mitlio.cars.unlink` | `vehicleId` (required) | `{"vehicleId", "linked": false}`; calls `VehicleLinkViewModel.unlink`, the copy keeps its values |
+| `ext.mitlio.cards.state` | `card` (`settlePayment`, `groupCar` or `newGroupProfile`) | `{"card", "visible"}`; re-reads `EntryCardViewModel` (inline just-in-time card, PU-T11) |
+| `ext.mitlio.cards.dismiss` | `card` | `{"card", "visible": false}`; calls `EntryCardViewModel.dismiss`, permanent (stored in local setup state, cleared by `reset`) |
+| `ext.mitlio.profile.summary` | none | `{"summary"}`: `none`, `noPayment`, `paypal`, `iban` or `both`, what the settings row "Mein Profil" says; never an IBAN |
+| `ext.mitlio.members.isOwn` | `memberId` (required) | `{"memberId", "own"}`; is the member "Ich" of this device (local marker, PU-T10) |
 | (flow ids) | | `setupFlowConfigsProvider` is filled in `main.dart` with `car_setup` (PU-T08: `hasCar`, `name`, `fuel`, `consumption`, `extraCost`) and `car_cost` (PU-T09: `annualKm`, one step per cost, `depPurchase`/`depResale`/`depYears`, `basis`). Answers: `name` is `{"name", "type"}`, a cost step is `{"cents", "period": "month"\|"year"}`, consumption is thousandths per 100 km, `extraCost` is `flat` or `exact`. Saving the car is the finish screen's "Auto speichern" (`CarSetupViewModel.save`), not a drive command yet |
 
 `navigate` also reaches the first-run routes `/welcome` (onboarding, shown on `/` while no group exists) and `/trip` (the trip form without a group). Onboarding has no commands of its own: the commute path creates its group through `GroupsViewModel.create`, i.e. what `groups.create` calls.
