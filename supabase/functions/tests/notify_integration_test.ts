@@ -31,7 +31,7 @@ async function rest(path: string, init: RequestInit = {}): Promise<Response> {
 
 async function insert(table: string, rows: unknown): Promise<void> {
   const res = await rest(table, { method: "POST", body: JSON.stringify(rows) });
-  assert(res.ok, `insert ${table}: ${res.status} ${await res.text()}`);
+  if (!res.ok) throw new Error(`insert ${table}: ${res.status} ${await res.text()}`);
   await res.body?.cancel();
 }
 
@@ -43,7 +43,7 @@ async function select<T>(path: string): Promise<T[]> {
 
 async function patch(path: string, body: unknown): Promise<void> {
   const res = await rest(path, { method: "PATCH", body: JSON.stringify(body) });
-  assert(res.ok, `patch ${path}: ${res.status} ${await res.text()}`);
+  if (!res.ok) throw new Error(`patch ${path}: ${res.status} ${await res.text()}`);
   await res.body?.cancel();
 }
 
@@ -205,7 +205,7 @@ Deno.test("a burst is coalesced, recipients exclude the actor, dead token is rem
 
 Deno.test("prefs: none skips the user, hide_amounts sends the generic body", async () => {
   await insert("notification_prefs", [
-    { user_id: cara, group_id: G, level: "none" },
+    { user_id: cara, group_id: G, level: "none", hide_amounts: false },
     { user_id: ben, group_id: G, level: "all", hide_amounts: true },
   ]);
   await fetch(`${STUB_URL}/__reset`).then((r) => r.body?.cancel());
@@ -267,7 +267,7 @@ Deno.test("retries: 503 re-queues with backoff, succeeds later, gives up at the 
 });
 
 Deno.test("only mine: members not involved are skipped", async () => {
-  await insert("notification_prefs", [{ user_id: cara, group_id: G, level: "mine" }]);
+  await patch(`notification_prefs?user_id=eq.${cara}&group_id=eq.${G}`, { level: "mine" });
   await fetch(`${STUB_URL}/__reset`).then((r) => r.body?.cancel());
   await insert("notification_outbox", [event({}, { involved_member_ids: [M_ANNA, M_BEN] })]);
   await (await run()).body?.cancel();
