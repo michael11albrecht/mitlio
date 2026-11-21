@@ -829,6 +829,7 @@ export type Database = {
     }
     Functions: {
       can_bootstrap_group: { Args: { gid: string }; Returns: boolean }
+      cleanup_auth_audit_log: { Args: never; Returns: undefined }
       cleanup_fuel_tables: { Args: never; Returns: undefined }
       cleanup_fx_rates: { Args: never; Returns: undefined }
       cleanup_inactive_accounts: { Args: never; Returns: undefined }
