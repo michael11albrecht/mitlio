@@ -15,6 +15,7 @@ class DbColumn {
 /// Table names of the server schema (`public`).
 abstract final class DbTables {
   static const appConfig = 'app_config';
+  static const deviceTokens = 'device_tokens';
   static const expensePayers = 'expense_payers';
   static const expenseRevisions = 'expense_revisions';
   static const expenseShares = 'expense_shares';
@@ -26,6 +27,8 @@ abstract final class DbTables {
   static const groupMemberships = 'group_memberships';
   static const groups = 'groups';
   static const members = 'members';
+  static const notificationOutbox = 'notification_outbox';
+  static const notificationPrefs = 'notification_prefs';
   static const rateLimits = 'rate_limits';
   static const rideTemplates = 'ride_templates';
   static const rides = 'rides';
@@ -39,6 +42,18 @@ abstract final class DbAppConfigCols {
   static const platform = 'platform';
   static const storeUrl = 'store_url';
   static const updatedAt = 'updated_at';
+}
+
+/// Column names of `device_tokens`.
+abstract final class DbDeviceTokensCols {
+  static const appVersion = 'app_version';
+  static const createdAt = 'created_at';
+  static const id = 'id';
+  static const lastSeenAt = 'last_seen_at';
+  static const locale = 'locale';
+  static const platform = 'platform';
+  static const token = 'token';
+  static const userId = 'user_id';
 }
 
 /// Column names of `expense_payers`.
@@ -170,6 +185,29 @@ abstract final class DbMembersCols {
   static const userId = 'user_id';
 }
 
+/// Column names of `notification_outbox`.
+abstract final class DbNotificationOutboxCols {
+  static const actorUserId = 'actor_user_id';
+  static const createdAt = 'created_at';
+  static const dedupeKey = 'dedupe_key';
+  static const entityId = 'entity_id';
+  static const event = 'event';
+  static const groupId = 'group_id';
+  static const id = 'id';
+  static const payload = 'payload';
+  static const processedAt = 'processed_at';
+}
+
+/// Column names of `notification_prefs`.
+abstract final class DbNotificationPrefsCols {
+  static const groupId = 'group_id';
+  static const hideAmounts = 'hide_amounts';
+  static const level = 'level';
+  static const quietHours = 'quiet_hours';
+  static const updatedAt = 'updated_at';
+  static const userId = 'user_id';
+}
+
 /// Column names of `rate_limits`.
 abstract final class DbRateLimitsCols {
   static const keyHash = 'key_hash';
@@ -253,6 +291,16 @@ const dbContract = <String, Map<String, DbColumn>>{
     'platform': DbColumn(DbColumnType.string, nullable: false),
     'store_url': DbColumn(DbColumnType.string, nullable: true),
     'updated_at': DbColumn(DbColumnType.string, nullable: false),
+  },
+  'device_tokens': {
+    'app_version': DbColumn(DbColumnType.string, nullable: true),
+    'created_at': DbColumn(DbColumnType.string, nullable: false),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'last_seen_at': DbColumn(DbColumnType.string, nullable: false),
+    'locale': DbColumn(DbColumnType.string, nullable: false),
+    'platform': DbColumn(DbColumnType.string, nullable: false),
+    'token': DbColumn(DbColumnType.string, nullable: false),
+    'user_id': DbColumn(DbColumnType.string, nullable: false),
   },
   'expense_payers': {
     'expense_id': DbColumn(DbColumnType.string, nullable: false),
@@ -360,6 +408,25 @@ const dbContract = <String, Map<String, DbColumn>>{
     'server_seq': DbColumn(DbColumnType.number, nullable: false),
     'updated_at': DbColumn(DbColumnType.string, nullable: false),
     'user_id': DbColumn(DbColumnType.string, nullable: true),
+  },
+  'notification_outbox': {
+    'actor_user_id': DbColumn(DbColumnType.string, nullable: true),
+    'created_at': DbColumn(DbColumnType.string, nullable: false),
+    'dedupe_key': DbColumn(DbColumnType.string, nullable: false),
+    'entity_id': DbColumn(DbColumnType.string, nullable: false),
+    'event': DbColumn(DbColumnType.string, nullable: false),
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'id': DbColumn(DbColumnType.string, nullable: false),
+    'payload': DbColumn(DbColumnType.json, nullable: false),
+    'processed_at': DbColumn(DbColumnType.string, nullable: true),
+  },
+  'notification_prefs': {
+    'group_id': DbColumn(DbColumnType.string, nullable: false),
+    'hide_amounts': DbColumn(DbColumnType.boolean, nullable: false),
+    'level': DbColumn(DbColumnType.string, nullable: false),
+    'quiet_hours': DbColumn(DbColumnType.json, nullable: true),
+    'updated_at': DbColumn(DbColumnType.string, nullable: false),
+    'user_id': DbColumn(DbColumnType.string, nullable: false),
   },
   'rate_limits': {
     'key_hash': DbColumn(DbColumnType.string, nullable: false),
