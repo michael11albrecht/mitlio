@@ -2478,6 +2478,34 @@ class AppLocalizationsEn extends AppLocalizations {
       'Name, picture, PayPal.Me and IBAN, only on your device';
 
   @override
+  String get myQrEntry => 'Share my QR code';
+
+  @override
+  String get myQrEntryHint => 'For bank transfers to you, no amount';
+
+  @override
+  String get myQrTitle => 'My QR code';
+
+  @override
+  String get myQrHint =>
+      'Anyone who scans this code with their banking app can send you money. It contains your IBAN: only share it with people you trust.';
+
+  @override
+  String get myQrShare => 'Share';
+
+  @override
+  String get myQrNoIbanTitle => 'No IBAN yet';
+
+  @override
+  String get myQrNoIbanMessage =>
+      'Add your IBAN in “My profile” and you can share your QR code here.';
+
+  @override
+  String myQrSemantics(String name) {
+    return 'QR code for bank transfers to $name';
+  }
+
+  @override
   String get profileNameTitle => 'What is your name?';
 
   @override

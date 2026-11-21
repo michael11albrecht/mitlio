@@ -2489,6 +2489,34 @@ class AppLocalizationsDe extends AppLocalizations {
       'Name, Bild, PayPal.Me und IBAN, nur auf deinem Gerät';
 
   @override
+  String get myQrEntry => 'Mein QR-Code teilen';
+
+  @override
+  String get myQrEntryHint => 'Zum Überweisen an dich, ohne Betrag';
+
+  @override
+  String get myQrTitle => 'Mein QR-Code';
+
+  @override
+  String get myQrHint =>
+      'Wer diesen Code mit der Banking-App scannt, kann dir Geld überweisen. Er enthält deine IBAN: teile ihn nur mit Leuten, denen du vertraust.';
+
+  @override
+  String get myQrShare => 'Teilen';
+
+  @override
+  String get myQrNoIbanTitle => 'Noch keine IBAN';
+
+  @override
+  String get myQrNoIbanMessage =>
+      'Trag in „Mein Profil“ deine IBAN ein, dann kannst du hier deinen QR-Code teilen.';
+
+  @override
+  String myQrSemantics(String name) {
+    return 'QR-Code zum Überweisen an $name';
+  }
+
+  @override
   String get profileNameTitle => 'Wie heißt du?';
 
   @override

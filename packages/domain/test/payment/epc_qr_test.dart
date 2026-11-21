@@ -155,6 +155,31 @@ void main() {
     });
   });
 
+  group('no amount (shareable "my QR code")', () {
+    test('line 8 is empty and the payload still has 11 lines', () {
+      final r = buildEpcQrPayload(
+        name: 'Max',
+        iban: _iban,
+        amount: null,
+      ) as Ok<String, EpcError>;
+      final lines = r.value.split('\n');
+      expect(lines, hasLength(11));
+      expect(lines[7], '');
+      expect(lines[5], 'Max');
+      expect(lines[6], _iban);
+    });
+    test('name and IBAN are still validated', () {
+      expect(
+        buildEpcQrPayload(name: ' ', iban: _iban, amount: null),
+        _err(const InvalidName()),
+      );
+      expect(
+        buildEpcQrPayload(name: 'Max', iban: 'DE00', amount: null),
+        isA<Err<String, EpcError>>(),
+      );
+    });
+  });
+
   group('remittance', () {
     test('140 ok, 141 RemittanceTooLong', () {
       expect(_build(remittance: 'a' * 140), isA<Ok<String, EpcError>>());
