@@ -10,7 +10,7 @@ Source of truth for scope stays `docs/IMPLEMENTATION_PLAN.md`. This file is the 
 | PW, P6c | done; #207 route field waits on owner (ORS origins, Datenschutz) |
 | P6 sync | done (T01–T16) |
 | P7 | T01–T08 done; T09 tip jar waits on ADR-28 owner decision (#219); T10 feedback form waits on ADR-29 (#229, #230) |
-| P8 | T01–T03, T07 done, T04 prod deploy workflow done (#233); T06 (#242), T08 (#243) in owner review |
+| P8 | T01–T03, T07 done, T04 prod deploy workflow done (#233); T06 (#242), T08 (#243, off until `AGENT_FIX_CI=true`) in owner review |
 | PU | T02, T03, T15 done (#235); T04 (#239), T05 (#245), T06 (#247) in review; T07–T09 in progress (stacked) |
 | P6b | T02–T04 in review (#246); T05 notify function, app-side T06–T09 in progress; T01 needs Firebase (owner) |
 | P9r, P9-T01..T07 | not started |
