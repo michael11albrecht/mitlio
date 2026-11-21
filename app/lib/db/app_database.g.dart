@@ -5146,6 +5146,17 @@ class $VehiclesTable extends Vehicles
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _sourceUserVehicleIdMeta =
+      const VerificationMeta('sourceUserVehicleId');
+  @override
+  late final GeneratedColumn<String> sourceUserVehicleId =
+      GeneratedColumn<String>(
+        'source_user_vehicle_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -5158,6 +5169,7 @@ class $VehiclesTable extends Vehicles
     consumptionMilliPer100km,
     wearMilliPerKm,
     kmRateMilliPerKm,
+    sourceUserVehicleId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5251,6 +5263,15 @@ class $VehiclesTable extends Vehicles
         ),
       );
     }
+    if (data.containsKey('source_user_vehicle_id')) {
+      context.handle(
+        _sourceUserVehicleIdMeta,
+        sourceUserVehicleId.isAcceptableOrUnknown(
+          data['source_user_vehicle_id']!,
+          _sourceUserVehicleIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -5300,6 +5321,10 @@ class $VehiclesTable extends Vehicles
         DriftSqlType.int,
         data['${effectivePrefix}km_rate_milli_per_km'],
       ),
+      sourceUserVehicleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_user_vehicle_id'],
+      ),
     );
   }
 
@@ -5333,6 +5358,11 @@ class VehicleRow extends DataClass implements Insertable<VehicleRow> {
 
   /// If set, rides with this vehicle default to km-rate mode.
   final int? kmRateMilliPerKm;
+
+  /// Id of the personal [UserVehicles] row this group copy is linked to
+  /// (ADR-25, schema v7). Local only: never pushed (the outbox payload uses
+  /// server columns) and not on the server. Null for plain group vehicles.
+  final String? sourceUserVehicleId;
   const VehicleRow({
     required this.id,
     required this.groupId,
@@ -5344,6 +5374,7 @@ class VehicleRow extends DataClass implements Insertable<VehicleRow> {
     required this.consumptionMilliPer100km,
     required this.wearMilliPerKm,
     this.kmRateMilliPerKm,
+    this.sourceUserVehicleId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5361,6 +5392,9 @@ class VehicleRow extends DataClass implements Insertable<VehicleRow> {
     map['wear_milli_per_km'] = Variable<int>(wearMilliPerKm);
     if (!nullToAbsent || kmRateMilliPerKm != null) {
       map['km_rate_milli_per_km'] = Variable<int>(kmRateMilliPerKm);
+    }
+    if (!nullToAbsent || sourceUserVehicleId != null) {
+      map['source_user_vehicle_id'] = Variable<String>(sourceUserVehicleId);
     }
     return map;
   }
@@ -5381,6 +5415,9 @@ class VehicleRow extends DataClass implements Insertable<VehicleRow> {
       kmRateMilliPerKm: kmRateMilliPerKm == null && nullToAbsent
           ? const Value.absent()
           : Value(kmRateMilliPerKm),
+      sourceUserVehicleId: sourceUserVehicleId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceUserVehicleId),
     );
   }
 
@@ -5402,6 +5439,9 @@ class VehicleRow extends DataClass implements Insertable<VehicleRow> {
       ),
       wearMilliPerKm: serializer.fromJson<int>(json['wearMilliPerKm']),
       kmRateMilliPerKm: serializer.fromJson<int?>(json['kmRateMilliPerKm']),
+      sourceUserVehicleId: serializer.fromJson<String?>(
+        json['sourceUserVehicleId'],
+      ),
     );
   }
   @override
@@ -5420,6 +5460,7 @@ class VehicleRow extends DataClass implements Insertable<VehicleRow> {
       ),
       'wearMilliPerKm': serializer.toJson<int>(wearMilliPerKm),
       'kmRateMilliPerKm': serializer.toJson<int?>(kmRateMilliPerKm),
+      'sourceUserVehicleId': serializer.toJson<String?>(sourceUserVehicleId),
     };
   }
 
@@ -5434,6 +5475,7 @@ class VehicleRow extends DataClass implements Insertable<VehicleRow> {
     int? consumptionMilliPer100km,
     int? wearMilliPerKm,
     Value<int?> kmRateMilliPerKm = const Value.absent(),
+    Value<String?> sourceUserVehicleId = const Value.absent(),
   }) => VehicleRow(
     id: id ?? this.id,
     groupId: groupId ?? this.groupId,
@@ -5448,6 +5490,9 @@ class VehicleRow extends DataClass implements Insertable<VehicleRow> {
     kmRateMilliPerKm: kmRateMilliPerKm.present
         ? kmRateMilliPerKm.value
         : this.kmRateMilliPerKm,
+    sourceUserVehicleId: sourceUserVehicleId.present
+        ? sourceUserVehicleId.value
+        : this.sourceUserVehicleId,
   );
   VehicleRow copyWithCompanion(VehiclesCompanion data) {
     return VehicleRow(
@@ -5467,6 +5512,9 @@ class VehicleRow extends DataClass implements Insertable<VehicleRow> {
       kmRateMilliPerKm: data.kmRateMilliPerKm.present
           ? data.kmRateMilliPerKm.value
           : this.kmRateMilliPerKm,
+      sourceUserVehicleId: data.sourceUserVehicleId.present
+          ? data.sourceUserVehicleId.value
+          : this.sourceUserVehicleId,
     );
   }
 
@@ -5482,7 +5530,8 @@ class VehicleRow extends DataClass implements Insertable<VehicleRow> {
           ..write('fuelType: $fuelType, ')
           ..write('consumptionMilliPer100km: $consumptionMilliPer100km, ')
           ..write('wearMilliPerKm: $wearMilliPerKm, ')
-          ..write('kmRateMilliPerKm: $kmRateMilliPerKm')
+          ..write('kmRateMilliPerKm: $kmRateMilliPerKm, ')
+          ..write('sourceUserVehicleId: $sourceUserVehicleId')
           ..write(')'))
         .toString();
   }
@@ -5499,6 +5548,7 @@ class VehicleRow extends DataClass implements Insertable<VehicleRow> {
     consumptionMilliPer100km,
     wearMilliPerKm,
     kmRateMilliPerKm,
+    sourceUserVehicleId,
   );
   @override
   bool operator ==(Object other) =>
@@ -5513,7 +5563,8 @@ class VehicleRow extends DataClass implements Insertable<VehicleRow> {
           other.fuelType == this.fuelType &&
           other.consumptionMilliPer100km == this.consumptionMilliPer100km &&
           other.wearMilliPerKm == this.wearMilliPerKm &&
-          other.kmRateMilliPerKm == this.kmRateMilliPerKm);
+          other.kmRateMilliPerKm == this.kmRateMilliPerKm &&
+          other.sourceUserVehicleId == this.sourceUserVehicleId);
 }
 
 class VehiclesCompanion extends UpdateCompanion<VehicleRow> {
@@ -5527,6 +5578,7 @@ class VehiclesCompanion extends UpdateCompanion<VehicleRow> {
   final Value<int> consumptionMilliPer100km;
   final Value<int> wearMilliPerKm;
   final Value<int?> kmRateMilliPerKm;
+  final Value<String?> sourceUserVehicleId;
   final Value<int> rowid;
   const VehiclesCompanion({
     this.id = const Value.absent(),
@@ -5539,6 +5591,7 @@ class VehiclesCompanion extends UpdateCompanion<VehicleRow> {
     this.consumptionMilliPer100km = const Value.absent(),
     this.wearMilliPerKm = const Value.absent(),
     this.kmRateMilliPerKm = const Value.absent(),
+    this.sourceUserVehicleId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   VehiclesCompanion.insert({
@@ -5552,6 +5605,7 @@ class VehiclesCompanion extends UpdateCompanion<VehicleRow> {
     required int consumptionMilliPer100km,
     this.wearMilliPerKm = const Value.absent(),
     this.kmRateMilliPerKm = const Value.absent(),
+    this.sourceUserVehicleId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        groupId = Value(groupId),
@@ -5571,6 +5625,7 @@ class VehiclesCompanion extends UpdateCompanion<VehicleRow> {
     Expression<int>? consumptionMilliPer100km,
     Expression<int>? wearMilliPerKm,
     Expression<int>? kmRateMilliPerKm,
+    Expression<String>? sourceUserVehicleId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -5585,6 +5640,8 @@ class VehiclesCompanion extends UpdateCompanion<VehicleRow> {
         'consumption_milli_per100km': consumptionMilliPer100km,
       if (wearMilliPerKm != null) 'wear_milli_per_km': wearMilliPerKm,
       if (kmRateMilliPerKm != null) 'km_rate_milli_per_km': kmRateMilliPerKm,
+      if (sourceUserVehicleId != null)
+        'source_user_vehicle_id': sourceUserVehicleId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -5600,6 +5657,7 @@ class VehiclesCompanion extends UpdateCompanion<VehicleRow> {
     Value<int>? consumptionMilliPer100km,
     Value<int>? wearMilliPerKm,
     Value<int?>? kmRateMilliPerKm,
+    Value<String?>? sourceUserVehicleId,
     Value<int>? rowid,
   }) {
     return VehiclesCompanion(
@@ -5614,6 +5672,7 @@ class VehiclesCompanion extends UpdateCompanion<VehicleRow> {
           consumptionMilliPer100km ?? this.consumptionMilliPer100km,
       wearMilliPerKm: wearMilliPerKm ?? this.wearMilliPerKm,
       kmRateMilliPerKm: kmRateMilliPerKm ?? this.kmRateMilliPerKm,
+      sourceUserVehicleId: sourceUserVehicleId ?? this.sourceUserVehicleId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -5653,6 +5712,11 @@ class VehiclesCompanion extends UpdateCompanion<VehicleRow> {
     if (kmRateMilliPerKm.present) {
       map['km_rate_milli_per_km'] = Variable<int>(kmRateMilliPerKm.value);
     }
+    if (sourceUserVehicleId.present) {
+      map['source_user_vehicle_id'] = Variable<String>(
+        sourceUserVehicleId.value,
+      );
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -5672,6 +5736,7 @@ class VehiclesCompanion extends UpdateCompanion<VehicleRow> {
           ..write('consumptionMilliPer100km: $consumptionMilliPer100km, ')
           ..write('wearMilliPerKm: $wearMilliPerKm, ')
           ..write('kmRateMilliPerKm: $kmRateMilliPerKm, ')
+          ..write('sourceUserVehicleId: $sourceUserVehicleId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -8850,6 +8915,2219 @@ class LocalSettingsCompanion extends UpdateCompanion<LocalSettingRow> {
   }
 }
 
+class $ProfileTable extends Profile with TableInfo<$ProfileTable, ProfileRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProfileTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    check: () => id.equals(profileRowId),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _displayNameMeta = const VerificationMeta(
+    'displayName',
+  );
+  @override
+  late final GeneratedColumn<String> displayName = GeneratedColumn<String>(
+    'display_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _avatarColorMeta = const VerificationMeta(
+    'avatarColor',
+  );
+  @override
+  late final GeneratedColumn<int> avatarColor = GeneratedColumn<int>(
+    'avatar_color',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _avatarEmojiMeta = const VerificationMeta(
+    'avatarEmoji',
+  );
+  @override
+  late final GeneratedColumn<String> avatarEmoji = GeneratedColumn<String>(
+    'avatar_emoji',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _paypalMeMeta = const VerificationMeta(
+    'paypalMe',
+  );
+  @override
+  late final GeneratedColumn<String> paypalMe = GeneratedColumn<String>(
+    'paypal_me',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    displayName,
+    avatarColor,
+    avatarEmoji,
+    paypalMe,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'profile';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProfileRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('display_name')) {
+      context.handle(
+        _displayNameMeta,
+        displayName.isAcceptableOrUnknown(
+          data['display_name']!,
+          _displayNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_displayNameMeta);
+    }
+    if (data.containsKey('avatar_color')) {
+      context.handle(
+        _avatarColorMeta,
+        avatarColor.isAcceptableOrUnknown(
+          data['avatar_color']!,
+          _avatarColorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('avatar_emoji')) {
+      context.handle(
+        _avatarEmojiMeta,
+        avatarEmoji.isAcceptableOrUnknown(
+          data['avatar_emoji']!,
+          _avatarEmojiMeta,
+        ),
+      );
+    }
+    if (data.containsKey('paypal_me')) {
+      context.handle(
+        _paypalMeMeta,
+        paypalMe.isAcceptableOrUnknown(data['paypal_me']!, _paypalMeMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ProfileRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProfileRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      displayName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}display_name'],
+      )!,
+      avatarColor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}avatar_color'],
+      ),
+      avatarEmoji: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}avatar_emoji'],
+      ),
+      paypalMe: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}paypal_me'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ProfileTable createAlias(String alias) {
+    return $ProfileTable(attachedDatabase, alias);
+  }
+}
+
+class ProfileRow extends DataClass implements Insertable<ProfileRow> {
+  final String id;
+  final String displayName;
+
+  /// Colour of the initials avatar as ARGB int; null = derived default.
+  final int? avatarColor;
+  final String? avatarEmoji;
+
+  /// Normalised PayPal.Me handle.
+  final String? paypalMe;
+  final String updatedAt;
+  const ProfileRow({
+    required this.id,
+    required this.displayName,
+    this.avatarColor,
+    this.avatarEmoji,
+    this.paypalMe,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['display_name'] = Variable<String>(displayName);
+    if (!nullToAbsent || avatarColor != null) {
+      map['avatar_color'] = Variable<int>(avatarColor);
+    }
+    if (!nullToAbsent || avatarEmoji != null) {
+      map['avatar_emoji'] = Variable<String>(avatarEmoji);
+    }
+    if (!nullToAbsent || paypalMe != null) {
+      map['paypal_me'] = Variable<String>(paypalMe);
+    }
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  ProfileCompanion toCompanion(bool nullToAbsent) {
+    return ProfileCompanion(
+      id: Value(id),
+      displayName: Value(displayName),
+      avatarColor: avatarColor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(avatarColor),
+      avatarEmoji: avatarEmoji == null && nullToAbsent
+          ? const Value.absent()
+          : Value(avatarEmoji),
+      paypalMe: paypalMe == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paypalMe),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory ProfileRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProfileRow(
+      id: serializer.fromJson<String>(json['id']),
+      displayName: serializer.fromJson<String>(json['displayName']),
+      avatarColor: serializer.fromJson<int?>(json['avatarColor']),
+      avatarEmoji: serializer.fromJson<String?>(json['avatarEmoji']),
+      paypalMe: serializer.fromJson<String?>(json['paypalMe']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'displayName': serializer.toJson<String>(displayName),
+      'avatarColor': serializer.toJson<int?>(avatarColor),
+      'avatarEmoji': serializer.toJson<String?>(avatarEmoji),
+      'paypalMe': serializer.toJson<String?>(paypalMe),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  ProfileRow copyWith({
+    String? id,
+    String? displayName,
+    Value<int?> avatarColor = const Value.absent(),
+    Value<String?> avatarEmoji = const Value.absent(),
+    Value<String?> paypalMe = const Value.absent(),
+    String? updatedAt,
+  }) => ProfileRow(
+    id: id ?? this.id,
+    displayName: displayName ?? this.displayName,
+    avatarColor: avatarColor.present ? avatarColor.value : this.avatarColor,
+    avatarEmoji: avatarEmoji.present ? avatarEmoji.value : this.avatarEmoji,
+    paypalMe: paypalMe.present ? paypalMe.value : this.paypalMe,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  ProfileRow copyWithCompanion(ProfileCompanion data) {
+    return ProfileRow(
+      id: data.id.present ? data.id.value : this.id,
+      displayName: data.displayName.present
+          ? data.displayName.value
+          : this.displayName,
+      avatarColor: data.avatarColor.present
+          ? data.avatarColor.value
+          : this.avatarColor,
+      avatarEmoji: data.avatarEmoji.present
+          ? data.avatarEmoji.value
+          : this.avatarEmoji,
+      paypalMe: data.paypalMe.present ? data.paypalMe.value : this.paypalMe,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProfileRow(')
+          ..write('id: $id, ')
+          ..write('displayName: $displayName, ')
+          ..write('avatarColor: $avatarColor, ')
+          ..write('avatarEmoji: $avatarEmoji, ')
+          ..write('paypalMe: $paypalMe, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    displayName,
+    avatarColor,
+    avatarEmoji,
+    paypalMe,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProfileRow &&
+          other.id == this.id &&
+          other.displayName == this.displayName &&
+          other.avatarColor == this.avatarColor &&
+          other.avatarEmoji == this.avatarEmoji &&
+          other.paypalMe == this.paypalMe &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ProfileCompanion extends UpdateCompanion<ProfileRow> {
+  final Value<String> id;
+  final Value<String> displayName;
+  final Value<int?> avatarColor;
+  final Value<String?> avatarEmoji;
+  final Value<String?> paypalMe;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const ProfileCompanion({
+    this.id = const Value.absent(),
+    this.displayName = const Value.absent(),
+    this.avatarColor = const Value.absent(),
+    this.avatarEmoji = const Value.absent(),
+    this.paypalMe = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProfileCompanion.insert({
+    required String id,
+    required String displayName,
+    this.avatarColor = const Value.absent(),
+    this.avatarEmoji = const Value.absent(),
+    this.paypalMe = const Value.absent(),
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       displayName = Value(displayName),
+       updatedAt = Value(updatedAt);
+  static Insertable<ProfileRow> custom({
+    Expression<String>? id,
+    Expression<String>? displayName,
+    Expression<int>? avatarColor,
+    Expression<String>? avatarEmoji,
+    Expression<String>? paypalMe,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (displayName != null) 'display_name': displayName,
+      if (avatarColor != null) 'avatar_color': avatarColor,
+      if (avatarEmoji != null) 'avatar_emoji': avatarEmoji,
+      if (paypalMe != null) 'paypal_me': paypalMe,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProfileCompanion copyWith({
+    Value<String>? id,
+    Value<String>? displayName,
+    Value<int?>? avatarColor,
+    Value<String?>? avatarEmoji,
+    Value<String?>? paypalMe,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return ProfileCompanion(
+      id: id ?? this.id,
+      displayName: displayName ?? this.displayName,
+      avatarColor: avatarColor ?? this.avatarColor,
+      avatarEmoji: avatarEmoji ?? this.avatarEmoji,
+      paypalMe: paypalMe ?? this.paypalMe,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (displayName.present) {
+      map['display_name'] = Variable<String>(displayName.value);
+    }
+    if (avatarColor.present) {
+      map['avatar_color'] = Variable<int>(avatarColor.value);
+    }
+    if (avatarEmoji.present) {
+      map['avatar_emoji'] = Variable<String>(avatarEmoji.value);
+    }
+    if (paypalMe.present) {
+      map['paypal_me'] = Variable<String>(paypalMe.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProfileCompanion(')
+          ..write('id: $id, ')
+          ..write('displayName: $displayName, ')
+          ..write('avatarColor: $avatarColor, ')
+          ..write('avatarEmoji: $avatarEmoji, ')
+          ..write('paypalMe: $paypalMe, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LocalProfileBankTable extends LocalProfileBank
+    with TableInfo<$LocalProfileBankTable, LocalProfileBankRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalProfileBankTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _profileIdMeta = const VerificationMeta(
+    'profileId',
+  );
+  @override
+  late final GeneratedColumn<String> profileId = GeneratedColumn<String>(
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES profile (id)',
+    ),
+  );
+  static const VerificationMeta _ibanMeta = const VerificationMeta('iban');
+  @override
+  late final GeneratedColumn<String> iban = GeneratedColumn<String>(
+    'iban',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bicMeta = const VerificationMeta('bic');
+  @override
+  late final GeneratedColumn<String> bic = GeneratedColumn<String>(
+    'bic',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _accountNameMeta = const VerificationMeta(
+    'accountName',
+  );
+  @override
+  late final GeneratedColumn<String> accountName = GeneratedColumn<String>(
+    'account_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    profileId,
+    iban,
+    bic,
+    accountName,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_profile_bank';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalProfileBankRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('profile_id')) {
+      context.handle(
+        _profileIdMeta,
+        profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('iban')) {
+      context.handle(
+        _ibanMeta,
+        iban.isAcceptableOrUnknown(data['iban']!, _ibanMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ibanMeta);
+    }
+    if (data.containsKey('bic')) {
+      context.handle(
+        _bicMeta,
+        bic.isAcceptableOrUnknown(data['bic']!, _bicMeta),
+      );
+    }
+    if (data.containsKey('account_name')) {
+      context.handle(
+        _accountNameMeta,
+        accountName.isAcceptableOrUnknown(
+          data['account_name']!,
+          _accountNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {profileId};
+  @override
+  LocalProfileBankRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalProfileBankRow(
+      profileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}profile_id'],
+      )!,
+      iban: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}iban'],
+      )!,
+      bic: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bic'],
+      ),
+      accountName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}account_name'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalProfileBankTable createAlias(String alias) {
+    return $LocalProfileBankTable(attachedDatabase, alias);
+  }
+}
+
+class LocalProfileBankRow extends DataClass
+    implements Insertable<LocalProfileBankRow> {
+  final String profileId;
+  final String iban;
+  final String? bic;
+  final String? accountName;
+  final String updatedAt;
+  const LocalProfileBankRow({
+    required this.profileId,
+    required this.iban,
+    this.bic,
+    this.accountName,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['profile_id'] = Variable<String>(profileId);
+    map['iban'] = Variable<String>(iban);
+    if (!nullToAbsent || bic != null) {
+      map['bic'] = Variable<String>(bic);
+    }
+    if (!nullToAbsent || accountName != null) {
+      map['account_name'] = Variable<String>(accountName);
+    }
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  LocalProfileBankCompanion toCompanion(bool nullToAbsent) {
+    return LocalProfileBankCompanion(
+      profileId: Value(profileId),
+      iban: Value(iban),
+      bic: bic == null && nullToAbsent ? const Value.absent() : Value(bic),
+      accountName: accountName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(accountName),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory LocalProfileBankRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalProfileBankRow(
+      profileId: serializer.fromJson<String>(json['profileId']),
+      iban: serializer.fromJson<String>(json['iban']),
+      bic: serializer.fromJson<String?>(json['bic']),
+      accountName: serializer.fromJson<String?>(json['accountName']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'profileId': serializer.toJson<String>(profileId),
+      'iban': serializer.toJson<String>(iban),
+      'bic': serializer.toJson<String?>(bic),
+      'accountName': serializer.toJson<String?>(accountName),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  LocalProfileBankRow copyWith({
+    String? profileId,
+    String? iban,
+    Value<String?> bic = const Value.absent(),
+    Value<String?> accountName = const Value.absent(),
+    String? updatedAt,
+  }) => LocalProfileBankRow(
+    profileId: profileId ?? this.profileId,
+    iban: iban ?? this.iban,
+    bic: bic.present ? bic.value : this.bic,
+    accountName: accountName.present ? accountName.value : this.accountName,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  LocalProfileBankRow copyWithCompanion(LocalProfileBankCompanion data) {
+    return LocalProfileBankRow(
+      profileId: data.profileId.present ? data.profileId.value : this.profileId,
+      iban: data.iban.present ? data.iban.value : this.iban,
+      bic: data.bic.present ? data.bic.value : this.bic,
+      accountName: data.accountName.present
+          ? data.accountName.value
+          : this.accountName,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalProfileBankRow(')
+          ..write('profileId: $profileId, ')
+          ..write('iban: $iban, ')
+          ..write('bic: $bic, ')
+          ..write('accountName: $accountName, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(profileId, iban, bic, accountName, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalProfileBankRow &&
+          other.profileId == this.profileId &&
+          other.iban == this.iban &&
+          other.bic == this.bic &&
+          other.accountName == this.accountName &&
+          other.updatedAt == this.updatedAt);
+}
+
+class LocalProfileBankCompanion extends UpdateCompanion<LocalProfileBankRow> {
+  final Value<String> profileId;
+  final Value<String> iban;
+  final Value<String?> bic;
+  final Value<String?> accountName;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const LocalProfileBankCompanion({
+    this.profileId = const Value.absent(),
+    this.iban = const Value.absent(),
+    this.bic = const Value.absent(),
+    this.accountName = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalProfileBankCompanion.insert({
+    required String profileId,
+    required String iban,
+    this.bic = const Value.absent(),
+    this.accountName = const Value.absent(),
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : profileId = Value(profileId),
+       iban = Value(iban),
+       updatedAt = Value(updatedAt);
+  static Insertable<LocalProfileBankRow> custom({
+    Expression<String>? profileId,
+    Expression<String>? iban,
+    Expression<String>? bic,
+    Expression<String>? accountName,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (profileId != null) 'profile_id': profileId,
+      if (iban != null) 'iban': iban,
+      if (bic != null) 'bic': bic,
+      if (accountName != null) 'account_name': accountName,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalProfileBankCompanion copyWith({
+    Value<String>? profileId,
+    Value<String>? iban,
+    Value<String?>? bic,
+    Value<String?>? accountName,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return LocalProfileBankCompanion(
+      profileId: profileId ?? this.profileId,
+      iban: iban ?? this.iban,
+      bic: bic ?? this.bic,
+      accountName: accountName ?? this.accountName,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (iban.present) {
+      map['iban'] = Variable<String>(iban.value);
+    }
+    if (bic.present) {
+      map['bic'] = Variable<String>(bic.value);
+    }
+    if (accountName.present) {
+      map['account_name'] = Variable<String>(accountName.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalProfileBankCompanion(')
+          ..write('profileId: $profileId, ')
+          ..write('iban: $iban, ')
+          ..write('bic: $bic, ')
+          ..write('accountName: $accountName, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $UserVehiclesTable extends UserVehicles
+    with TableInfo<$UserVehiclesTable, UserVehicleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserVehiclesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fuelTypeMeta = const VerificationMeta(
+    'fuelType',
+  );
+  @override
+  late final GeneratedColumn<String> fuelType = GeneratedColumn<String>(
+    'fuel_type',
+    aliasedName,
+    false,
+    check: () => fuelType.isIn(const ['petrol', 'diesel', 'electric', 'other']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _consumptionMilliPer100kmMeta =
+      const VerificationMeta('consumptionMilliPer100km');
+  @override
+  late final GeneratedColumn<int> consumptionMilliPer100km =
+      GeneratedColumn<int>(
+        'consumption_milli_per100km',
+        aliasedName,
+        false,
+        check: () =>
+            ComparableExpr(consumptionMilliPer100km).isBiggerThanValue(0),
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _wearMilliPerKmMeta = const VerificationMeta(
+    'wearMilliPerKm',
+  );
+  @override
+  late final GeneratedColumn<int> wearMilliPerKm = GeneratedColumn<int>(
+    'wear_milli_per_km',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(wearMilliPerKm).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _kmRateMilliPerKmMeta = const VerificationMeta(
+    'kmRateMilliPerKm',
+  );
+  @override
+  late final GeneratedColumn<int> kmRateMilliPerKm = GeneratedColumn<int>(
+    'km_rate_milli_per_km',
+    aliasedName,
+    true,
+    check: () => ComparableExpr(kmRateMilliPerKm).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    fuelType,
+    consumptionMilliPer100km,
+    wearMilliPerKm,
+    kmRateMilliPerKm,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_vehicles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserVehicleRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('fuel_type')) {
+      context.handle(
+        _fuelTypeMeta,
+        fuelType.isAcceptableOrUnknown(data['fuel_type']!, _fuelTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fuelTypeMeta);
+    }
+    if (data.containsKey('consumption_milli_per100km')) {
+      context.handle(
+        _consumptionMilliPer100kmMeta,
+        consumptionMilliPer100km.isAcceptableOrUnknown(
+          data['consumption_milli_per100km']!,
+          _consumptionMilliPer100kmMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_consumptionMilliPer100kmMeta);
+    }
+    if (data.containsKey('wear_milli_per_km')) {
+      context.handle(
+        _wearMilliPerKmMeta,
+        wearMilliPerKm.isAcceptableOrUnknown(
+          data['wear_milli_per_km']!,
+          _wearMilliPerKmMeta,
+        ),
+      );
+    }
+    if (data.containsKey('km_rate_milli_per_km')) {
+      context.handle(
+        _kmRateMilliPerKmMeta,
+        kmRateMilliPerKm.isAcceptableOrUnknown(
+          data['km_rate_milli_per_km']!,
+          _kmRateMilliPerKmMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UserVehicleRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserVehicleRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      fuelType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fuel_type'],
+      )!,
+      consumptionMilliPer100km: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}consumption_milli_per100km'],
+      )!,
+      wearMilliPerKm: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}wear_milli_per_km'],
+      )!,
+      kmRateMilliPerKm: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}km_rate_milli_per_km'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $UserVehiclesTable createAlias(String alias) {
+    return $UserVehiclesTable(attachedDatabase, alias);
+  }
+}
+
+class UserVehicleRow extends DataClass implements Insertable<UserVehicleRow> {
+  final String id;
+  final String name;
+  final String fuelType;
+  final int consumptionMilliPer100km;
+  final int wearMilliPerKm;
+  final int? kmRateMilliPerKm;
+  final DateTime createdAt;
+  final String updatedAt;
+  final DateTime? deletedAt;
+  const UserVehicleRow({
+    required this.id,
+    required this.name,
+    required this.fuelType,
+    required this.consumptionMilliPer100km,
+    required this.wearMilliPerKm,
+    this.kmRateMilliPerKm,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['fuel_type'] = Variable<String>(fuelType);
+    map['consumption_milli_per100km'] = Variable<int>(consumptionMilliPer100km);
+    map['wear_milli_per_km'] = Variable<int>(wearMilliPerKm);
+    if (!nullToAbsent || kmRateMilliPerKm != null) {
+      map['km_rate_milli_per_km'] = Variable<int>(kmRateMilliPerKm);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  UserVehiclesCompanion toCompanion(bool nullToAbsent) {
+    return UserVehiclesCompanion(
+      id: Value(id),
+      name: Value(name),
+      fuelType: Value(fuelType),
+      consumptionMilliPer100km: Value(consumptionMilliPer100km),
+      wearMilliPerKm: Value(wearMilliPerKm),
+      kmRateMilliPerKm: kmRateMilliPerKm == null && nullToAbsent
+          ? const Value.absent()
+          : Value(kmRateMilliPerKm),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory UserVehicleRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserVehicleRow(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      fuelType: serializer.fromJson<String>(json['fuelType']),
+      consumptionMilliPer100km: serializer.fromJson<int>(
+        json['consumptionMilliPer100km'],
+      ),
+      wearMilliPerKm: serializer.fromJson<int>(json['wearMilliPerKm']),
+      kmRateMilliPerKm: serializer.fromJson<int?>(json['kmRateMilliPerKm']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'fuelType': serializer.toJson<String>(fuelType),
+      'consumptionMilliPer100km': serializer.toJson<int>(
+        consumptionMilliPer100km,
+      ),
+      'wearMilliPerKm': serializer.toJson<int>(wearMilliPerKm),
+      'kmRateMilliPerKm': serializer.toJson<int?>(kmRateMilliPerKm),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  UserVehicleRow copyWith({
+    String? id,
+    String? name,
+    String? fuelType,
+    int? consumptionMilliPer100km,
+    int? wearMilliPerKm,
+    Value<int?> kmRateMilliPerKm = const Value.absent(),
+    DateTime? createdAt,
+    String? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => UserVehicleRow(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    fuelType: fuelType ?? this.fuelType,
+    consumptionMilliPer100km:
+        consumptionMilliPer100km ?? this.consumptionMilliPer100km,
+    wearMilliPerKm: wearMilliPerKm ?? this.wearMilliPerKm,
+    kmRateMilliPerKm: kmRateMilliPerKm.present
+        ? kmRateMilliPerKm.value
+        : this.kmRateMilliPerKm,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  UserVehicleRow copyWithCompanion(UserVehiclesCompanion data) {
+    return UserVehicleRow(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      fuelType: data.fuelType.present ? data.fuelType.value : this.fuelType,
+      consumptionMilliPer100km: data.consumptionMilliPer100km.present
+          ? data.consumptionMilliPer100km.value
+          : this.consumptionMilliPer100km,
+      wearMilliPerKm: data.wearMilliPerKm.present
+          ? data.wearMilliPerKm.value
+          : this.wearMilliPerKm,
+      kmRateMilliPerKm: data.kmRateMilliPerKm.present
+          ? data.kmRateMilliPerKm.value
+          : this.kmRateMilliPerKm,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserVehicleRow(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('fuelType: $fuelType, ')
+          ..write('consumptionMilliPer100km: $consumptionMilliPer100km, ')
+          ..write('wearMilliPerKm: $wearMilliPerKm, ')
+          ..write('kmRateMilliPerKm: $kmRateMilliPerKm, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    fuelType,
+    consumptionMilliPer100km,
+    wearMilliPerKm,
+    kmRateMilliPerKm,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserVehicleRow &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.fuelType == this.fuelType &&
+          other.consumptionMilliPer100km == this.consumptionMilliPer100km &&
+          other.wearMilliPerKm == this.wearMilliPerKm &&
+          other.kmRateMilliPerKm == this.kmRateMilliPerKm &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class UserVehiclesCompanion extends UpdateCompanion<UserVehicleRow> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> fuelType;
+  final Value<int> consumptionMilliPer100km;
+  final Value<int> wearMilliPerKm;
+  final Value<int?> kmRateMilliPerKm;
+  final Value<DateTime> createdAt;
+  final Value<String> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<int> rowid;
+  const UserVehiclesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.fuelType = const Value.absent(),
+    this.consumptionMilliPer100km = const Value.absent(),
+    this.wearMilliPerKm = const Value.absent(),
+    this.kmRateMilliPerKm = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UserVehiclesCompanion.insert({
+    required String id,
+    required String name,
+    required String fuelType,
+    required int consumptionMilliPer100km,
+    this.wearMilliPerKm = const Value.absent(),
+    this.kmRateMilliPerKm = const Value.absent(),
+    required DateTime createdAt,
+    required String updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       fuelType = Value(fuelType),
+       consumptionMilliPer100km = Value(consumptionMilliPer100km),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<UserVehicleRow> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? fuelType,
+    Expression<int>? consumptionMilliPer100km,
+    Expression<int>? wearMilliPerKm,
+    Expression<int>? kmRateMilliPerKm,
+    Expression<DateTime>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (fuelType != null) 'fuel_type': fuelType,
+      if (consumptionMilliPer100km != null)
+        'consumption_milli_per100km': consumptionMilliPer100km,
+      if (wearMilliPerKm != null) 'wear_milli_per_km': wearMilliPerKm,
+      if (kmRateMilliPerKm != null) 'km_rate_milli_per_km': kmRateMilliPerKm,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UserVehiclesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? fuelType,
+    Value<int>? consumptionMilliPer100km,
+    Value<int>? wearMilliPerKm,
+    Value<int?>? kmRateMilliPerKm,
+    Value<DateTime>? createdAt,
+    Value<String>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return UserVehiclesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      fuelType: fuelType ?? this.fuelType,
+      consumptionMilliPer100km:
+          consumptionMilliPer100km ?? this.consumptionMilliPer100km,
+      wearMilliPerKm: wearMilliPerKm ?? this.wearMilliPerKm,
+      kmRateMilliPerKm: kmRateMilliPerKm ?? this.kmRateMilliPerKm,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (fuelType.present) {
+      map['fuel_type'] = Variable<String>(fuelType.value);
+    }
+    if (consumptionMilliPer100km.present) {
+      map['consumption_milli_per100km'] = Variable<int>(
+        consumptionMilliPer100km.value,
+      );
+    }
+    if (wearMilliPerKm.present) {
+      map['wear_milli_per_km'] = Variable<int>(wearMilliPerKm.value);
+    }
+    if (kmRateMilliPerKm.present) {
+      map['km_rate_milli_per_km'] = Variable<int>(kmRateMilliPerKm.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserVehiclesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('fuelType: $fuelType, ')
+          ..write('consumptionMilliPer100km: $consumptionMilliPer100km, ')
+          ..write('wearMilliPerKm: $wearMilliPerKm, ')
+          ..write('kmRateMilliPerKm: $kmRateMilliPerKm, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $UserVehicleCostsTable extends UserVehicleCosts
+    with TableInfo<$UserVehicleCostsTable, UserVehicleCostsRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserVehicleCostsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _userVehicleIdMeta = const VerificationMeta(
+    'userVehicleId',
+  );
+  @override
+  late final GeneratedColumn<String> userVehicleId = GeneratedColumn<String>(
+    'user_vehicle_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES user_vehicles (id)',
+    ),
+  );
+  static const VerificationMeta _annualKmMeta = const VerificationMeta(
+    'annualKm',
+  );
+  @override
+  late final GeneratedColumn<int> annualKm = GeneratedColumn<int>(
+    'annual_km',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(annualKm).isBiggerThanValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _shareBasisMeta = const VerificationMeta(
+    'shareBasis',
+  );
+  @override
+  late final GeneratedColumn<String> shareBasis = GeneratedColumn<String>(
+    'share_basis',
+    aliasedName,
+    false,
+    check: () => shareBasis.isIn(const ['running', 'full']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('running'),
+  );
+  static const VerificationMeta _insuranceCentsMeta = const VerificationMeta(
+    'insuranceCents',
+  );
+  @override
+  late final GeneratedColumn<int> insuranceCents = GeneratedColumn<int>(
+    'insurance_cents',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _taxCentsMeta = const VerificationMeta(
+    'taxCents',
+  );
+  @override
+  late final GeneratedColumn<int> taxCents = GeneratedColumn<int>(
+    'tax_cents',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _maintenanceCentsMeta = const VerificationMeta(
+    'maintenanceCents',
+  );
+  @override
+  late final GeneratedColumn<int> maintenanceCents = GeneratedColumn<int>(
+    'maintenance_cents',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _tyresCentsMeta = const VerificationMeta(
+    'tyresCents',
+  );
+  @override
+  late final GeneratedColumn<int> tyresCents = GeneratedColumn<int>(
+    'tyres_cents',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _repairsCentsMeta = const VerificationMeta(
+    'repairsCents',
+  );
+  @override
+  late final GeneratedColumn<int> repairsCents = GeneratedColumn<int>(
+    'repairs_cents',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _loanCentsMeta = const VerificationMeta(
+    'loanCents',
+  );
+  @override
+  late final GeneratedColumn<int> loanCents = GeneratedColumn<int>(
+    'loan_cents',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _depreciationCentsMeta = const VerificationMeta(
+    'depreciationCents',
+  );
+  @override
+  late final GeneratedColumn<int> depreciationCents = GeneratedColumn<int>(
+    'depreciation_cents',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _parkingCentsMeta = const VerificationMeta(
+    'parkingCents',
+  );
+  @override
+  late final GeneratedColumn<int> parkingCents = GeneratedColumn<int>(
+    'parking_cents',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _otherCentsMeta = const VerificationMeta(
+    'otherCents',
+  );
+  @override
+  late final GeneratedColumn<int> otherCents = GeneratedColumn<int>(
+    'other_cents',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    userVehicleId,
+    annualKm,
+    shareBasis,
+    insuranceCents,
+    taxCents,
+    maintenanceCents,
+    tyresCents,
+    repairsCents,
+    loanCents,
+    depreciationCents,
+    parkingCents,
+    otherCents,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_vehicle_costs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserVehicleCostsRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('user_vehicle_id')) {
+      context.handle(
+        _userVehicleIdMeta,
+        userVehicleId.isAcceptableOrUnknown(
+          data['user_vehicle_id']!,
+          _userVehicleIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_userVehicleIdMeta);
+    }
+    if (data.containsKey('annual_km')) {
+      context.handle(
+        _annualKmMeta,
+        annualKm.isAcceptableOrUnknown(data['annual_km']!, _annualKmMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_annualKmMeta);
+    }
+    if (data.containsKey('share_basis')) {
+      context.handle(
+        _shareBasisMeta,
+        shareBasis.isAcceptableOrUnknown(data['share_basis']!, _shareBasisMeta),
+      );
+    }
+    if (data.containsKey('insurance_cents')) {
+      context.handle(
+        _insuranceCentsMeta,
+        insuranceCents.isAcceptableOrUnknown(
+          data['insurance_cents']!,
+          _insuranceCentsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tax_cents')) {
+      context.handle(
+        _taxCentsMeta,
+        taxCents.isAcceptableOrUnknown(data['tax_cents']!, _taxCentsMeta),
+      );
+    }
+    if (data.containsKey('maintenance_cents')) {
+      context.handle(
+        _maintenanceCentsMeta,
+        maintenanceCents.isAcceptableOrUnknown(
+          data['maintenance_cents']!,
+          _maintenanceCentsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tyres_cents')) {
+      context.handle(
+        _tyresCentsMeta,
+        tyresCents.isAcceptableOrUnknown(data['tyres_cents']!, _tyresCentsMeta),
+      );
+    }
+    if (data.containsKey('repairs_cents')) {
+      context.handle(
+        _repairsCentsMeta,
+        repairsCents.isAcceptableOrUnknown(
+          data['repairs_cents']!,
+          _repairsCentsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('loan_cents')) {
+      context.handle(
+        _loanCentsMeta,
+        loanCents.isAcceptableOrUnknown(data['loan_cents']!, _loanCentsMeta),
+      );
+    }
+    if (data.containsKey('depreciation_cents')) {
+      context.handle(
+        _depreciationCentsMeta,
+        depreciationCents.isAcceptableOrUnknown(
+          data['depreciation_cents']!,
+          _depreciationCentsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('parking_cents')) {
+      context.handle(
+        _parkingCentsMeta,
+        parkingCents.isAcceptableOrUnknown(
+          data['parking_cents']!,
+          _parkingCentsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('other_cents')) {
+      context.handle(
+        _otherCentsMeta,
+        otherCents.isAcceptableOrUnknown(data['other_cents']!, _otherCentsMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {userVehicleId};
+  @override
+  UserVehicleCostsRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserVehicleCostsRow(
+      userVehicleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_vehicle_id'],
+      )!,
+      annualKm: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}annual_km'],
+      )!,
+      shareBasis: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}share_basis'],
+      )!,
+      insuranceCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}insurance_cents'],
+      ),
+      taxCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tax_cents'],
+      ),
+      maintenanceCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}maintenance_cents'],
+      ),
+      tyresCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tyres_cents'],
+      ),
+      repairsCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}repairs_cents'],
+      ),
+      loanCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}loan_cents'],
+      ),
+      depreciationCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}depreciation_cents'],
+      ),
+      parkingCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}parking_cents'],
+      ),
+      otherCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}other_cents'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $UserVehicleCostsTable createAlias(String alias) {
+    return $UserVehicleCostsTable(attachedDatabase, alias);
+  }
+}
+
+class UserVehicleCostsRow extends DataClass
+    implements Insertable<UserVehicleCostsRow> {
+  final String userVehicleId;
+  final int annualKm;
+
+  /// `running` or `full` (ADR-25 §3).
+  final String shareBasis;
+  final int? insuranceCents;
+  final int? taxCents;
+  final int? maintenanceCents;
+  final int? tyresCents;
+  final int? repairsCents;
+  final int? loanCents;
+  final int? depreciationCents;
+  final int? parkingCents;
+  final int? otherCents;
+  final String updatedAt;
+  const UserVehicleCostsRow({
+    required this.userVehicleId,
+    required this.annualKm,
+    required this.shareBasis,
+    this.insuranceCents,
+    this.taxCents,
+    this.maintenanceCents,
+    this.tyresCents,
+    this.repairsCents,
+    this.loanCents,
+    this.depreciationCents,
+    this.parkingCents,
+    this.otherCents,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['user_vehicle_id'] = Variable<String>(userVehicleId);
+    map['annual_km'] = Variable<int>(annualKm);
+    map['share_basis'] = Variable<String>(shareBasis);
+    if (!nullToAbsent || insuranceCents != null) {
+      map['insurance_cents'] = Variable<int>(insuranceCents);
+    }
+    if (!nullToAbsent || taxCents != null) {
+      map['tax_cents'] = Variable<int>(taxCents);
+    }
+    if (!nullToAbsent || maintenanceCents != null) {
+      map['maintenance_cents'] = Variable<int>(maintenanceCents);
+    }
+    if (!nullToAbsent || tyresCents != null) {
+      map['tyres_cents'] = Variable<int>(tyresCents);
+    }
+    if (!nullToAbsent || repairsCents != null) {
+      map['repairs_cents'] = Variable<int>(repairsCents);
+    }
+    if (!nullToAbsent || loanCents != null) {
+      map['loan_cents'] = Variable<int>(loanCents);
+    }
+    if (!nullToAbsent || depreciationCents != null) {
+      map['depreciation_cents'] = Variable<int>(depreciationCents);
+    }
+    if (!nullToAbsent || parkingCents != null) {
+      map['parking_cents'] = Variable<int>(parkingCents);
+    }
+    if (!nullToAbsent || otherCents != null) {
+      map['other_cents'] = Variable<int>(otherCents);
+    }
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  UserVehicleCostsCompanion toCompanion(bool nullToAbsent) {
+    return UserVehicleCostsCompanion(
+      userVehicleId: Value(userVehicleId),
+      annualKm: Value(annualKm),
+      shareBasis: Value(shareBasis),
+      insuranceCents: insuranceCents == null && nullToAbsent
+          ? const Value.absent()
+          : Value(insuranceCents),
+      taxCents: taxCents == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taxCents),
+      maintenanceCents: maintenanceCents == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maintenanceCents),
+      tyresCents: tyresCents == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tyresCents),
+      repairsCents: repairsCents == null && nullToAbsent
+          ? const Value.absent()
+          : Value(repairsCents),
+      loanCents: loanCents == null && nullToAbsent
+          ? const Value.absent()
+          : Value(loanCents),
+      depreciationCents: depreciationCents == null && nullToAbsent
+          ? const Value.absent()
+          : Value(depreciationCents),
+      parkingCents: parkingCents == null && nullToAbsent
+          ? const Value.absent()
+          : Value(parkingCents),
+      otherCents: otherCents == null && nullToAbsent
+          ? const Value.absent()
+          : Value(otherCents),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory UserVehicleCostsRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserVehicleCostsRow(
+      userVehicleId: serializer.fromJson<String>(json['userVehicleId']),
+      annualKm: serializer.fromJson<int>(json['annualKm']),
+      shareBasis: serializer.fromJson<String>(json['shareBasis']),
+      insuranceCents: serializer.fromJson<int?>(json['insuranceCents']),
+      taxCents: serializer.fromJson<int?>(json['taxCents']),
+      maintenanceCents: serializer.fromJson<int?>(json['maintenanceCents']),
+      tyresCents: serializer.fromJson<int?>(json['tyresCents']),
+      repairsCents: serializer.fromJson<int?>(json['repairsCents']),
+      loanCents: serializer.fromJson<int?>(json['loanCents']),
+      depreciationCents: serializer.fromJson<int?>(json['depreciationCents']),
+      parkingCents: serializer.fromJson<int?>(json['parkingCents']),
+      otherCents: serializer.fromJson<int?>(json['otherCents']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'userVehicleId': serializer.toJson<String>(userVehicleId),
+      'annualKm': serializer.toJson<int>(annualKm),
+      'shareBasis': serializer.toJson<String>(shareBasis),
+      'insuranceCents': serializer.toJson<int?>(insuranceCents),
+      'taxCents': serializer.toJson<int?>(taxCents),
+      'maintenanceCents': serializer.toJson<int?>(maintenanceCents),
+      'tyresCents': serializer.toJson<int?>(tyresCents),
+      'repairsCents': serializer.toJson<int?>(repairsCents),
+      'loanCents': serializer.toJson<int?>(loanCents),
+      'depreciationCents': serializer.toJson<int?>(depreciationCents),
+      'parkingCents': serializer.toJson<int?>(parkingCents),
+      'otherCents': serializer.toJson<int?>(otherCents),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  UserVehicleCostsRow copyWith({
+    String? userVehicleId,
+    int? annualKm,
+    String? shareBasis,
+    Value<int?> insuranceCents = const Value.absent(),
+    Value<int?> taxCents = const Value.absent(),
+    Value<int?> maintenanceCents = const Value.absent(),
+    Value<int?> tyresCents = const Value.absent(),
+    Value<int?> repairsCents = const Value.absent(),
+    Value<int?> loanCents = const Value.absent(),
+    Value<int?> depreciationCents = const Value.absent(),
+    Value<int?> parkingCents = const Value.absent(),
+    Value<int?> otherCents = const Value.absent(),
+    String? updatedAt,
+  }) => UserVehicleCostsRow(
+    userVehicleId: userVehicleId ?? this.userVehicleId,
+    annualKm: annualKm ?? this.annualKm,
+    shareBasis: shareBasis ?? this.shareBasis,
+    insuranceCents: insuranceCents.present
+        ? insuranceCents.value
+        : this.insuranceCents,
+    taxCents: taxCents.present ? taxCents.value : this.taxCents,
+    maintenanceCents: maintenanceCents.present
+        ? maintenanceCents.value
+        : this.maintenanceCents,
+    tyresCents: tyresCents.present ? tyresCents.value : this.tyresCents,
+    repairsCents: repairsCents.present ? repairsCents.value : this.repairsCents,
+    loanCents: loanCents.present ? loanCents.value : this.loanCents,
+    depreciationCents: depreciationCents.present
+        ? depreciationCents.value
+        : this.depreciationCents,
+    parkingCents: parkingCents.present ? parkingCents.value : this.parkingCents,
+    otherCents: otherCents.present ? otherCents.value : this.otherCents,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  UserVehicleCostsRow copyWithCompanion(UserVehicleCostsCompanion data) {
+    return UserVehicleCostsRow(
+      userVehicleId: data.userVehicleId.present
+          ? data.userVehicleId.value
+          : this.userVehicleId,
+      annualKm: data.annualKm.present ? data.annualKm.value : this.annualKm,
+      shareBasis: data.shareBasis.present
+          ? data.shareBasis.value
+          : this.shareBasis,
+      insuranceCents: data.insuranceCents.present
+          ? data.insuranceCents.value
+          : this.insuranceCents,
+      taxCents: data.taxCents.present ? data.taxCents.value : this.taxCents,
+      maintenanceCents: data.maintenanceCents.present
+          ? data.maintenanceCents.value
+          : this.maintenanceCents,
+      tyresCents: data.tyresCents.present
+          ? data.tyresCents.value
+          : this.tyresCents,
+      repairsCents: data.repairsCents.present
+          ? data.repairsCents.value
+          : this.repairsCents,
+      loanCents: data.loanCents.present ? data.loanCents.value : this.loanCents,
+      depreciationCents: data.depreciationCents.present
+          ? data.depreciationCents.value
+          : this.depreciationCents,
+      parkingCents: data.parkingCents.present
+          ? data.parkingCents.value
+          : this.parkingCents,
+      otherCents: data.otherCents.present
+          ? data.otherCents.value
+          : this.otherCents,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserVehicleCostsRow(')
+          ..write('userVehicleId: $userVehicleId, ')
+          ..write('annualKm: $annualKm, ')
+          ..write('shareBasis: $shareBasis, ')
+          ..write('insuranceCents: $insuranceCents, ')
+          ..write('taxCents: $taxCents, ')
+          ..write('maintenanceCents: $maintenanceCents, ')
+          ..write('tyresCents: $tyresCents, ')
+          ..write('repairsCents: $repairsCents, ')
+          ..write('loanCents: $loanCents, ')
+          ..write('depreciationCents: $depreciationCents, ')
+          ..write('parkingCents: $parkingCents, ')
+          ..write('otherCents: $otherCents, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    userVehicleId,
+    annualKm,
+    shareBasis,
+    insuranceCents,
+    taxCents,
+    maintenanceCents,
+    tyresCents,
+    repairsCents,
+    loanCents,
+    depreciationCents,
+    parkingCents,
+    otherCents,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserVehicleCostsRow &&
+          other.userVehicleId == this.userVehicleId &&
+          other.annualKm == this.annualKm &&
+          other.shareBasis == this.shareBasis &&
+          other.insuranceCents == this.insuranceCents &&
+          other.taxCents == this.taxCents &&
+          other.maintenanceCents == this.maintenanceCents &&
+          other.tyresCents == this.tyresCents &&
+          other.repairsCents == this.repairsCents &&
+          other.loanCents == this.loanCents &&
+          other.depreciationCents == this.depreciationCents &&
+          other.parkingCents == this.parkingCents &&
+          other.otherCents == this.otherCents &&
+          other.updatedAt == this.updatedAt);
+}
+
+class UserVehicleCostsCompanion extends UpdateCompanion<UserVehicleCostsRow> {
+  final Value<String> userVehicleId;
+  final Value<int> annualKm;
+  final Value<String> shareBasis;
+  final Value<int?> insuranceCents;
+  final Value<int?> taxCents;
+  final Value<int?> maintenanceCents;
+  final Value<int?> tyresCents;
+  final Value<int?> repairsCents;
+  final Value<int?> loanCents;
+  final Value<int?> depreciationCents;
+  final Value<int?> parkingCents;
+  final Value<int?> otherCents;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const UserVehicleCostsCompanion({
+    this.userVehicleId = const Value.absent(),
+    this.annualKm = const Value.absent(),
+    this.shareBasis = const Value.absent(),
+    this.insuranceCents = const Value.absent(),
+    this.taxCents = const Value.absent(),
+    this.maintenanceCents = const Value.absent(),
+    this.tyresCents = const Value.absent(),
+    this.repairsCents = const Value.absent(),
+    this.loanCents = const Value.absent(),
+    this.depreciationCents = const Value.absent(),
+    this.parkingCents = const Value.absent(),
+    this.otherCents = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UserVehicleCostsCompanion.insert({
+    required String userVehicleId,
+    required int annualKm,
+    this.shareBasis = const Value.absent(),
+    this.insuranceCents = const Value.absent(),
+    this.taxCents = const Value.absent(),
+    this.maintenanceCents = const Value.absent(),
+    this.tyresCents = const Value.absent(),
+    this.repairsCents = const Value.absent(),
+    this.loanCents = const Value.absent(),
+    this.depreciationCents = const Value.absent(),
+    this.parkingCents = const Value.absent(),
+    this.otherCents = const Value.absent(),
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : userVehicleId = Value(userVehicleId),
+       annualKm = Value(annualKm),
+       updatedAt = Value(updatedAt);
+  static Insertable<UserVehicleCostsRow> custom({
+    Expression<String>? userVehicleId,
+    Expression<int>? annualKm,
+    Expression<String>? shareBasis,
+    Expression<int>? insuranceCents,
+    Expression<int>? taxCents,
+    Expression<int>? maintenanceCents,
+    Expression<int>? tyresCents,
+    Expression<int>? repairsCents,
+    Expression<int>? loanCents,
+    Expression<int>? depreciationCents,
+    Expression<int>? parkingCents,
+    Expression<int>? otherCents,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (userVehicleId != null) 'user_vehicle_id': userVehicleId,
+      if (annualKm != null) 'annual_km': annualKm,
+      if (shareBasis != null) 'share_basis': shareBasis,
+      if (insuranceCents != null) 'insurance_cents': insuranceCents,
+      if (taxCents != null) 'tax_cents': taxCents,
+      if (maintenanceCents != null) 'maintenance_cents': maintenanceCents,
+      if (tyresCents != null) 'tyres_cents': tyresCents,
+      if (repairsCents != null) 'repairs_cents': repairsCents,
+      if (loanCents != null) 'loan_cents': loanCents,
+      if (depreciationCents != null) 'depreciation_cents': depreciationCents,
+      if (parkingCents != null) 'parking_cents': parkingCents,
+      if (otherCents != null) 'other_cents': otherCents,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UserVehicleCostsCompanion copyWith({
+    Value<String>? userVehicleId,
+    Value<int>? annualKm,
+    Value<String>? shareBasis,
+    Value<int?>? insuranceCents,
+    Value<int?>? taxCents,
+    Value<int?>? maintenanceCents,
+    Value<int?>? tyresCents,
+    Value<int?>? repairsCents,
+    Value<int?>? loanCents,
+    Value<int?>? depreciationCents,
+    Value<int?>? parkingCents,
+    Value<int?>? otherCents,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return UserVehicleCostsCompanion(
+      userVehicleId: userVehicleId ?? this.userVehicleId,
+      annualKm: annualKm ?? this.annualKm,
+      shareBasis: shareBasis ?? this.shareBasis,
+      insuranceCents: insuranceCents ?? this.insuranceCents,
+      taxCents: taxCents ?? this.taxCents,
+      maintenanceCents: maintenanceCents ?? this.maintenanceCents,
+      tyresCents: tyresCents ?? this.tyresCents,
+      repairsCents: repairsCents ?? this.repairsCents,
+      loanCents: loanCents ?? this.loanCents,
+      depreciationCents: depreciationCents ?? this.depreciationCents,
+      parkingCents: parkingCents ?? this.parkingCents,
+      otherCents: otherCents ?? this.otherCents,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (userVehicleId.present) {
+      map['user_vehicle_id'] = Variable<String>(userVehicleId.value);
+    }
+    if (annualKm.present) {
+      map['annual_km'] = Variable<int>(annualKm.value);
+    }
+    if (shareBasis.present) {
+      map['share_basis'] = Variable<String>(shareBasis.value);
+    }
+    if (insuranceCents.present) {
+      map['insurance_cents'] = Variable<int>(insuranceCents.value);
+    }
+    if (taxCents.present) {
+      map['tax_cents'] = Variable<int>(taxCents.value);
+    }
+    if (maintenanceCents.present) {
+      map['maintenance_cents'] = Variable<int>(maintenanceCents.value);
+    }
+    if (tyresCents.present) {
+      map['tyres_cents'] = Variable<int>(tyresCents.value);
+    }
+    if (repairsCents.present) {
+      map['repairs_cents'] = Variable<int>(repairsCents.value);
+    }
+    if (loanCents.present) {
+      map['loan_cents'] = Variable<int>(loanCents.value);
+    }
+    if (depreciationCents.present) {
+      map['depreciation_cents'] = Variable<int>(depreciationCents.value);
+    }
+    if (parkingCents.present) {
+      map['parking_cents'] = Variable<int>(parkingCents.value);
+    }
+    if (otherCents.present) {
+      map['other_cents'] = Variable<int>(otherCents.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserVehicleCostsCompanion(')
+          ..write('userVehicleId: $userVehicleId, ')
+          ..write('annualKm: $annualKm, ')
+          ..write('shareBasis: $shareBasis, ')
+          ..write('insuranceCents: $insuranceCents, ')
+          ..write('taxCents: $taxCents, ')
+          ..write('maintenanceCents: $maintenanceCents, ')
+          ..write('tyresCents: $tyresCents, ')
+          ..write('repairsCents: $repairsCents, ')
+          ..write('loanCents: $loanCents, ')
+          ..write('depreciationCents: $depreciationCents, ')
+          ..write('parkingCents: $parkingCents, ')
+          ..write('otherCents: $otherCents, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -8877,6 +11155,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $LocalSettingsTable localSettings = $LocalSettingsTable(this);
+  late final $ProfileTable profile = $ProfileTable(this);
+  late final $LocalProfileBankTable localProfileBank = $LocalProfileBankTable(
+    this,
+  );
+  late final $UserVehiclesTable userVehicles = $UserVehiclesTable(this);
+  late final $UserVehicleCostsTable userVehicleCosts = $UserVehicleCostsTable(
+    this,
+  );
   late final Index membersGroupId = Index(
     'members_group_id',
     'CREATE INDEX members_group_id ON members (group_id)',
@@ -8947,6 +11233,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final RidesDao ridesDao = RidesDao(this as AppDatabase);
   late final SyncStateDao syncStateDao = SyncStateDao(this as AppDatabase);
+  late final ProfileDao profileDao = ProfileDao(this as AppDatabase);
+  late final LocalProfileBankDao localProfileBankDao = LocalProfileBankDao(
+    this as AppDatabase,
+  );
+  late final UserVehiclesDao userVehiclesDao = UserVehiclesDao(
+    this as AppDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -8969,6 +11262,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     localGroupSync,
     localSyncCursor,
     localSettings,
+    profile,
+    localProfileBank,
+    userVehicles,
+    userVehicleCosts,
     membersGroupId,
     expensesGroupId,
     expensePayersExpenseId,
@@ -15226,6 +17523,7 @@ typedef $$VehiclesTableCreateCompanionBuilder = VehiclesCompanion Function({
   required int consumptionMilliPer100km,
   Value<int> wearMilliPerKm,
   Value<int?> kmRateMilliPerKm,
+  Value<String?> sourceUserVehicleId,
   Value<int> rowid,
 });
 typedef $$VehiclesTableUpdateCompanionBuilder = VehiclesCompanion Function({
@@ -15239,6 +17537,7 @@ typedef $$VehiclesTableUpdateCompanionBuilder = VehiclesCompanion Function({
   Value<int> consumptionMilliPer100km,
   Value<int> wearMilliPerKm,
   Value<int?> kmRateMilliPerKm,
+  Value<String?> sourceUserVehicleId,
   Value<int> rowid,
 });
 
@@ -15352,6 +17651,11 @@ class $$VehiclesTableFilterComposer
 
   ColumnFilters<int> get kmRateMilliPerKm => $composableBuilder(
     column: $table.kmRateMilliPerKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceUserVehicleId => $composableBuilder(
+    column: $table.sourceUserVehicleId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -15483,6 +17787,11 @@ class $$VehiclesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get sourceUserVehicleId => $composableBuilder(
+    column: $table.sourceUserVehicleId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$GroupsTableOrderingComposer get groupId {
     final $$GroupsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -15546,6 +17855,11 @@ class $$VehiclesTableAnnotationComposer
 
   GeneratedColumn<int> get kmRateMilliPerKm => $composableBuilder(
     column: $table.kmRateMilliPerKm,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceUserVehicleId => $composableBuilder(
+    column: $table.sourceUserVehicleId,
     builder: (column) => column,
   );
 
@@ -15665,6 +17979,7 @@ class $$VehiclesTableTableManager
                 Value<int> consumptionMilliPer100km = const Value.absent(),
                 Value<int> wearMilliPerKm = const Value.absent(),
                 Value<int?> kmRateMilliPerKm = const Value.absent(),
+                Value<String?> sourceUserVehicleId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VehiclesCompanion(
                 id: id,
@@ -15677,6 +17992,7 @@ class $$VehiclesTableTableManager
                 consumptionMilliPer100km: consumptionMilliPer100km,
                 wearMilliPerKm: wearMilliPerKm,
                 kmRateMilliPerKm: kmRateMilliPerKm,
+                sourceUserVehicleId: sourceUserVehicleId,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -15691,6 +18007,7 @@ class $$VehiclesTableTableManager
                 required int consumptionMilliPer100km,
                 Value<int> wearMilliPerKm = const Value.absent(),
                 Value<int?> kmRateMilliPerKm = const Value.absent(),
+                Value<String?> sourceUserVehicleId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VehiclesCompanion.insert(
                 id: id,
@@ -15703,6 +18020,7 @@ class $$VehiclesTableTableManager
                 consumptionMilliPer100km: consumptionMilliPer100km,
                 wearMilliPerKm: wearMilliPerKm,
                 kmRateMilliPerKm: kmRateMilliPerKm,
+                sourceUserVehicleId: sourceUserVehicleId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -18515,6 +20833,1549 @@ typedef $$LocalSettingsTableProcessedTableManager =
       LocalSettingRow,
       PrefetchHooks Function()
     >;
+typedef $$ProfileTableCreateCompanionBuilder = ProfileCompanion Function({
+  required String id,
+  required String displayName,
+  Value<int?> avatarColor,
+  Value<String?> avatarEmoji,
+  Value<String?> paypalMe,
+  required String updatedAt,
+  Value<int> rowid,
+});
+typedef $$ProfileTableUpdateCompanionBuilder = ProfileCompanion Function({
+  Value<String> id,
+  Value<String> displayName,
+  Value<int?> avatarColor,
+  Value<String?> avatarEmoji,
+  Value<String?> paypalMe,
+  Value<String> updatedAt,
+  Value<int> rowid,
+});
+
+final class $$ProfileTableReferences
+    extends BaseReferences<_$AppDatabase, $ProfileTable, ProfileRow> {
+  $$ProfileTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$LocalProfileBankTable, List<LocalProfileBankRow>>
+  _localProfileBankRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.localProfileBank,
+    aliasName: 'profile__id__local_profile_bank__profile_id',
+  );
+
+  $$LocalProfileBankTableProcessedTableManager get localProfileBankRefs {
+    final manager = $$LocalProfileBankTableTableManager(
+      $_db,
+      $_db.localProfileBank,
+    ).filter((f) => f.profileId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _localProfileBankRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$ProfileTableFilterComposer
+    extends Composer<_$AppDatabase, $ProfileTable> {
+  $$ProfileTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get avatarColor => $composableBuilder(
+    column: $table.avatarColor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get avatarEmoji => $composableBuilder(
+    column: $table.avatarEmoji,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get paypalMe => $composableBuilder(
+    column: $table.paypalMe,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> localProfileBankRefs(
+    Expression<bool> Function($$LocalProfileBankTableFilterComposer f) f,
+  ) {
+    final $$LocalProfileBankTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.localProfileBank,
+      getReferencedColumn: (t) => t.profileId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalProfileBankTableFilterComposer(
+            $db: $db,
+            $table: $db.localProfileBank,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ProfileTableOrderingComposer
+    extends Composer<_$AppDatabase, $ProfileTable> {
+  $$ProfileTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get avatarColor => $composableBuilder(
+    column: $table.avatarColor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get avatarEmoji => $composableBuilder(
+    column: $table.avatarEmoji,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get paypalMe => $composableBuilder(
+    column: $table.paypalMe,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ProfileTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ProfileTable> {
+  $$ProfileTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get avatarColor => $composableBuilder(
+    column: $table.avatarColor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get avatarEmoji => $composableBuilder(
+    column: $table.avatarEmoji,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get paypalMe =>
+      $composableBuilder(column: $table.paypalMe, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  Expression<T> localProfileBankRefs<T extends Object>(
+    Expression<T> Function($$LocalProfileBankTableAnnotationComposer a) f,
+  ) {
+    final $$LocalProfileBankTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.localProfileBank,
+      getReferencedColumn: (t) => t.profileId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalProfileBankTableAnnotationComposer(
+            $db: $db,
+            $table: $db.localProfileBank,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ProfileTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ProfileTable,
+          ProfileRow,
+          $$ProfileTableFilterComposer,
+          $$ProfileTableOrderingComposer,
+          $$ProfileTableAnnotationComposer,
+          $$ProfileTableCreateCompanionBuilder,
+          $$ProfileTableUpdateCompanionBuilder,
+          (ProfileRow, $$ProfileTableReferences),
+          ProfileRow,
+          PrefetchHooks Function({bool localProfileBankRefs})
+        > {
+  $$ProfileTableTableManager(_$AppDatabase db, $ProfileTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProfileTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProfileTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProfileTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> displayName = const Value.absent(),
+                Value<int?> avatarColor = const Value.absent(),
+                Value<String?> avatarEmoji = const Value.absent(),
+                Value<String?> paypalMe = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProfileCompanion(
+                id: id,
+                displayName: displayName,
+                avatarColor: avatarColor,
+                avatarEmoji: avatarEmoji,
+                paypalMe: paypalMe,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String displayName,
+                Value<int?> avatarColor = const Value.absent(),
+                Value<String?> avatarEmoji = const Value.absent(),
+                Value<String?> paypalMe = const Value.absent(),
+                required String updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ProfileCompanion.insert(
+                id: id,
+                displayName: displayName,
+                avatarColor: avatarColor,
+                avatarEmoji: avatarEmoji,
+                paypalMe: paypalMe,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ProfileTable, ProfileRow>(table),
+                  $$ProfileTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({localProfileBankRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (localProfileBankRefs) db.localProfileBank,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (localProfileBankRefs)
+                    await $_getPrefetchedDataByColumns<
+                      ProfileRow,
+                      $ProfileTable,
+                      LocalProfileBankRow,
+                      $LocalProfileBankTable
+                    >(
+                      currentTable: table,
+                      referencedTable: $$ProfileTableReferences
+                          ._localProfileBankRefsTable(db),
+                      managerFromTypedResult: (p0) => $$ProfileTableReferences(
+                        db,
+                        table,
+                        p0,
+                      ).localProfileBankRefs,
+                      currentColumn: 'id',
+                      referencedColumn: 'profile_id',
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ProfileTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ProfileTable,
+      ProfileRow,
+      $$ProfileTableFilterComposer,
+      $$ProfileTableOrderingComposer,
+      $$ProfileTableAnnotationComposer,
+      $$ProfileTableCreateCompanionBuilder,
+      $$ProfileTableUpdateCompanionBuilder,
+      (ProfileRow, $$ProfileTableReferences),
+      ProfileRow,
+      PrefetchHooks Function({bool localProfileBankRefs})
+    >;
+typedef $$LocalProfileBankTableCreateCompanionBuilder =
+    LocalProfileBankCompanion Function({
+      required String profileId,
+      required String iban,
+      Value<String?> bic,
+      Value<String?> accountName,
+      required String updatedAt,
+      Value<int> rowid,
+    });
+typedef $$LocalProfileBankTableUpdateCompanionBuilder =
+    LocalProfileBankCompanion Function({
+      Value<String> profileId,
+      Value<String> iban,
+      Value<String?> bic,
+      Value<String?> accountName,
+      Value<String> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$LocalProfileBankTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $LocalProfileBankTable,
+          LocalProfileBankRow
+        > {
+  $$LocalProfileBankTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ProfileTable _profileIdTable(_$AppDatabase db) =>
+      db.profile.createAlias('local_profile_bank__profile_id__profile__id');
+
+  $$ProfileTableProcessedTableManager get profileId {
+    final $_column = $_itemColumn<String>('profile_id')!;
+
+    final manager = $$ProfileTableTableManager(
+      $_db,
+      $_db.profile,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_profileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$LocalProfileBankTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalProfileBankTable> {
+  $$LocalProfileBankTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get iban => $composableBuilder(
+    column: $table.iban,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bic => $composableBuilder(
+    column: $table.bic,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get accountName => $composableBuilder(
+    column: $table.accountName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ProfileTableFilterComposer get profileId {
+    final $$ProfileTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profile,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProfileTableFilterComposer(
+            $db: $db,
+            $table: $db.profile,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LocalProfileBankTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalProfileBankTable> {
+  $$LocalProfileBankTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get iban => $composableBuilder(
+    column: $table.iban,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bic => $composableBuilder(
+    column: $table.bic,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get accountName => $composableBuilder(
+    column: $table.accountName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ProfileTableOrderingComposer get profileId {
+    final $$ProfileTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profile,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProfileTableOrderingComposer(
+            $db: $db,
+            $table: $db.profile,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LocalProfileBankTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalProfileBankTable> {
+  $$LocalProfileBankTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get iban =>
+      $composableBuilder(column: $table.iban, builder: (column) => column);
+
+  GeneratedColumn<String> get bic =>
+      $composableBuilder(column: $table.bic, builder: (column) => column);
+
+  GeneratedColumn<String> get accountName => $composableBuilder(
+    column: $table.accountName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$ProfileTableAnnotationComposer get profileId {
+    final $$ProfileTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.profileId,
+      referencedTable: $db.profile,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProfileTableAnnotationComposer(
+            $db: $db,
+            $table: $db.profile,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LocalProfileBankTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalProfileBankTable,
+          LocalProfileBankRow,
+          $$LocalProfileBankTableFilterComposer,
+          $$LocalProfileBankTableOrderingComposer,
+          $$LocalProfileBankTableAnnotationComposer,
+          $$LocalProfileBankTableCreateCompanionBuilder,
+          $$LocalProfileBankTableUpdateCompanionBuilder,
+          (LocalProfileBankRow, $$LocalProfileBankTableReferences),
+          LocalProfileBankRow,
+          PrefetchHooks Function({bool profileId})
+        > {
+  $$LocalProfileBankTableTableManager(
+    _$AppDatabase db,
+    $LocalProfileBankTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalProfileBankTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalProfileBankTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalProfileBankTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> profileId = const Value.absent(),
+                Value<String> iban = const Value.absent(),
+                Value<String?> bic = const Value.absent(),
+                Value<String?> accountName = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalProfileBankCompanion(
+                profileId: profileId,
+                iban: iban,
+                bic: bic,
+                accountName: accountName,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String profileId,
+                required String iban,
+                Value<String?> bic = const Value.absent(),
+                Value<String?> accountName = const Value.absent(),
+                required String updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => LocalProfileBankCompanion.insert(
+                profileId: profileId,
+                iban: iban,
+                bic: bic,
+                accountName: accountName,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$LocalProfileBankTable, LocalProfileBankRow>(
+                    table,
+                  ),
+                  $$LocalProfileBankTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({profileId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (profileId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.profileId,
+                        referencedTable: $$LocalProfileBankTableReferences
+                            ._profileIdTable(db),
+                        referencedColumn: $$LocalProfileBankTableReferences
+                            ._profileIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$LocalProfileBankTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalProfileBankTable,
+      LocalProfileBankRow,
+      $$LocalProfileBankTableFilterComposer,
+      $$LocalProfileBankTableOrderingComposer,
+      $$LocalProfileBankTableAnnotationComposer,
+      $$LocalProfileBankTableCreateCompanionBuilder,
+      $$LocalProfileBankTableUpdateCompanionBuilder,
+      (LocalProfileBankRow, $$LocalProfileBankTableReferences),
+      LocalProfileBankRow,
+      PrefetchHooks Function({bool profileId})
+    >;
+typedef $$UserVehiclesTableCreateCompanionBuilder =
+    UserVehiclesCompanion Function({
+      required String id,
+      required String name,
+      required String fuelType,
+      required int consumptionMilliPer100km,
+      Value<int> wearMilliPerKm,
+      Value<int?> kmRateMilliPerKm,
+      required DateTime createdAt,
+      required String updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$UserVehiclesTableUpdateCompanionBuilder =
+    UserVehiclesCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> fuelType,
+      Value<int> consumptionMilliPer100km,
+      Value<int> wearMilliPerKm,
+      Value<int?> kmRateMilliPerKm,
+      Value<DateTime> createdAt,
+      Value<String> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<int> rowid,
+    });
+
+final class $$UserVehiclesTableReferences
+    extends BaseReferences<_$AppDatabase, $UserVehiclesTable, UserVehicleRow> {
+  $$UserVehiclesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$UserVehicleCostsTable, List<UserVehicleCostsRow>>
+  _userVehicleCostsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.userVehicleCosts,
+    aliasName: 'user_vehicles__id__user_vehicle_costs__user_vehicle_id',
+  );
+
+  $$UserVehicleCostsTableProcessedTableManager get userVehicleCostsRefs {
+    final manager = $$UserVehicleCostsTableTableManager(
+      $_db,
+      $_db.userVehicleCosts,
+    ).filter((f) => f.userVehicleId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _userVehicleCostsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$UserVehiclesTableFilterComposer
+    extends Composer<_$AppDatabase, $UserVehiclesTable> {
+  $$UserVehiclesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fuelType => $composableBuilder(
+    column: $table.fuelType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get consumptionMilliPer100km => $composableBuilder(
+    column: $table.consumptionMilliPer100km,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get wearMilliPerKm => $composableBuilder(
+    column: $table.wearMilliPerKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get kmRateMilliPerKm => $composableBuilder(
+    column: $table.kmRateMilliPerKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> userVehicleCostsRefs(
+    Expression<bool> Function($$UserVehicleCostsTableFilterComposer f) f,
+  ) {
+    final $$UserVehicleCostsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.userVehicleCosts,
+      getReferencedColumn: (t) => t.userVehicleId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UserVehicleCostsTableFilterComposer(
+            $db: $db,
+            $table: $db.userVehicleCosts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$UserVehiclesTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserVehiclesTable> {
+  $$UserVehiclesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fuelType => $composableBuilder(
+    column: $table.fuelType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get consumptionMilliPer100km => $composableBuilder(
+    column: $table.consumptionMilliPer100km,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get wearMilliPerKm => $composableBuilder(
+    column: $table.wearMilliPerKm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get kmRateMilliPerKm => $composableBuilder(
+    column: $table.kmRateMilliPerKm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserVehiclesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserVehiclesTable> {
+  $$UserVehiclesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get fuelType =>
+      $composableBuilder(column: $table.fuelType, builder: (column) => column);
+
+  GeneratedColumn<int> get consumptionMilliPer100km => $composableBuilder(
+    column: $table.consumptionMilliPer100km,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get wearMilliPerKm => $composableBuilder(
+    column: $table.wearMilliPerKm,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get kmRateMilliPerKm => $composableBuilder(
+    column: $table.kmRateMilliPerKm,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  Expression<T> userVehicleCostsRefs<T extends Object>(
+    Expression<T> Function($$UserVehicleCostsTableAnnotationComposer a) f,
+  ) {
+    final $$UserVehicleCostsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.userVehicleCosts,
+      getReferencedColumn: (t) => t.userVehicleId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UserVehicleCostsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.userVehicleCosts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$UserVehiclesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserVehiclesTable,
+          UserVehicleRow,
+          $$UserVehiclesTableFilterComposer,
+          $$UserVehiclesTableOrderingComposer,
+          $$UserVehiclesTableAnnotationComposer,
+          $$UserVehiclesTableCreateCompanionBuilder,
+          $$UserVehiclesTableUpdateCompanionBuilder,
+          (UserVehicleRow, $$UserVehiclesTableReferences),
+          UserVehicleRow,
+          PrefetchHooks Function({bool userVehicleCostsRefs})
+        > {
+  $$UserVehiclesTableTableManager(_$AppDatabase db, $UserVehiclesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserVehiclesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserVehiclesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserVehiclesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> fuelType = const Value.absent(),
+                Value<int> consumptionMilliPer100km = const Value.absent(),
+                Value<int> wearMilliPerKm = const Value.absent(),
+                Value<int?> kmRateMilliPerKm = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserVehiclesCompanion(
+                id: id,
+                name: name,
+                fuelType: fuelType,
+                consumptionMilliPer100km: consumptionMilliPer100km,
+                wearMilliPerKm: wearMilliPerKm,
+                kmRateMilliPerKm: kmRateMilliPerKm,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String fuelType,
+                required int consumptionMilliPer100km,
+                Value<int> wearMilliPerKm = const Value.absent(),
+                Value<int?> kmRateMilliPerKm = const Value.absent(),
+                required DateTime createdAt,
+                required String updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserVehiclesCompanion.insert(
+                id: id,
+                name: name,
+                fuelType: fuelType,
+                consumptionMilliPer100km: consumptionMilliPer100km,
+                wearMilliPerKm: wearMilliPerKm,
+                kmRateMilliPerKm: kmRateMilliPerKm,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$UserVehiclesTable, UserVehicleRow>(table),
+                  $$UserVehiclesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({userVehicleCostsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (userVehicleCostsRefs) db.userVehicleCosts,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (userVehicleCostsRefs)
+                    await $_getPrefetchedDataByColumns<
+                      UserVehicleRow,
+                      $UserVehiclesTable,
+                      UserVehicleCostsRow,
+                      $UserVehicleCostsTable
+                    >(
+                      currentTable: table,
+                      referencedTable: $$UserVehiclesTableReferences
+                          ._userVehicleCostsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$UserVehiclesTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).userVehicleCostsRefs,
+                      currentColumn: 'id',
+                      referencedColumn: 'user_vehicle_id',
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$UserVehiclesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserVehiclesTable,
+      UserVehicleRow,
+      $$UserVehiclesTableFilterComposer,
+      $$UserVehiclesTableOrderingComposer,
+      $$UserVehiclesTableAnnotationComposer,
+      $$UserVehiclesTableCreateCompanionBuilder,
+      $$UserVehiclesTableUpdateCompanionBuilder,
+      (UserVehicleRow, $$UserVehiclesTableReferences),
+      UserVehicleRow,
+      PrefetchHooks Function({bool userVehicleCostsRefs})
+    >;
+typedef $$UserVehicleCostsTableCreateCompanionBuilder =
+    UserVehicleCostsCompanion Function({
+      required String userVehicleId,
+      required int annualKm,
+      Value<String> shareBasis,
+      Value<int?> insuranceCents,
+      Value<int?> taxCents,
+      Value<int?> maintenanceCents,
+      Value<int?> tyresCents,
+      Value<int?> repairsCents,
+      Value<int?> loanCents,
+      Value<int?> depreciationCents,
+      Value<int?> parkingCents,
+      Value<int?> otherCents,
+      required String updatedAt,
+      Value<int> rowid,
+    });
+typedef $$UserVehicleCostsTableUpdateCompanionBuilder =
+    UserVehicleCostsCompanion Function({
+      Value<String> userVehicleId,
+      Value<int> annualKm,
+      Value<String> shareBasis,
+      Value<int?> insuranceCents,
+      Value<int?> taxCents,
+      Value<int?> maintenanceCents,
+      Value<int?> tyresCents,
+      Value<int?> repairsCents,
+      Value<int?> loanCents,
+      Value<int?> depreciationCents,
+      Value<int?> parkingCents,
+      Value<int?> otherCents,
+      Value<String> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$UserVehicleCostsTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $UserVehicleCostsTable,
+          UserVehicleCostsRow
+        > {
+  $$UserVehicleCostsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $UserVehiclesTable _userVehicleIdTable(_$AppDatabase db) => db
+      .userVehicles
+      .createAlias('user_vehicle_costs__user_vehicle_id__user_vehicles__id');
+
+  $$UserVehiclesTableProcessedTableManager get userVehicleId {
+    final $_column = $_itemColumn<String>('user_vehicle_id')!;
+
+    final manager = $$UserVehiclesTableTableManager(
+      $_db,
+      $_db.userVehicles,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userVehicleIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$UserVehicleCostsTableFilterComposer
+    extends Composer<_$AppDatabase, $UserVehicleCostsTable> {
+  $$UserVehicleCostsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get annualKm => $composableBuilder(
+    column: $table.annualKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get shareBasis => $composableBuilder(
+    column: $table.shareBasis,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get insuranceCents => $composableBuilder(
+    column: $table.insuranceCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get taxCents => $composableBuilder(
+    column: $table.taxCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get maintenanceCents => $composableBuilder(
+    column: $table.maintenanceCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get tyresCents => $composableBuilder(
+    column: $table.tyresCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get repairsCents => $composableBuilder(
+    column: $table.repairsCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get loanCents => $composableBuilder(
+    column: $table.loanCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get depreciationCents => $composableBuilder(
+    column: $table.depreciationCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get parkingCents => $composableBuilder(
+    column: $table.parkingCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get otherCents => $composableBuilder(
+    column: $table.otherCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$UserVehiclesTableFilterComposer get userVehicleId {
+    final $$UserVehiclesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userVehicleId,
+      referencedTable: $db.userVehicles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UserVehiclesTableFilterComposer(
+            $db: $db,
+            $table: $db.userVehicles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$UserVehicleCostsTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserVehicleCostsTable> {
+  $$UserVehicleCostsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get annualKm => $composableBuilder(
+    column: $table.annualKm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get shareBasis => $composableBuilder(
+    column: $table.shareBasis,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get insuranceCents => $composableBuilder(
+    column: $table.insuranceCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get taxCents => $composableBuilder(
+    column: $table.taxCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get maintenanceCents => $composableBuilder(
+    column: $table.maintenanceCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get tyresCents => $composableBuilder(
+    column: $table.tyresCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get repairsCents => $composableBuilder(
+    column: $table.repairsCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get loanCents => $composableBuilder(
+    column: $table.loanCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get depreciationCents => $composableBuilder(
+    column: $table.depreciationCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get parkingCents => $composableBuilder(
+    column: $table.parkingCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get otherCents => $composableBuilder(
+    column: $table.otherCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$UserVehiclesTableOrderingComposer get userVehicleId {
+    final $$UserVehiclesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userVehicleId,
+      referencedTable: $db.userVehicles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UserVehiclesTableOrderingComposer(
+            $db: $db,
+            $table: $db.userVehicles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$UserVehicleCostsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserVehicleCostsTable> {
+  $$UserVehicleCostsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get annualKm =>
+      $composableBuilder(column: $table.annualKm, builder: (column) => column);
+
+  GeneratedColumn<String> get shareBasis => $composableBuilder(
+    column: $table.shareBasis,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get insuranceCents => $composableBuilder(
+    column: $table.insuranceCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get taxCents =>
+      $composableBuilder(column: $table.taxCents, builder: (column) => column);
+
+  GeneratedColumn<int> get maintenanceCents => $composableBuilder(
+    column: $table.maintenanceCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get tyresCents => $composableBuilder(
+    column: $table.tyresCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get repairsCents => $composableBuilder(
+    column: $table.repairsCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get loanCents =>
+      $composableBuilder(column: $table.loanCents, builder: (column) => column);
+
+  GeneratedColumn<int> get depreciationCents => $composableBuilder(
+    column: $table.depreciationCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get parkingCents => $composableBuilder(
+    column: $table.parkingCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get otherCents => $composableBuilder(
+    column: $table.otherCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$UserVehiclesTableAnnotationComposer get userVehicleId {
+    final $$UserVehiclesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userVehicleId,
+      referencedTable: $db.userVehicles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UserVehiclesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.userVehicles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$UserVehicleCostsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserVehicleCostsTable,
+          UserVehicleCostsRow,
+          $$UserVehicleCostsTableFilterComposer,
+          $$UserVehicleCostsTableOrderingComposer,
+          $$UserVehicleCostsTableAnnotationComposer,
+          $$UserVehicleCostsTableCreateCompanionBuilder,
+          $$UserVehicleCostsTableUpdateCompanionBuilder,
+          (UserVehicleCostsRow, $$UserVehicleCostsTableReferences),
+          UserVehicleCostsRow,
+          PrefetchHooks Function({bool userVehicleId})
+        > {
+  $$UserVehicleCostsTableTableManager(
+    _$AppDatabase db,
+    $UserVehicleCostsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserVehicleCostsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserVehicleCostsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserVehicleCostsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> userVehicleId = const Value.absent(),
+                Value<int> annualKm = const Value.absent(),
+                Value<String> shareBasis = const Value.absent(),
+                Value<int?> insuranceCents = const Value.absent(),
+                Value<int?> taxCents = const Value.absent(),
+                Value<int?> maintenanceCents = const Value.absent(),
+                Value<int?> tyresCents = const Value.absent(),
+                Value<int?> repairsCents = const Value.absent(),
+                Value<int?> loanCents = const Value.absent(),
+                Value<int?> depreciationCents = const Value.absent(),
+                Value<int?> parkingCents = const Value.absent(),
+                Value<int?> otherCents = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserVehicleCostsCompanion(
+                userVehicleId: userVehicleId,
+                annualKm: annualKm,
+                shareBasis: shareBasis,
+                insuranceCents: insuranceCents,
+                taxCents: taxCents,
+                maintenanceCents: maintenanceCents,
+                tyresCents: tyresCents,
+                repairsCents: repairsCents,
+                loanCents: loanCents,
+                depreciationCents: depreciationCents,
+                parkingCents: parkingCents,
+                otherCents: otherCents,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String userVehicleId,
+                required int annualKm,
+                Value<String> shareBasis = const Value.absent(),
+                Value<int?> insuranceCents = const Value.absent(),
+                Value<int?> taxCents = const Value.absent(),
+                Value<int?> maintenanceCents = const Value.absent(),
+                Value<int?> tyresCents = const Value.absent(),
+                Value<int?> repairsCents = const Value.absent(),
+                Value<int?> loanCents = const Value.absent(),
+                Value<int?> depreciationCents = const Value.absent(),
+                Value<int?> parkingCents = const Value.absent(),
+                Value<int?> otherCents = const Value.absent(),
+                required String updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => UserVehicleCostsCompanion.insert(
+                userVehicleId: userVehicleId,
+                annualKm: annualKm,
+                shareBasis: shareBasis,
+                insuranceCents: insuranceCents,
+                taxCents: taxCents,
+                maintenanceCents: maintenanceCents,
+                tyresCents: tyresCents,
+                repairsCents: repairsCents,
+                loanCents: loanCents,
+                depreciationCents: depreciationCents,
+                parkingCents: parkingCents,
+                otherCents: otherCents,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$UserVehicleCostsTable, UserVehicleCostsRow>(
+                    table,
+                  ),
+                  $$UserVehicleCostsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({userVehicleId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (userVehicleId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.userVehicleId,
+                        referencedTable: $$UserVehicleCostsTableReferences
+                            ._userVehicleIdTable(db),
+                        referencedColumn: $$UserVehicleCostsTableReferences
+                            ._userVehicleIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$UserVehicleCostsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserVehicleCostsTable,
+      UserVehicleCostsRow,
+      $$UserVehicleCostsTableFilterComposer,
+      $$UserVehicleCostsTableOrderingComposer,
+      $$UserVehicleCostsTableAnnotationComposer,
+      $$UserVehicleCostsTableCreateCompanionBuilder,
+      $$UserVehicleCostsTableUpdateCompanionBuilder,
+      (UserVehicleCostsRow, $$UserVehicleCostsTableReferences),
+      UserVehicleCostsRow,
+      PrefetchHooks Function({bool userVehicleId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -18553,4 +22414,12 @@ class $AppDatabaseManager {
       $$LocalSyncCursorTableTableManager(_db, _db.localSyncCursor);
   $$LocalSettingsTableTableManager get localSettings =>
       $$LocalSettingsTableTableManager(_db, _db.localSettings);
+  $$ProfileTableTableManager get profile =>
+      $$ProfileTableTableManager(_db, _db.profile);
+  $$LocalProfileBankTableTableManager get localProfileBank =>
+      $$LocalProfileBankTableTableManager(_db, _db.localProfileBank);
+  $$UserVehiclesTableTableManager get userVehicles =>
+      $$UserVehiclesTableTableManager(_db, _db.userVehicles);
+  $$UserVehicleCostsTableTableManager get userVehicleCosts =>
+      $$UserVehicleCostsTableTableManager(_db, _db.userVehicleCosts);
 }

@@ -152,6 +152,11 @@ class Vehicles extends Table with SyncColumns {
   /// If set, rides with this vehicle default to km-rate mode.
   IntColumn get kmRateMilliPerKm =>
       integer().nullable().check(kmRateMilliPerKm.isBiggerOrEqualValue(0))();
+
+  /// Id of the personal [UserVehicles] row this group copy is linked to
+  /// (ADR-25, schema v7). Local only: never pushed (the outbox payload uses
+  /// server columns) and not on the server. Null for plain group vehicles.
+  TextColumn get sourceUserVehicleId => text().nullable()();
 }
 
 @DataClassName('RideTemplateRow')
@@ -352,4 +357,90 @@ class LocalSettings extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {key};
+}
+
+/// The device owner's personal profile "Ich" (ADR-25, schema v7). At most one
+/// row, id [profileRowId]. Local only until P6-T07 (PII).
+@DataClassName('ProfileRow')
+class Profile extends Table {
+  TextColumn get id => text().check(id.equals(profileRowId))();
+  TextColumn get displayName => text()();
+
+  /// Colour of the initials avatar as ARGB int; null = derived default.
+  IntColumn get avatarColor => integer().nullable()();
+  TextColumn get avatarEmoji => text().nullable()();
+
+  /// Normalised PayPal.Me handle.
+  TextColumn get paypalMe => text().nullable()();
+  TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// Primary key of the single [Profile] row.
+const profileRowId = 'me';
+
+/// Full IBAN of the profile (encrypted at rest). Local only, never synced
+/// (PII, plan §8); sync code must not read it (architecture test).
+@DataClassName('LocalProfileBankRow')
+class LocalProfileBank extends Table {
+  TextColumn get profileId => text().references(Profile, #id)();
+  TextColumn get iban => text()();
+  TextColumn get bic => text().nullable()();
+  TextColumn get accountName => text().nullable()();
+  TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {profileId};
+}
+
+/// Personal vehicles "Meine Autos" (ADR-25). Local only for now; later synced
+/// to the own account only. Same value rules as [Vehicles].
+@DataClassName('UserVehicleRow')
+class UserVehicles extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get fuelType => text().check(
+    fuelType.isIn(const ['petrol', 'diesel', 'electric', 'other']),
+  )();
+  IntColumn get consumptionMilliPer100km =>
+      integer().check(consumptionMilliPer100km.isBiggerThanValue(0))();
+  IntColumn get wearMilliPerKm => integer()
+      .withDefault(const Constant(0))
+      .check(wearMilliPerKm.isBiggerOrEqualValue(0))();
+  IntColumn get kmRateMilliPerKm =>
+      integer().nullable().check(kmRateMilliPerKm.isBiggerOrEqualValue(0))();
+  DateTimeColumn get createdAt => dateTime()();
+  TextColumn get updatedAt => text()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// Optional real car costs of a personal vehicle (ADR-25 §3): yearly cents per
+/// category; null = not asked or skipped.
+@DataClassName('UserVehicleCostsRow')
+class UserVehicleCosts extends Table {
+  TextColumn get userVehicleId => text().references(UserVehicles, #id)();
+  IntColumn get annualKm => integer().check(annualKm.isBiggerThanValue(0))();
+
+  /// `running` or `full` (ADR-25 §3).
+  TextColumn get shareBasis => text()
+      .withDefault(const Constant('running'))
+      .check(shareBasis.isIn(const ['running', 'full']))();
+  IntColumn get insuranceCents => integer().nullable()();
+  IntColumn get taxCents => integer().nullable()();
+  IntColumn get maintenanceCents => integer().nullable()();
+  IntColumn get tyresCents => integer().nullable()();
+  IntColumn get repairsCents => integer().nullable()();
+  IntColumn get loanCents => integer().nullable()();
+  IntColumn get depreciationCents => integer().nullable()();
+  IntColumn get parkingCents => integer().nullable()();
+  IntColumn get otherCents => integer().nullable()();
+  TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {userVehicleId};
 }
