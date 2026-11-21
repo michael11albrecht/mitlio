@@ -1,6 +1,6 @@
 # Claude auth for the CI agents
 
-The three agent workflows (`agent-plan`, `agent-implement`, `agent-review`) can authenticate to Claude two ways.
+The four agent workflows (`agent-plan`, `agent-implement`, `agent-review`, `agent-fix-ci`) can authenticate to Claude two ways.
 The repo variable `CLAUDE_AUTH` picks one. No code change or PR is needed to switch.
 
 | `CLAUDE_AUTH` | Credential (secret) | Billing |
@@ -42,7 +42,8 @@ Check the workspace usage page after switching; the action log also prints `tota
 | Diff of at most N lines and no critical path: small model and 8 turns. Otherwise the full model and 12 turns | `agent-review` | `REVIEW_SMALL_LINES` (default 80), `REVIEWER_MODEL_SMALL` (default `claude-haiku-5-5`) |
 | `REVIEWER_MODEL` set: always that model (disables the diff-size rule) | `agent-review` | `REVIEWER_MODEL` |
 | Daily implementer cap and turn cap | `agent-implement` | `AGENT_DAILY_LIMIT` (default 3), `IMPLEMENTER_MAX_TURNS` (default 30) |
-| Cost per run (`total_cost_usd`, turns) in the job summary | all three | none |
+| `agent-fix-ci` is off unless `AGENT_FIX_CI=true`; at most N fix rounds per PR (commits with the `Agent-Fix-CI: round N` trailer), then it comments and stops; turn cap | `agent-fix-ci` | `AGENT_FIX_CI` (default off), `AGENT_FIX_CI_MAX_ROUNDS` (default 2), `FIX_CI_MAX_TURNS` (default 20) |
+| Cost per run (`total_cost_usd`, turns) in the job summary | all four | none |
 
 Critical paths for the diff-size and re-review rules: `.github/`, `supabase/`, `packages/domain/`, `tool/`, `.claude/`,
 `CLAUDE.md`, `CODEOWNERS`, `analysis_options.yaml`, `lefthook.yml`. They always get the full model.
