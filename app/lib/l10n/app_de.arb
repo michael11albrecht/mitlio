@@ -1593,5 +1593,129 @@
   "joinLocalFailed": "Die Gruppe konnte auf diesem Handy nicht gespeichert werden. Prüfe den freien Speicher und öffne den Link nochmal.",
   "joinOpenGroup": "Zur Gruppe",
   "joinClose": "Schließen",
-  "joinConnectOffline": "Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist."
+  "joinConnectOffline": "Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist.",
+  "pushPromptText": "Soll mitlio dir Bescheid geben, wenn jemand etwas einträgt?",
+  "pushPromptAction": "Ja, bitte",
+  "pushPermissionDenied": "Benachrichtigungen sind aus. Schalte sie in den Systemeinstellungen ein, wenn du sie doch willst.",
+  "pushUnavailable": "Benachrichtigungen gibt es in dieser Version noch nicht.",
+  "pushErrorPlatform": "Benachrichtigungen ließen sich nicht einrichten. Versuch es gleich nochmal.",
+  "pushIncomingGeneric": "Es gibt Neues in deiner Gruppe.",
+  "pushIncomingOpen": "Ansehen",
+  "pushOpenFailed": "Diese Benachrichtigung ließ sich nicht öffnen. Öffne die Gruppe in der Liste.",
+  "notifSettingsTitle": "Benachrichtigungen",
+  "notifLevelLabel": "Worüber soll ich dich informieren?",
+  "notifLevelAll": "Alles",
+  "notifLevelMine": "Nur was mich betrifft",
+  "notifLevelNone": "Nichts",
+  "notifQuietHoursLabel": "Ruhezeiten",
+  "notifQuietHoursHint": "In dieser Zeit bekommst du keine Benachrichtigung.",
+  "notifQuietHoursFrom": "Von",
+  "notifQuietHoursTo": "Bis",
+  "notifHideAmountsLabel": "Beträge ausblenden",
+  "notifHideAmountsHint": "Auf dem Sperrbildschirm steht nur, dass es Neues gibt.",
+  "notifNotShared": "Benachrichtigungen gibt es nur für geteilte Gruppen. Teile die Gruppe zuerst.",
+  "notifEnable": "Benachrichtigungen einschalten",
+  "notifLoading": "Einstellungen werden geladen",
+  "pushLocExpenseAdded": "{actor} hat „{title}“ eingetragen · {amount}",
+  "@pushLocExpenseAdded": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocExpenseChanged": "{actor} hat „{title}“ geändert · {amount}",
+  "@pushLocExpenseChanged": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocExpenseDeleted": "{actor} hat „{title}“ gelöscht",
+  "@pushLocExpenseDeleted": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocSettlementAdded": "{actor} hat eine Zahlung eingetragen · {amount}",
+  "@pushLocSettlementAdded": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocMemberJoined": "{name} ist „{group}“ beigetreten",
+  "@pushLocMemberJoined": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocExpensesAdded": "{actor} hat {count} Ausgaben in „{group}“ eingetragen",
+  "@pushLocExpensesAdded": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocGroupUpdates": "{count} Änderungen in „{group}“",
+  "@pushLocGroupUpdates": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocGeneric": "Neues in „{group}“",
+  "@pushLocGeneric": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  }
 }

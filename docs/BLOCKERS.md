@@ -7,7 +7,7 @@
 | 3 | Android `android-build (dev apk)` fails on Gradle: cannot resolve the Flutter plugin loader | Android internal builds, P8-T03 Play half | check Gradle/Flutter plugin setup on CI |
 | 4 | Play Console: service account + keystore secrets | Play internal track | create and add secrets |
 | 5 | Production Supabase project `Mitlio` (`vnlshkpxcvriiaguniro`, eu-central-1) exists with `ORS_API_KEY` set; still open: remaining secrets, `production` environment approval, check which Edge Functions are deployed | P8-T04 release workflow, P6b | set environment reviewers, remaining secrets |
-| 6 | Firebase project, APNs auth key, FCM service account | P6b-T01, T05 live test | create and upload keys |
+| 6 | Firebase project, APNs auth key, FCM service account. App side is ready without Firebase (P6b-T06..T09, `UnavailablePushService` is the default): T01 must add `firebase_messaging` + `flutter_local_notifications`, a `PushService` implementation registered in `main` only when the flavor has a Firebase config (`pushServiceProvider`), and add the generated `app/ios/Runner/{de,en}.lproj/Localizable.strings` to the Xcode project (the Android `push_strings.xml` files are picked up by Gradle as is) | P6b-T01, T05 live test | create and upload keys |
 | 7 | Legal texts (Impressum, Datenschutz) are drafts | store submission, P7-T07 sign-off | review with lawyer / sign off |
 | 8 | Apple Associated Domains / AASA for `mitlio.de` must be live and match the profile | universal join links on device | verify domain + hosting |
 | 9 | P5 field test on a real trip | go-live confidence; new fixtures | drive, file `field-test` issues |

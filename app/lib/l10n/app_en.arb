@@ -1089,5 +1089,129 @@
   "joinLocalFailed": "The group could not be saved on this phone. Check your free storage and open the link again.",
   "joinOpenGroup": "Open group",
   "joinClose": "Close",
-  "joinConnectOffline": "No connection. You are in the group but not connected to anyone yet. Try again as soon as you are online."
+  "joinConnectOffline": "No connection. You are in the group but not connected to anyone yet. Try again as soon as you are online.",
+  "pushPromptText": "Should mitlio let you know when someone adds something?",
+  "pushPromptAction": "Yes, please",
+  "pushPermissionDenied": "Notifications are off. Turn them on in the system settings if you change your mind.",
+  "pushUnavailable": "This version cannot send notifications yet.",
+  "pushErrorPlatform": "Notifications could not be set up. Try again in a moment.",
+  "pushIncomingGeneric": "There is news in your group.",
+  "pushIncomingOpen": "Open",
+  "pushOpenFailed": "This notification could not be opened. Open the group from the list.",
+  "notifSettingsTitle": "Notifications",
+  "notifLevelLabel": "What should I tell you about?",
+  "notifLevelAll": "Everything",
+  "notifLevelMine": "Only what involves me",
+  "notifLevelNone": "Nothing",
+  "notifQuietHoursLabel": "Quiet hours",
+  "notifQuietHoursHint": "You get no notifications during this time.",
+  "notifQuietHoursFrom": "From",
+  "notifQuietHoursTo": "To",
+  "notifHideAmountsLabel": "Hide amounts",
+  "notifHideAmountsHint": "The lock screen only says that there is news.",
+  "notifNotShared": "Notifications exist only for shared groups. Share the group first.",
+  "notifEnable": "Turn on notifications",
+  "notifLoading": "Loading settings",
+  "pushLocExpenseAdded": "{actor} added “{title}” · {amount}",
+  "@pushLocExpenseAdded": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocExpenseChanged": "{actor} changed “{title}” · {amount}",
+  "@pushLocExpenseChanged": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocExpenseDeleted": "{actor} deleted “{title}”",
+  "@pushLocExpenseDeleted": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocSettlementAdded": "{actor} recorded a payment · {amount}",
+  "@pushLocSettlementAdded": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocMemberJoined": "{name} joined “{group}”",
+  "@pushLocMemberJoined": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocExpensesAdded": "{actor} added {count} expenses in “{group}”",
+  "@pushLocExpensesAdded": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "actor": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocGroupUpdates": "{count} changes in “{group}”",
+  "@pushLocGroupUpdates": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "pushLocGeneric": "News in “{group}”",
+  "@pushLocGeneric": {
+    "description": "Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.",
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  }
 }

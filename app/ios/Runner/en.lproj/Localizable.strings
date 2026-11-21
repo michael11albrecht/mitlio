@@ -1,0 +1,9 @@
+/* GENERATED from app/lib/l10n/app_*.arb by packages/tooling/bin/gen_push_strings.dart. Do not edit; run `make push-strings`. */
+"push_expense_added" = "%1$@ added “%2$@” · %3$@";
+"push_expense_changed" = "%1$@ changed “%2$@” · %3$@";
+"push_expense_deleted" = "%1$@ deleted “%2$@”";
+"push_expenses_added" = "%1$@ added %2$@ expenses in “%3$@”";
+"push_generic" = "News in “%1$@”";
+"push_group_updates" = "%1$@ changes in “%2$@”";
+"push_member_joined" = "%1$@ joined “%2$@”";
+"push_settlement_added" = "%1$@ recorded a payment · %2$@";
