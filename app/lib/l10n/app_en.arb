@@ -1089,5 +1089,19 @@
   "joinLocalFailed": "The group could not be saved on this phone. Check your free storage and open the link again.",
   "joinOpenGroup": "Open group",
   "joinClose": "Close",
-  "joinConnectOffline": "No connection. You are in the group but not connected to anyone yet. Try again as soon as you are online."
+  "joinConnectOffline": "No connection. You are in the group but not connected to anyone yet. Try again as soon as you are online.",
+  "setupStepProgress": "Step {current} of {total}",
+  "@setupStepProgress": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "setupNext": "Continue",
+  "setupSkip": "Skip",
+  "setupBack": "Back",
+  "setupYes": "Yes",
+  "setupNo": "No",
+  "setupFinishDone": "Done",
+  "setupCelebration": "All set"
 }

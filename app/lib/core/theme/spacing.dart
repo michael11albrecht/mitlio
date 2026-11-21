@@ -64,6 +64,12 @@ abstract final class Sizes {
   /// Thickness of a bar in the statistics bar lists.
   static const double barHeight = 8;
 
+  /// Minimum height of a yes/no card in a setup flow (a big, calm target).
+  static const double choiceCard = 72;
+
+  /// Edge of the finish-screen celebration.
+  static const double celebration = 120;
+
   /// Height of one day of the rides calendar (day number plus an avatar).
   static const double calendarCell = 64;
 }

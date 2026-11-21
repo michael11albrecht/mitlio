@@ -2155,4 +2155,30 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get joinConnectOffline =>
       'Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist.';
+
+  @override
+  String setupStepProgress(int current, int total) {
+    return 'Schritt $current von $total';
+  }
+
+  @override
+  String get setupNext => 'Weiter';
+
+  @override
+  String get setupSkip => 'Überspringen';
+
+  @override
+  String get setupBack => 'Zurück';
+
+  @override
+  String get setupYes => 'Ja';
+
+  @override
+  String get setupNo => 'Nein';
+
+  @override
+  String get setupFinishDone => 'Fertig';
+
+  @override
+  String get setupCelebration => 'Geschafft';
 }
