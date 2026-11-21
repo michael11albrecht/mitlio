@@ -15,7 +15,7 @@ Future<void> main() async {
   );
   await matrixGolden(
     'my_qr',
-    () => ProviderScope(overrides: rig.overrides, child: const MyQrView()),
+    () => ProviderScope(overrides: rig.overrides, child: const MyQrBody()),
     width: 360,
     height: 640,
   );
