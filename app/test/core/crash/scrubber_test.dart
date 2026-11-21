@@ -177,6 +177,10 @@ void main() {
 
     test('full fixture: no IBAN, member name, note or amount survives', () {
       final event = SentryEvent(
+        // Fixed: a random id or time could contain "3704" or "12,50" by
+        // chance and fail the check below once in a few thousand runs.
+        eventId: SentryId.fromId('0123456789abcdef0123456789abcdef'),
+        timestamp: DateTime.utc(2026),
         message: SentryMessage('Anna Schmidt owes 12,50 EUR'),
         throwable: StateError(
           'Notiz: Pizza bei Anna, DE89 3704 0044 0532 0130 00',
