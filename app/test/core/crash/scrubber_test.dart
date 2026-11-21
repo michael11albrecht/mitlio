@@ -175,6 +175,53 @@ void main() {
       expect(out.eventId, event.eventId);
     });
 
+    test('full fixture: no IBAN, member name, note or amount survives', () {
+      final event = SentryEvent(
+        message: SentryMessage('Anna Schmidt owes 12,50 EUR'),
+        throwable: StateError(
+          'Notiz: Pizza bei Anna, DE89 3704 0044 0532 0130 00',
+        ),
+        // ignore: deprecated_member_use -- the scrubber must drop legacy extra data
+        extra: {'note': 'Pizza bei Anna', 'iban': 'DE89370400440532013000'},
+        tags: {'member': 'anna@example.com'},
+        breadcrumbs: [
+          Breadcrumb(
+            message: 'Anna Schmidt paid 12,50',
+            category: 'ui.click',
+            data: {'name': 'Anna', 'note': 'Pizza'},
+          ),
+          Breadcrumb(
+            message: 'Anna Schmidt',
+            category: 'navigation',
+            data: {'iban': 'DE89370400440532013000'},
+          ),
+          Breadcrumb(message: 'addExpense', category: 'command'),
+        ],
+        exceptions: [
+          SentryException(
+            type: 'StateError',
+            value: 'Bad state: Anna Schmidt DE89370400440532013000',
+          ),
+        ],
+      );
+      final out = scrubEvent(event, Hint());
+      final dump = out!.toJson().toString();
+      for (final secret in [
+        'Anna',
+        'Schmidt',
+        'Pizza',
+        '12,50',
+        '3704',
+        'example.com',
+      ]) {
+        expect(dump, isNot(contains(secret)), reason: secret);
+      }
+      expect(out.breadcrumbs?.map((b) => b.message), [
+        redacted,
+        'addExpense',
+      ]);
+    });
+
     test('scrubBreadcrumb drops free-text breadcrumbs', () {
       expect(
         scrubBreadcrumb(

@@ -2,7 +2,7 @@
 
 ## Crash reporting (Sentry EU) — P7-T08
 
-Status: the app code is in place; the release pipeline is not yet wired.
+Status: the app code is in place; the release pipeline is not yet wired (owner action, docs/BLOCKERS.md #23).
 
 - The DSN is `SENTRY_DSN` (`--dart-define=SENTRY_DSN=...`, EU region `de.sentry.io`). It is empty in the
   repo: builds without it never initialise Sentry and make no network call.

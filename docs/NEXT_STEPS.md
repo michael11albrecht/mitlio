@@ -9,7 +9,7 @@ Source of truth for scope stays `docs/IMPLEMENTATION_PLAN.md`. This file is the 
 | P0–P4 (foundation, domain, local app, rides, settle) | done |
 | PW (SEO web calculator), P6c (fuel prices) | done; open polish: #186, #207, PR #211/#212 |
 | P6 (backend, sync, share, join, version gate) | done (T01–T16); sync E2E on local Supabase green |
-| P7 | T01–T03, T07 done; T04–T06 present; T08 (Sentry scrubber) open; T09 (support tip, ADR-28) in PR #217 |
+| P7 | T01–T03, T07 done; T04–T06 present; T08 (Sentry scrubber) done in app, release wiring owner-only (BLOCKERS #23); T09 (support tip, ADR-28) in PR #217 |
 | P8 | T01–T03 done (iOS TestFlight signing fixed in #216); T04–T08 open |
 | PU (personal profile, cars, guided setup) | **not started** (ADR-25) |
 | P6b (push) | **not started** (needs Firebase accounts) |
@@ -47,7 +47,7 @@ PU-T13 (photo), T14 (needs P6-T07 account tie), T17 (needs P6b) stay later.
 - [ ] P8-T06 `check_release_strip.sh` wired into the release workflow (script exists; verify gate)
 - [ ] P8-T04 `release.yml` with prod approval + smoke drive (needs prod project, see blockers)
 - [ ] P8-T08 `agent-fix-ci.yml`
-- [ ] P7-T08 Sentry: scrubber test, `beforeSend`, opt-in only
+- [x] P7-T08 Sentry: scrubber test, `beforeSend`, opt-in only
 - [ ] P7-T09 support the developer (after #217, ADR-28: opt-in, never in payment flow, App Store 3.1.1)
 
 ### Q6 — Later
