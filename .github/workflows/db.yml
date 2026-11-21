@@ -54,7 +54,8 @@ jobs:
         run: supabase/functions/tests/run_integration.sh
       - name: TS types are up to date
         run: |
-          supabase gen types typescript --local > supabase/types/database.ts
+          # CLI 3.x no longer formats the output; same prettier call as `make db-types`.
+          supabase gen types typescript --local | npx --yes prettier@3.3.3 --no-semi --parser typescript --stdin-filepath database.ts > supabase/types/database.ts
           git --no-pager diff --exit-code -- supabase/types/database.ts
       - uses: subosito/flutter-action@v2
         with:
