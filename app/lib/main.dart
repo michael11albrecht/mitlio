@@ -26,6 +26,8 @@ import 'package:mitlio/features/fuel/data/services/geolocator_location_service.d
 import 'package:mitlio/features/fx/data/repositories/fx_providers.dart';
 import 'package:mitlio/features/fx/data/services/fx_rate_service.dart';
 import 'package:mitlio/features/profile/ui/profile_setup_view_model.dart';
+import 'package:mitlio/features/push/data/push_providers.dart';
+import 'package:mitlio/features/push/data/push_state_store.dart';
 import 'package:mitlio/features/routes/data/repositories/route_providers.dart';
 import 'package:mitlio/features/routes/data/services/route_distance_service.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
@@ -101,6 +103,11 @@ Future<void> main() async {
       }),
       appDatabaseProvider.overrideWithValue(db),
       crashReporterProvider.overrideWithValue(crashReporter),
+      // No pushServiceProvider override: Firebase arrives with P6b-T01, until
+      // then the app reports "no push in this build" (UnavailablePushService).
+      pushStateStoreProvider.overrideWithValue(
+        FilePushStateStore(File('${dir.path}/push_state.json')),
+      ),
     ],
   );
   // One node id per install, created on first start (plan 2.4, ADR-07).

@@ -126,6 +126,12 @@ identity: ## Regenerate Android/iOS identity values from app/app_identity.yaml (
 identity-check: ## Fail if generated identity files drifted from app_identity.yaml
 	cd $(TOOLING) && $(DART) run bin/gen_app_identity.dart --root ../.. --check
 
+.PHONY: push-strings push-strings-check
+push-strings: ## Regenerate push loc-key strings (Android strings.xml, iOS Localizable.strings) from the ARB files (P6b-T09)
+	cd $(TOOLING) && $(DART) run bin/gen_push_strings.dart --root ../..
+push-strings-check: ## Fail if a push loc-key is missing in a locale or the generated files drifted
+	cd $(TOOLING) && $(DART) run bin/gen_push_strings.dart --root ../.. --check
+
 .PHONY: run-dev build-android-dev build-android-prod
 run-dev: ## Run the dev flavor on a device (DEVICE=<id>, needs a phone/emulator)
 	cd $(APP) && $(FLUTTER) run --flavor dev --dart-define-from-file=$(CONFIG_DEV) $(if $(DEVICE),-d $(DEVICE),)
@@ -230,4 +236,4 @@ secrets: ## Scan for committed secrets
 check-fast: fmt-check lint test-domain ## Quick gate (agent Stop hook)
 
 .PHONY: check
-check: fmt-check lint identity-check arch deps-policy test-tooling cov domain-web-test web-check goldens secrets ## Definition of done (cov runs all tests)
+check: fmt-check lint identity-check push-strings-check arch deps-policy test-tooling cov domain-web-test web-check goldens secrets ## Definition of done (cov runs all tests)

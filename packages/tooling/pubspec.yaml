@@ -21,3 +21,4 @@ executables:
   deps_policy: deps_policy
   build_car_catalog: build_car_catalog
   gen_app_identity: gen_app_identity
+  gen_push_strings: gen_push_strings
