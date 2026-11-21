@@ -27,6 +27,12 @@ Future<(ProviderContainer, FakeDataDeletionRepository)> _open(
   );
   c.read(routerProvider).go('/settings');
   await tester.pumpAndSettle();
+  // The entries above push it below the test viewport.
+  await tester.scrollUntilVisible(
+    find.text('Alle meine Daten löschen'),
+    200,
+    scrollable: find.byType(Scrollable).first,
+  );
   await tester.tap(find.text('Alle meine Daten löschen'));
   await tester.pumpAndSettle();
   return (c, repo);
