@@ -6,6 +6,7 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
+import 'package:mitlio/features/profile/data/repositories/profile_providers.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio/features/sync/data/sync_status.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -81,12 +82,15 @@ class GroupsViewModel extends Notifier<GroupsState> {
   }
 
   /// Creates the group and appends [memberNames] in order (blank names are
-  /// skipped). If adding a member fails the group stays and the error is
-  /// returned.
+  /// skipped). With [withProfile] and a saved profile, "Ich" (name and
+  /// PayPal.Me of the profile) is the first member and is remembered as the
+  /// own member (ADR-25 §5); it stays an ordinary, editable member. If adding
+  /// a member fails the group stays and the error is returned.
   Future<RepoResult<Group>> create({
     required String name,
     required Currency currency,
     List<String> memberNames = const [],
+    bool withProfile = false,
   }) async {
     if (name.trim().isEmpty) {
       return const Err(InvalidData('name must not be empty'));
@@ -96,6 +100,10 @@ class GroupsViewModel extends Notifier<GroupsState> {
         .create(name: name, currency: currency, createdBy: localOwnerId);
     if (created case Ok(:final value)) {
       final members = ref.read(membersRepositoryProvider);
+      if (withProfile) {
+        final me = await _addOwnMember(value.id);
+        if (me case Err(:final error)) return Err(error);
+      }
       for (final memberName in memberNames) {
         if (memberName.trim().isEmpty) continue;
         final added = await members.add(value.id, name: memberName);
@@ -103,6 +111,26 @@ class GroupsViewModel extends Notifier<GroupsState> {
       }
     }
     return created;
+  }
+
+  /// Adds the profile as member; nothing to do without a profile.
+  Future<RepoResult<void>> _addOwnMember(String groupId) async {
+    final profile = await ref.read(profileRepositoryProvider).get();
+    switch (profile) {
+      case Err(:final error):
+        return Err(error);
+      case Ok(value: null):
+        return const Ok(null);
+      case Ok(:final value?):
+        final added = await ref
+            .read(membersRepositoryProvider)
+            .add(groupId, name: value.displayName, paypalMe: value.paypalMe);
+        return switch (added) {
+          Err(:final error) => Err(error),
+          Ok(:final value) =>
+            ref.read(ownMemberRepositoryProvider).mark(value.id),
+        };
+    }
   }
 
   /// Pull-to-refresh: syncs every shared group now (local-only groups never

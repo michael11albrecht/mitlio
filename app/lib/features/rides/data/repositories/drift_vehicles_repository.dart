@@ -64,6 +64,38 @@ class DriftVehiclesRepository implements VehiclesRepository {
     required int consumptionMilliPer100km,
     int wearMilliPerKm = 0,
     int? kmRateMilliPerKm,
+  }) => _insert(
+    groupId,
+    name: name,
+    fuelType: fuelType,
+    consumptionMilliPer100km: consumptionMilliPer100km,
+    wearMilliPerKm: wearMilliPerKm,
+    kmRateMilliPerKm: kmRateMilliPerKm,
+  );
+
+  @override
+  Future<RepoResult<Vehicle>> addLinked(
+    String groupId, {
+    required String sourceUserVehicleId,
+    required Vehicle template,
+  }) => _insert(
+    groupId,
+    name: template.name,
+    fuelType: template.fuelType,
+    consumptionMilliPer100km: template.consumptionMilliPer100km,
+    wearMilliPerKm: template.wearMilliPerKm,
+    kmRateMilliPerKm: template.kmRateMilliPerKm,
+    sourceUserVehicleId: sourceUserVehicleId,
+  );
+
+  Future<RepoResult<Vehicle>> _insert(
+    String groupId, {
+    required String name,
+    required FuelType fuelType,
+    required int consumptionMilliPer100km,
+    required int wearMilliPerKm,
+    required int? kmRateMilliPerKm,
+    String? sourceUserVehicleId,
   }) => guardStorage(() async {
     final id = _ids.newId();
     final built = buildVehicle(
@@ -93,11 +125,55 @@ class DriftVehiclesRepository implements VehiclesRepository {
           consumptionMilliPer100km: v.consumptionMilliPer100km,
           wearMilliPerKm: Value(v.wearMilliPerKm),
           kmRateMilliPerKm: Value(v.kmRateMilliPerKm),
+          sourceUserVehicleId: Value(sourceUserVehicleId),
         ),
       );
       await _outbox.enqueue(OutboxEntity.vehicle, id);
     });
     return get(id);
+  });
+
+  @override
+  Future<RepoResult<List<LinkedVehicle>>> linkedCopies(
+    String sourceUserVehicleId,
+  ) => guardStorage(() async {
+    final rows = await _dao.linkedVehicles(sourceUserVehicleId);
+    final copies = <LinkedVehicle>[];
+    for (final row in rows) {
+      switch (_map(row)) {
+        case Ok(:final value):
+          copies.add((vehicle: value, groupId: row.groupId));
+        case Err(:final error):
+          return Err(error);
+      }
+    }
+    return Ok(List.unmodifiable(copies));
+  });
+
+  @override
+  Future<RepoResult<String?>> sourceOf(String id) => guardStorage(() async {
+    final row = await _dao.findVehicle(id);
+    return row == null
+        ? Err(NotFound('vehicle', id))
+        : Ok(row.sourceUserVehicleId);
+  });
+
+  @override
+  Future<RepoResult<void>> unlink(String id) => guardStorage(() async {
+    final row = await _dao.findVehicle(id);
+    if (row == null) return Err(NotFound('vehicle', id));
+    if (row.sourceUserVehicleId == null) return const Ok(null);
+    await _db.transaction(() async {
+      await _dao.updateVehicle(
+        id,
+        VehiclesCompanion(
+          sourceUserVehicleId: const Value(null),
+          updatedAt: Value(Hlc.now(_clock)),
+        ),
+      );
+      await _outbox.enqueue(OutboxEntity.vehicle, id);
+    });
+    return const Ok(null);
   });
 
   @override

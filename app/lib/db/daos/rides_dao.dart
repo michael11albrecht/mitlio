@@ -26,6 +26,20 @@ class RidesDao extends DatabaseAccessor<AppDatabase> with _$RidesDaoMixin {
             ]))
           .watch();
 
+  /// Live group copies of the personal vehicle [sourceUserVehicleId].
+  Future<List<VehicleRow>> linkedVehicles(String sourceUserVehicleId) =>
+      (select(vehicles)
+            ..where(
+              (v) =>
+                  v.sourceUserVehicleId.equals(sourceUserVehicleId) &
+                  v.deletedAt.isNull(),
+            )
+            ..orderBy([
+              (v) => OrderingTerm.asc(v.createdAt),
+              (v) => OrderingTerm.asc(v.id),
+            ]))
+          .get();
+
   Future<bool> updateVehicle(String id, VehiclesCompanion change) async =>
       await (update(
         vehicles,

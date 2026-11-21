@@ -130,6 +130,80 @@ void runRidesRepositoriesContract(
         expect(ok(await r.vehicles.get(car.id)), car);
       });
 
+      test('addLinked copies the template and remembers the source', () async {
+        final copy = ok(
+          await r.vehicles.addLinked(
+            gid,
+            sourceUserVehicleId: 'personal-1',
+            template: car,
+          ),
+        );
+        expect(copy.id, isNot(car.id));
+        expect(
+          [copy.name, copy.fuelType, copy.wearMilliPerKm],
+          [car.name, car.fuelType, car.wearMilliPerKm],
+        );
+        expect(copy.kmRateMilliPerKm, 300);
+        expect(ok(await r.vehicles.sourceOf(copy.id)), 'personal-1');
+        expect(ok(await r.vehicles.sourceOf(car.id)), isNull);
+        expect(
+          ok(await r.vehicles.linkedCopies('personal-1')),
+          [(vehicle: copy, groupId: gid)],
+        );
+        expect(ok(await r.vehicles.linkedCopies('other')), isEmpty);
+        expect(
+          err(
+            await r.vehicles.addLinked(
+              'nope',
+              sourceUserVehicleId: 'personal-1',
+              template: car,
+            ),
+          ),
+          isA<NotFound>(),
+        );
+      });
+
+      test('an update keeps the link, unlink ends it', () async {
+        final copy = ok(
+          await r.vehicles.addLinked(
+            gid,
+            sourceUserVehicleId: 'personal-1',
+            template: car,
+          ),
+        );
+        ok(
+          await r.vehicles.update(
+            Vehicle(
+              id: copy.id,
+              name: 'Golf 2',
+              fuelType: copy.fuelType,
+              consumptionMilliPer100km: copy.consumptionMilliPer100km,
+            ),
+          ),
+        );
+        expect(ok(await r.vehicles.sourceOf(copy.id)), 'personal-1');
+        ok(await r.vehicles.unlink(copy.id));
+        expect(ok(await r.vehicles.sourceOf(copy.id)), isNull);
+        expect(ok(await r.vehicles.linkedCopies('personal-1')), isEmpty);
+        ok(await r.vehicles.unlink(copy.id));
+        expect(err(await r.vehicles.unlink('nope')), isA<NotFound>());
+        expect(err(await r.vehicles.sourceOf('nope')), isA<NotFound>());
+      });
+
+      test('a deleted copy is no longer listed, undo brings it back', () async {
+        final copy = ok(
+          await r.vehicles.addLinked(
+            gid,
+            sourceUserVehicleId: 'personal-1',
+            template: car,
+          ),
+        );
+        final undo = ok(await r.vehicles.softDelete(copy.id));
+        expect(ok(await r.vehicles.linkedCopies('personal-1')), isEmpty);
+        ok(await undo());
+        expect(ok(await r.vehicles.linkedCopies('personal-1')), hasLength(1));
+      });
+
       test('watchVehicles emits initial value and every change', () async {
         final probe = StreamProbe(r.vehicles.watchVehicles(gid));
         expect(await probe.next(), [car]);

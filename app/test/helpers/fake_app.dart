@@ -21,6 +21,10 @@ import 'package:mitlio/features/members/data/repositories/members_providers.dart
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_providers.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/fake_profile_bank_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/fake_profile_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/fake_user_vehicles_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/profile_providers.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_rides_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_vehicles_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
@@ -29,6 +33,8 @@ import 'package:mitlio/features/routes/data/repositories/route_providers.dart';
 import 'package:mitlio/features/routes/ui/route_distance_view_model.dart'
     show routeSearchDebounceProvider;
 import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
+import 'package:mitlio/features/setup/data/fake_setup_state_repository.dart';
+import 'package:mitlio/features/setup/data/setup_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/fake_settlements_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
@@ -254,6 +260,16 @@ class FakeApp {
   final FlakySettlements settlements;
   final FlakyPayments payments;
 
+  /// The personal profile, its bank details, the personal cars and the local
+  /// setup state ("Ich" member, dismissed cards): empty unless a test fills
+  /// them.
+  final profile = FakeProfileRepository();
+  late final profileBank = FakeProfileBankRepository(profile: profile);
+  late final userVehicles = FakeUserVehiclesRepository(
+    ids: SequentialIdGenerator(),
+  );
+  final setupState = FakeSetupStateRepository();
+
   /// Links opened and text copied by the payment actions.
   final launcher = FakeLinkLauncher();
 
@@ -286,6 +302,10 @@ class FakeApp {
     shareServiceProvider.overrideWithValue(share),
     syncCoordinatorProvider.overrideWithValue(sync),
     connectionsRepositoryProvider.overrideWithValue(connections),
+    profileRepositoryProvider.overrideWithValue(profile),
+    profileBankRepositoryProvider.overrideWithValue(profileBank),
+    userVehiclesRepositoryProvider.overrideWithValue(userVehicles),
+    setupStateRepositoryProvider.overrideWithValue(setupState),
   ];
 
   /// The fuel price backend and location, off by default (chips hidden):

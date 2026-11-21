@@ -61,7 +61,11 @@ class _GroupFormViewState extends ConsumerState<GroupFormView> {
     final result = id == null
         ? await ref
               .read(groupsViewModelProvider.notifier)
-              .create(name: _name.text, currency: _currency)
+              .create(
+                name: _name.text,
+                currency: _currency,
+                withProfile: true,
+              )
         : await ref
               .read(groupDetailViewModelProvider(id).notifier)
               .updateGroup(name: _name.text, currency: _currency);

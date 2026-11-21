@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/groups/ui/groups_view_model.dart';
+import 'package:mitlio/features/profile/data/repositories/profile_providers.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../../../helpers/fake_app.dart';
@@ -65,6 +66,55 @@ void main() {
       final members = ok(await app.members.list(g.id));
       expect([for (final m in members) m.name], ['Anna', 'Ben']);
       expect([for (final m in members) m.position], [0, 1]);
+    });
+
+    test('with a profile "Ich" is the first member, marked as own', () async {
+      await open();
+      ok(
+        await app.profile.save(displayName: ' Mia ', paypalMe: 'paypal.me/mia'),
+      );
+      final g = ok(
+        await vm().create(
+          name: 'Trip',
+          currency: Currency.eur,
+          memberNames: ['Ben'],
+          withProfile: true,
+        ),
+      );
+      final members = ok(await app.members.list(g.id));
+      expect([for (final m in members) m.name], ['Mia', 'Ben']);
+      expect(members.first.paypalMe, 'mia');
+      final own = container.read(ownMemberRepositoryProvider);
+      expect(ok(await own.isOwn(members.first.id)), isTrue);
+      expect(ok(await own.isOwn(members.last.id)), isFalse);
+    });
+
+    test('without a profile, or without asking, no member is added', () async {
+      await open();
+      final none = ok(
+        await vm().create(
+          name: 'A',
+          currency: Currency.eur,
+          withProfile: true,
+        ),
+      );
+      expect(ok(await app.members.list(none.id)), isEmpty);
+      ok(await app.profile.save(displayName: 'Mia'));
+      final skipped = ok(await vm().create(name: 'B', currency: Currency.eur));
+      expect(ok(await app.members.list(skipped.id)), isEmpty);
+    });
+
+    test('a failing own member add keeps the group and says so', () async {
+      await open();
+      ok(await app.profile.save(displayName: 'Mia'));
+      app.members.failWith = const Storage('disk full');
+      final r = await vm().create(
+        name: 'Trip',
+        currency: Currency.eur,
+        withProfile: true,
+      );
+      expect(err(r), const Storage('disk full'));
+      expect((state() as GroupsLoaded).groups, hasLength(1));
     });
 
     test('rejects a blank name without touching the repository', () async {
