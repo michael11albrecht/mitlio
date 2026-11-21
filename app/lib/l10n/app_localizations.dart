@@ -3581,6 +3581,54 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist.'**
   String get joinConnectOffline;
+
+  /// No description provided for @setupStepProgress.
+  ///
+  /// In de, this message translates to:
+  /// **'Schritt {current} von {total}'**
+  String setupStepProgress(int current, int total);
+
+  /// No description provided for @setupNext.
+  ///
+  /// In de, this message translates to:
+  /// **'Weiter'**
+  String get setupNext;
+
+  /// No description provided for @setupSkip.
+  ///
+  /// In de, this message translates to:
+  /// **'Überspringen'**
+  String get setupSkip;
+
+  /// No description provided for @setupBack.
+  ///
+  /// In de, this message translates to:
+  /// **'Zurück'**
+  String get setupBack;
+
+  /// No description provided for @setupYes.
+  ///
+  /// In de, this message translates to:
+  /// **'Ja'**
+  String get setupYes;
+
+  /// No description provided for @setupNo.
+  ///
+  /// In de, this message translates to:
+  /// **'Nein'**
+  String get setupNo;
+
+  /// No description provided for @setupFinishDone.
+  ///
+  /// In de, this message translates to:
+  /// **'Fertig'**
+  String get setupFinishDone;
+
+  /// No description provided for @setupCelebration.
+  ///
+  /// In de, this message translates to:
+  /// **'Geschafft'**
+  String get setupCelebration;
 }
 
 class _AppLocalizationsDelegate
