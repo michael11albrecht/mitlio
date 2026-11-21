@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.4.0](https://github.com/michael11albrecht/mitlio/compare/mitlio-v0.3.0...mitlio-v0.4.0) (2026-11-21)
+
+
+### Features
+
+* **app:** read Sentry DSN from AppConfig, full scrubber fixture test (P7-T08) ([#241](https://github.com/michael11albrecht/mitlio/issues/241)) ([57a6079](https://github.com/michael11albrecht/mitlio/commit/57a6079c1857e3f49d53e44f60dfeab882128edd))
+* **domain:** PayPal.Me handle, vehicle extra cost per km, operating-cost check (PU-T02, PU-T03, PU-T15) ([#235](https://github.com/michael11albrecht/mitlio/issues/235)) ([a237c52](https://github.com/michael11albrecht/mitlio/commit/a237c52930c6538fdb4f94451d953b5cf5e32f9b))
+* **web,app:** Made with heart by Michael Albrecht credit ([#186](https://github.com/michael11albrecht/mitlio/issues/186), [#187](https://github.com/michael11albrecht/mitlio/issues/187)) ([#225](https://github.com/michael11albrecht/mitlio/issues/225)) ([a888562](https://github.com/michael11albrecht/mitlio/commit/a888562d6e8fa1cd0e47d6189f8c943a73cde157))
+
+
+### Bug Fixes
+
+* **app:** credit line gap and check mark over avatar chips ([#236](https://github.com/michael11albrecht/mitlio/issues/236), [#237](https://github.com/michael11albrecht/mitlio/issues/237)) ([#250](https://github.com/michael11albrecht/mitlio/issues/250)) ([1f275e5](https://github.com/michael11albrecht/mitlio/commit/1f275e5bfd21f2992b8decaec9e7bbd09d44921e))
+* **balances:** removed members no longer break balances; settle sheet shows what others owe ([#136](https://github.com/michael11albrecht/mitlio/issues/136), [#141](https://github.com/michael11albrecht/mitlio/issues/141)) ([#222](https://github.com/michael11albrecht/mitlio/issues/222)) ([a800efb](https://github.com/michael11albrecht/mitlio/commit/a800efbd4d356db07cc4fcde1f327872df55af41))
+* **groups:** focus the member rename field and reject duplicate names ([#138](https://github.com/michael11albrecht/mitlio/issues/138), [#144](https://github.com/michael11albrecht/mitlio/issues/144)) ([#224](https://github.com/michael11albrecht/mitlio/issues/224)) ([b941051](https://github.com/michael11albrecht/mitlio/commit/b941051b2c7aa1e094da9739d0cbb3254c0938f0))
+* **trip:** share text names payee and total; plausibility limits; UTC seed dates and app category keys ([#223](https://github.com/michael11albrecht/mitlio/issues/223)) ([6a0465b](https://github.com/michael11albrecht/mitlio/commit/6a0465b8afae2cd5a5f95a067367c7eda43f5cf0))
+* **web:** fuel source/note to footer, nearby only when supported, center chips ([#211](https://github.com/michael11albrecht/mitlio/issues/211)) ([f93013f](https://github.com/michael11albrecht/mitlio/commit/f93013f65f98f029f7ebe46e37e3c27a53c069f6))
+
 ## [0.3.0](https://github.com/michael11albrecht/mitlio/compare/mitlio-v0.2.0...mitlio-v0.3.0) (2026-11-19)
 
 
