@@ -25,3 +25,14 @@
 | 21 | Feedback (ADR-29): private Supabase Storage bucket for screenshots + retention period and cleanup schedule | P7-T10 (#230) | create bucket, decide retention |
 | 22 | Feedback (ADR-29): privacy policy update (free-text, screenshots, optional email, diagnostics, retention) | P7-T10, P7-T07 sign-off | update the Datenschutz draft, review with item 7 |
 | 23 | P7-T08 Sentry release wiring: create the EU Sentry project, add `SENTRY_DSN` per flavor (`app/config/{dev,prod}.json` stay empty in the repo, pass as CI secret/dart-define), add `SENTRY_AUTH_TOKEN`, and add the `--split-debug-info` + `sentry_dart_plugin` upload step to the release workflow (steps in `docs/release.md`; touches `.github/workflows/**`, critical). Set project retention to 30 days | crash reports in release builds | create project and secrets, review the workflow change |
+
+## Owner review queue (critical PRs, code-owner review required)
+
+Updated 2026-11-21. Agents cannot merge these; they are otherwise green or waiting on CI.
+
+| PR | What | Why critical |
+|---|---|---|
+| #239 | PU-T04 profile, personal vehicles tables, schema v7 | schema, PII (IBAN stays local) |
+| #242 | P8-T06 release-strip gate verified on real builds | `.github/**`, release gate |
+| #243 | P8-T08 `agent-fix-ci` workflow | `.github/**` |
+| #229 | ADR-29 in-app feedback (decision: accept?) | owner decision, blocks #230 |
