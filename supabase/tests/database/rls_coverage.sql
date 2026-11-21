@@ -20,7 +20,8 @@ select is_empty(
        'groups', 'members', 'expenses', 'expense_payers', 'expense_shares',
        'settlements', 'vehicles', 'ride_templates', 'rides',
        'group_memberships', 'group_invites', 'fuel_price_cache', 'fx_rates', 'rate_limits',
-       'expense_revisions', 'group_join_audit', 'app_config'
+       'expense_revisions', 'group_join_audit', 'app_config',
+       'device_tokens', 'notification_prefs', 'notification_outbox'
      ])$q$,
   'every table in public is in the RLS test registry (add new tables here and in rls_policies.sql)');
 
@@ -29,7 +30,8 @@ select is_empty(
        'groups', 'members', 'expenses', 'expense_payers', 'expense_shares',
        'settlements', 'vehicles', 'ride_templates', 'rides',
        'group_memberships', 'group_invites', 'fuel_price_cache', 'fx_rates', 'rate_limits',
-       'expense_revisions', 'group_join_audit', 'app_config'
+       'expense_revisions', 'group_join_audit', 'app_config',
+       'device_tokens', 'notification_prefs', 'notification_outbox'
      ])
      except
      select tablename from pg_tables where schemaname = 'public'$q$,
@@ -48,9 +50,9 @@ select is_empty(
             or has_table_privilege('authenticated', c.oid,
               'delete, truncate, references, trigger')
             or (c.relname in ('fuel_price_cache', 'fx_rates', 'app_config', 'expense_revisions',
-                                    'group_join_audit')
+                                    'group_join_audit', 'device_tokens', 'notification_outbox')
                 and has_table_privilege('authenticated', c.oid, 'insert, update')))$q$,
-  'anon has no table privileges (fuel_price_cache, fx_rates, app_config: select only); authenticated has no delete/truncate/references/trigger, and no write on fuel_price_cache / fx_rates / app_config / expense_revisions / group_join_audit');
+  'anon has no table privileges (fuel_price_cache, fx_rates, app_config: select only); authenticated has no delete/truncate/references/trigger, and no write on fuel_price_cache / fx_rates / app_config / expense_revisions / group_join_audit / device_tokens / notification_outbox');
 
 select is_empty(
   $q$select tablename, policyname from pg_policies

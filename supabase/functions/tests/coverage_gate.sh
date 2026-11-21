@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Unit tests + line coverage gate (>= 90 %) for the pure Edge Function logic (P6c-T03).
+# Unit tests + line coverage gate (>= 90 %) for the pure Edge Function logic (P6c-T03, P6b-T04).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 min=90
 dir="$(mktemp -d)"
 deno test --allow-read=_shared/testdata --coverage="$dir/cov" _shared/
-deno coverage "$dir/cov" --include='_shared/(fuel|oil_bulletin|fx|route|contact)\.ts' --lcov > "$dir/lcov.info"
+deno coverage "$dir/cov" --include='_shared/(fuel|oil_bulletin|fx|route|contact|notify)\.ts' --lcov > "$dir/lcov.info"
 awk -F: -v min="$min" '
   /^LF:/ { lf += $2 } /^LH:/ { lh += $2 }
   END {
