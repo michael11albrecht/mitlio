@@ -1103,5 +1103,72 @@
   "setupYes": "Yes",
   "setupNo": "No",
   "setupFinishDone": "Done",
-  "setupCelebration": "All set"
+  "setupCelebration": "All set",
+  "profileSettingsEntry": "My profile",
+  "profileSettingsEntryHint": "Name, picture, PayPal.Me and IBAN, only on your device",
+  "profileNameTitle": "What is your name?",
+  "profileNameLabel": "Your name",
+  "profileNameRequired": "What is your name? Enter it to continue.",
+  "profileAvatarTitle": "Pick your picture",
+  "profileAvatarColor": "Colour {number}",
+  "@profileAvatarColor": {
+    "placeholders": {
+      "number": {"type": "int"}
+    }
+  },
+  "profileAvatarInitials": "Initials only",
+  "profileAvatarEmoji": "Symbol {emoji}",
+  "@profileAvatarEmoji": {
+    "placeholders": {
+      "emoji": {"type": "String"}
+    }
+  },
+  "profilePaypalAskTitle": "Do you want to get money via PayPal?",
+  "profilePaypalTitle": "What is your PayPal.Me link?",
+  "profilePaypalLabel": "PayPal.Me link or name",
+  "profilePaypalHint": "e.g. paypal.me/anna",
+  "profilePaypalResult": "Your link: {link}",
+  "@profilePaypalResult": {
+    "placeholders": {
+      "link": {"type": "String"}
+    }
+  },
+  "profilePaypalInvalid": "That is not a PayPal.Me name. Letters and digits only, up to 20 characters.",
+  "profilePaypalTest": "Test link",
+  "profilePaypalCreate": "No PayPal.Me yet? Create one now",
+  "profilePaypalLinkCopied": "The link would not open. We copied it, paste it into your browser.",
+  "profilePaypalHelpTitle": "How to find your link",
+  "profilePaypalHelp1": "Open the PayPal app and tap your profile.",
+  "profilePaypalHelp2": "Choose “PayPal.Me” or “Receive money”.",
+  "profilePaypalHelp3": "Your link looks like this: paypal.me/yourname",
+  "profilePaypalHelp4": "Copy it and paste it above.",
+  "profileBankAskTitle": "Prefer a bank transfer (QR code)?",
+  "profileIbanTitle": "Your IBAN",
+  "profileIbanLabel": "IBAN",
+  "profileIbanHolderLabel": "Account holder",
+  "profileIbanHolderRequired": "Who is the account holder? Enter the name.",
+  "profileIbanPaste": "Paste",
+  "profileIbanPasteEmpty": "There is no text on the clipboard. Copy your IBAN and tap Paste again.",
+  "profileIbanLocalOnly": "Your IBAN stays on your device only. It is never uploaded.",
+  "profileIbanTyping": "Keep typing, it is checked as you go.",
+  "profileIbanValid": "IBAN is valid",
+  "profileIbanBadFormat": "That is not an IBAN. It starts with two letters and two digits, e.g. DE89.",
+  "profileIbanBadChecksum": "The check digits do not match. Compare the IBAN with your bank card or app.",
+  "profileIbanQrPreview": "This is the QR code your friends scan (example: €10.00)",
+  "profileIbanQrSemantics": "Example QR code for a transfer to you",
+  "profileIbanQrFailed": "No QR code can be made from these details. Check that the account holder is shorter than 70 characters.",
+  "profileFinishTitle": "Your profile is ready",
+  "profileCardPaypal": "PayPal.Me: {handle}",
+  "@profileCardPaypal": {
+    "placeholders": {
+      "handle": {"type": "String"}
+    }
+  },
+  "profileCardIban": "IBAN ···· {tail}, only on this device",
+  "@profileCardIban": {
+    "placeholders": {
+      "tail": {"type": "String"}
+    }
+  },
+  "profileCardNoPayment": "No payment details yet"
 }

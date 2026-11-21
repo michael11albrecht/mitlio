@@ -10,6 +10,7 @@ import 'package:mitlio/features/groups/ui/group_detail_view.dart';
 import 'package:mitlio/features/groups/ui/group_form_view.dart';
 import 'package:mitlio/features/groups/ui/groups_view.dart';
 import 'package:mitlio/features/onboarding/ui/onboarding_view.dart';
+import 'package:mitlio/features/profile/ui/profile_setup_view.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/template_form_view.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view.dart';
@@ -54,6 +55,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'settings',
             builder: (context, state) => const SettingsView(),
             routes: [
+              GoRoute(
+                path: 'profile',
+                builder: (context, state) => const ProfileSetupView(),
+              ),
               GoRoute(
                 path: 'delete-data',
                 builder: (context, state) => const DeleteMyDataView(),

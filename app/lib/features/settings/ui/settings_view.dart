@@ -24,6 +24,13 @@ class SettingsView extends ConsumerWidget {
       body: ListView(
         padding: Spacing.screen,
         children: [
+          ListTile(
+            title: Text(l10n.profileSettingsEntry),
+            subtitle: Text(l10n.profileSettingsEntryHint),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => unawaited(context.push('/settings/profile')),
+          ),
+          const SizedBox(height: Spacing.md),
           Text(
             l10n.privacySection,
             style: Theme.of(context).textTheme.titleSmall,
