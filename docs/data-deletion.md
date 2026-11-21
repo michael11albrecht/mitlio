@@ -30,7 +30,7 @@ cleanup of inactive anonymous accounts (`docs/retention.md`) uses as well. For t
   account),
 - push tokens and notification settings, once those tables exist,
 - the account itself, including invites the user created, their entries in the join audit and login sessions,
-- the user's rows in Supabase Auth's audit log (`auth.audit_log_entries`, migration `0017`): Auth writes one per token
+- the user's rows in Supabase Auth's audit log (`auth.audit_log_entries`, migration `0018`): Auth writes one per token
   refresh and logout, with no link to the account, so they are removed by user id. The owner also switches the
   database audit log off (`supabase/README.md`); a daily job purges leftovers older than 7 days,
 - ownership: a group the user owned passes to its oldest remaining membership.
