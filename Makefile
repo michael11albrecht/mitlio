@@ -95,6 +95,7 @@ test-tooling: ## Tests for repo tooling (gates)
 	cd $(TOOLING) && $(DART) test
 	tool/risk_label_test.sh
 	tool/agent_metrics_test.sh
+	tool/check_release_strip_test.sh
 
 .PHONY: agent-metrics
 agent-metrics: ## Regenerate docs/agent-metrics.md from merged PRs (needs gh + jq)

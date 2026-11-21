@@ -16,7 +16,8 @@ Shell gates, agent hooks and gate config. Invoked from `Makefile`, CI workflows,
 | `risk_label_test.sh` | Self-test for `risk_label.sh` (`bash tool/risk_label_test.sh`) |
 | `drive.sh` | Calls `ext.mitlio.*` on the running debug app via `packages/drive_client` (reads `.drive/uri`) |
 | `gen_db_contract.dart` | Parses `supabase/types/database.ts` into `app/lib/features/sync/data/db_contract.g.dart` (`make db-types`; db workflow fails on a stale file) |
-| `check_release_strip.sh` | Fails if a Linux release bundle contains `ext.mitlio` (Linux only, skips elsewhere) |
+| `check_release_strip.sh` | Fails if a release build (Linux bundle dir, iOS `Runner.app`, or an apk/aab/ipa) contains `ext.mitlio`; exit 2 if no AOT snapshot. Without an argument: Linux only, skips elsewhere. Run by desktop-it and before the TestFlight upload |
+| `check_release_strip_test.sh` | Self-test for `check_release_strip.sh` on fake builds (`make test-tooling`) |
 
 ## Subdirectories
 | Directory | Purpose |
