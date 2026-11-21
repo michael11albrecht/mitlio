@@ -53,6 +53,18 @@ void main() {
     );
   }
 
+  testWidgets('credit words are evenly spaced (#236)', (tester) async {
+    await _open(tester, const Locale('en'));
+    final name = find.text('Michael Albrecht');
+    await tester.scrollUntilVisible(name, 200);
+    final gapBeforeName =
+        tester.getTopLeft(name).dx - tester.getTopRight(find.text('by')).dx;
+    final gapAfterLead =
+        tester.getTopLeft(find.text('♥')).dx -
+        tester.getTopRight(find.text('Made with')).dx;
+    expect(gapBeforeName, closeTo(gapAfterLead, 0.5));
+  });
+
   testWidgets('says what to do when the link cannot open', (tester) async {
     final launcher = await _open(tester, const Locale('de'), canLaunch: false);
     final name = find.text('Michael Albrecht');

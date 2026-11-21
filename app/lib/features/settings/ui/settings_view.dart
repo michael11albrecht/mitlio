@@ -118,6 +118,11 @@ class _AuthorCredit extends ConsumerWidget {
         ),
         Text(l10n.creditMid, style: style),
         TextButton(
+          // No side padding: it would widen the gap before the name.
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+          ),
           onPressed: () => unawaited(_open(context, ref)),
           child: Text(l10n.creditName),
         ),

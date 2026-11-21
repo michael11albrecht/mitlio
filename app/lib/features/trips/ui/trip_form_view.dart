@@ -282,6 +282,7 @@ class _TripFormViewState extends ConsumerState<TripFormView> {
                           ),
                           label: Text(nameOf(m)),
                           selected: inputs.passengerIds.contains(m.id),
+                          showCheckmark: false,
                           onSelected: (_) => vm.togglePassenger(m.id),
                         ),
                   ],

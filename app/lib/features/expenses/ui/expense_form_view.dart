@@ -332,6 +332,7 @@ class _FormBody extends StatelessWidget {
           ),
           label: Text(m.name),
           selected: form.payerId == m.id,
+          showCheckmark: false,
           onSelected: (_) => vm.setPayer(m.id),
         ),
     ],
