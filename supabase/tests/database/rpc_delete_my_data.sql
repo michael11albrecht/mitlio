@@ -84,7 +84,7 @@ select is(
   public.delete_my_data(),
   jsonb_build_object(
     'memberships_deleted', 2, 'members_unlinked', 1,
-    'device_tokens_deleted', 0, 'notification_prefs_deleted', 0,
+    'device_tokens_deleted', 0, 'notification_prefs_deleted', 0, 'auth_audit_entries_deleted', 0,
     'auth_user_deleted', true),
   'alice: report counts her own rows only');
 
@@ -116,7 +116,7 @@ select is(
   public.delete_my_data(),
   jsonb_build_object(
     'memberships_deleted', 0, 'members_unlinked', 0,
-    'device_tokens_deleted', 0, 'notification_prefs_deleted', 0,
+    'device_tokens_deleted', 0, 'notification_prefs_deleted', 0, 'auth_audit_entries_deleted', 0,
     'auth_user_deleted', false),
   'calling it twice is a no-op');
 
