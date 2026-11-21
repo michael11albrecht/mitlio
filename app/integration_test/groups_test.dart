@@ -66,9 +66,11 @@ void main() {
     await start(tester);
     expect(find.text('Willkommen bei mitlio'), findsOneWidget);
 
-    final taps = TapCounter(tester);
-    await taps.tap(find.text('Gruppe für Ausgaben anlegen'));
+    // The first group is a step flow (PU-T12, `first_group` budget); this
+    // covers the compact form every later group uses.
+    await drive['navigate']!({'route': '/groups/new'});
     await tester.pumpAndSettle();
+    final taps = TapCounter(tester);
     await taps.enterText(find.byType(TextField), 'Skiwochenende');
     await taps.tap(find.text('Gruppe anlegen'));
     await tester.pumpAndSettle();
