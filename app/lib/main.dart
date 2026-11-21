@@ -30,23 +30,20 @@ import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
-// TODO(P8-T01): read from AppConfig once the config files land. Empty in the
-// repo: the owner sets it via CI secret + dart-define; empty means no Sentry.
-const _sentryDsn = String.fromEnvironment('SENTRY_DSN');
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  const config = AppConfig.fromEnvironment();
   final dir = await getApplicationSupportDirectory();
   await dir.create(recursive: true);
   final db = AppDatabase(
     NativeDatabase.createInBackground(File('${dir.path}/mitlio.sqlite')),
   );
   final crashReporter = CrashReporter(
-    dsn: _sentryDsn,
+    // Empty in the repo (flavor config files): empty means no Sentry.
+    dsn: config.sentryDsn,
     store: FileCrashReportingStore(File('${dir.path}/crash_reporting_on')),
   );
   await crashReporter.start();
-  const config = AppConfig.fromEnvironment();
   final remoteBackend = await RemoteBackend.initialize(
     config,
     store: const FlutterSecretStore(),
