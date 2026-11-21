@@ -98,6 +98,23 @@ void main() {
       expect(catalog.search('benz').single.name, 'Mercedes-Benz A 180');
     });
 
+    test('alias plus model reads as one word: "mercedesa", "benza 180"', () {
+      expect(catalog.search('mercedesa').single.name, 'Mercedes-Benz A 180');
+      expect(catalog.search('benza180').single.name, 'Mercedes-Benz A 180');
+    });
+
+    test('same variant sorts by engine size first, then by power', () {
+      final cars = CarCatalog([
+        car('Zed', 'Zap', cc: 1600, kw: 65),
+        car('Zed', 'Zap', cc: 1000, kw: 110),
+        car('Zed', 'Zap', cc: 1000, kw: 70),
+      ]);
+      expect(
+        cars.search('zap').map((e) => (e.engineCc, e.powerKw)).toList(),
+        [(1000, 70), (1000, 110), (1600, 65)],
+      );
+    });
+
     test('no match gives an empty list', () {
       expect(catalog.search('xyzzy'), isEmpty);
       expect(catalog.search('golf zzz'), isEmpty);
@@ -228,6 +245,18 @@ void main() {
       expect(
         () => realisticConsumptionMilli(FuelType.diesel, -5),
         throwsArgumentError,
+      );
+    });
+
+    test('the error names the argument and the rule', () {
+      expect(
+        () => realisticConsumptionMilli(FuelType.petrol, 0),
+        throwsA(
+          isA<ArgumentError>()
+              .having((e) => e.name, 'name', 'wltpMilli')
+              .having((e) => e.message, 'message', 'must be > 0')
+              .having((e) => e.invalidValue, 'invalidValue', 0),
+        ),
       );
     });
 
