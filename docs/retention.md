@@ -18,6 +18,7 @@ a new migration for the SQL (never edit a merged one), update the pgTAP test, th
 | Expense edit history (`expense_revisions`) | Supabase | newest 50 revisions per expense (older ones pruned by the trigger); no time limit, kept while the group exists, also for soft-deleted expenses | `expense_revisions_per_expense` | trigger `record_expense_revision` (0007) |
 | Shared group content (groups, members, expenses, settlements, rides, vehicles, ride templates; soft-deleted rows stay as tombstones) | Supabase | while the group exists (see the two rows above) | none | the cleanup above |
 | Revoked / replaced invites (`expires_at = infinity`, token hash only) | Supabase | kept until the group is deleted (the 30-day rule only reaches invites with a finite expiry) | none | group cleanup (0014) |
+| Auth audit log (`auth.audit_log_entries`; normally off, see `supabase/README.md`) | Supabase | 7 days; also removed with the account (`delete_account_data`) | `auth_audit_days` | cron `auth-audit-cleanup` (0017) |
 | Supabase platform logs | Supabase | at most 7 days (plan-dependent, controlled by the provider) | `platform_logs_max_days` | provider |
 | Crash reports (opt-in) | Sentry (EU) | 30 days | `sentry_days` | owner sets the project's data retention in Sentry |
 | Website server logs | Firebase Hosting (Google) | controlled by Google; we have no access and do not evaluate them | none | provider |

@@ -7,9 +7,10 @@
 -- retention: join_audit_days=90
 -- retention: expired_invites_days_after_expiry=30
 -- retention: inactive_account_months=13
+-- retention: auth_audit_days=7
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(33);
+select plan(37);
 
 -- Scheduled ------------------------------------------------------------------------------------------
 select ok(exists (select 1 from cron.job where jobname = 'fuel-prices-cleanup' and command like '%cleanup_fuel_tables%'),
@@ -20,6 +21,8 @@ select ok(exists (select 1 from cron.job where jobname = 'join-data-cleanup' and
   'join-data-cleanup is scheduled');
 select ok(exists (select 1 from cron.job where jobname = 'inactive-accounts-cleanup' and command like '%cleanup_inactive_accounts%'),
   'inactive-accounts-cleanup is scheduled');
+select ok(exists (select 1 from cron.job where jobname = 'auth-audit-cleanup' and command like '%cleanup_auth_audit_log%'),
+  'auth-audit-cleanup is scheduled');
 
 -- Fixtures --------------------------------------------------------------------------------------------
 insert into auth.users (id, aud, role, email) values
@@ -58,6 +61,15 @@ insert into public.group_invites (id, group_id, token_hash, created_by, created_
     '00000000-0000-0000-0000-0000000000a1', now() - interval '60 days', now() - interval '30 days' + interval '1 hour'),
   ('00000000-0000-0000-0004-000000000003', '00000000-0000-0000-0001-0000000000a1', decode(repeat('cc', 32), 'hex'),
     '00000000-0000-0000-0000-0000000000a1', now(), now() + interval '7 days');
+
+-- auth.audit_log_entries: 7 days (the empty-table no-op is covered in auth_audit_log.sql)
+insert into auth.audit_log_entries (instance_id, id, payload, created_at) values
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-000a-000000000001',
+    '{"actor_id":"00000000-0000-0000-0000-0000000000a1","action":"token_refreshed"}',
+    now() - interval '7 days' - interval '1 hour'),
+  ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-000a-000000000002',
+    '{"actor_id":"00000000-0000-0000-0000-0000000000a1","action":"token_refreshed"}',
+    now() - interval '7 days' + interval '1 hour');
 
 -- Inactive anonymous accounts (13 months) and groups without a linked account -------------------------
 -- b1 anonymous, just past 13 months: deleted.        b2 anonymous, just inside: kept.
@@ -134,6 +146,7 @@ insert into public.group_join_audit (group_id, user_id) values
 select public.cleanup_fuel_tables();
 select public.cleanup_fx_rates();
 select public.cleanup_join_data();
+select public.cleanup_auth_audit_log();
 select public.cleanup_inactive_accounts();
 
 select is((select count(*) from public.rate_limits where key_hash = 'retention-rl-old-0000'), 0::bigint,
@@ -164,6 +177,11 @@ select is((select count(*) from public.group_invites where id = '00000000-0000-0
   'group_invites: invite expired less than 30 days ago is kept');
 select is((select count(*) from public.group_invites where id = '00000000-0000-0000-0004-000000000003'), 1::bigint,
   'group_invites: valid invite is kept');
+
+select is((select count(*) from auth.audit_log_entries where id = '00000000-0000-0000-000a-000000000001'), 0::bigint,
+  'auth.audit_log_entries: row just past 7 days is deleted');
+select is((select count(*) from auth.audit_log_entries where id = '00000000-0000-0000-000a-000000000002'), 1::bigint,
+  'auth.audit_log_entries: row just inside 7 days is kept');
 
 -- Inactive anonymous accounts ---------------------------------------------------------------------------
 select is((select count(*) from auth.users where id = '00000000-0000-0000-0000-0000000000b1'), 0::bigint,
@@ -216,6 +234,8 @@ select is((select count(*) from public.members where group_id in
 
 -- Client roles cannot call the job.
 set local role authenticated;
+select throws_ok($q$select public.cleanup_auth_audit_log()$q$, '42501', null,
+  'authenticated cannot run the audit log purge');
 select throws_ok($q$select public.cleanup_join_data()$q$, '42501', null, 'authenticated cannot run the join cleanup');
 select throws_ok($q$select public.cleanup_inactive_accounts()$q$, '42501', null,
   'authenticated cannot run the inactive-accounts cleanup');

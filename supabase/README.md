@@ -119,5 +119,6 @@ and the inactive-account cleanup (`docs/retention.md`). This is a hosted-project
 select count(*) from auth.audit_log_entries where created_at > now() - interval '1 hour';
 ```
 
+Safety net (migration `0017`): `delete_account_data()` deletes the user's audit rows and the daily job `auth-audit-cleanup` purges rows older than 7 days (`supabase/retention.json`), in case the toggle is late or missing.
 Events then only reach the platform log stream (1 day on Free, 7 days on Pro).
 Also per project: Authentication > Rate Limits > anonymous sign-ins 10 per hour per IP; usage alerts for MAU and database size.
