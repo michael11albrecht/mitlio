@@ -1042,6 +1042,13 @@ export type Database = {
         Args: { claim_member_id?: string; token: string }
         Returns: Json
       }
+      notification_outbox_health: {
+        Args: never
+        Returns: {
+          failed_last_hour: number
+          oldest_due_age_seconds: number
+        }[]
+      }
       register_device_token: {
         Args: {
           p_app_version?: string

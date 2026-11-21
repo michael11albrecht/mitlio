@@ -74,7 +74,11 @@ interface Sent {
   body: { message: Message };
 }
 async function stats(): Promise<
-  { fcm: Sent[]; oauth: { grant_type: string; assertion: string }[] }
+  {
+    fcm: Sent[];
+    oauth: { grant_type: string; assertion: string }[];
+    sentry: { path: string; status: string; duration: string }[];
+  }
 > {
   return await (await fetch(`${STUB_URL}/__stats`)).json();
 }
@@ -273,4 +277,33 @@ Deno.test("only mine: members not involved are skipped", async () => {
   await (await run()).body?.cancel();
   assertEquals((await sentTo(T("cara-ok"))).length, 0);
   assertEquals((await sentTo(T("ben-ok"))).length, 1);
+});
+
+Deno.test("monitor: a failing run raises an error check-in, a healthy run an ok check-in", async () => {
+  // Earlier tests left a dropped row (failed_at, last hour): that alone is an alert, so clear it.
+  const del = await rest("notification_outbox?failed_at=not.is.null", { method: "DELETE" });
+  await del.body?.cancel();
+  await patch(`notification_prefs?user_id=eq.${cara}&group_id=eq.${G}`, { level: "none" });
+  await fetch(`${STUB_URL}/__reset`).then((r) => r.body?.cancel());
+
+  // Only ben is notified (cara opted out), with one working and one flaky token: half of the messages fail, FCM answers 503.
+  await insert("notification_outbox", [event()]);
+  const bad = await (await run()).json();
+  assertEquals(bad.retried, 1);
+  const afterBad = (await stats()).sentry;
+  assertEquals(afterBad.length, 1, "one check-in per run");
+  assertEquals(afterBad[0].path, "/api/42/cron/notify/stubkey/");
+  assertEquals(afterBad[0].status, "error");
+  assert(Number(afterBad[0].duration) >= 0);
+
+  // FCM recovers, the re-queued row is due: the next run is healthy.
+  await patch("notification_outbox?processed_at=is.null", {
+    next_attempt_at: "2000-01-01T00:00:00Z",
+  });
+  await fetch(`${STUB_URL}/__fcm_heal`).then((r) => r.body?.cancel());
+  const good = await (await run()).json();
+  assertEquals(good.retried, 0);
+  const afterGood = (await stats()).sentry;
+  assertEquals(afterGood.length, 2);
+  assertEquals(afterGood[1].status, "ok");
 });
