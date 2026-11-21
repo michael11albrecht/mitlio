@@ -169,3 +169,25 @@ Deno.test("createFcmClient: error mapping and token endpoint failures", async ()
   sendThrows = true;
   assertEquals(await mk().send({}), { ok: false, kind: "retryable", code: "network_error" });
 });
+
+Deno.test("createFcmClient: concurrent sends share one OAuth exchange", async () => {
+  const { sa } = await testAccount();
+  let tokens = 0;
+  const fetchFn = async (url: string) => {
+    await new Promise((r) => setTimeout(r, 5));
+    if (url === sa.token_uri) {
+      tokens++;
+      return Response.json({ access_token: "at", expires_in: 3600 });
+    }
+    return Response.json({});
+  };
+  const client = createFcmClient({
+    endpoint: "https://fcm.test/send",
+    serviceAccount: sa,
+    fetch: fetchFn,
+    now: () => 0,
+  });
+  const results = await Promise.all([1, 2, 3, 4].map((i) => client.send({ token: `t${i}` })));
+  assertEquals(results.every((r) => r.ok), true);
+  assertEquals(tokens, 1);
+});

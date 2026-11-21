@@ -116,9 +116,21 @@ export interface FcmClientOptions {
 export function createFcmClient(opts: FcmClientOptions): FcmClient {
   let cached: { token: string; expiresAtMs: number } | null = null;
 
-  async function accessToken(): Promise<string | null> {
+  // Concurrent sends share one exchange instead of each fetching a token.
+  let inflight: Promise<string | null> | null = null;
+
+  function accessToken(): Promise<string | null> {
     const nowMs = opts.now();
-    if (cached && nowMs < cached.expiresAtMs - REFRESH_MARGIN_MS) return cached.token;
+    if (cached && nowMs < cached.expiresAtMs - REFRESH_MARGIN_MS) {
+      return Promise.resolve(cached.token);
+    }
+    inflight ??= fetchToken(nowMs).finally(() => {
+      inflight = null;
+    });
+    return inflight;
+  }
+
+  async function fetchToken(nowMs: number): Promise<string | null> {
     try {
       const assertion = await signJwt(opts.serviceAccount, Math.floor(nowMs / 1000));
       const res = await opts.fetch(opts.serviceAccount.token_uri, {

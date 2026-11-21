@@ -235,7 +235,7 @@ Deno.test("retries: 503 re-queues with backoff, succeeds later, gives up at the 
   );
   assertEquals(row.processed_at, null);
   assertEquals(row.attempts, 1);
-  assertEquals(row.last_error, "HTTP_503");
+  assertEquals(row.last_error, "UNAVAILABLE");
 
   const notDue = await (await run()).json();
   assertEquals(notDue.claimed, 0, "backoff: the row is not due yet");
