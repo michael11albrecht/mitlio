@@ -67,6 +67,12 @@ abstract final class Sizes {
   /// Minimum height of a yes/no card in a setup flow (a big, calm target).
   static const double choiceCard = 72;
 
+  /// Diameter of the avatar preview on the profile avatar step and card.
+  static const double profileAvatar = 96;
+
+  /// Height of the picture slot above a setup step (illustrations, PU-T06).
+  static const double stepVisual = 120;
+
   /// Edge of the finish-screen celebration.
   static const double celebration = 120;
 

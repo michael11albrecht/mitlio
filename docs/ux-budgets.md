@@ -19,6 +19,7 @@ The fenced JSON block below is the single source: the helper parses it. Keys are
 | `setup_step_input` | Input step: type the value, tap "Weiter" | 1 |
 | `setup_step_skip` | Skip an optional step ("Überspringen") | 1 |
 | `setup_finish_action` | Finish screen to its one next action | 1 |
+| `profile_setup` | Whole profile flow, every step answered: name, avatar (pick + "Weiter"), PayPal yes, PayPal.Me, bank yes, IBAN, finish action. Typing is not a tap; the minimal path (name, skip, no, no, finish) is 5 (PU-T07) | 8 |
 
 ```json
 {
@@ -34,7 +35,8 @@ The fenced JSON block below is the single source: the helper parses it. Keys are
   "setup_step_yes_no": {"maxTaps": 1},
   "setup_step_input": {"maxTaps": 1},
   "setup_step_skip": {"maxTaps": 1},
-  "setup_finish_action": {"maxTaps": 1}
+  "setup_finish_action": {"maxTaps": 1},
+  "profile_setup": {"maxTaps": 8}
 }
 ```
 

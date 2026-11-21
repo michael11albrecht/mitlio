@@ -15,6 +15,7 @@ import 'package:mitlio/core/logging.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/remote/remote_backend.dart';
 import 'package:mitlio/core/remote/secure_local_storage.dart';
+import 'package:mitlio/core/ui/setup_flow/setup_flow_view_model.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/debug/debug_drive.dart';
@@ -24,6 +25,7 @@ import 'package:mitlio/features/fuel/data/services/fuel_price_service.dart';
 import 'package:mitlio/features/fuel/data/services/geolocator_location_service.dart';
 import 'package:mitlio/features/fx/data/repositories/fx_providers.dart';
 import 'package:mitlio/features/fx/data/services/fx_rate_service.dart';
+import 'package:mitlio/features/profile/ui/profile_setup_view_model.dart';
 import 'package:mitlio/features/routes/data/repositories/route_providers.dart';
 import 'package:mitlio/features/routes/data/services/route_distance_service.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
@@ -93,6 +95,10 @@ Future<void> main() async {
             anonKey: config.supabaseAnonKey,
           ),
         ),
+      // The guided flows DebugDrive can drive (`ext.mitlio.setup.*`).
+      setupFlowConfigsProvider.overrideWithValue({
+        profileSetupFlow.id: profileSetupFlow,
+      }),
       appDatabaseProvider.overrideWithValue(db),
       crashReporterProvider.overrideWithValue(crashReporter),
     ],

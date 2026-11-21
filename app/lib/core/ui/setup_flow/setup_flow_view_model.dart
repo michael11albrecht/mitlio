@@ -44,8 +44,36 @@ final class SetupFlowState {
   /// Why [status] is `failed`.
   final RepositoryError? error;
 
-  /// Number of steps, for "Schritt 2 von 5" (the finish screen is not one).
-  int get total => config.steps.length;
+  bool _visible(int index, Map<String, Object?> from) =>
+      config.steps[index].visibleWhen?.call(from) ?? true;
+
+  /// Index of the nearest visible step before ([forward] false) or after
+  /// [from], judged by [given] answers (default: the current ones); null if
+  /// there is none.
+  int? neighbour(
+    int from, {
+    required bool forward,
+    Map<String, Object?>? given,
+  }) {
+    final step = forward ? 1 : -1;
+    for (var i = from + step; i >= 0 && i < config.steps.length; i += step) {
+      if (_visible(i, given ?? answers)) return i;
+    }
+    return null;
+  }
+
+  /// Number of visible steps, for "Schritt 2 von 5" (the finish screen is
+  /// not one).
+  int get total => [
+    for (var i = 0; i < config.steps.length; i++)
+      if (_visible(i, answers)) i,
+  ].length;
+
+  /// 1-based position of the current step among the visible ones.
+  int get position => [
+    for (var i = 0; i <= stepIndex && i < config.steps.length; i++)
+      if (_visible(i, answers)) i,
+  ].length;
 
   /// The current step; null while loading, failed or finished.
   SetupStepSpec? get step => status == SetupFlowStatus.ready && !finished
@@ -59,7 +87,8 @@ final class SetupFlowState {
   /// Back is possible from the finish screen and from every step but the
   /// first.
   bool get canGoBack =>
-      status == SetupFlowStatus.ready && (finished || stepIndex > 0);
+      status == SetupFlowStatus.ready &&
+      (finished || neighbour(stepIndex, forward: false) != null);
 
   SetupProgress get progress => SetupProgress(
     stepIndex: stepIndex,
@@ -165,14 +194,33 @@ class SetupFlowViewModel extends Notifier<SetupFlowState> {
   Future<RepoResult<void>> next({Object? answer}) async {
     final step = state.step;
     if (step == null) return const Err(Conflict('no step to continue from'));
-    if (answer != null) this.answer(answer);
-    final value = state.answerOf(step.id);
+    // A committing step keeps its raw answer out of the state: `back` would
+    // save it with the progress.
+    final commit = step.commit;
+    if (answer != null && commit == null) this.answer(answer);
+    final value = commit == null
+        ? state.answerOf(step.id)
+        : answer ?? state.answerOf(step.id);
     if (value == null && !step.skippable) {
       return Err(InvalidData('step ${step.id} needs an answer'));
     }
     final problem = value == null ? null : step.validate?.call(value);
     if (problem != null) return Err(InvalidData('step ${step.id}: $problem'));
-    return _moveTo(state);
+    if (commit == null || value == null) return _moveTo(state);
+    final stored = await commit(ref, value);
+    if (!ref.mounted) return const Err(Conflict('flow closed'));
+    return switch (stored) {
+      Err(:final error) => Err(error),
+      Ok(value: final kept) => _moveTo(
+        state._copy(
+          answers: {...state.answers, step.id: kept},
+          skipped: [
+            for (final id in state.skipped)
+              if (id != step.id) id,
+          ],
+        ),
+      ),
+    };
   }
 
   /// "Überspringen": forgets the answer of the current optional step, saves,
@@ -196,17 +244,19 @@ class SetupFlowViewModel extends Notifier<SetupFlowState> {
     if (!state.canGoBack) return const Err(Conflict('already at the start'));
     final goal = state.finished
         ? state._copy(finished: false)
-        : state._copy(stepIndex: state.stepIndex - 1);
+        : state._copy(
+            stepIndex: state.neighbour(state.stepIndex, forward: false),
+          );
     return _save(goal);
   }
 
   /// Saves [from] advanced by one step (or finished after the last).
   Future<RepoResult<void>> _moveTo(SetupFlowState from) {
-    final last = from.stepIndex == from.total - 1;
+    final following = from.neighbour(from.stepIndex, forward: true);
     return _save(
-      last
+      following == null
           ? from._copy(finished: true)
-          : from._copy(stepIndex: from.stepIndex + 1),
+          : from._copy(stepIndex: following),
     );
   }
 
