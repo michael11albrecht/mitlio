@@ -29,7 +29,7 @@ jobs:
   desktop-it:
     name: desktop-it
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -55,3 +55,13 @@ jobs:
         run: |
           cd app && flutter build linux --release
           cd .. && tool/check_release_strip.sh
+      # P8-T06 proof that the gate bites: remove the kDebugMode guard, rebuild, the check must fail.
+      - name: Release build without the kDebugMode guard is caught
+        run: |
+          grep -q '^  if (kDebugMode) registerDebugDrive(container);$' app/lib/main.dart
+          sed -i 's/^  if (kDebugMode) registerDebugDrive(container);$/  registerDebugDrive(container);/' app/lib/main.dart
+          (cd app && flutter build linux --release)
+          if tool/check_release_strip.sh; then
+            echo "::error::check_release_strip.sh passed although the kDebugMode guard was removed"
+            exit 1
+          fi
