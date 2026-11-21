@@ -39,6 +39,12 @@ void main() {
         'share_group_system_share': 2,
         'join_link_claim_self': 1,
         'web_calculator': 0,
+        'setup_step_answer': 2,
+        'setup_step_yes_no': 1,
+        'setup_step_input': 1,
+        'setup_step_skip': 1,
+        'setup_finish_action': 1,
+        'profile_setup': 8,
       });
     });
   });

@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show StringExpressionOperators;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/providers.dart';
@@ -12,6 +13,7 @@ import 'package:mitlio/features/groups/data/repositories/groups_repository.dart'
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
+import 'package:mitlio/features/setup/data/drift_setup_state_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 /// Wipes and seeds local data for DebugDrive (`reset` / `seed`).
@@ -59,6 +61,12 @@ class DriftDebugDataControl implements DebugDataControl {
       if (table == _db.localSettings) continue;
       await _db.delete(table).go();
     }
+    // Install settings stay (the HLC node id), but setup progress is user
+    // data: a reset starts the guided flows over.
+    await (_db.delete(_db.localSettings)..where(
+          (r) => r.key.like('$setupFlowKeyPrefix%'),
+        ))
+        .go();
   });
 
   @override

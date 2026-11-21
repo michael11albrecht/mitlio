@@ -2155,4 +2155,178 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get joinConnectOffline =>
       'Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist.';
+
+  @override
+  String setupStepProgress(int current, int total) {
+    return 'Schritt $current von $total';
+  }
+
+  @override
+  String get setupNext => 'Weiter';
+
+  @override
+  String get setupSkip => 'Überspringen';
+
+  @override
+  String get setupBack => 'Zurück';
+
+  @override
+  String get setupYes => 'Ja';
+
+  @override
+  String get setupNo => 'Nein';
+
+  @override
+  String get setupFinishDone => 'Fertig';
+
+  @override
+  String get setupCelebration => 'Geschafft';
+
+  @override
+  String get profileSettingsEntry => 'Mein Profil';
+
+  @override
+  String get profileSettingsEntryHint =>
+      'Name, Bild, PayPal.Me und IBAN, nur auf deinem Gerät';
+
+  @override
+  String get profileNameTitle => 'Wie heißt du?';
+
+  @override
+  String get profileNameLabel => 'Dein Name';
+
+  @override
+  String get profileNameRequired => 'Wie heißt du? Trag deinen Namen ein.';
+
+  @override
+  String get profileAvatarTitle => 'Such dir ein Bild aus';
+
+  @override
+  String profileAvatarColor(int number) {
+    return 'Farbe $number';
+  }
+
+  @override
+  String get profileAvatarInitials => 'Nur Initialen';
+
+  @override
+  String profileAvatarEmoji(String emoji) {
+    return 'Symbol $emoji';
+  }
+
+  @override
+  String get profilePaypalAskTitle => 'Möchtest du per PayPal Geld bekommen?';
+
+  @override
+  String get profilePaypalTitle => 'Wie lautet dein PayPal.Me-Link?';
+
+  @override
+  String get profilePaypalLabel => 'PayPal.Me-Link oder Name';
+
+  @override
+  String get profilePaypalHint => 'z. B. paypal.me/anna';
+
+  @override
+  String profilePaypalResult(String link) {
+    return 'Dein Link: $link';
+  }
+
+  @override
+  String get profilePaypalInvalid =>
+      'Das ist kein PayPal.Me-Name. Erlaubt sind Buchstaben und Ziffern, bis 20 Zeichen.';
+
+  @override
+  String get profilePaypalTest => 'Link testen';
+
+  @override
+  String get profilePaypalCreate => 'Noch kein PayPal.Me? Jetzt erstellen';
+
+  @override
+  String get profilePaypalLinkCopied =>
+      'Der Link ließ sich nicht öffnen. Wir haben ihn kopiert, füge ihn in deinen Browser ein.';
+
+  @override
+  String get profilePaypalHelpTitle => 'So findest du deinen Link';
+
+  @override
+  String get profilePaypalHelp1 =>
+      'Öffne die PayPal-App und tippe auf dein Profil.';
+
+  @override
+  String get profilePaypalHelp2 => 'Wähle „PayPal.Me“ oder „Geld erhalten“.';
+
+  @override
+  String get profilePaypalHelp3 => 'Dein Link sieht so aus: paypal.me/deinname';
+
+  @override
+  String get profilePaypalHelp4 => 'Kopiere ihn und füge ihn oben ein.';
+
+  @override
+  String get profileBankAskTitle => 'Lieber per Überweisung (QR-Code)?';
+
+  @override
+  String get profileIbanTitle => 'Deine IBAN';
+
+  @override
+  String get profileIbanLabel => 'IBAN';
+
+  @override
+  String get profileIbanHolderLabel => 'Kontoinhaber';
+
+  @override
+  String get profileIbanHolderRequired =>
+      'Wer ist Kontoinhaber? Trag den Namen ein.';
+
+  @override
+  String get profileIbanPaste => 'Einfügen';
+
+  @override
+  String get profileIbanPasteEmpty =>
+      'In der Zwischenablage ist kein Text. Kopiere deine IBAN und tippe nochmal auf Einfügen.';
+
+  @override
+  String get profileIbanLocalOnly =>
+      'Deine IBAN bleibt nur auf deinem Gerät. Sie wird nie hochgeladen.';
+
+  @override
+  String get profileIbanTyping => 'Tippe weiter, die Prüfung läuft mit.';
+
+  @override
+  String get profileIbanValid => 'IBAN stimmt';
+
+  @override
+  String get profileIbanBadFormat =>
+      'Das ist keine IBAN. Sie beginnt mit zwei Buchstaben und zwei Ziffern, z. B. DE89.';
+
+  @override
+  String get profileIbanBadChecksum =>
+      'Die Prüfziffer stimmt nicht. Vergleiche die IBAN mit deiner Bankkarte oder App.';
+
+  @override
+  String get profileIbanQrPreview =>
+      'So sieht der QR-Code aus, den deine Freunde scannen (Beispiel: 10,00 €)';
+
+  @override
+  String get profileIbanQrSemantics =>
+      'Beispiel-QR-Code für eine Überweisung an dich';
+
+  @override
+  String get profileIbanQrFailed =>
+      'Aus diesen Angaben lässt sich kein QR-Code bauen. Prüfe, ob der Kontoinhaber kürzer als 70 Zeichen ist.';
+
+  @override
+  String get profileFinishTitle => 'Dein Profil ist fertig';
+
+  @override
+  String profileCardPaypal(String handle) {
+    return 'PayPal.Me: $handle';
+  }
+
+  @override
+  String profileCardIban(String tail) {
+    return 'IBAN ···· $tail, nur auf diesem Gerät';
+  }
+
+  @override
+  String get profileCardNoPayment => 'Noch keine Zahlungsdaten';
 }

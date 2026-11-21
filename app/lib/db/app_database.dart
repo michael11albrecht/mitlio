@@ -3,10 +3,13 @@ import 'package:mitlio/db/daos/expenses_dao.dart';
 import 'package:mitlio/db/daos/groups_dao.dart';
 import 'package:mitlio/db/daos/local_member_bank_dao.dart';
 import 'package:mitlio/db/daos/local_places_dao.dart';
+import 'package:mitlio/db/daos/local_profile_bank_dao.dart';
 import 'package:mitlio/db/daos/members_dao.dart';
+import 'package:mitlio/db/daos/profile_dao.dart';
 import 'package:mitlio/db/daos/rides_dao.dart';
 import 'package:mitlio/db/daos/settlements_dao.dart';
 import 'package:mitlio/db/daos/sync_state_dao.dart';
+import 'package:mitlio/db/daos/user_vehicles_dao.dart';
 import 'package:mitlio/db/tables.dart';
 
 part 'app_database.g.dart';
@@ -32,6 +35,10 @@ part 'app_database.g.dart';
     LocalGroupSync,
     LocalSyncCursor,
     LocalSettings,
+    Profile,
+    LocalProfileBank,
+    UserVehicles,
+    UserVehicleCosts,
   ],
   daos: [
     GroupsDao,
@@ -42,13 +49,16 @@ part 'app_database.g.dart';
     LocalPlacesDao,
     RidesDao,
     SyncStateDao,
+    ProfileDao,
+    LocalProfileBankDao,
+    UserVehiclesDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -59,11 +69,29 @@ class AppDatabase extends _$AppDatabase {
       if (from < 4) await _from3To4(m);
       if (from < 5) await _from4To5(m);
       if (from < 6) await _from5To6(m);
+      if (from < 7) await _from6To7(m);
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },
   );
+
+  /// v7: personal profile and vehicles (PU-T04, ADR-25), all local only, and
+  /// the link from a group vehicle to its personal source.
+  Future<void> _from6To7(Migrator m) async {
+    await m.createTable(profile);
+    await m.createTable(localProfileBank);
+    await m.createTable(userVehicles);
+    await m.createTable(userVehicleCosts);
+    // `_from1To2` creates `vehicles` from the current definition, so an
+    // upgrade from v1 already has the column.
+    final columns = await customSelect('PRAGMA table_info(vehicles)').get();
+    if (!columns.any(
+      (c) => c.read<String>('name') == 'source_user_vehicle_id',
+    )) {
+      await m.addColumn(vehicles, vehicles.sourceUserVehicleId);
+    }
+  }
 
   /// v6: local sync state (P6-T09a). `local_outbox` was never written, so it
   /// is recreated with the new columns instead of migrated.
