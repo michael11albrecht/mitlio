@@ -188,12 +188,16 @@ abstract final class DbMembersCols {
 /// Column names of `notification_outbox`.
 abstract final class DbNotificationOutboxCols {
   static const actorUserId = 'actor_user_id';
+  static const attempts = 'attempts';
   static const createdAt = 'created_at';
   static const dedupeKey = 'dedupe_key';
   static const entityId = 'entity_id';
   static const event = 'event';
+  static const failedAt = 'failed_at';
   static const groupId = 'group_id';
   static const id = 'id';
+  static const lastError = 'last_error';
+  static const nextAttemptAt = 'next_attempt_at';
   static const payload = 'payload';
   static const processedAt = 'processed_at';
 }
@@ -411,12 +415,16 @@ const dbContract = <String, Map<String, DbColumn>>{
   },
   'notification_outbox': {
     'actor_user_id': DbColumn(DbColumnType.string, nullable: true),
+    'attempts': DbColumn(DbColumnType.number, nullable: false),
     'created_at': DbColumn(DbColumnType.string, nullable: false),
     'dedupe_key': DbColumn(DbColumnType.string, nullable: false),
     'entity_id': DbColumn(DbColumnType.string, nullable: false),
     'event': DbColumn(DbColumnType.string, nullable: false),
+    'failed_at': DbColumn(DbColumnType.string, nullable: true),
     'group_id': DbColumn(DbColumnType.string, nullable: false),
     'id': DbColumn(DbColumnType.string, nullable: false),
+    'last_error': DbColumn(DbColumnType.string, nullable: true),
+    'next_attempt_at': DbColumn(DbColumnType.string, nullable: false),
     'payload': DbColumn(DbColumnType.json, nullable: false),
     'processed_at': DbColumn(DbColumnType.string, nullable: true),
   },
