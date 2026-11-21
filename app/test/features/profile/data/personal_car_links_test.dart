@@ -6,9 +6,9 @@ import 'package:mitlio/features/profile/data/repositories/drift_user_vehicles_re
 import 'package:mitlio/features/profile/data/repositories/fake_user_vehicles_repository.dart';
 import 'package:mitlio/features/profile/data/repositories/personal_car_links_repository.dart';
 import 'package:mitlio/features/profile/data/repositories/user_vehicles_repository.dart';
+import 'package:mitlio/features/rides/data/repositories/fake_vehicles_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/vehicles_repository.dart';
-import 'package:mitlio/features/rides/data/repositories/fake_vehicles_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../../repo_test_support.dart';
@@ -153,7 +153,7 @@ void main() {
       });
 
       test('an unknown car changes nothing', () async {
-        final a = ok(await links.useInGroup(gA, golf.id));
+        ok(await links.useInGroup(gA, golf.id));
         expect(
           err(await links.update(edited().copyWithId('nope'))),
           isA<NotFound>(),
@@ -177,7 +177,6 @@ void main() {
               passengerIds: {m[1].id, m[2].id},
               driverCounts: false,
               pricePerUnitMilli: 1800,
-              useKmRate: false,
             ),
           ),
         );
@@ -205,7 +204,7 @@ void main() {
       });
 
       // The failure is injected into the in-memory vehicles only.
-      if (variant == 'fake')
+      if (variant == 'fake') {
         test(
           'a failing copy rolls everything back and reports the error',
           () async {
@@ -228,6 +227,7 @@ void main() {
             expect(ok(await failing.get(b.id)).name, 'Golf');
           },
         );
+      }
     });
   }
 }

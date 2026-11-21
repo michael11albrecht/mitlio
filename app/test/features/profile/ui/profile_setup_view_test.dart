@@ -23,7 +23,7 @@ void main() {
 
   setUp(() {
     app = FakeApp();
-    rig = ProfileFlowRig(launcher: app.launcher);
+    rig = ProfileFlowRig(launcher: app.launcher)..install(app);
   });
 
   Future<void> open(WidgetTester tester, {String? at}) async {
@@ -34,7 +34,7 @@ void main() {
       tester,
       app,
       location: at ?? '/settings/profile',
-      extra: rig.overrides,
+      extra: rig.flowOverrides,
     );
   }
 

@@ -9,6 +9,8 @@ import 'package:mitlio/features/settle/ui/transfer_sheet_view_model.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../../../helpers/entry_card_stub.dart';
+
 /// Fixed state for goldens and a11y tests: no repository is touched.
 class StubSettleViewModel extends SettleViewModel {
   StubSettleViewModel(super.groupId, this.fixed);
@@ -175,7 +177,7 @@ final TransferSheetLoaded sheetTooHigh = _sheet(
 );
 
 Widget scopedSettle(List<Override> overrides, Widget child) =>
-    ProviderScope(overrides: overrides, child: child);
+    ProviderScope(overrides: [...noEntryCards, ...overrides], child: child);
 
 const SettleView settleView = SettleView(groupId: 'g-1');
 const TransferSheet transferSheet = TransferSheet(transferKey: sheetKey);

@@ -33,11 +33,11 @@ import 'package:mitlio/features/routes/data/repositories/route_providers.dart';
 import 'package:mitlio/features/routes/ui/route_distance_view_model.dart'
     show routeSearchDebounceProvider;
 import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
-import 'package:mitlio/features/setup/data/fake_setup_state_repository.dart';
-import 'package:mitlio/features/setup/data/setup_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/fake_settlements_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
+import 'package:mitlio/features/setup/data/fake_setup_state_repository.dart';
+import 'package:mitlio/features/setup/data/setup_providers.dart';
 import 'package:mitlio/features/sync/data/repositories/fake_connections_repository.dart';
 import 'package:mitlio/features/sync/data/sync_coordinator.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
@@ -262,13 +262,18 @@ class FakeApp {
 
   /// The personal profile, its bank details, the personal cars and the local
   /// setup state ("Ich" member, dismissed cards): empty unless a test fills
-  /// them.
-  final profile = FakeProfileRepository();
-  late final profileBank = FakeProfileBankRepository(profile: profile);
-  late final userVehicles = FakeUserVehiclesRepository(
+  /// them. Replaceable (before the container is made), so a test can bring
+  /// flaky ones instead of passing a second override of the same provider.
+  FakeProfileRepository profile = FakeProfileRepository();
+  late FakeProfileBankRepository profileBank = FakeProfileBankRepository(
+    profile: profile,
+  );
+
+  /// Replaceable, so a test can bring a failing one before the container.
+  FakeUserVehiclesRepository userVehicles = FakeUserVehiclesRepository(
     ids: SequentialIdGenerator(),
   );
-  final setupState = FakeSetupStateRepository();
+  FakeSetupStateRepository setupState = FakeSetupStateRepository();
 
   /// Links opened and text copied by the payment actions.
   final launcher = FakeLinkLauncher();

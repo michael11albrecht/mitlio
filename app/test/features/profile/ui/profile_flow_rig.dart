@@ -13,6 +13,7 @@ import 'package:mitlio/features/setup/data/fake_setup_state_repository.dart';
 import 'package:mitlio/features/setup/data/setup_providers.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../../../helpers/fake_app.dart';
 import '../../../helpers/fake_platform.dart';
 
 /// A profile repository that can be made to fail.
@@ -83,6 +84,21 @@ class ProfileFlowRig {
     profileRepositoryProvider.overrideWithValue(profile),
     profileBankRepositoryProvider.overrideWithValue(bank),
     if (_ownsLauncher) linkLauncherProvider.overrideWithValue(launcher),
+    setupFlowConfigsProvider.overrideWithValue({
+      profileSetupFlow.id: profileSetupFlow,
+    }),
+  ];
+
+  /// The rig's fakes into an app that has slots for them.
+  void install(FakeApp app) {
+    app
+      ..profile = profile
+      ..profileBank = bank
+      ..setupState = setup;
+  }
+
+  /// What an app that [install]ed the rig still needs.
+  List<Override> get flowOverrides => [
     setupFlowConfigsProvider.overrideWithValue({
       profileSetupFlow.id: profileSetupFlow,
     }),

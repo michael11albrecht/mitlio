@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/theme/theme.dart';
+import 'package:mitlio/features/profile/ui/profile_entry_view_model.dart';
 import 'package:mitlio/features/settings/ui/author_credit_view_model.dart';
 import 'package:mitlio/features/settings/ui/crash_reporting_view_model.dart';
 import 'package:mitlio/features/settings/ui/legal_links_view_model.dart';
@@ -19,6 +20,12 @@ class SettingsView extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final state = ref.watch(crashReportingViewModelProvider);
     final vm = ref.read(crashReportingViewModelProvider.notifier);
+    final profile = ref.watch(profileEntryViewModelProvider);
+    Future<void> openProfile() async {
+      await context.push<void>('/settings/profile');
+      await ref.read(profileEntryViewModelProvider.notifier).refresh();
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: ListView(
@@ -27,8 +34,14 @@ class SettingsView extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.person_outline),
             title: Text(l10n.profileSettingsEntry),
-            subtitle: Text(l10n.profileSettingsEntryHint),
-            onTap: () => unawaited(context.push('/settings/profile')),
+            subtitle: Text(switch (profile) {
+              ProfileSummary.none => l10n.profileSettingsEntryHint,
+              ProfileSummary.noPayment => l10n.profileEntrySaved('none'),
+              ProfileSummary.paypal => l10n.profileEntrySaved('paypal'),
+              ProfileSummary.iban => l10n.profileEntrySaved('iban'),
+              ProfileSummary.both => l10n.profileEntrySaved('both'),
+            }),
+            onTap: () => unawaited(openProfile()),
           ),
           ListTile(
             leading: const Icon(Icons.directions_car_outlined),

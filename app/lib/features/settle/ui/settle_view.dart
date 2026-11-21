@@ -11,6 +11,9 @@ import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/core/widgets/money_text.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
+import 'package:mitlio/features/profile/ui/entry_card_view_model.dart'
+    show EntryCard;
+import 'package:mitlio/features/profile/ui/setup_entry_card.dart';
 import 'package:mitlio/features/settle/ui/settle_view_model.dart';
 import 'package:mitlio/features/settle/ui/transfer_sheet.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
@@ -132,6 +135,7 @@ class _Loaded extends StatelessWidget {
                 )),
               ),
             ),
+          const SetupEntryCard(EntryCard.settlePayment),
         ],
         const SizedBox(height: Spacing.lg),
         Semantics(

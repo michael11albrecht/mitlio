@@ -3,7 +3,6 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/profile/data/repositories/own_member_repository.dart';
 import 'package:mitlio/features/profile/data/repositories/profile_payment_details_repository.dart';
 import 'package:mitlio/features/settle/data/repositories/settle_actions_providers.dart';
-import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../../../helpers/fake_app.dart';
 import '../../repo_test_support.dart';

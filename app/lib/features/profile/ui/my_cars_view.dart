@@ -71,6 +71,8 @@ class MyCarsView extends ConsumerWidget {
                       car.consumptionMilliPer100km,
                     ),
                   ),
+                  onTap: () =>
+                      unawaited(context.push('/settings/cars/${car.id}')),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete_outline),
                     tooltip: l10n.carRemoveLabel(car.name),

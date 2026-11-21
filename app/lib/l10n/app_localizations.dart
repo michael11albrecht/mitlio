@@ -4577,6 +4577,126 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Neues in „{group}“'**
   String pushLocGeneric(String group);
+
+  /// No description provided for @cardDismiss.
+  ///
+  /// In de, this message translates to:
+  /// **'Nicht mehr anzeigen'**
+  String get cardDismiss;
+
+  /// No description provided for @cardSettlePaymentTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Zahlungsdaten einmal einrichten'**
+  String get cardSettlePaymentTitle;
+
+  /// No description provided for @cardSettlePaymentMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Speichere PayPal.Me oder IBAN einmal. In jeder Gruppe können Freunde dich damit bezahlen, die IBAN bleibt auf deinem Gerät.'**
+  String get cardSettlePaymentMessage;
+
+  /// No description provided for @cardSettlePaymentAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Einrichten'**
+  String get cardSettlePaymentAction;
+
+  /// No description provided for @cardGroupCarTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Auto einmal einrichten'**
+  String get cardGroupCarTitle;
+
+  /// No description provided for @cardGroupCarMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Nutze es in allen Gruppen. Änderungen am Auto gelten dann überall.'**
+  String get cardGroupCarMessage;
+
+  /// No description provided for @cardGroupCarAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Auto einrichten'**
+  String get cardGroupCarAction;
+
+  /// No description provided for @cardNewGroupProfileTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Profil einmal einrichten'**
+  String get cardNewGroupProfileTitle;
+
+  /// No description provided for @cardNewGroupProfileMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Dann bist du in jeder neuen Gruppe schon mit Namen und PayPal.Me dabei.'**
+  String get cardNewGroupProfileMessage;
+
+  /// No description provided for @cardNewGroupProfileAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Profil einrichten'**
+  String get cardNewGroupProfileAction;
+
+  /// No description provided for @groupCarPickerTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Aus Meine Autos'**
+  String get groupCarPickerTitle;
+
+  /// No description provided for @groupCarUse.
+  ///
+  /// In de, this message translates to:
+  /// **'Nutzen'**
+  String get groupCarUse;
+
+  /// No description provided for @groupCarPickerFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Meine Autos konnten nicht geladen werden. Tippe auf „Nochmal versuchen“.'**
+  String get groupCarPickerFailed;
+
+  /// No description provided for @carLinkedNote.
+  ///
+  /// In de, this message translates to:
+  /// **'Dieses Auto kommt aus Meine Autos. Änderungen dort gelten auch hier.'**
+  String get carLinkedNote;
+
+  /// No description provided for @carUnlink.
+  ///
+  /// In de, this message translates to:
+  /// **'Trennen'**
+  String get carUnlink;
+
+  /// No description provided for @carUnlinked.
+  ///
+  /// In de, this message translates to:
+  /// **'Nicht mehr mit Meine Autos verknüpft. Die Werte bleiben.'**
+  String get carUnlinked;
+
+  /// No description provided for @carLinkFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Konnte nicht prüfen, ob dieses Auto aus Meine Autos kommt. Tippe auf „Nochmal versuchen“.'**
+  String get carLinkFailed;
+
+  /// No description provided for @carEditTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Auto bearbeiten'**
+  String get carEditTitle;
+
+  /// No description provided for @carUpdatedInGroups.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{In 1 Gruppe aktualisiert} other{In {count} Gruppen aktualisiert}}'**
+  String carUpdatedInGroups(num count);
+
+  /// No description provided for @profileEntrySaved.
+  ///
+  /// In de, this message translates to:
+  /// **'{kind, select, paypal{PayPal.Me gespeichert} iban{IBAN gespeichert} both{PayPal.Me und IBAN gespeichert} other{Noch keine Zahlungsdaten}}'**
+  String profileEntrySaved(String kind);
 }
 
 class _AppLocalizationsDelegate
