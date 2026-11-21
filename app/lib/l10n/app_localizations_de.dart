@@ -2155,4 +2155,118 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get joinConnectOffline =>
       'Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist.';
+
+  @override
+  String get pushPromptText =>
+      'Soll mitlio dir Bescheid geben, wenn jemand etwas einträgt?';
+
+  @override
+  String get pushPromptAction => 'Ja, bitte';
+
+  @override
+  String get pushPermissionDenied =>
+      'Benachrichtigungen sind aus. Schalte sie in den Systemeinstellungen ein, wenn du sie doch willst.';
+
+  @override
+  String get pushUnavailable =>
+      'Benachrichtigungen gibt es in dieser Version noch nicht.';
+
+  @override
+  String get pushErrorPlatform =>
+      'Benachrichtigungen ließen sich nicht einrichten. Versuch es gleich nochmal.';
+
+  @override
+  String get pushIncomingGeneric => 'Es gibt Neues in deiner Gruppe.';
+
+  @override
+  String get pushIncomingOpen => 'Ansehen';
+
+  @override
+  String get pushOpenFailed =>
+      'Diese Benachrichtigung ließ sich nicht öffnen. Öffne die Gruppe in der Liste.';
+
+  @override
+  String get notifSettingsTitle => 'Benachrichtigungen';
+
+  @override
+  String get notifLevelLabel => 'Worüber soll ich dich informieren?';
+
+  @override
+  String get notifLevelAll => 'Alles';
+
+  @override
+  String get notifLevelMine => 'Nur was mich betrifft';
+
+  @override
+  String get notifLevelNone => 'Nichts';
+
+  @override
+  String get notifQuietHoursLabel => 'Ruhezeiten';
+
+  @override
+  String get notifQuietHoursHint =>
+      'In dieser Zeit bekommst du keine Benachrichtigung.';
+
+  @override
+  String get notifQuietHoursFrom => 'Von';
+
+  @override
+  String get notifQuietHoursTo => 'Bis';
+
+  @override
+  String get notifHideAmountsLabel => 'Beträge ausblenden';
+
+  @override
+  String get notifHideAmountsHint =>
+      'Auf dem Sperrbildschirm steht nur, dass es Neues gibt.';
+
+  @override
+  String get notifNotShared =>
+      'Benachrichtigungen gibt es nur für geteilte Gruppen. Teile die Gruppe zuerst.';
+
+  @override
+  String get notifEnable => 'Benachrichtigungen einschalten';
+
+  @override
+  String get notifLoading => 'Einstellungen werden geladen';
+
+  @override
+  String pushLocExpenseAdded(String actor, String title, String amount) {
+    return '$actor hat „$title“ eingetragen · $amount';
+  }
+
+  @override
+  String pushLocExpenseChanged(String actor, String title, String amount) {
+    return '$actor hat „$title“ geändert · $amount';
+  }
+
+  @override
+  String pushLocExpenseDeleted(String actor, String title) {
+    return '$actor hat „$title“ gelöscht';
+  }
+
+  @override
+  String pushLocSettlementAdded(String actor, String amount) {
+    return '$actor hat eine Zahlung eingetragen · $amount';
+  }
+
+  @override
+  String pushLocMemberJoined(String name, String group) {
+    return '$name ist „$group“ beigetreten';
+  }
+
+  @override
+  String pushLocExpensesAdded(String actor, String count, String group) {
+    return '$actor hat $count Ausgaben in „$group“ eingetragen';
+  }
+
+  @override
+  String pushLocGroupUpdates(String count, String group) {
+    return '$count Änderungen in „$group“';
+  }
+
+  @override
+  String pushLocGeneric(String group) {
+    return 'Neues in „$group“';
+  }
 }

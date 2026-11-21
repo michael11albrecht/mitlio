@@ -3581,6 +3581,186 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist.'**
   String get joinConnectOffline;
+
+  /// No description provided for @pushPromptText.
+  ///
+  /// In de, this message translates to:
+  /// **'Soll mitlio dir Bescheid geben, wenn jemand etwas einträgt?'**
+  String get pushPromptText;
+
+  /// No description provided for @pushPromptAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Ja, bitte'**
+  String get pushPromptAction;
+
+  /// No description provided for @pushPermissionDenied.
+  ///
+  /// In de, this message translates to:
+  /// **'Benachrichtigungen sind aus. Schalte sie in den Systemeinstellungen ein, wenn du sie doch willst.'**
+  String get pushPermissionDenied;
+
+  /// No description provided for @pushUnavailable.
+  ///
+  /// In de, this message translates to:
+  /// **'Benachrichtigungen gibt es in dieser Version noch nicht.'**
+  String get pushUnavailable;
+
+  /// No description provided for @pushErrorPlatform.
+  ///
+  /// In de, this message translates to:
+  /// **'Benachrichtigungen ließen sich nicht einrichten. Versuch es gleich nochmal.'**
+  String get pushErrorPlatform;
+
+  /// No description provided for @pushIncomingGeneric.
+  ///
+  /// In de, this message translates to:
+  /// **'Es gibt Neues in deiner Gruppe.'**
+  String get pushIncomingGeneric;
+
+  /// No description provided for @pushIncomingOpen.
+  ///
+  /// In de, this message translates to:
+  /// **'Ansehen'**
+  String get pushIncomingOpen;
+
+  /// No description provided for @pushOpenFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Benachrichtigung ließ sich nicht öffnen. Öffne die Gruppe in der Liste.'**
+  String get pushOpenFailed;
+
+  /// No description provided for @notifSettingsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Benachrichtigungen'**
+  String get notifSettingsTitle;
+
+  /// No description provided for @notifLevelLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Worüber soll ich dich informieren?'**
+  String get notifLevelLabel;
+
+  /// No description provided for @notifLevelAll.
+  ///
+  /// In de, this message translates to:
+  /// **'Alles'**
+  String get notifLevelAll;
+
+  /// No description provided for @notifLevelMine.
+  ///
+  /// In de, this message translates to:
+  /// **'Nur was mich betrifft'**
+  String get notifLevelMine;
+
+  /// No description provided for @notifLevelNone.
+  ///
+  /// In de, this message translates to:
+  /// **'Nichts'**
+  String get notifLevelNone;
+
+  /// No description provided for @notifQuietHoursLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Ruhezeiten'**
+  String get notifQuietHoursLabel;
+
+  /// No description provided for @notifQuietHoursHint.
+  ///
+  /// In de, this message translates to:
+  /// **'In dieser Zeit bekommst du keine Benachrichtigung.'**
+  String get notifQuietHoursHint;
+
+  /// No description provided for @notifQuietHoursFrom.
+  ///
+  /// In de, this message translates to:
+  /// **'Von'**
+  String get notifQuietHoursFrom;
+
+  /// No description provided for @notifQuietHoursTo.
+  ///
+  /// In de, this message translates to:
+  /// **'Bis'**
+  String get notifQuietHoursTo;
+
+  /// No description provided for @notifHideAmountsLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Beträge ausblenden'**
+  String get notifHideAmountsLabel;
+
+  /// No description provided for @notifHideAmountsHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Auf dem Sperrbildschirm steht nur, dass es Neues gibt.'**
+  String get notifHideAmountsHint;
+
+  /// No description provided for @notifNotShared.
+  ///
+  /// In de, this message translates to:
+  /// **'Benachrichtigungen gibt es nur für geteilte Gruppen. Teile die Gruppe zuerst.'**
+  String get notifNotShared;
+
+  /// No description provided for @notifEnable.
+  ///
+  /// In de, this message translates to:
+  /// **'Benachrichtigungen einschalten'**
+  String get notifEnable;
+
+  /// No description provided for @notifLoading.
+  ///
+  /// In de, this message translates to:
+  /// **'Einstellungen werden geladen'**
+  String get notifLoading;
+
+  /// Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.
+  ///
+  /// In de, this message translates to:
+  /// **'{actor} hat „{title}“ eingetragen · {amount}'**
+  String pushLocExpenseAdded(String actor, String title, String amount);
+
+  /// Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.
+  ///
+  /// In de, this message translates to:
+  /// **'{actor} hat „{title}“ geändert · {amount}'**
+  String pushLocExpenseChanged(String actor, String title, String amount);
+
+  /// Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.
+  ///
+  /// In de, this message translates to:
+  /// **'{actor} hat „{title}“ gelöscht'**
+  String pushLocExpenseDeleted(String actor, String title);
+
+  /// Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.
+  ///
+  /// In de, this message translates to:
+  /// **'{actor} hat eine Zahlung eingetragen · {amount}'**
+  String pushLocSettlementAdded(String actor, String amount);
+
+  /// Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} ist „{group}“ beigetreten'**
+  String pushLocMemberJoined(String name, String group);
+
+  /// Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.
+  ///
+  /// In de, this message translates to:
+  /// **'{actor} hat {count} Ausgaben in „{group}“ eingetragen'**
+  String pushLocExpensesAdded(String actor, String count, String group);
+
+  /// Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.
+  ///
+  /// In de, this message translates to:
+  /// **'{count} Änderungen in „{group}“'**
+  String pushLocGroupUpdates(String count, String group);
+
+  /// Push notification body (FCM loc-key). Also generated into Android strings and iOS Localizable.strings by make push-strings; arguments are in this order.
+  ///
+  /// In de, this message translates to:
+  /// **'Neues in „{group}“'**
+  String pushLocGeneric(String group);
 }
 
 class _AppLocalizationsDelegate
