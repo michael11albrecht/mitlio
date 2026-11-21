@@ -578,35 +578,47 @@ export type Database = {
       notification_outbox: {
         Row: {
           actor_user_id: string | null
+          attempts: number
           created_at: string
           dedupe_key: string
           entity_id: string
           event: string
+          failed_at: string | null
           group_id: string
           id: string
+          last_error: string | null
+          next_attempt_at: string
           payload: NonNullable<Json>
           processed_at: string | null
         }
         ComputedFields: never
         Insert: {
           actor_user_id?: string | null
+          attempts?: number
           created_at?: string
           dedupe_key: string
           entity_id: string
           event: string
+          failed_at?: string | null
           group_id: string
           id?: string
+          last_error?: string | null
+          next_attempt_at?: string
           payload?: NonNullable<Json>
           processed_at?: string | null
         }
         Update: {
           actor_user_id?: string | null
+          attempts?: number
           created_at?: string
           dedupe_key?: string
           entity_id?: string
           event?: string
+          failed_at?: string | null
           group_id?: string
           id?: string
+          last_error?: string | null
+          next_attempt_at?: string
           payload?: NonNullable<Json>
           processed_at?: string | null
         }
@@ -961,6 +973,19 @@ export type Database = {
     }
     Functions: {
       can_bootstrap_group: { Args: { gid: string }; Returns: boolean }
+      claim_notification_outbox: {
+        Args: { p_limit?: number }
+        Returns: {
+          actor_user_id: string
+          attempts: number
+          created_at: string
+          entity_id: string
+          event: string
+          group_id: string
+          id: string
+          payload: NonNullable<Json>
+        }[]
+      }
       cleanup_auth_audit_log: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -979,6 +1004,10 @@ export type Database = {
         Returns: undefined
       }
       cleanup_join_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      cleanup_notification_outbox: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
@@ -1004,6 +1033,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      invoke_notify: { Args: never; Returns: undefined }
       is_group_member: { Args: { gid: string }; Returns: boolean }
       join_group: {
         Args: { claim_member_id?: string; token: string }
@@ -1019,6 +1049,10 @@ export type Database = {
         Returns: undefined
       }
       remove_membership: { Args: { membership_id: string }; Returns: undefined }
+      retry_notification_outbox: {
+        Args: { p_error: string; p_ids: string[]; p_max_attempts?: number }
+        Returns: number
+      }
       revoke_invite: { Args: { invite_id: string }; Returns: undefined }
       unregister_device_token: { Args: { p_token: string }; Returns: undefined }
       upsert_expense: { Args: { payload: Json }; Returns: Json }

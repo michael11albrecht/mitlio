@@ -22,6 +22,7 @@ Never run `supabase link` / `supabase db push` from an agent; deploys are an own
 | `migrations/0014_inactive_accounts_cleanup.sql` | Retention for sync (#188): `delete_account_data(uid)` (internal, the one deletion path; `delete_my_data` now delegates to it) and the daily cron job `inactive-accounts-cleanup` (`cleanup_inactive_accounts()`): anonymous accounts inactive for 13 months, then groups with no linked account (with all rows). Activity signal in `docs/retention.md`. |
 | `migrations/0015_push_notifications.sql` | P6b-T02 (ADR-13): `device_tokens` (own rows readable, written by `register_device_token` / `unregister_device_token`), `notification_prefs` (own rows), `notification_outbox` (no client grant, no policy). |
 | `migrations/0016_notification_triggers.sql` | P6b-T03: writes of expenses (deferred to commit), settlements and members queue `notification_outbox` rows, only for user-visible changes by a signed-in actor, idempotent via `dedupe_key`. Pure recipient/coalesce/message logic: `functions/_shared/notify.ts`. |
+| `migrations/0017_notify_claim_and_cron.sql` | P6b-T05: `claim_notification_outbox` (`FOR UPDATE SKIP LOCKED`), `retry_notification_outbox` (backoff, max attempts), `invoke_notify` + pg_cron `notify-outbox` every minute, outbox cleanup after 7 days. Edge Function: `functions/notify/`. |
 | `migrations/0012_app_config.sql` | `app_config` (min_supported_version per platform, ADR-27 §2.3): the one anon-readable app table (the gate runs before sign-in), no client writes, owner edits it in the SQL editor. `join_group`'s `P0429` now carries `hint = 'retry_after_seconds=<n>'`. |
 | `functions/` | Edge Functions (Deno 2.1.4). `fuel-prices/`, `fx-rates/` + pure logic in `_shared/`; `tests/coverage_gate.sh` (unit, >= 90 %) and `tests/run_integration.sh` (`functions serve` + provider stub). CI only; never `functions deploy` from an agent. |
 | `migrations/0021_feedback_bucket.sql` | P7-T10 (ADR-29): private Storage bucket `feedback-screenshots` (5 MB, images + json, restrictive policy keeps client roles out) and the daily `feedback-cleanup` cron job (calls `submit-feedback`; inert without Vault secrets). Needs `[storage] enabled = true` in `config.toml`. |
@@ -103,6 +104,13 @@ The access token expires after 90 days: rotate it in the `staging` environment b
   `fx_rates_anon_key`, `fx_rates_warm_token` (same value as `FX_WARM_TOKEN`), and `feedback_url`,
   `feedback_anon_key`, `feedback_cleanup_token` (same value as `FEEDBACK_CLEANUP_TOKEN`). Create them in the SQL editor with
   `select vault.create_secret('<value>', '<name>');`.
+- The `notify` push job (`invoke_notify`, every minute) works the same way: Vault secrets `notify_url`
+  (`https://<ref>.supabase.co/functions/v1/notify`), `notify_anon_key`, `notify_token` (same value as the
+  function secret `NOTIFY_TOKEN`). The function itself needs the secrets `NOTIFY_TOKEN`, `FCM_ENDPOINT`
+  (`https://fcm.googleapis.com/v1/projects/<firebase-project-id>/messages:send`) and `FCM_SERVICE_ACCOUNT`
+  (service-account JSON, set with `supabase secrets set`, never committed). Optional: `NOTIFY_MAX_ATTEMPTS`
+  (5), `NOTIFY_BATCH_SIZE` (200), `NOTIFY_CONCURRENCY` (10). Without FCM secrets it answers 503
+  `fcm_not_configured` and leaves the outbox untouched. Each run logs one JSON line with counts only.
 
 ## Auth audit logs (#206, owner step per project)
 
