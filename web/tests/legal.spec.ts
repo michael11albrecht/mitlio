@@ -121,9 +121,11 @@ test.describe('retention numbers come from supabase/retention.json', () => {
     expect(en).toContain(`the last ${retention.expense_revisions_per_expense} versions`);
   });
 
-  test('join audit and invites only appear in the not-yet-live sections', () => {
+  test('join audit and invites appear exactly when the sync sections are rendered', () => {
     for (const t of [legalTexts.de.privacy, legalTexts.en.privacy]) {
-      expect(flat(t)).not.toMatch(new RegExp(`${retention.join_audit_days} (Tagen|days)`));
+      const re = new RegExp(`${retention.join_audit_days} (Tagen|days)`);
+      if (SYNC_PRIVACY_RENDERED) expect(flat(t)).toMatch(re);
+      else expect(flat(t)).not.toMatch(re);
     }
   });
 });
@@ -215,7 +217,7 @@ test.describe('legal pages', () => {
     });
   }
 
-  test('sections for features that are not live are not rendered', async ({ page }) => {
+  test('sync sections are rendered exactly when SYNC_PRIVACY_RENDERED is true; push is never rendered', async ({ page }) => {
     for (const [path, future] of [
       ['/datenschutz/', futurePrivacySectionsDe],
       ['/en/privacy/', futurePrivacySectionsEn],
@@ -224,7 +226,13 @@ test.describe('legal pages', () => {
       const body = await page.locator('main').innerText();
       expect(future.length).toBeGreaterThan(0);
       // Headings may appear in running text ("Push-Nachrichten gibt es noch nicht"), so compare the bodies.
-      for (const s of future) for (const p of s.paragraphs ?? []) expect(body).not.toContain(p);
+      for (const s of future) {
+        for (const p of s.paragraphs ?? []) {
+          if (SYNC_PRIVACY_RENDERED) expect(body).toContain(p);
+          else expect(body).not.toContain(p);
+        }
+      }
+      // Push is not shipped with sync: its section was removed and must not reappear unnoticed.
       expect(body).not.toContain('Firebase Cloud Messaging');
     }
   });

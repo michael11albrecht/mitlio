@@ -385,22 +385,21 @@ const en = {
 } as const satisfies Record<LegalKey, LegalText>;
 
 // ---------------------------------------------------------------------------------------------------------------
-// Sync (anonymous sign-in, shared groups on the server, invite links, push). NOT rendered while
-// `SYNC_PRIVACY_RENDERED` is false, so the live text matches reality: app/config/prod.json has no Supabase URL,
-// so nothing leaves the device but the public fuel and exchange-rate lookups.
+// Sync (anonymous sign-in, shared groups on the server, invite links). Rendered when
+// `SYNC_PRIVACY_RENDERED` is true; keep it in step with whether app/config/prod.json carries a Supabase URL.
 //
 // Every statement below was checked against supabase/migrations/0001 to 0014, docs/data-deletion.md,
 // docs/data-flows.md and the sync code (app/lib/features/sync). Where the server stores something, the table is
 // named in the comment next to it. Re-check when a migration or the sync payload changes.
 //
-// TODO(owner): when sync ships, set SYNC_PRIVACY_RENDERED to true (and set SUPABASE_URL in app/config/prod.json
-// in the same release). The production build fails if the URL is set while this is false (assertSyncDisclosed in
-// src/lib/legal.ts, docs/release.md). If push notifications do NOT ship together with sync, remove the push
-// section from `futurePrivacySections*` first, because it says the device token is stored.
+// Rendered since the first sync release (2026-11-21). Push notifications do not ship with it, so the push
+// section and its recipient and retention lines were removed; add them back together with push (P6b).
+// The production build fails if SUPABASE_URL is set in app/config/prod.json while this is false
+// (assertSyncDisclosed in src/lib/legal.ts, docs/release.md).
 // ---------------------------------------------------------------------------------------------------------------
 
 /** Renders the sync sections and the changed live sections. Flip together with SUPABASE_URL in prod.json. */
-export const SYNC_PRIVACY_RENDERED = false;
+export const SYNC_PRIVACY_RENDERED = true;
 
 type SectionChange = (live: LegalSection) => LegalSection;
 
@@ -480,16 +479,9 @@ export const futurePrivacySectionsDe: readonly LegalSection[] = [
     heading: 'Alle meine Daten löschen und geteilte Gruppen',
     paragraphs: [
       'Hast du Gruppen geteilt, ruft die App beim Löschen zuerst unseren Server auf und leert erst danach dein Gerät. Schlägt der Aufruf fehl, bleibt alles erhalten und du kannst es erneut versuchen.',
-      'Auf dem Server werden gelöscht: deine Verbindungen zu den Gruppen (du kannst sie nicht mehr öffnen), die Verknüpfung zwischen deinem Konto und deinem Mitglied, dein Geräte-Token und deine Benachrichtigungseinstellungen (sofern vorhanden) und dein anonymes Konto samt Sitzungen, den von dir erstellten Einladungen und deinen Einträgen im Beitrittsprotokoll. Hast du die Gruppe angelegt, geht die Rolle an das am längsten verbundene Mitglied.',
+      'Auf dem Server werden gelöscht: deine Verbindungen zu den Gruppen (du kannst sie nicht mehr öffnen), die Verknüpfung zwischen deinem Konto und deinem Mitglied und dein anonymes Konto samt Sitzungen, den von dir erstellten Einladungen und deinen Einträgen im Beitrittsprotokoll. Hast du die Gruppe angelegt, geht die Rolle an das am längsten verbundene Mitglied.',
       'Es bleiben die Gruppendaten, die du mit anderen teilst: Gruppe, Namen der Mitglieder (auch deiner, dann ohne Verbindung zu einem Konto), Ausgaben, Ausgleichszahlungen, Fahrten und Änderungsverlauf. Sie gehören zur Gruppe, und ihr Löschen würde die Salden der anderen verändern. Willst du auch deinen Namen dort loswerden, bitte die Gruppe, ihn zu ändern oder zu entfernen, oder schreib an privacy@mitlio.de. Auch Kopien auf den Geräten der anderen Mitglieder können wir nicht löschen.',
       'Warst du das letzte verbundene Konto, löschen wir die Gruppe mit allen Daten im täglichen Löschlauf, also etwa einen Tag später.',
-    ],
-  },
-  {
-    heading: 'Push-Nachrichten',
-    paragraphs: [
-      'Für Push-Nachrichten speichern wir ein Geräte-Token und deine Benachrichtigungseinstellungen. Zugestellt wird über Firebase Cloud Messaging (Google, Datenübertragung in die USA auf Grundlage des EU-US Data Privacy Framework) und auf iOS über Apples Push-Dienst (APNs). Rechtsgrundlage: deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO).',
-      'Das Token und die Einstellungen löschen wir mit deinem Konto: mit „Alle meine Daten löschen“ oder nach dem Löschlauf für inaktive Konten.',
     ],
   },
 ];
@@ -544,16 +536,9 @@ export const futurePrivacySectionsEn: readonly LegalSection[] = [
     heading: 'Delete all my data and shared groups',
     paragraphs: [
       'If you shared groups, the app first calls our server when you delete and only then wipes your device. If the call fails, everything is kept and you can try again.',
-      'Deleted on the server: your links to the groups (you can no longer open them), the link between your account and your member, your device token and notification settings (if any) and your anonymous account including its sessions, the invites you created and your entries in the join log. If you created the group, that role passes to the member who has been linked the longest.',
+      'Deleted on the server: your links to the groups (you can no longer open them), the link between your account and your member and your anonymous account including its sessions, the invites you created and your entries in the join log. If you created the group, that role passes to the member who has been linked the longest.',
       'What stays is the group data you share with others: the group, member names (including yours, then without a link to any account), expenses, settlements, rides and edit history. It belongs to the group, and deleting it would change the others’ balances. If you also want your name gone there, ask the group to change or remove it, or write to privacy@mitlio.de. We also cannot delete copies on the other members’ devices.',
       'If you were the last linked account, we delete the group with all its data in the daily cleanup run, so about a day later.',
-    ],
-  },
-  {
-    heading: 'Push notifications',
-    paragraphs: [
-      'For push notifications we store a device token and your notification settings. They are delivered through Firebase Cloud Messaging (Google, transfer to the USA under the EU-US Data Privacy Framework) and, on iOS, Apple’s push service (APNs). Legal basis: your consent (Art. 6(1)(a) GDPR).',
-      'We delete the token and the settings with your account: with “Delete all my data” or by the cleanup run for inactive accounts.',
     ],
   },
 ];
@@ -586,7 +571,7 @@ const syncDe: SyncPrivacy = {
       ...s,
       paragraphs: [
         paragraph(s, 0),
-        'Dort laufen die Abfrage von Spritpreisen und Wechselkursen, die Annahme von Nachrichten aus dem Kontaktformular und, sobald du eine Gruppe teilst, die Speicherung der Gruppendaten, deines anonymen Kontos und der Einladungen (siehe „Geteilte Gruppen (Synchronisierung)“). Bei eingeschalteten Push-Nachrichten gehören auch dein Geräte-Token und deine Benachrichtigungseinstellungen dazu. Supabase verarbeitet diese Inhalte nur in unserem Auftrag.',
+        'Dort laufen die Abfrage von Spritpreisen und Wechselkursen, die Annahme von Nachrichten aus dem Kontaktformular und, sobald du eine Gruppe teilst, die Speicherung der Gruppendaten, deines anonymen Kontos und der Einladungen (siehe „Geteilte Gruppen (Synchronisierung)“). Supabase verarbeitet diese Inhalte nur in unserem Auftrag.',
         paragraph(s, 2),
       ],
     }),
@@ -600,7 +585,6 @@ const syncDe: SyncPrivacy = {
           `Anonyme Konten: ${deMonths(r.inactive_account_months)} ohne Aktivität. Aktivität heißt, dass sich die App in dieser Zeit am Server angemeldet oder ihre Anmeldung erneuert hat. Dann löschen wir das Konto so, als hättest du „Alle meine Daten löschen“ gewählt.`,
           `Änderungsverlauf einer Ausgabe: die letzten ${r.expense_revisions_per_expense} Stände, ältere werden automatisch entfernt. Der Verlauf bleibt, solange die Gruppe besteht, auch wenn die Ausgabe gelöscht wurde (sie bleibt als gelöscht markiert, damit alle Geräte die Löschung übernehmen).`,
           `Beitrittsprotokoll: ${deDays(r.join_audit_days)}. Einladungen: ${deDays(r.expired_invites_days_after_expiry)} nach Ablauf. Widerrufene und ersetzte Links bleiben als Hash, bis die Gruppe gelöscht wird.`,
-          `Geräte-Token und Benachrichtigungseinstellungen: bis dein Konto gelöscht wird, von dir oder nach ${deMonths(r.inactive_account_months)} ohne Aktivität.`,
           ...items.slice(1),
         ],
       };
@@ -610,7 +594,6 @@ const syncDe: SyncPrivacy = {
       items: [
         ...(s.items ?? []),
         'Mitglieder deiner geteilten Gruppen: sehen die Daten der Gruppe, siehe „Geteilte Gruppen (Synchronisierung)“.',
-        'Apple (APNs) und Google (Firebase Cloud Messaging): stellen Push-Nachrichten zu, siehe „Push-Nachrichten“.',
       ],
     }),
     'Bereitstellung der Daten und automatisierte Entscheidungen': (s) => ({
@@ -668,7 +651,7 @@ const syncEn: SyncPrivacy = {
       ...s,
       paragraphs: [
         paragraph(s, 0),
-        'It serves fuel prices and exchange rates, receives messages from the contact form and, as soon as you share a group, stores the group data, your anonymous account and the invites (see “Shared groups (sync)”). With push notifications switched on, your device token and notification settings are stored there too. Supabase processes this content only on our behalf.',
+        'It serves fuel prices and exchange rates, receives messages from the contact form and, as soon as you share a group, stores the group data, your anonymous account and the invites (see “Shared groups (sync)”). Supabase processes this content only on our behalf.',
         paragraph(s, 2),
       ],
     }),
@@ -682,7 +665,6 @@ const syncEn: SyncPrivacy = {
           `Anonymous accounts: ${enMonths(r.inactive_account_months)} without activity. Activity means the app signed in to the server or renewed its sign-in during that time. We then delete the account as if you had chosen “Delete all my data”.`,
           `Edit history of an expense: the last ${r.expense_revisions_per_expense} versions, older ones are removed automatically. The history stays as long as the group exists, even if the expense was deleted (it stays marked as deleted so all devices pick up the deletion).`,
           `Join log: ${enDays(r.join_audit_days)}. Invites: ${enDays(r.expired_invites_days_after_expiry)} after they expire. Revoked and replaced links stay as a hash until the group is deleted.`,
-          `Device token and notification settings: until your account is deleted, by you or after ${enMonths(r.inactive_account_months)} without activity.`,
           ...items.slice(1),
         ],
       };
@@ -692,7 +674,6 @@ const syncEn: SyncPrivacy = {
       items: [
         ...(s.items ?? []),
         'Members of your shared groups: see the group data, see “Shared groups (sync)”.',
-        'Apple (APNs) and Google (Firebase Cloud Messaging): deliver push notifications, see “Push notifications”.',
       ],
     }),
     'Providing data and automated decisions': (s) => ({
