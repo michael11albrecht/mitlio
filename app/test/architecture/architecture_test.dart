@@ -368,6 +368,26 @@ void main() {
       (
         'sync-no-local-bank',
         {
+          'app/lib/features/sync/data/pusher.dart':
+              "import 'package:mitlio/db/daos/local_profile_bank_dao.dart';",
+        },
+        {
+          'app/lib/features/sync/data/pusher.dart':
+              "import 'package:mitlio/db/daos/profile_dao.dart';",
+        },
+      ),
+      (
+        'sync-no-local-bank',
+        {
+          'app/lib/features/sync/data/pusher.dart': "import 'package:mitlio/features/profile/data/repositories/profile_bank_repository.dart';",
+        },
+        {
+          'app/lib/features/profile/ui/profile_view_model.dart': "import 'package:mitlio/features/profile/data/repositories/profile_bank_repository.dart';",
+        },
+      ),
+      (
+        'sync-no-local-bank',
+        {
           'app/lib/core/outbox_sync.dart': "import 'package:mitlio/features/members/data/repositories/payment_details_repository.dart';",
         },
         {
