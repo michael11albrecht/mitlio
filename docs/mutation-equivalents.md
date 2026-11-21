@@ -21,6 +21,9 @@ Files: `core/result.dart` (2), `expense/expense_error.dart` (5),
 `settle/simplify_debts.dart` (2), `split/split_error.dart` (5),
 `sync/hlc_error.dart` (3), `sync/hlc.dart` (2), `trip/trip_error.dart` (2).
 
+Verified per file: `expense_error.dart` (5, #118), `split_error.dart` (5, #119)
+and `ride_period.dart` (4, #120) have no other survivors.
+
 ## Modulo by a negated constant (3 mutants)
 
 - `payment/epc_qr.dart` `amount.cents % 100` becomes `% -100`.
