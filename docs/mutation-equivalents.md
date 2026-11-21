@@ -4,7 +4,7 @@ Surviving mutants that no behavioural test can distinguish from the original.
 Source: `make mutate` (mutation_test 1.8.1). Review this list when the tool
 or the domain code changes; a new survivor must be killed or added here with a reason.
 
-## `hashCode` argument order (30 mutants)
+## `hashCode` argument order (34 mutants)
 
 Mutation: reorder the arguments of `Object.hash(...)` in a `hashCode` getter
 (`Object.hash(a, b)` becomes `Object.hash(b, a)`).
@@ -17,12 +17,14 @@ rather than behaviour. Equality and hash consistency are already tested.
 
 Files: `core/result.dart` (2), `expense/expense_error.dart` (5),
 `expense/settlement_error.dart` (1), `members/member.dart` (1),
-`money/money.dart` (1), `payment/epc_qr.dart` (2), `rides/ride_period.dart` (4),
+`money/money.dart` (1), `payment/epc_qr.dart` (2), `rides/ride_period.dart` (4), `rides/vehicle_cost.dart` (4),
 `settle/simplify_debts.dart` (2), `split/split_error.dart` (5),
 `sync/hlc_error.dart` (3), `sync/hlc.dart` (2), `trip/trip_error.dart` (2).
 
 Verified per file: `expense_error.dart` (5, #118), `split_error.dart` (5, #119)
-and `ride_period.dart` (4, #120) have no other survivors.
+and `ride_period.dart` (4, #120) have no other survivors. The nightly run re-filed
+the same hash mutants as #256, #257 (`vehicle_cost.dart`, plus one real survivor, the `MoneyOverflow`
+value, now killed) and #258; they are equivalent as described above.
 
 ## Modulo by a negated constant (3 mutants)
 

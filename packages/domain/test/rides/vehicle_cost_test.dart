@@ -309,7 +309,13 @@ void main() {
           ),
           CostBasis.running,
         ),
-        throwsA(isA<MoneyOverflow>()),
+        throwsA(
+          isA<MoneyOverflow>().having(
+            (e) => e.cents,
+            'cents',
+            Money.maxAbsCents + 1,
+          ),
+        ),
       );
       // Exactly at the limit is fine.
       final ok = _ok(
