@@ -20,4 +20,10 @@
 | 16 | Routing: `ORS_API_KEY` is set. Open: rotate the key (it was pasted into a session transcript), optional `GEOAPIFY_API_KEY` fallback, quota/ToS spike + ADR for #130, confirm the ORS endpoint is current | P9-T08 | rotate key, add Geoapify later, decide #130 |
 | 17 | Supabase CLI 3.x rejects `[inbucket]` in `supabase/config.toml` (wants `local_smtp`), CI pins CLI 2.70.0 which needs `inbucket`. Local CLI 3.x works only from a directory without `supabase/config.toml` | local `supabase` use, CI CLI bump | decide: pin CI to 3.x and rename, or keep 2.x (touches `.github/workflows/**`, critical) |
 | 18 | E-Control (Austria) fuel API terms for ADR-20 not confirmed | AT fuel prices | check terms |
+<<<<<<< HEAD
 | 19 | #206 Supabase Auth audit logs must not be stored in the DB (`auth.audit_log_entries` survives `delete from auth.users`). Hosted-project dashboard toggle only, not expressible in `supabase/config.toml` (never pushed). Do it on staging and on prod (`mitlio-prod`), then run the check in `supabase/README.md` (expect `0`). Same visit: anonymous sign-ins rate limit 10/h per IP, usage alerts | sync go-live, privacy text | switch off the toggle per project, run the check |
+=======
+| 20 | Feedback (ADR-29): GitHub App or fine-grained PAT with `issues:write` only, stored as Supabase function secret (never in the app) | P7-T10 (#230) | create the credential after ADR-29 is accepted |
+| 21 | Feedback (ADR-29): private Supabase Storage bucket for screenshots + retention period and cleanup schedule | P7-T10 (#230) | create bucket, decide retention |
+| 22 | Feedback (ADR-29): privacy policy update (free-text, screenshots, optional email, diagnostics, retention) | P7-T10, P7-T07 sign-off | update the Datenschutz draft, review with item 7 |
+>>>>>>> 4b18d15 (docs(blockers): feedback form prerequisites (ADR-29))
