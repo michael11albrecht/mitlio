@@ -25,10 +25,16 @@ class SettingsView extends ConsumerWidget {
         padding: Spacing.screen,
         children: [
           ListTile(
+            leading: const Icon(Icons.person_outline),
             title: Text(l10n.profileSettingsEntry),
             subtitle: Text(l10n.profileSettingsEntryHint),
-            trailing: const Icon(Icons.chevron_right),
             onTap: () => unawaited(context.push('/settings/profile')),
+          ),
+          ListTile(
+            leading: const Icon(Icons.directions_car_outlined),
+            title: Text(l10n.carsEntry),
+            subtitle: Text(l10n.carsEntryHint),
+            onTap: () => unawaited(context.push('/settings/cars')),
           ),
           const SizedBox(height: Spacing.md),
           Text(
