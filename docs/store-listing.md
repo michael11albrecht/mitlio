@@ -11,7 +11,7 @@ Facts below come from `docs/data-flows.md`, `docs/retention.md` and the app feat
 | Name | mitlio | 6 |
 | Subtitle | Fahrtkosten fair teilen | 23 |
 | Promotional text | Wer fährt, wer zahlt, wer schuldet wem? mitlio rechnet Fahrten und Gruppenausgaben fair ab. Ohne Werbung, ohne Tracking. | 120 |
-| Keywords | Fahrgemeinschaft,Spritkosten,Kilometer,Pendeln,Reisekasse,Ausgaben,teilen,Urlaub,WG,Schulden | 91 |
+| Keywords | Fahrgemeinschaft,Spritkosten,Kilometer,Pendeln,Reisekasse,Ausgaben,teilen,Urlaub,WG,Schulden | 92 |
 | Category | Primary: Finance. Secondary: Travel (or Utilities, **OWNER**) | |
 | Support URL | https://mitlio.de/kontakt/ | |
 | Marketing URL | https://mitlio.de/ | |
