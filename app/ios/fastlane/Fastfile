@@ -94,10 +94,16 @@ platform :ios do
       "--build-number #{build_number} --export-options-plist=#{export_options}"
     )
 
+    ipa = Dir[File.expand_path("../../build/ios/ipa/*.ipa", __dir__)].first
+    UI.user_error!("No .ipa found in app/build/ios/ipa after the build") if ipa.nil?
+
+    # P8-T06: never upload a build that still registers DebugDrive (`ext.mitlio`).
+    sh(File.expand_path("../../../tool/check_release_strip.sh", __dir__), ipa)
+
     upload_to_testflight(
       api_key: api_key,
       app_identifier: bundle_id,
-      ipa: Dir[File.expand_path("../../build/ios/ipa/*.ipa", __dir__)].first,
+      ipa: ipa,
       skip_waiting_for_build_processing: true
     )
   end
