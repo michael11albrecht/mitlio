@@ -1593,5 +1593,19 @@
   "joinLocalFailed": "Die Gruppe konnte auf diesem Handy nicht gespeichert werden. Prüfe den freien Speicher und öffne den Link nochmal.",
   "joinOpenGroup": "Zur Gruppe",
   "joinClose": "Schließen",
-  "joinConnectOffline": "Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist."
+  "joinConnectOffline": "Keine Verbindung. Du bist in der Gruppe, aber noch mit niemandem verbunden. Versuch es nochmal, sobald du online bist.",
+  "setupStepProgress": "Schritt {current} von {total}",
+  "@setupStepProgress": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "setupNext": "Weiter",
+  "setupSkip": "Überspringen",
+  "setupBack": "Zurück",
+  "setupYes": "Ja",
+  "setupNo": "Nein",
+  "setupFinishDone": "Fertig",
+  "setupCelebration": "Geschafft"
 }
