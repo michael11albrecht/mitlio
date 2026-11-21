@@ -4,7 +4,7 @@
 |---|---|---|---|
 | 1 | Anthropic API credit balance too low for `agent-implement` (CI auth was switched to the subscription OAuth token; confirm the re-run for #210 passes) | all CI agent runs | confirm OAuth token secret is valid, or top up credit |
 | 2 | CODEOWNERS review required on `critical` paths (`CLAUDE.md`, `.github/**`, `supabase/migrations/**`, `tool/*_gate.dart`) | merging #206, P8-T04/T08, P6b migrations | review and approve |
-| 3 | Android `android-build (dev apk)` fails on Gradle: cannot resolve the Flutter plugin loader | Android internal builds, P8-T03 Play half | check Gradle/Flutter plugin setup on CI |
+| 3 | ~~Android `android-build (dev apk)` fails on Gradle~~ **Resolved, no owner action.** Only failure was run 44801038184 (2026-11-20, `agent/worktree-rule`): `plugins.gradle.org` could not serve `kotlin-stdlib`/`kotlin-gradle-plugin` 2.3.20 while resolving the Flutter plugin loader, a transient artifact-repository outage (not a settings.gradle, Flutter pin, Java or keystore problem). Since then the job is green on every run, incl. main run 44904403742 and 44899907745 (dev debug APK builds, ~5 min). If it recurs, re-run the job first | Android internal builds, P8-T03 Play half | none; re-run CI on a recurrence |
 | 4 | Play Console: service account + keystore secrets | Play internal track | create and add secrets |
 | 5 | Production Supabase project `Mitlio` (`vnlshkpxcvriiaguniro`, eu-central-1) exists with `ORS_API_KEY` set; still open: remaining secrets, `production` environment approval, check which Edge Functions are deployed | P8-T04 release workflow, P6b | set environment reviewers, remaining secrets |
 | 6 | Firebase project, APNs auth key, FCM service account | P6b-T01, T05 live test | create and upload keys |
