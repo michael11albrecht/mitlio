@@ -1,11 +1,14 @@
 // Justification: all fields are final; no meta dependency for @immutable.
 // ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
 
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/providers.dart';
 import 'package:mitlio/core/remote/remote_error_text.dart';
 import 'package:mitlio/db/daos/sync_state_dao.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
+import 'package:mitlio/features/push/ui/push_notices_view_model.dart';
 import 'package:mitlio/features/sync/data/repositories/share_error_text.dart';
 import 'package:mitlio/features/sync/data/repositories/share_group_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/share_link_repository.dart';
@@ -149,7 +152,15 @@ class ShareViewModel extends Notifier<ShareState> {
   var _running = false;
 
   @override
-  ShareState build() => const ShareLoading();
+  ShareState build() {
+    // The first share is the moment to offer notifications (plan P6b).
+    listenSelf((_, next) {
+      if (next is ShareReady) {
+        unawaited(ref.read(pushNoticesViewModelProvider.notifier).offer());
+      }
+    });
+    return const ShareLoading();
+  }
 
   /// Prepares the link. Safe to call again (retry); ignored while running.
   Future<void> share() async {

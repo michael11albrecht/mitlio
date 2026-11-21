@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mitlio/core/remote/remote_error.dart';
 import 'package:mitlio/core/remote/remote_error_text.dart';
+import 'package:mitlio/features/push/ui/push_notices_view_model.dart';
 import 'package:mitlio/features/sync/data/invite_link.dart';
 import 'package:mitlio/features/sync/data/repositories/join_repository.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
@@ -137,7 +140,15 @@ class JoinViewModel extends Notifier<JoinState> {
   JoinRepository get _repo => ref.read(joinRepositoryProvider);
 
   @override
-  JoinState build() => const JoinJoining();
+  JoinState build() {
+    // Joining is the moment to offer notifications (plan P6b).
+    listenSelf((_, next) {
+      if (next is JoinDone) {
+        unawaited(ref.read(pushNoticesViewModelProvider.notifier).offer());
+      }
+    });
+    return const JoinJoining();
+  }
 
   /// Joins the group. Safe to call again (retry); ignored while running.
   Future<void> start() async {

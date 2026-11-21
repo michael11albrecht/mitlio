@@ -11,6 +11,7 @@ import 'package:mitlio/features/groups/ui/group_form_view.dart';
 import 'package:mitlio/features/groups/ui/groups_view.dart';
 import 'package:mitlio/features/onboarding/ui/onboarding_view.dart';
 import 'package:mitlio/features/profile/ui/profile_setup_view.dart';
+import 'package:mitlio/features/push/ui/notification_settings_view.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/template_form_view.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view.dart';
@@ -105,6 +106,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'settle',
                 builder: (context, state) =>
                     SettleView(groupId: state.pathParameters['id']!),
+              ),
+              GoRoute(
+                path: 'notifications',
+                builder: (context, state) => NotificationSettingsView(
+                  groupId: state.pathParameters['id']!,
+                ),
               ),
               GoRoute(
                 path: 'edit',

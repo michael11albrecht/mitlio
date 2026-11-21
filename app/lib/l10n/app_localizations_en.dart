@@ -2319,4 +2319,117 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileCardNoPayment => 'No payment details yet';
+
+  @override
+  String get pushPromptText =>
+      'Should mitlio let you know when someone adds something?';
+
+  @override
+  String get pushPromptAction => 'Yes, please';
+
+  @override
+  String get pushPermissionDenied =>
+      'Notifications are off. Turn them on in the system settings if you change your mind.';
+
+  @override
+  String get pushUnavailable => 'This version cannot send notifications yet.';
+
+  @override
+  String get pushErrorPlatform =>
+      'Notifications could not be set up. Try again in a moment.';
+
+  @override
+  String get pushIncomingGeneric => 'There is news in your group.';
+
+  @override
+  String get pushIncomingOpen => 'Open';
+
+  @override
+  String get pushOpenFailed =>
+      'This notification could not be opened. Open the group from the list.';
+
+  @override
+  String get notifSettingsTitle => 'Notifications';
+
+  @override
+  String get notifLevelLabel => 'What should I tell you about?';
+
+  @override
+  String get notifLevelAll => 'Everything';
+
+  @override
+  String get notifLevelMine => 'Only what involves me';
+
+  @override
+  String get notifLevelNone => 'Nothing';
+
+  @override
+  String get notifQuietHoursLabel => 'Quiet hours';
+
+  @override
+  String get notifQuietHoursHint =>
+      'You get no notifications during this time.';
+
+  @override
+  String get notifQuietHoursFrom => 'From';
+
+  @override
+  String get notifQuietHoursTo => 'To';
+
+  @override
+  String get notifHideAmountsLabel => 'Hide amounts';
+
+  @override
+  String get notifHideAmountsHint =>
+      'The lock screen only says that there is news.';
+
+  @override
+  String get notifNotShared =>
+      'Notifications exist only for shared groups. Share the group first.';
+
+  @override
+  String get notifEnable => 'Turn on notifications';
+
+  @override
+  String get notifLoading => 'Loading settings';
+
+  @override
+  String pushLocExpenseAdded(String actor, String title, String amount) {
+    return '$actor added “$title” · $amount';
+  }
+
+  @override
+  String pushLocExpenseChanged(String actor, String title, String amount) {
+    return '$actor changed “$title” · $amount';
+  }
+
+  @override
+  String pushLocExpenseDeleted(String actor, String title) {
+    return '$actor deleted “$title”';
+  }
+
+  @override
+  String pushLocSettlementAdded(String actor, String amount) {
+    return '$actor recorded a payment · $amount';
+  }
+
+  @override
+  String pushLocMemberJoined(String name, String group) {
+    return '$name joined “$group”';
+  }
+
+  @override
+  String pushLocExpensesAdded(String actor, String count, String group) {
+    return '$actor added $count expenses in “$group”';
+  }
+
+  @override
+  String pushLocGroupUpdates(String count, String group) {
+    return '$count changes in “$group”';
+  }
+
+  @override
+  String pushLocGeneric(String group) {
+    return 'News in “$group”';
+  }
 }
