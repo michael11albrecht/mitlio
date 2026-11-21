@@ -46,6 +46,9 @@ run_phase() {
   base_env > "$tmp/$phase.env"
   [ "$phase" = key ] && echo "TANKERKOENIG_API_KEY=test-key" >> "$tmp/$phase.env"
   echo "=== phase: $phase ==="
+  # CLI 3.x `supabase start` already runs the edge runtime; `functions serve` would reuse it and ignore
+  # --env-file. Remove it so serve starts a fresh runtime with this phase's env.
+  docker rm -f supabase_edge_runtime_mitlio >/dev/null 2>&1 || true
   supabase functions serve --env-file "$tmp/$phase.env" >> "$tmp/serve.log" 2>&1 &
   serve_pid=$!
   local ready=""
