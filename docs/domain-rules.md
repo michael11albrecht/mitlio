@@ -337,6 +337,36 @@ Result<Uri, PayPalError> buildPayPalMeLink({required String handle, required Mon
 ]
 ```
 
+## PayPal.Me handle and link (PU-T02)
+
+`PaypalMeHandle` (same file as `buildPayPalMeLink`) is the validated form of what a user types into the profile.
+
+```dart
+final class PaypalMeHandle {
+  final String value;                       // bare handle, case preserved
+  static Result<PaypalMeHandle, PayPalError> parse(String input);   // PayPalError: InvalidHandle
+  String format();                          // 'paypal.me/<value>'; parse(format()) == the same handle
+  Result<Uri, PayPalError> link({Money? amount});   // NonPositiveAmount if amount <= 0
+}
+```
+
+- `parse` normalises like `buildPayPalMeLink` (which now delegates to it) and additionally cuts everything from
+  the first `?` or `#` (share links carry tracking parameters). Accepts `x`, `@x`, `paypal.me/x`, full URLs.
+- `link()` without amount: `https://paypal.me/<handle>`; with amount as in the section above.
+
+<!-- examples:paypal_handle -->
+```json
+[
+  {"input": "maxmuster", "handle": "maxmuster", "link": "https://paypal.me/maxmuster"},
+  {"input": " @MaxMuster ", "handle": "MaxMuster", "link": "https://paypal.me/MaxMuster"},
+  {"input": "https://www.paypal.me/max42/?country.x=DE&locale.x=de_DE", "handle": "max42", "link": "https://paypal.me/max42"},
+  {"input": "paypal.me/max42#top", "handle": "max42", "link": "https://paypal.me/max42"},
+  {"input": "max muster", "error": "InvalidHandle"},
+  {"input": "?a=b", "error": "InvalidHandle"},
+  {"input": "", "error": "InvalidHandle"}
+]
+```
+
 ## IBAN and EPC QR payload (P2-T10)
 
 ```dart
@@ -494,6 +524,125 @@ The vehicle form suggests cars from a bundled catalog built offline from the EEA
   It is always shown as an estimate, never as an official value.
 
 Examples: petrol 5600 -> 6720; diesel 4500 -> 5400; 3 -> 4 (3.6); 2 -> 2 (2.4); 5 -> 6 (6.0).
+
+## Vehicle extra cost per km (PU-T03)
+
+Turns what a user knows about the real costs of a car into `wearMilliPerKm` (ADR-25 §3). File
+`rides/vehicle_cost.dart`.
+
+```dart
+enum CostCategory { insurance, vehicleTax, maintenance, tyres, repairs, loan, depreciation, parking, other }
+//   running (by km): maintenance, tyres, repairs, depreciation      fixed: the rest (`other` is fixed)
+enum CostBasis { running, full }            // default in the UI: running
+enum CostPeriod { month, year }
+final class CostEntry { final int amountCents; final CostPeriod period; }
+final class Depreciation { final int purchaseCents, resaleCents, keepYears; }
+final class VehicleCostProfile { final int annualKm; final Currency currency;
+                                 final Map<CostCategory, CostEntry> costs; final Depreciation? depreciation; }
+final class VehicleExtraCost { final int wearMilliPerKm; final Map<CostCategory, int> breakdownMilliPerKm; }
+Result<VehicleExtraCost, VehicleCostError> vehicleExtraCostPerKm(VehicleCostProfile profile, CostBasis basis);
+// VehicleCostError: NonPositiveAnnualKm, VehicleCostNegativeValue(field), InvalidDepreciation
+```
+
+- Annual cost per category: `month` x 12, `year` x 1. Depreciation = `roundHalfUp((purchase - resale) / keepYears)`
+  per year and replaces a `depreciation` entry in `costs`.
+- Counted categories: `running` basis = running categories only; `full` = all. Missing categories count as 0.
+- `wearMilliPerKm = roundHalfUp(sumAnnualCents x 10^(3 - minorUnits) / annualKm)` (BigInt).
+- `breakdownMilliPerKm` = `allocate(wearMilliPerKm, annualCentsPerCategory)` in `CostCategory` order (largest
+  remainder, ties by that order), so the values sum to `wearMilliPerKm`. All counted categories are present. If every
+  weight is 0, all values are 0.
+- Validation order (first failure wins): `annualKm <= 0` -> `NonPositiveAnnualKm`; negative `costs` amount (enum
+  order) or negative depreciation price -> `VehicleCostNegativeValue(name)` (`depreciation` for the latter);
+  `keepYears <= 0` or `resale > purchase` -> `InvalidDepreciation`. Result above `Money.maxAbsCents` throws
+  `MoneyOverflow`.
+
+<!-- examples:vehicle_cost -->
+```json
+[
+  {"name": "running basis", "annualKm": 15000, "currency": "EUR", "basis": "running",
+   "costs": {"maintenance": [4000, "month"], "tyres": [12000, "year"], "insurance": [60000, "year"], "vehicleTax": [20000, "year"]},
+   "depreciation": [3000000, 1500000, 5],
+   "wear": 240, "breakdown": {"maintenance": 32, "tyres": 8, "repairs": 0, "depreciation": 200}},
+  {"name": "full basis, largest remainder", "annualKm": 15000, "currency": "EUR", "basis": "full",
+   "costs": {"maintenance": [4000, "month"], "tyres": [12000, "year"], "insurance": [60000, "year"], "vehicleTax": [20000, "year"]},
+   "depreciation": [3000000, 1500000, 5],
+   "wear": 293, "breakdown": {"insurance": 40, "vehicleTax": 13, "maintenance": 32, "tyres": 8, "repairs": 0,
+                              "loan": 0, "depreciation": 200, "parking": 0, "other": 0}},
+  {"name": "monthly amount", "annualKm": 12000, "currency": "EUR", "basis": "full",
+   "costs": {"insurance": [10000, "month"]}, "wear": 100,
+   "breakdown": {"insurance": 100, "vehicleTax": 0, "maintenance": 0, "tyres": 0, "repairs": 0, "loan": 0,
+                 "depreciation": 0, "parking": 0, "other": 0}},
+  {"name": "rounds half up", "annualKm": 20, "currency": "EUR", "basis": "running",
+   "costs": {"tyres": [5, "year"]}, "wear": 3, "breakdown": {"maintenance": 0, "tyres": 3, "repairs": 0, "depreciation": 0}},
+  {"name": "nothing entered", "annualKm": 10000, "currency": "EUR", "basis": "running", "costs": {}, "wear": 0,
+   "breakdown": {"maintenance": 0, "tyres": 0, "repairs": 0, "depreciation": 0}},
+  {"name": "JPY has no minor units", "annualKm": 10000, "currency": "JPY", "basis": "running",
+   "costs": {"tyres": [50000, "year"]}, "wear": 5000,
+   "breakdown": {"maintenance": 0, "tyres": 5000, "repairs": 0, "depreciation": 0}},
+  {"name": "annual km zero", "annualKm": 0, "currency": "EUR", "basis": "running", "costs": {}, "error": "NonPositiveAnnualKm()"},
+  {"name": "negative cost", "annualKm": 10000, "currency": "EUR", "basis": "running",
+   "costs": {"tyres": [-1, "year"]}, "error": "VehicleCostNegativeValue(tyres)"},
+  {"name": "resale above purchase", "annualKm": 10000, "currency": "EUR", "basis": "running",
+   "costs": {}, "depreciation": [100, 200, 5], "error": "InvalidDepreciation()"}
+]
+```
+
+Check: running = 48000 + 12000 + 300000 = 360000 ct/year; x 10 / 15000 = 240 milli = 0.24 EUR/km.
+
+## Operating-cost check (PU-T15)
+
+Inline, non-blocking hints for a computed trip (ADR-25 §3). File `trip/operating_cost_check.dart`. Never a dialog,
+never prevents saving; the UI shows a hint at most once per trip/car until the choice changes. Wording is
+"Keine Rechtsberatung" and reviewed by the owner before release.
+
+```dart
+OperatingCostCheck operatingCostCheck(TripInput input, TripCost cost,
+    {int? runningWearMilliPerKm, int? operatingMilliPerKm, int implausibleMilliPerKm = 1000});
+final class OperatingCostCheck { final int passengersPayCents; final int? operatingCostCents;
+                                 final List<PlausibilityIssue> plausibility;
+                                 bool get exceedsOperatingCost; bool get hasHint; }
+enum PlausibilityIssue { costPerKmTooHigh, consumptionTooHigh }
+```
+
+- `passengersPayCents` = sum of `cost.shares` of `input.passengerIds` (the driver's own share is not paid by
+  anyone else).
+- Operating cost (PBefG §1 Abs. 2 Nr. 1) = `fuel + wear_running`. Consumption mode: `wear_running` =
+  `roundHalfUp(d x min(runningWear, wear) / (1000 x k))` with the trip distance `d`; `runningWearMilliPerKm == null`
+  means the whole wear is running. Km-rate mode: only if `operatingMilliPerKm` is given (same formula), else
+  `operatingCostCents == null` and no PBefG hint. **Tolls and ferry are not part of it**: passengers who pay them
+  can trigger the hint (conservative choice, owner to confirm).
+- `exceedsOperatingCost` = `operatingCostCents != null && passengersPayCents > operatingCostCents`. Hence it never
+  fires with running-basis wear and no extras (passengers pay at most fuel + wear).
+- Plausibility: `costPerKmTooHigh` when `totalCents x k x 1000 > implausibleMilliPerKm x d` (strictly more than
+  1 major unit per km by default; callers scale it for non-euro currencies); `consumptionTooHigh` when
+  consumption mode and `consumptionMilliPer100km > 30000`.
+
+<!-- examples:operating_cost -->
+```json
+[
+  {"name": "running-only wear, driver free: equal, no hint",
+   "input": {"distanceMeters": 250000, "consumption": 6500, "price": 1799, "wear": 50, "driver": "A", "passengers": ["B", "C"], "driverCounts": false},
+   "pay": 4173, "operating": 4173, "exceeds": false, "plausibility": []},
+  {"name": "full-basis wear above running wear",
+   "input": {"distanceMeters": 250000, "consumption": 6500, "price": 1799, "wear": 50, "runningWear": 20, "driver": "A", "passengers": ["B", "C"], "driverCounts": false},
+   "pay": 4173, "operating": 3423, "exceeds": true, "plausibility": []},
+  {"name": "driver pays a share too",
+   "input": {"distanceMeters": 250000, "consumption": 6500, "price": 1799, "wear": 50, "runningWear": 20, "driver": "A", "passengers": ["B", "C"], "driverCounts": true},
+   "pay": 2782, "operating": 3423, "exceeds": false, "plausibility": []},
+  {"name": "tolls paid by passengers",
+   "input": {"distanceMeters": 250000, "consumption": 6500, "price": 1799, "tolls": 1150, "driver": "A", "passengers": ["B"], "driverCounts": false},
+   "pay": 4073, "operating": 2923, "exceeds": true, "plausibility": []},
+  {"name": "consumption typo",
+   "input": {"distanceMeters": 250000, "consumption": 32000, "price": 1799, "driver": "A", "passengers": ["B"], "driverCounts": false},
+   "pay": 14392, "operating": 14392, "exceeds": false, "plausibility": ["consumptionTooHigh"]},
+  {"name": "km rate with reference, too high",
+   "input": {"distanceMeters": 10000, "kmRate": 1200, "operatingMilliPerKm": 250, "driver": "A", "passengers": ["B"], "driverCounts": false},
+   "pay": 1200, "operating": 250, "exceeds": true, "plausibility": ["costPerKmTooHigh"]},
+  {"name": "km rate without reference",
+   "input": {"distanceMeters": 250000, "kmRate": 300, "driver": "A", "passengers": ["B"], "driverCounts": false},
+   "pay": 7500, "operating": null, "exceeds": false, "plausibility": []}
+]
+```
 
 ## HLC
 
