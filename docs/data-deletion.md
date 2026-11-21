@@ -19,8 +19,8 @@ of view: the screen says so and the user can try again.
 
 ## On the server
 
-Without sync (today: no Supabase URL in `app/config/prod.json`) nothing about a person is stored on the server and this
-step does nothing. Once sync is live, the app first calls `delete_my_data()` (migration `0008`, rewritten in `0010` and
+Without sync (a build with no Supabase URL, e.g. a local debug build) nothing about a person is stored on the server and
+this step does nothing. In the prod build (`app/config/prod.json` carries the Supabase URL) the app first calls `delete_my_data()` (migration `0008`, rewritten in `0010` and
 `0014`) and only then wipes the device, so a failed call can simply be repeated. `delete_my_data()` acts for
 `auth.uid()` and delegates to `delete_account_data(uid)` (migration `0014`), the one deletion path that the daily
 cleanup of inactive anonymous accounts (`docs/retention.md`) uses as well. For the account it deletes:

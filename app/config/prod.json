@@ -1,6 +1,6 @@
 {
   "FLAVOR": "prod",
-  "SUPABASE_URL": "",
-  "SUPABASE_ANON_KEY": "",
+  "SUPABASE_URL": "https://bbkhmqdseazczsgltuto.supabase.co",
+  "SUPABASE_ANON_KEY": "sb_publishable_U1iPVvh1Nd9zaG8osOmZEA_yF0YZcxa",
   "SENTRY_DSN": ""
 }
