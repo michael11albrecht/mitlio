@@ -1,7 +1,7 @@
 -- squawk-ignore-file prefer-robust-stmts
 -- Justification: the Supabase CLI applies each migration file once, in a transaction; the functions
 -- are created or replaced (same signature) here and the cron job is scheduled by name (idempotent).
--- 0017_auth_audit_purge: Auth audit rows of a deleted account, and a daily purge as a safety net (#206).
+-- 0018_auth_audit_purge: Auth audit rows of a deleted account, and a daily purge as a safety net (#206).
 --
 -- Supabase Auth writes auth.audit_log_entries (user id in the JSON payload) on every token refresh and
 -- logout. The table has no foreign key to auth.users, so rows outlive the account. The owner switches
