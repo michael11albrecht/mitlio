@@ -69,6 +69,20 @@ void main() {
       expect(_plan([_ride('r1', useKmRate: true)]), isNull);
     });
 
+    test('getsCents is what the others owe, not the total cost (#141)', () {
+      final d = _plan([
+        _ride('r1', passengers: {}),
+        _ride('r2', passengers: {'b', 'c'}),
+      ])!.drivers.single;
+      expect(d.totalCents, 468 + 468);
+      expect(
+        d.getsCents,
+        d.sharesOf(['a', 'b', 'c']).fold(0, (n, s) => n + s.cents),
+      );
+      expect(d.getsCents, lessThan(d.totalCents - 468));
+      expect(d.getsCents, greaterThan(0));
+    });
+
     test('sharesOf lists the passengers that owe something', () {
       final d = _plan([
         _ride('r1', passengers: {'b', 'c'}),

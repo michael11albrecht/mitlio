@@ -99,9 +99,12 @@ class FlakyMembers extends FakeMembersRepository {
   Object? watchError;
 
   @override
-  Stream<List<GroupMember>> watchMembers(String groupId) => watchError != null
+  Stream<List<GroupMember>> watchMembers(
+    String groupId, {
+    bool includeDeleted = false,
+  }) => watchError != null
       ? Stream.error(watchError!)
-      : super.watchMembers(groupId);
+      : super.watchMembers(groupId, includeDeleted: includeDeleted);
 
   @override
   Future<RepoResult<GroupMember>> add(

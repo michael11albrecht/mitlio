@@ -115,6 +115,7 @@ class BalancesViewModel extends Notifier<BalancesState> {
   Group? _group;
   var _groupKnown = false;
   List<GroupMember>? _members;
+  List<GroupMember>? _allMembers;
   List<ExpenseEntry>? _expenses;
   List<SettlementEntry>? _settlements;
   List<RideEntry>? _rides;
@@ -127,6 +128,7 @@ class BalancesViewModel extends Notifier<BalancesState> {
     _group = null;
     _groupKnown = false;
     _members = null;
+    _allMembers = null;
     _expenses = null;
     _settlements = null;
     _rides = null;
@@ -140,6 +142,12 @@ class BalancesViewModel extends Notifier<BalancesState> {
       _listen(
         ref.watch(membersRepositoryProvider).watchMembers(groupId),
         (members) => _members = members,
+      ),
+      _listen(
+        ref
+            .watch(membersRepositoryProvider)
+            .watchMembers(groupId, includeDeleted: true),
+        (members) => _allMembers = members,
       ),
       _listen(
         ref.watch(expensesRepositoryProvider).watchExpenses(groupId),
@@ -182,6 +190,7 @@ class BalancesViewModel extends Notifier<BalancesState> {
     if (!ref.mounted) return;
     final failure = _failure;
     final members = _members;
+    final allMembers = _allMembers;
     final expenses = _expenses;
     final settlements = _settlements;
     final rides = _rides;
@@ -190,6 +199,7 @@ class BalancesViewModel extends Notifier<BalancesState> {
       state = BalancesFailure(failure);
     } else if (!_groupKnown ||
         members == null ||
+        allMembers == null ||
         expenses == null ||
         settlements == null ||
         rides == null ||
@@ -199,6 +209,7 @@ class BalancesViewModel extends Notifier<BalancesState> {
       state = _build(
         group,
         members,
+        allMembers,
         expenses,
         settlements,
         rides,
@@ -213,6 +224,7 @@ class BalancesViewModel extends Notifier<BalancesState> {
   BalancesState _build(
     Group group,
     List<GroupMember> members,
+    List<GroupMember> allMembers,
     List<ExpenseEntry> expenses,
     List<SettlementEntry> settlements,
     List<RideEntry> rides,
@@ -220,7 +232,8 @@ class BalancesViewModel extends Notifier<BalancesState> {
     BalancesMode mode,
   ) {
     try {
-      final domainMembers = [for (final m in members) m.toDomain()];
+      // Expenses keep referencing removed members, so the maths needs them.
+      final domainMembers = [for (final m in allMembers) m.toDomain()];
       final open = openRideExpenses(
         unsettled: [
           for (final e in rides)
@@ -237,9 +250,12 @@ class BalancesViewModel extends Notifier<BalancesState> {
       );
       return BalancesLoaded(
         group: group,
+        // Removed members only show up while they still owe or get money.
         balances: [
-          for (final m in members)
-            MemberBalance(member: m, cents: result.balances[m.id] ?? 0),
+          for (final m in allMembers)
+            if (members.any((l) => l.id == m.id) ||
+                (result.balances[m.id] ?? 0) != 0)
+              MemberBalance(member: m, cents: result.balances[m.id] ?? 0),
         ],
         simplified: result.simplified,
         pairwise: result.pairwise,
@@ -281,6 +297,10 @@ class BalancesViewModel extends Notifier<BalancesState> {
           .read(membersRepositoryProvider)
           .watchMembers(groupId)
           .first;
+      final allMembers = await ref
+          .read(membersRepositoryProvider)
+          .watchMembers(groupId, includeDeleted: true)
+          .first;
       final expenses = await ref
           .read(expensesRepositoryProvider)
           .watchExpenses(groupId)
@@ -300,6 +320,7 @@ class BalancesViewModel extends Notifier<BalancesState> {
       final built = _build(
         group,
         members,
+        allMembers,
         expenses,
         settlements,
         rides,

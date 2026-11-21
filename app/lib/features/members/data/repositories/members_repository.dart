@@ -55,8 +55,12 @@ final class GroupMember {
 /// Source of truth for members. Lists are ordered by position, then id.
 abstract interface class MembersRepository {
   /// Live members of [groupId]; emits the current list first, then after
-  /// every change.
-  Stream<List<GroupMember>> watchMembers(String groupId);
+  /// every change. With [includeDeleted] the soft-deleted members are part of
+  /// it too: expenses keep referencing them, so aggregates need them.
+  Stream<List<GroupMember>> watchMembers(
+    String groupId, {
+    bool includeDeleted = false,
+  });
 
   /// Members of [groupId]. Expenses keep referencing deleted members, so
   /// [includeDeleted] exists for rebuilding aggregates and history views.

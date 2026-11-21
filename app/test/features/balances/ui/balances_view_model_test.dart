@@ -243,18 +243,6 @@ void main() {
       await open(s.group.id);
       expect((state(s.group.id) as BalancesFailure).error, const Conflict('x'));
     });
-
-    test('data the domain refuses becomes InvalidData', () async {
-      final s = await Scenario.create(app, ['A', 'B']);
-      await s.expense({'A': 1000}, {'B': 1000});
-      // A member vanishes while an expense still refers to them.
-      ok(await app.members.softDelete(s.ids['B']!));
-      await open(s.group.id);
-      expect(
-        (state(s.group.id) as BalancesFailure).error,
-        isA<InvalidData>(),
-      );
-    });
   });
 
   group('load (DebugDrive)', () {
@@ -277,11 +265,25 @@ void main() {
       expect(err(await vm(s.group.id).load()), const Conflict('x'));
     });
 
-    test('data the domain refuses is an Err', () async {
+    test('a removed member with a share still counts (#136)', () async {
       final s = await Scenario.create(app, ['A', 'B']);
       await s.expense({'A': 1000}, {'B': 1000});
       ok(await app.members.softDelete(s.ids['B']!));
-      expect(err(await vm(s.group.id).load()), isA<InvalidData>());
+      final b = ok(await vm(s.group.id).load());
+      expect(b.balances.map((x) => (x.member.name, x.cents)), [
+        ('A', 1000),
+        ('B', -1000),
+      ]);
+    });
+
+    test('a removed member without a share is hidden (#136)', () async {
+      final s = await Scenario.create(app, ['A', 'B', 'C']);
+      ok(await app.members.softDelete(s.ids['C']!));
+      await s.expense({'A': 3000}, {'A': 1500, 'B': 1500});
+      await open(s.group.id);
+      final b = loaded(s.group.id);
+      expect(byLabel(s, b), {'A': 1500, 'B': -1500});
+      expect(ok(await vm(s.group.id).load()).balances, hasLength(2));
     });
   });
 

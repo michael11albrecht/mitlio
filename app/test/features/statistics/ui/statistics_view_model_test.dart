@@ -83,6 +83,14 @@ void main() {
       expect(s.nameOf('gone'), '?');
     });
 
+    test('a removed member does not break the statistics (#136)', () async {
+      await app.seedGroup();
+      await spend(1000, date: '2026-03-01', category: 'food');
+      ok(await app.base.members.softDelete(app.people[1].id));
+      await open(app.group.id);
+      expect(loaded(app.group.id).stats.totalCents, 1000);
+    });
+
     test('a foreign expense counts in the group currency', () async {
       await app.seedGroup();
       await spend(

@@ -16,6 +16,12 @@ final class DriverSettlement {
   int get rideCount => aggregate.rideIds.length;
   int get totalCents => aggregate.totalCents;
 
+  /// What the driver gets back: the shares of everyone but the driver. The
+  /// driver's own share and solo rides are part of [totalCents] only.
+  int get getsCents => aggregate.shares.entries
+      .where((e) => e.key != driverId)
+      .fold(0, (n, e) => n + e.value);
+
   /// What each passenger owes the driver, in the order of [memberOrder]:
   /// members other than the driver with a share above zero.
   List<RideShare> sharesOf(List<String> memberOrder) => [

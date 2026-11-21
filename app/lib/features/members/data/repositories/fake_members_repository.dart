@@ -39,9 +39,12 @@ class FakeMembersRepository implements MembersRepository {
   GroupMember? _live(String id) => _deleted.contains(id) ? null : _members[id];
 
   @override
-  Stream<List<GroupMember>> watchMembers(String groupId) => watchSnapshots(
+  Stream<List<GroupMember>> watchMembers(
+    String groupId, {
+    bool includeDeleted = false,
+  }) => watchSnapshots(
     _changes.stream,
-    () => _of(groupId, includeDeleted: false),
+    () => _of(groupId, includeDeleted: includeDeleted),
   );
 
   @override
