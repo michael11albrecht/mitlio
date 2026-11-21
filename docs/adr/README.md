@@ -30,3 +30,4 @@ Source of truth for the summary table: `docs/IMPLEMENTATION_PLAN.md` §1. Each A
 | [ADR-26](0026-receipt-to-expense.md) | Receipt photo to expense, recognised on the device |
 | [ADR-27](0027-sync-go.md) | Sync go, v1 scope |
 | [ADR-28](0028-support-the-developer.md) | Support the developer, opt-in and never in the payment |
+| [ADR-29](0029-in-app-feedback.md) | In-app feedback, human-triaged into GitHub issues |
