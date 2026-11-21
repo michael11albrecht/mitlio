@@ -9,6 +9,7 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/core/widgets/undo_snack_bar.dart';
+import 'package:mitlio/features/profile/ui/group_car_picker.dart';
 import 'package:mitlio/features/rides/ui/quick_log_card.dart';
 import 'package:mitlio/features/rides/ui/rides_calculator.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
@@ -153,6 +154,7 @@ class _Lists extends StatelessWidget {
               ),
             ),
           ),
+        GroupCarPicker(groupId: groupId),
         Align(
           alignment: AlignmentDirectional.centerStart,
           child: TextButton.icon(

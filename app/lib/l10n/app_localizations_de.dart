@@ -2742,4 +2742,90 @@ class AppLocalizationsDe extends AppLocalizations {
   String pushLocGeneric(String group) {
     return 'Neues in „$group“';
   }
+
+  @override
+  String get cardDismiss => 'Nicht mehr anzeigen';
+
+  @override
+  String get cardSettlePaymentTitle => 'Zahlungsdaten einmal einrichten';
+
+  @override
+  String get cardSettlePaymentMessage =>
+      'Speichere PayPal.Me oder IBAN einmal. In jeder Gruppe können Freunde dich damit bezahlen, die IBAN bleibt auf deinem Gerät.';
+
+  @override
+  String get cardSettlePaymentAction => 'Einrichten';
+
+  @override
+  String get cardGroupCarTitle => 'Dein Auto einmal einrichten';
+
+  @override
+  String get cardGroupCarMessage =>
+      'Nutze es in allen Gruppen. Änderungen am Auto gelten dann überall.';
+
+  @override
+  String get cardGroupCarAction => 'Auto einrichten';
+
+  @override
+  String get cardNewGroupProfileTitle => 'Dein Profil einmal einrichten';
+
+  @override
+  String get cardNewGroupProfileMessage =>
+      'Dann bist du in jeder neuen Gruppe schon mit Namen und PayPal.Me dabei.';
+
+  @override
+  String get cardNewGroupProfileAction => 'Profil einrichten';
+
+  @override
+  String get groupCarPickerTitle => 'Aus Meine Autos';
+
+  @override
+  String get groupCarUse => 'Nutzen';
+
+  @override
+  String get groupCarPickerFailed =>
+      'Meine Autos konnten nicht geladen werden. Tippe auf „Nochmal versuchen“.';
+
+  @override
+  String get carLinkedNote =>
+      'Dieses Auto kommt aus Meine Autos. Änderungen dort gelten auch hier.';
+
+  @override
+  String get carUnlink => 'Trennen';
+
+  @override
+  String get carUnlinked =>
+      'Nicht mehr mit Meine Autos verknüpft. Die Werte bleiben.';
+
+  @override
+  String get carLinkFailed =>
+      'Konnte nicht prüfen, ob dieses Auto aus Meine Autos kommt. Tippe auf „Nochmal versuchen“.';
+
+  @override
+  String get carEditTitle => 'Auto bearbeiten';
+
+  @override
+  String carUpdatedInGroups(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'In $count Gruppen aktualisiert',
+      one: 'In 1 Gruppe aktualisiert',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileEntrySaved(String kind) {
+    String _temp0 = intl.Intl.selectLogic(
+      kind,
+      {
+        'paypal': 'PayPal.Me gespeichert',
+        'iban': 'IBAN gespeichert',
+        'both': 'PayPal.Me und IBAN gespeichert',
+        'other': 'Noch keine Zahlungsdaten',
+      },
+    );
+    return '$_temp0';
+  }
 }

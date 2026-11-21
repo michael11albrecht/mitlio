@@ -21,6 +21,10 @@ import 'package:mitlio/features/members/data/repositories/members_providers.dart
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_providers.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/fake_profile_bank_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/fake_profile_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/fake_user_vehicles_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/profile_providers.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_rides_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_vehicles_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
@@ -32,6 +36,8 @@ import 'package:mitlio/features/settle/data/services/payment_link_providers.dart
 import 'package:mitlio/features/settlements/data/repositories/fake_settlements_repository.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
+import 'package:mitlio/features/setup/data/fake_setup_state_repository.dart';
+import 'package:mitlio/features/setup/data/setup_providers.dart';
 import 'package:mitlio/features/sync/data/repositories/fake_connections_repository.dart';
 import 'package:mitlio/features/sync/data/sync_coordinator.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
@@ -254,6 +260,21 @@ class FakeApp {
   final FlakySettlements settlements;
   final FlakyPayments payments;
 
+  /// The personal profile, its bank details, the personal cars and the local
+  /// setup state ("Ich" member, dismissed cards): empty unless a test fills
+  /// them. Replaceable (before the container is made), so a test can bring
+  /// flaky ones instead of passing a second override of the same provider.
+  FakeProfileRepository profile = FakeProfileRepository();
+  late FakeProfileBankRepository profileBank = FakeProfileBankRepository(
+    profile: profile,
+  );
+
+  /// Replaceable, so a test can bring a failing one before the container.
+  FakeUserVehiclesRepository userVehicles = FakeUserVehiclesRepository(
+    ids: SequentialIdGenerator(),
+  );
+  FakeSetupStateRepository setupState = FakeSetupStateRepository();
+
   /// Links opened and text copied by the payment actions.
   final launcher = FakeLinkLauncher();
 
@@ -286,6 +307,10 @@ class FakeApp {
     shareServiceProvider.overrideWithValue(share),
     syncCoordinatorProvider.overrideWithValue(sync),
     connectionsRepositoryProvider.overrideWithValue(connections),
+    profileRepositoryProvider.overrideWithValue(profile),
+    profileBankRepositoryProvider.overrideWithValue(profileBank),
+    userVehiclesRepositoryProvider.overrideWithValue(userVehicles),
+    setupStateRepositoryProvider.overrideWithValue(setupState),
   ];
 
   /// The fuel price backend and location, off by default (chips hidden):

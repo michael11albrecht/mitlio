@@ -13,6 +13,8 @@ import 'package:mitlio/features/expenses/data/repositories/fake_expenses_reposit
 import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
+import 'package:mitlio/features/profile/data/repositories/profile_providers.dart';
+import 'package:mitlio/features/profile/ui/group_car_picker_view_model.dart';
 import 'package:mitlio/features/rides/data/repositories/car_catalog_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_ride_templates_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_rides_repository.dart';
@@ -25,11 +27,13 @@ import 'package:mitlio/features/rides/ui/rides_view_model.dart';
 import 'package:mitlio/features/rides/ui/template_form_view_model.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
+import 'package:mitlio/features/setup/data/setup_providers.dart';
 import 'package:mitlio/features/sync/data/repositories/fake_connections_repository.dart';
 import 'package:mitlio/features/sync/data/sync_coordinator.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../../../helpers/entry_card_stub.dart';
 import '../../../helpers/fake_app.dart';
 import '../../repo_test_support.dart';
 
@@ -154,6 +158,19 @@ class FlakyVehicles extends FakeVehiclesRepository {
           wearMilliPerKm: wearMilliPerKm,
           kmRateMilliPerKm: kmRateMilliPerKm,
         );
+
+  @override
+  Future<RepoResult<Vehicle>> addLinked(
+    String groupId, {
+    required String sourceUserVehicleId,
+    required Vehicle template,
+  }) async => failWith != null
+      ? Err(failWith!)
+      : super.addLinked(
+          groupId,
+          sourceUserVehicleId: sourceUserVehicleId,
+          template: template,
+        );
 }
 
 /// Templates fake whose commands can be made to fail.
@@ -270,6 +287,11 @@ class RidesApp {
     connectionsRepositoryProvider.overrideWithValue(
       FakeConnectionsRepository(),
     ),
+    // Personal cars and the dismissed cards (vehicle list of a group).
+    userVehiclesRepositoryProvider.overrideWithValue(base.userVehicles),
+    profileRepositoryProvider.overrideWithValue(base.profile),
+    profileBankRepositoryProvider.overrideWithValue(base.profileBank),
+    setupStateRepositoryProvider.overrideWithValue(base.setupState),
   ];
 
   ProviderContainer container({List<Override> extra = const []}) =>
@@ -469,9 +491,20 @@ List<Override> ridesStateOverride(RidesState state) => [
   ),
 ];
 
+/// Fixed state for the "Mein Auto" picker: nothing on offer, no card.
+class StubGroupCarPickerViewModel extends GroupCarPickerViewModel {
+  StubGroupCarPickerViewModel(super.groupId);
+
+  @override
+  AsyncValue<List<Vehicle>> build() => const AsyncData([]);
+}
+
 List<Override> setupStateOverride(RidesSetupState state) => [
   ridesSetupViewModelProvider.overrideWith2(
     (id) => StubRidesSetupViewModel(id, state),
+  ),
+  groupCarPickerViewModelProvider.overrideWith2(
+    StubGroupCarPickerViewModel.new,
   ),
 ];
 
@@ -488,7 +521,7 @@ List<Override> templateFormOverride(TemplateFormState state) => [
 ];
 
 Widget scopedRides(List<Override> overrides, Widget child) =>
-    ProviderScope(overrides: overrides, child: child);
+    ProviderScope(overrides: [...noEntryCards, ...overrides], child: child);
 
 const _names = ['Anna Berg', 'Ben', 'Chiara Rossi'];
 

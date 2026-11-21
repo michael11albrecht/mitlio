@@ -25,7 +25,9 @@ void main() {
 
   setUp(() {
     fakes = CarFlowFakes();
-    app = FakeApp();
+    app = FakeApp()
+      ..userVehicles = fakes.cars
+      ..setupState = fakes.setup;
   });
 
   Future<ProviderContainer> open(
@@ -42,7 +44,6 @@ void main() {
       app,
       location: location,
       locale: locale,
-      extra: fakes.overrides,
     );
   }
 

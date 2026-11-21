@@ -10,8 +10,10 @@ import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_providers.dart';
+import 'package:mitlio/features/profile/data/repositories/profile_providers.dart';
 import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
+import 'package:mitlio/features/setup/data/setup_providers.dart';
 import 'package:mitlio/features/trips/data/trip_meta.dart';
 import 'package:mitlio/features/trips/ui/trip_form_view_model.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -80,6 +82,9 @@ void main() {
     paymentDetailsRepositoryProvider.overrideWithValue(app.payments),
     linkLauncherProvider.overrideWithValue(app.launcher),
     shareServiceProvider.overrideWithValue(app.share),
+    profileRepositoryProvider.overrideWithValue(app.profile),
+    profileBankRepositoryProvider.overrideWithValue(app.profileBank),
+    setupStateRepositoryProvider.overrideWithValue(app.setupState),
   ];
 
   TripFormViewModel vm([String? id]) =>

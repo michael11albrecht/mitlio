@@ -7,6 +7,7 @@ import 'package:mitlio/features/members/data/repositories/members_providers.dart
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_providers.dart';
 import 'package:mitlio/features/members/data/repositories/payment_details_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/profile_providers.dart';
 import 'package:mitlio/features/settle/data/services/payment_link_providers.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -67,7 +68,8 @@ Map<String, DriveHandler> paymentDriveHandlers(ProviderContainer c) => {
     final pair = await findMemberPair(c, fromId, toId);
     if (pair == null) return driveError(NotFound('member', '$fromId/$toId'));
     final PaymentDetails d;
-    switch (await c.read(paymentDetailsRepositoryProvider).get(toId)) {
+    // The payout view: the own member falls back to the profile.
+    switch (await c.read(payoutDetailsRepositoryProvider).get(toId)) {
       case Ok(:final value):
         d = value;
       case Err(:final error):

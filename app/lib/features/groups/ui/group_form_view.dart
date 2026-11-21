@@ -8,6 +8,9 @@ import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
 import 'package:mitlio/features/groups/ui/groups_view_model.dart';
+import 'package:mitlio/features/profile/ui/entry_card_view_model.dart'
+    show EntryCard;
+import 'package:mitlio/features/profile/ui/setup_entry_card.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -61,7 +64,11 @@ class _GroupFormViewState extends ConsumerState<GroupFormView> {
     final result = id == null
         ? await ref
               .read(groupsViewModelProvider.notifier)
-              .create(name: _name.text, currency: _currency)
+              .create(
+                name: _name.text,
+                currency: _currency,
+                withProfile: true,
+              )
         : await ref
               .read(groupDetailViewModelProvider(id).notifier)
               .updateGroup(name: _name.text, currency: _currency);
@@ -146,6 +153,10 @@ class _GroupFormViewState extends ConsumerState<GroupFormView> {
                       ? null
                       : (c) => setState(() => _currency = c ?? _currency),
                 ),
+                if (!_editing) ...[
+                  const SizedBox(height: Spacing.md),
+                  const SetupEntryCard(EntryCard.newGroupProfile),
+                ],
                 if (locked) ...[
                   const SizedBox(height: Spacing.sm),
                   Text(

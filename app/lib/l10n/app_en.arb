@@ -1380,5 +1380,25 @@
         "type": "String"
       }
     }
-  }
+  },
+  "cardDismiss": "Don't show again",
+  "cardSettlePaymentTitle": "Set up your payment details once",
+  "cardSettlePaymentMessage": "Save PayPal.Me or IBAN once. Friends can pay you with it in every group, and the IBAN stays on your device.",
+  "cardSettlePaymentAction": "Set up",
+  "cardGroupCarTitle": "Set up your car once",
+  "cardGroupCarMessage": "Use it in all groups. Changes to the car then apply everywhere.",
+  "cardGroupCarAction": "Set up car",
+  "cardNewGroupProfileTitle": "Set up your profile once",
+  "cardNewGroupProfileMessage": "Then you are in every new group with your name and PayPal.Me.",
+  "cardNewGroupProfileAction": "Set up profile",
+  "groupCarPickerTitle": "From My cars",
+  "groupCarUse": "Use",
+  "groupCarPickerFailed": "My cars could not be loaded. Tap \"Try again\".",
+  "carLinkedNote": "This car comes from My cars. Changes there apply here too.",
+  "carUnlink": "Unlink",
+  "carUnlinked": "No longer linked to My cars. The values stay.",
+  "carLinkFailed": "Could not check whether this car comes from My cars. Tap \"Try again\".",
+  "carEditTitle": "Edit car",
+  "carUpdatedInGroups": "{count, plural, =1{Updated in 1 group} other{Updated in {count} groups}}",
+  "profileEntrySaved": "{kind, select, paypal{PayPal.Me saved} iban{IBAN saved} both{PayPal.Me and IBAN saved} other{No payment details yet}}"
 }

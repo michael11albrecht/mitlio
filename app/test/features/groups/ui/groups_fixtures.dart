@@ -10,6 +10,8 @@ import 'package:mitlio/features/sync/data/sync_coordinator.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+import '../../../helpers/entry_card_stub.dart';
+
 /// Fixed states for goldens and a11y tests: the ViewModels are replaced by
 /// stubs that never touch a repository.
 class StubGroupsViewModel extends GroupsViewModel {
@@ -62,6 +64,7 @@ Widget scoped(List<Override> overrides, Widget child) => ProviderScope(
     connectionsRepositoryProvider.overrideWithValue(
       FakeConnectionsRepository(),
     ),
+    ...noEntryCards,
     ...overrides,
   ],
   child: child,

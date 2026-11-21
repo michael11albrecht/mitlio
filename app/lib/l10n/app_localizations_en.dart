@@ -2729,4 +2729,89 @@ class AppLocalizationsEn extends AppLocalizations {
   String pushLocGeneric(String group) {
     return 'News in “$group”';
   }
+
+  @override
+  String get cardDismiss => 'Don\'t show again';
+
+  @override
+  String get cardSettlePaymentTitle => 'Set up your payment details once';
+
+  @override
+  String get cardSettlePaymentMessage =>
+      'Save PayPal.Me or IBAN once. Friends can pay you with it in every group, and the IBAN stays on your device.';
+
+  @override
+  String get cardSettlePaymentAction => 'Set up';
+
+  @override
+  String get cardGroupCarTitle => 'Set up your car once';
+
+  @override
+  String get cardGroupCarMessage =>
+      'Use it in all groups. Changes to the car then apply everywhere.';
+
+  @override
+  String get cardGroupCarAction => 'Set up car';
+
+  @override
+  String get cardNewGroupProfileTitle => 'Set up your profile once';
+
+  @override
+  String get cardNewGroupProfileMessage =>
+      'Then you are in every new group with your name and PayPal.Me.';
+
+  @override
+  String get cardNewGroupProfileAction => 'Set up profile';
+
+  @override
+  String get groupCarPickerTitle => 'From My cars';
+
+  @override
+  String get groupCarUse => 'Use';
+
+  @override
+  String get groupCarPickerFailed =>
+      'My cars could not be loaded. Tap \"Try again\".';
+
+  @override
+  String get carLinkedNote =>
+      'This car comes from My cars. Changes there apply here too.';
+
+  @override
+  String get carUnlink => 'Unlink';
+
+  @override
+  String get carUnlinked => 'No longer linked to My cars. The values stay.';
+
+  @override
+  String get carLinkFailed =>
+      'Could not check whether this car comes from My cars. Tap \"Try again\".';
+
+  @override
+  String get carEditTitle => 'Edit car';
+
+  @override
+  String carUpdatedInGroups(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Updated in $count groups',
+      one: 'Updated in 1 group',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileEntrySaved(String kind) {
+    String _temp0 = intl.Intl.selectLogic(
+      kind,
+      {
+        'paypal': 'PayPal.Me saved',
+        'iban': 'IBAN saved',
+        'both': 'PayPal.Me and IBAN saved',
+        'other': 'No payment details yet',
+      },
+    );
+    return '$_temp0';
+  }
 }

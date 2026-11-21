@@ -1,6 +1,9 @@
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
+/// A group's copy of a personal vehicle (ADR-25 §2) and where it lives.
+typedef LinkedVehicle = ({Vehicle vehicle, String groupId});
+
 /// Source of truth for a group's vehicles. Lists are ordered by creation
 /// time, then id.
 abstract interface class VehiclesRepository {
@@ -19,6 +22,28 @@ abstract interface class VehiclesRepository {
     int wearMilliPerKm = 0,
     int? kmRateMilliPerKm,
   });
+
+  /// Adds a copy of [template] (name, fuel, consumption, wear, km rate) that
+  /// stays linked to the personal vehicle [sourceUserVehicleId]. Same rules
+  /// as [add].
+  Future<RepoResult<Vehicle>> addLinked(
+    String groupId, {
+    required String sourceUserVehicleId,
+    required Vehicle template,
+  });
+
+  /// The live group copies of a personal vehicle, oldest first.
+  Future<RepoResult<List<LinkedVehicle>>> linkedCopies(
+    String sourceUserVehicleId,
+  );
+
+  /// The personal vehicle [id] was copied from; null if it has no link.
+  /// [NotFound] for unknown ids.
+  Future<RepoResult<String?>> sourceOf(String id);
+
+  /// The group copy stops following the personal vehicle and keeps its
+  /// values. [NotFound] for unknown ids; fine if it has no link.
+  Future<RepoResult<void>> unlink(String id);
 
   /// Replaces every field of the vehicle with [vehicle]'s id.
   Future<RepoResult<Vehicle>> update(Vehicle vehicle);

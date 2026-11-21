@@ -17,6 +17,7 @@ class FakeVehiclesRepository implements VehiclesRepository {
   final _vehicles = <String, Vehicle>{};
   final _groupOf = <String, String>{};
   final _deleted = <String>{};
+  final _source = <String, String>{};
   final _changes = StreamController<void>.broadcast(sync: true);
 
   Vehicle? _live(String id) => _deleted.contains(id) ? null : _vehicles[id];
@@ -44,6 +45,38 @@ class FakeVehiclesRepository implements VehiclesRepository {
     required int consumptionMilliPer100km,
     int wearMilliPerKm = 0,
     int? kmRateMilliPerKm,
+  }) => _insert(
+    groupId,
+    name: name,
+    fuelType: fuelType,
+    consumptionMilliPer100km: consumptionMilliPer100km,
+    wearMilliPerKm: wearMilliPerKm,
+    kmRateMilliPerKm: kmRateMilliPerKm,
+  );
+
+  @override
+  Future<RepoResult<Vehicle>> addLinked(
+    String groupId, {
+    required String sourceUserVehicleId,
+    required Vehicle template,
+  }) => _insert(
+    groupId,
+    name: template.name,
+    fuelType: template.fuelType,
+    consumptionMilliPer100km: template.consumptionMilliPer100km,
+    wearMilliPerKm: template.wearMilliPerKm,
+    kmRateMilliPerKm: template.kmRateMilliPerKm,
+    sourceUserVehicleId: sourceUserVehicleId,
+  );
+
+  Future<RepoResult<Vehicle>> _insert(
+    String groupId, {
+    required String name,
+    required FuelType fuelType,
+    required int consumptionMilliPer100km,
+    required int wearMilliPerKm,
+    required int? kmRateMilliPerKm,
+    String? sourceUserVehicleId,
   }) async {
     final id = _ids.newId();
     final built = buildVehicle(
@@ -65,8 +98,29 @@ class FakeVehiclesRepository implements VehiclesRepository {
     final v = built.orThrow();
     _vehicles[id] = v;
     _groupOf[id] = groupId;
+    if (sourceUserVehicleId != null) _source[id] = sourceUserVehicleId;
     _changes.add(null);
     return Ok(v);
+  }
+
+  @override
+  Future<RepoResult<List<LinkedVehicle>>> linkedCopies(
+    String sourceUserVehicleId,
+  ) async => Ok([
+    for (final v in _vehicles.values)
+      if (_source[v.id] == sourceUserVehicleId && !_deleted.contains(v.id))
+        (vehicle: v, groupId: _groupOf[v.id]!),
+  ]);
+
+  @override
+  Future<RepoResult<String?>> sourceOf(String id) async =>
+      _live(id) == null ? Err(NotFound('vehicle', id)) : Ok(_source[id]);
+
+  @override
+  Future<RepoResult<void>> unlink(String id) async {
+    if (_live(id) == null) return Err(NotFound('vehicle', id));
+    if (_source.remove(id) != null) _changes.add(null);
+    return const Ok(null);
   }
 
   @override

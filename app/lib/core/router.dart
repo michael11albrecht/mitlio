@@ -11,6 +11,7 @@ import 'package:mitlio/features/groups/ui/group_form_view.dart';
 import 'package:mitlio/features/groups/ui/groups_view.dart';
 import 'package:mitlio/features/onboarding/ui/onboarding_view.dart';
 import 'package:mitlio/features/profile/ui/car_cost_flow_view.dart';
+import 'package:mitlio/features/profile/ui/car_edit_view.dart';
 import 'package:mitlio/features/profile/ui/car_setup_view.dart';
 import 'package:mitlio/features/profile/ui/my_cars_view.dart';
 import 'package:mitlio/features/profile/ui/profile_setup_view.dart';
@@ -80,6 +81,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (context, state) => const CarCostFlowView(),
                       ),
                     ],
+                  ),
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) =>
+                        CarEditView(carId: state.pathParameters['id']!),
                   ),
                 ],
               ),

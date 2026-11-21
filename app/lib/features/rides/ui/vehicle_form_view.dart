@@ -13,6 +13,7 @@ import 'package:mitlio/features/rides/ui/milli_field.dart';
 import 'package:mitlio/features/rides/ui/rides_calculator.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
+import 'package:mitlio/features/rides/ui/vehicle_link_note.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -128,6 +129,7 @@ class _VehicleFormViewState extends ConsumerState<VehicleFormView> {
                 vm: vm,
                 name: _name,
                 onPick: _pick,
+                vehicleId: widget.vehicleId,
               ),
             ),
             SafeArea(
@@ -155,8 +157,10 @@ class _FormBody extends StatelessWidget {
     required this.vm,
     required this.name,
     required this.onPick,
+    required this.vehicleId,
   });
 
+  final String? vehicleId;
   final VehicleFormReady form;
   final VehicleFormViewModel vm;
   final TextEditingController name;
@@ -171,6 +175,8 @@ class _FormBody extends StatelessWidget {
       padding: Spacing.screen,
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       children: [
+        if (form.editing && vehicleId != null)
+          VehicleLinkNote(vehicleId: vehicleId!),
         TextField(
           controller: name,
           autofocus: !form.editing,
