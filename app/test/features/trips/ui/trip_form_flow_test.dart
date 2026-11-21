@@ -219,6 +219,17 @@ void main() {
     expect(find.text('Wähle mindestens eine Person, die mitfährt.'), findsOne);
   });
 
+  tripTest('member chips never draw a check mark over the avatar (#237)', (
+    tester,
+  ) async {
+    await pumpMitlio(tester, app, location: '/groups/${group.id}/trip');
+    final chips = tester.widgetList<FilterChip>(find.byType(FilterChip));
+    expect(chips, isNotEmpty);
+    for (final chip in chips) {
+      expect(chip.showCheckmark, isFalse);
+    }
+  });
+
   tripTest('electric vehicles are asked in kWh', (tester) async {
     await pumpMitlio(tester, app, location: '/groups/${group.id}/trip');
     await tester.tap(find.text('Strom'));
