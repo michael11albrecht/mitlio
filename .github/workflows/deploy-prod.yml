@@ -30,7 +30,7 @@ jobs:
           persist-credentials: false
       - uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb
         with:
-          version: 2.70.0
+          version: 3.2.0
       - name: Link production project
         run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
       - name: Dry run (pending migrations)
