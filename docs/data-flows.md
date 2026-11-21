@@ -41,7 +41,10 @@ Stored on the server (tables of migrations 0001 to 0014):
 - `group_memberships` (account to group, member link, role owner/member), `group_invites` (SHA-256 token hash, creator,
   timestamps, `revoked_at`), `group_join_audit` (account, group, member, time; 90 days).
 - `rate_limits`: `join:` plus hash of the user id, token bucket (see "Abuse protection" in the privacy text).
-- Later (P6b): `device_tokens`, `notification_prefs`.
+- Push notifications (migrations 0015, 0016; P6b): `device_tokens` (account, FCM token, platform, locale, app version,
+  last seen; newest 20 per account), `notification_prefs` (account, group, level, quiet hours, hide amounts) and
+  `notification_outbox` (group, actor account, event kind, entity id, display strings of the change: actor name, group
+  name, title, amount, currency, member ids; no client access, no IBAN, no notes). Deleted with the account.
 
 Never sent: full IBAN, BIC, account holder (`local_member_bank`, `local_profile_bank`), saved places (`local_places`),
 route lookup text and place labels (only the distance goes into the ride), location, the crash-report choice.

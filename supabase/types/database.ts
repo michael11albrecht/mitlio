@@ -55,6 +55,39 @@ export type Database = {
         }
         Relationships: []
       }
+      device_tokens: {
+        Row: {
+          app_version: string | null
+          created_at: string
+          id: string
+          last_seen_at: string
+          locale: string
+          platform: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          app_version?: string | null
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          locale?: string
+          platform: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          app_version?: string | null
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          locale?: string
+          platform?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       expense_payers: {
         Row: {
           expense_id: string
@@ -529,6 +562,85 @@ export type Database = {
           },
         ]
       }
+      notification_outbox: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          dedupe_key: string
+          entity_id: string
+          event: string
+          group_id: string
+          id: string
+          payload: Json
+          processed_at: string | null
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          dedupe_key: string
+          entity_id: string
+          event: string
+          group_id: string
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          dedupe_key?: string
+          entity_id?: string
+          event?: string
+          group_id?: string
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_outbox_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_prefs: {
+        Row: {
+          group_id: string
+          hide_amounts: boolean
+          level: string
+          quiet_hours: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          hide_amounts?: boolean
+          level?: string
+          quiet_hours?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          hide_amounts?: boolean
+          level?: string
+          quiet_hours?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_prefs_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rate_limits: {
         Row: {
           key_hash: string
@@ -844,13 +956,34 @@ export type Database = {
       create_invite: { Args: { gid: string }; Returns: string }
       delete_account_data: { Args: { p_uid: string }; Returns: Json }
       delete_my_data: { Args: never; Returns: Json }
+      enqueue_notification: {
+        Args: {
+          p_actor: string
+          p_dedupe_key: string
+          p_entity_id: string
+          p_event: string
+          p_group_id: string
+          p_payload: Json
+        }
+        Returns: undefined
+      }
       is_group_member: { Args: { gid: string }; Returns: boolean }
       join_group: {
         Args: { claim_member_id?: string; token: string }
         Returns: Json
       }
+      register_device_token: {
+        Args: {
+          p_app_version?: string
+          p_locale?: string
+          p_platform: string
+          p_token: string
+        }
+        Returns: undefined
+      }
       remove_membership: { Args: { membership_id: string }; Returns: undefined }
       revoke_invite: { Args: { invite_id: string }; Returns: undefined }
+      unregister_device_token: { Args: { p_token: string }; Returns: undefined }
       upsert_expense: { Args: { payload: Json }; Returns: Json }
       warm_fuel_national: { Args: never; Returns: undefined }
       warm_fx_rates: { Args: never; Returns: undefined }

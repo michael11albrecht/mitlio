@@ -28,9 +28,13 @@ const _localOnlyTables = {
 /// backend tables (P6c, P7-T02). The revisions are trigger-written history
 /// (P7-T03). The join audit is written only by join_group (#89).
 /// `app_config` is the owner-edited minimum app version, read before
-/// sign-in (P6-T16a).
+/// sign-in (P6-T16a). The push tables (P6b-T02) are written through RPCs,
+/// triggers and the notify Edge Function, never synced.
 const _serverOnlyTables = {
   'app_config',
+  'device_tokens',
+  'notification_outbox',
+  'notification_prefs',
   'expense_revisions',
   'group_memberships',
   'group_invites',
