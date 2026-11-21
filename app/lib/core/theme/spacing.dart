@@ -76,6 +76,14 @@ abstract final class Sizes {
   /// Edge of the finish-screen celebration.
   static const double celebration = 120;
 
+  /// Edge of the placeholder slot for a setup step's illustration (PU-T06
+  /// replaces its content).
+  static const double illustration = 96;
+
+  /// Height of the stacked cost bar and the dot in front of a legend row.
+  static const double stackedBar = 24;
+  static const double legendDot = 12;
+
   /// Height of one day of the rides calendar (day number plus an avatar).
   static const double calendarCell = 64;
 }

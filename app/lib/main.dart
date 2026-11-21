@@ -25,6 +25,8 @@ import 'package:mitlio/features/fuel/data/services/fuel_price_service.dart';
 import 'package:mitlio/features/fuel/data/services/geolocator_location_service.dart';
 import 'package:mitlio/features/fx/data/repositories/fx_providers.dart';
 import 'package:mitlio/features/fx/data/services/fx_rate_service.dart';
+import 'package:mitlio/features/profile/ui/car_setup_view_model.dart'
+    show carFlowConfigs;
 import 'package:mitlio/features/profile/ui/profile_setup_view_model.dart';
 import 'package:mitlio/features/routes/data/repositories/route_providers.dart';
 import 'package:mitlio/features/routes/data/services/route_distance_service.dart';
@@ -98,6 +100,7 @@ Future<void> main() async {
       // The guided flows DebugDrive can drive (`ext.mitlio.setup.*`).
       setupFlowConfigsProvider.overrideWithValue({
         profileSetupFlow.id: profileSetupFlow,
+        ...carFlowConfigs,
       }),
       appDatabaseProvider.overrideWithValue(db),
       crashReporterProvider.overrideWithValue(crashReporter),

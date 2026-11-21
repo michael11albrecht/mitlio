@@ -2183,6 +2183,305 @@ class AppLocalizationsDe extends AppLocalizations {
   String get setupCelebration => 'Geschafft';
 
   @override
+  String get carsEntry => 'Meine Autos';
+
+  @override
+  String get carsEntryHint => 'Deine Autos und was ein Kilometer kostet';
+
+  @override
+  String get carsTitle => 'Meine Autos';
+
+  @override
+  String get carsEmptyTitle => 'Noch kein Auto';
+
+  @override
+  String get carsEmptyMessage =>
+      'Richte dein Auto einmal ein, dann siehst du, was jeder Kilometer kostet.';
+
+  @override
+  String get carsAdd => 'Auto hinzufügen';
+
+  @override
+  String get carsAnother => 'Noch ein Auto?';
+
+  @override
+  String carRemoved(String name) {
+    return '$name entfernt';
+  }
+
+  @override
+  String carRemoveLabel(String name) {
+    return '$name entfernen';
+  }
+
+  @override
+  String carRowSubtitle(String fuel, String consumption) {
+    return '$fuel, $consumption';
+  }
+
+  @override
+  String get carFuelPetrol => 'Benzin';
+
+  @override
+  String get carFuelDiesel => 'Diesel';
+
+  @override
+  String get carFuelElectric => 'Strom';
+
+  @override
+  String get carFuelOther => 'Andere';
+
+  @override
+  String get carUnitLitres => 'l/100 km';
+
+  @override
+  String get carUnitKwh => 'kWh/100 km';
+
+  @override
+  String get carHasCarTitle => 'Hast du ein Auto?';
+
+  @override
+  String get carNameTitle => 'Wie heißt dein Auto?';
+
+  @override
+  String get carNameLabel => 'Name, z. B. Golf';
+
+  @override
+  String get carTypeSmall => 'Kleinwagen';
+
+  @override
+  String get carTypeCompact => 'Kompakt';
+
+  @override
+  String get carTypeSuv => 'SUV';
+
+  @override
+  String get carTypeVan => 'Van';
+
+  @override
+  String get carFuelTitle => 'Womit fährt es?';
+
+  @override
+  String get carConsumptionTitle => 'Wie viel verbraucht es?';
+
+  @override
+  String get carConsumptionLabel => 'Verbrauch';
+
+  @override
+  String get carConsumptionDontKnow => 'Weiß ich nicht';
+
+  @override
+  String carConsumptionTypical(String value, String unit) {
+    return 'Typisch für dein Auto: $value $unit';
+  }
+
+  @override
+  String get carConsumptionInvalid => 'Bitte gib eine Zahl wie 6,5 ein.';
+
+  @override
+  String get carExtraTitle => 'Was kostet dich ein Kilometer noch?';
+
+  @override
+  String carExtraFlat(String value) {
+    return 'Pauschale (≈ $value ct/km)';
+  }
+
+  @override
+  String get carExtraFlatHint => 'Schnell: nur ein Zuschlag für Verschleiß';
+
+  @override
+  String get carExtraExact => 'Genau ausrechnen (2 Min.)';
+
+  @override
+  String get carExtraExactHint =>
+      'Versicherung, Steuer, Reparaturen und mehr einmal eintragen';
+
+  @override
+  String carPerKm(String value) {
+    return '≈ $value ct/km';
+  }
+
+  @override
+  String carFinishTitle(String value) {
+    return 'Dein Auto kostet ≈ $value ct/km';
+  }
+
+  @override
+  String carSummaryCar(String name, String fuel) {
+    return '$name, $fuel';
+  }
+
+  @override
+  String carSummaryConsumption(String value, String unit) {
+    return 'Verbrauch: $value $unit';
+  }
+
+  @override
+  String carSummaryExtraFlat(String value) {
+    return 'Pauschale: $value ct/km';
+  }
+
+  @override
+  String carSummaryExtraExact(String value) {
+    return 'Eigene Kosten: $value ct/km';
+  }
+
+  @override
+  String get carSave => 'Auto speichern';
+
+  @override
+  String get carChartLabel => 'Kosten pro Kilometer nach Art';
+
+  @override
+  String carPartValue(String label, String value) {
+    return '$label: $value ct/km';
+  }
+
+  @override
+  String get carPartFuel => 'Kraftstoff';
+
+  @override
+  String get carPartFlat => 'Pauschale';
+
+  @override
+  String get carPartInsurance => 'Versicherung';
+
+  @override
+  String get carPartVehicleTax => 'Kfz-Steuer';
+
+  @override
+  String get carPartMaintenance => 'Wartung und TÜV';
+
+  @override
+  String get carPartTyres => 'Reifen';
+
+  @override
+  String get carPartRepairs => 'Reparaturen';
+
+  @override
+  String get carPartLoan => 'Kredit oder Leasing';
+
+  @override
+  String get carPartDepreciation => 'Wertverlust';
+
+  @override
+  String get carPartParking => 'Parken';
+
+  @override
+  String get carPartOther => 'Sonstiges';
+
+  @override
+  String get carCostKmTitle => 'Wie viele Kilometer fährst du im Jahr?';
+
+  @override
+  String get carCostKmLabel => 'Kilometer pro Jahr';
+
+  @override
+  String get carCostKmInvalid => 'Bitte gib ganze Kilometer ein, z. B. 15000.';
+
+  @override
+  String carCostKmPreset(int count) {
+    return '$count Tkm';
+  }
+
+  @override
+  String get carCostAmountLabel => 'Betrag';
+
+  @override
+  String get carCostAmountInvalid =>
+      'Bitte gib einen Betrag wie 45 oder 45,50 ein.';
+
+  @override
+  String get carCostMonth => 'pro Monat';
+
+  @override
+  String get carCostYear => 'pro Jahr';
+
+  @override
+  String get carCostInsuranceTitle => 'Was zahlst du für die Versicherung?';
+
+  @override
+  String get carCostTaxTitle => 'Was zahlst du für die Kfz-Steuer?';
+
+  @override
+  String get carCostMaintenanceTitle => 'Was kosten Wartung und TÜV?';
+
+  @override
+  String get carCostTyresTitle => 'Was kosten Reifen?';
+
+  @override
+  String get carCostRepairsTitle => 'Was kosten Reparaturen?';
+
+  @override
+  String get carCostLoanTitle => 'Zahlst du Kredit oder Leasing?';
+
+  @override
+  String get carCostPurchaseTitle => 'Was hat das Auto gekostet?';
+
+  @override
+  String get carCostResaleTitle => 'Was ist es später noch wert?';
+
+  @override
+  String get carCostYearsTitle => 'Wie viele Jahre behältst du es?';
+
+  @override
+  String get carCostYearsLabel => 'Jahre';
+
+  @override
+  String get carCostYearsInvalid => 'Bitte gib ganze Jahre ein, z. B. 5.';
+
+  @override
+  String get carCostParkingTitle => 'Was kostet das Parken?';
+
+  @override
+  String get carCostOtherTitle => 'Gibt es sonstige Kosten?';
+
+  @override
+  String carCostSoFar(String value) {
+    return 'Bisher ≈ $value ct/km extra';
+  }
+
+  @override
+  String get carCostBasisTitle => 'Welche Kosten sollen Mitfahrende teilen?';
+
+  @override
+  String carCostBasisRunning(String value) {
+    return 'Nur laufende Kosten (≈ $value ct/km)';
+  }
+
+  @override
+  String get carCostBasisRunningHint =>
+      'Wartung, Reifen, Reparaturen, Wertverlust. Empfohlen.';
+
+  @override
+  String carCostBasisFull(String value) {
+    return 'Alle Kosten (≈ $value ct/km)';
+  }
+
+  @override
+  String get carCostBasisFullHint =>
+      'Zusätzlich Versicherung, Steuer, Kredit, Parken.';
+
+  @override
+  String carCostResultTitle(String value) {
+    return 'Dein Auto kostet ≈ $value ct/km extra';
+  }
+
+  @override
+  String get carCostResultAccept => 'Übernehmen';
+
+  @override
+  String get carHintOperatingCost =>
+      'Hinweis: Zahlen Mitfahrende zusammen mehr als Kraftstoff und laufende Kosten, kann das rechtlich als gewerbliche Personenbeförderung gelten (PBefG). Keine Rechtsberatung.';
+
+  @override
+  String get carHintCheck =>
+      'Bitte prüfen: Dieser Wert ist ungewöhnlich hoch. Hast du dich vertippt?';
+
+  @override
+  String get carNameRequired => 'Gib deinem Auto einen Namen';
+
+  @override
   String get profileSettingsEntry => 'Mein Profil';
 
   @override

@@ -16,6 +16,9 @@ class FinishStep extends StatefulWidget {
     required this.actionLabel,
     required this.onAction,
     this.summary = const [],
+    this.content,
+    this.secondaryLabel,
+    this.onSecondary,
     this.preview,
     this.onBack,
     super.key,
@@ -27,6 +30,13 @@ class FinishStep extends StatefulWidget {
   final List<String> summary;
   final String actionLabel;
   final VoidCallback onAction;
+
+  /// A result under the summary (a chart); optional.
+  final Widget? content;
+
+  /// An optional second, quieter action ("Noch ein Auto?").
+  final String? secondaryLabel;
+  final VoidCallback? onSecondary;
 
   /// What the flow made, shown as it will look (the profile card).
   final Widget? preview;
@@ -128,6 +138,10 @@ class _FinishStepState extends State<FinishStep>
                             ),
                           ),
                       ],
+                      if (widget.content != null) ...[
+                        const SizedBox(height: Spacing.lg),
+                        widget.content!,
+                      ],
                     ],
                   ),
                 ),
@@ -141,6 +155,11 @@ class _FinishStepState extends State<FinishStep>
                       onPressed: widget.onAction,
                       child: Text(widget.actionLabel),
                     ),
+                    if (widget.secondaryLabel != null)
+                      TextButton(
+                        onPressed: widget.onSecondary,
+                        child: Text(widget.secondaryLabel!),
+                      ),
                     if (widget.onBack != null)
                       TextButton(
                         onPressed: widget.onBack,
