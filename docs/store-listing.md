@@ -2,7 +2,7 @@
 
 Primary language German (Germany), second localization English. Bundle id `app.mitlio`, SKU `mitlio-ios`.
 Limits are Apple's: name 30, subtitle 30, promotional text 170, keywords 100 (comma separated, no spaces), description 4000.
-Facts below come from `docs/data-flows.md`, `docs/retention.md` and the app features on `main`. Items marked **OWNER** need a decision or an input only the owner has.
+Feature claims checked against the code (l10n strings and merged sync PRs #196 to #208) on 2026-11-21. Facts below come from `docs/data-flows.md`, `docs/retention.md` and the app features on `main`. Items marked **OWNER** need a decision or an input only the owner has.
 
 ## Listing: German (primary)
 
@@ -38,7 +38,7 @@ GRUPPEN-AUSGABEN
 
 BEZAHLEN UND TEILEN
 - PayPal.Me-Link oder Überweisungs-QR direkt aus der Abrechnung
-- Export als Übersicht zum Weitergeben
+- Export als Tabelle (CSV): alle Ausgaben und Salden
 - Gruppen per Einladungslink gemeinsam nutzen (anonym, ohne Konto mit E-Mail)
 
 PRIVAT
