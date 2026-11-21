@@ -1192,6 +1192,21 @@
   "carNameRequired": "Give your car a name",
   "profileSettingsEntry": "My profile",
   "profileSettingsEntryHint": "Name, picture, PayPal.Me and IBAN, only on your device",
+  "myQrEntry": "Share my QR code",
+  "myQrEntryHint": "For bank transfers to you, no amount",
+  "myQrTitle": "My QR code",
+  "myQrHint": "Anyone who scans this code with their banking app can send you money. It contains your IBAN: only share it with people you trust.",
+  "myQrShare": "Share",
+  "myQrNoIbanTitle": "No IBAN yet",
+  "myQrNoIbanMessage": "Add your IBAN in “My profile” and you can share your QR code here.",
+  "myQrSemantics": "QR code for bank transfers to {name}",
+  "@myQrSemantics": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "profileNameTitle": "What is your name?",
   "profileNameLabel": "Your name",
   "profileNameRequired": "What is your name? Enter it to continue.",

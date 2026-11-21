@@ -143,11 +143,12 @@ const _maxPayloadBytes = 331;
 /// Lengths count Unicode code points. A [name] containing a line break is
 /// [InvalidName]; line breaks in [remittance] are replaced by a single space
 /// so the payload always has exactly 11 lines. An empty [bic] after trimming
-/// is omitted.
+/// is omitted. A null [amount] leaves the amount line empty: the payer's
+/// banking app then asks for it (a reusable "pay me" code).
 Result<String, EpcError> buildEpcQrPayload({
   required String name,
   required String iban,
-  required Money amount,
+  required Money? amount,
   String? bic,
   String remittance = '',
 }) {
@@ -171,9 +172,11 @@ Result<String, EpcError> buildEpcQrPayload({
     return const Err(InvalidBic());
   }
 
-  if (amount.currency != Currency.eur) return const Err(NotEur());
-  if (amount.cents < 1 || amount.cents > _maxCents) {
-    return const Err(AmountOutOfRange());
+  if (amount != null) {
+    if (amount.currency != Currency.eur) return const Err(NotEur());
+    if (amount.cents < 1 || amount.cents > _maxCents) {
+      return const Err(AmountOutOfRange());
+    }
   }
 
   final text = remittance.trim().replaceAll(_lineBreaks, ' ');
@@ -181,8 +184,10 @@ Result<String, EpcError> buildEpcQrPayload({
     return const Err(RemittanceTooLong());
   }
 
-  final euros = amount.cents ~/ 100;
-  final cents = (amount.cents % 100).toString().padLeft(2, '0');
+  final amountLine = amount == null
+      ? ''
+      : 'EUR${amount.cents ~/ 100}.'
+            '${(amount.cents % 100).toString().padLeft(2, '0')}';
   final payload = [
     'BCD',
     '002',
@@ -191,7 +196,7 @@ Result<String, EpcError> buildEpcQrPayload({
     normalizedBic,
     trimmedName,
     normalizedIban,
-    'EUR$euros.$cents',
+    amountLine,
     '',
     '',
     text,

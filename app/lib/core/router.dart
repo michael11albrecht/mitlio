@@ -14,6 +14,7 @@ import 'package:mitlio/features/profile/ui/car_cost_flow_view.dart';
 import 'package:mitlio/features/profile/ui/car_edit_view.dart';
 import 'package:mitlio/features/profile/ui/car_setup_view.dart';
 import 'package:mitlio/features/profile/ui/my_cars_view.dart';
+import 'package:mitlio/features/profile/ui/my_qr_view.dart';
 import 'package:mitlio/features/profile/ui/profile_setup_view.dart';
 import 'package:mitlio/features/push/ui/notification_settings_view.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
@@ -63,6 +64,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'profile',
                 builder: (context, state) => const ProfileSetupView(),
+              ),
+              GoRoute(
+                path: 'my-qr',
+                builder: (context, state) => const MyQrView(),
               ),
               GoRoute(
                 path: 'delete-data',

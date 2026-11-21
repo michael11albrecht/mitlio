@@ -4158,6 +4158,54 @@ abstract class AppLocalizations {
   /// **'Name, Bild, PayPal.Me und IBAN, nur auf deinem Gerät'**
   String get profileSettingsEntryHint;
 
+  /// No description provided for @myQrEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Mein QR-Code teilen'**
+  String get myQrEntry;
+
+  /// No description provided for @myQrEntryHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Zum Überweisen an dich, ohne Betrag'**
+  String get myQrEntryHint;
+
+  /// No description provided for @myQrTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Mein QR-Code'**
+  String get myQrTitle;
+
+  /// No description provided for @myQrHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer diesen Code mit der Banking-App scannt, kann dir Geld überweisen. Er enthält deine IBAN: teile ihn nur mit Leuten, denen du vertraust.'**
+  String get myQrHint;
+
+  /// No description provided for @myQrShare.
+  ///
+  /// In de, this message translates to:
+  /// **'Teilen'**
+  String get myQrShare;
+
+  /// No description provided for @myQrNoIbanTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine IBAN'**
+  String get myQrNoIbanTitle;
+
+  /// No description provided for @myQrNoIbanMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Trag in „Mein Profil“ deine IBAN ein, dann kannst du hier deinen QR-Code teilen.'**
+  String get myQrNoIbanMessage;
+
+  /// No description provided for @myQrSemantics.
+  ///
+  /// In de, this message translates to:
+  /// **'QR-Code zum Überweisen an {name}'**
+  String myQrSemantics(String name);
+
   /// No description provided for @profileNameTitle.
   ///
   /// In de, this message translates to:

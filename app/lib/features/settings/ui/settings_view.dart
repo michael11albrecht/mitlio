@@ -43,6 +43,13 @@ class SettingsView extends ConsumerWidget {
             }),
             onTap: () => unawaited(openProfile()),
           ),
+          if (profile == ProfileSummary.iban || profile == ProfileSummary.both)
+            ListTile(
+              leading: const Icon(Icons.qr_code_2),
+              title: Text(l10n.myQrEntry),
+              subtitle: Text(l10n.myQrEntryHint),
+              onTap: () => unawaited(context.push('/settings/my-qr')),
+            ),
           ListTile(
             leading: const Icon(Icons.directions_car_outlined),
             title: Text(l10n.carsEntry),

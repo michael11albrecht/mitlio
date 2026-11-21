@@ -18,6 +18,7 @@ import 'package:mitlio/debug/handlers/export.dart';
 import 'package:mitlio/debug/handlers/fuel.dart';
 import 'package:mitlio/debug/handlers/groups.dart';
 import 'package:mitlio/debug/handlers/join.dart';
+import 'package:mitlio/debug/handlers/my_qr.dart';
 import 'package:mitlio/debug/handlers/payment.dart';
 import 'package:mitlio/debug/handlers/personal.dart';
 import 'package:mitlio/debug/handlers/push.dart';
@@ -128,6 +129,7 @@ void registerDebugDrive(ProviderContainer container) {
     ...settleDriveHandlers(container),
     ...setupDriveHandlers(container),
     ...personalDriveHandlers(container),
+    ...myQrDriveHandlers(container),
     ...ridesDriveHandlers(container),
     ...exportDriveHandlers(container),
     ...statisticsDriveHandlers(container),
