@@ -96,3 +96,21 @@ The access token expires after 90 days: rotate it in the `staging` environment b
   `fuel_prices_anon_key`, `fuel_prices_warm_token` (same value as `FUEL_WARM_TOKEN`), and `fx_rates_url`,
   `fx_rates_anon_key`, `fx_rates_warm_token` (same value as `FX_WARM_TOKEN`). Create them in the SQL editor with
   `select vault.create_secret('<value>', '<name>');`.
+
+## Auth audit logs (#206, owner step per project)
+
+Supabase Auth writes a row to `auth.audit_log_entries` for every token refresh and logout (user ID in the payload).
+Nothing deletes these rows and they survive `delete from auth.users`, so they would outlive "delete all my data"
+and the inactive-account cleanup (`docs/retention.md`). This is a hosted-project setting, not part of
+`config.toml` (which is never pushed), so it is done in the dashboard for **every** project (staging and `mitlio-prod`):
+
+1. Dashboard > Authentication > Configuration > Audit Logs: switch off storing audit logs in the database. Save.
+   (The label may differ; it is the toggle behind `GOTRUE_AUDIT_LOG_DISABLE_POSTGRES`.)
+2. Check in the SQL editor after one anonymous sign-in from the app; expected `0`:
+
+```sql
+select count(*) from auth.audit_log_entries where created_at > now() - interval '1 hour';
+```
+
+Events then only reach the platform log stream (1 day on Free, 7 days on Pro).
+Also per project: Authentication > Rate Limits > anonymous sign-ins 10 per hour per IP; usage alerts for MAU and database size.
