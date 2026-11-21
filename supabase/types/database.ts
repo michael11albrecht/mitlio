@@ -41,6 +41,7 @@ export type Database = {
           store_url: string | null
           updated_at: string
         }
+        ComputedFields: never
         Insert: {
           min_supported_version: string
           platform: string
@@ -62,6 +63,7 @@ export type Database = {
           member_id: string
           paid_cents: number
         }
+        ComputedFields: never
         Insert: {
           expense_id: string
           group_id: string
@@ -106,8 +108,9 @@ export type Database = {
           group_id: string
           id: string
           revision: number
-          snapshot: Json
+          snapshot: NonNullable<Json>
         }
+        ComputedFields: never
         Insert: {
           author_member_id?: string | null
           changed_at?: string
@@ -115,7 +118,7 @@ export type Database = {
           group_id: string
           id?: string
           revision: number
-          snapshot: Json
+          snapshot: NonNullable<Json>
         }
         Update: {
           author_member_id?: string | null
@@ -124,7 +127,7 @@ export type Database = {
           group_id?: string
           id?: string
           revision?: number
-          snapshot?: Json
+          snapshot?: NonNullable<Json>
         }
         Relationships: [
           {
@@ -158,6 +161,7 @@ export type Database = {
           share_cents: number
           weight: number
         }
+        ComputedFields: never
         Insert: {
           expense_id: string
           group_id: string
@@ -215,6 +219,7 @@ export type Database = {
           type: string
           updated_at: string
         }
+        ComputedFields: never
         Insert: {
           amount_cents: number
           category?: string | null
@@ -273,6 +278,7 @@ export type Database = {
           stations: number
           type: string
         }
+        ComputedFields: never
         Insert: {
           approximation?: string | null
           fetched_at?: string
@@ -306,6 +312,7 @@ export type Database = {
           rate_ppm: number
           source_date: string
         }
+        ComputedFields: never
         Insert: {
           base: string
           date: string
@@ -334,6 +341,7 @@ export type Database = {
           revoked_at: string | null
           token_hash: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           created_by: string
@@ -370,6 +378,7 @@ export type Database = {
           member_id: string | null
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           group_id: string
           id?: string
@@ -410,6 +419,7 @@ export type Database = {
           role: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           group_id: string
@@ -454,6 +464,7 @@ export type Database = {
           server_seq: number
           updated_at: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           created_by: string
@@ -491,6 +502,7 @@ export type Database = {
           updated_at: string
           user_id: string | null
         }
+        ComputedFields: never
         Insert: {
           can_drive?: boolean
           created_at?: string
@@ -535,6 +547,7 @@ export type Database = {
           tokens: number
           updated_at: string
         }
+        ComputedFields: never
         Insert: {
           key_hash: string
           tokens: number
@@ -551,7 +564,7 @@ export type Database = {
         Row: {
           created_at: string
           default_driver_id: string | null
-          default_passenger_ids: Json
+          default_passenger_ids: NonNullable<Json>
           deleted_at: string | null
           distance_meters: number
           group_id: string
@@ -563,10 +576,11 @@ export type Database = {
           updated_at: string
           vehicle_id: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           default_driver_id?: string | null
-          default_passenger_ids?: Json
+          default_passenger_ids?: NonNullable<Json>
           deleted_at?: string | null
           distance_meters: number
           group_id: string
@@ -581,7 +595,7 @@ export type Database = {
         Update: {
           created_at?: string
           default_driver_id?: string | null
-          default_passenger_ids?: Json
+          default_passenger_ids?: NonNullable<Json>
           deleted_at?: string | null
           distance_meters?: number
           group_id?: string
@@ -627,7 +641,7 @@ export type Database = {
           driver_id: string
           group_id: string
           id: string
-          passenger_ids: Json
+          passenger_ids: NonNullable<Json>
           price_per_unit_milli: number
           round_trip: boolean
           server_seq: number
@@ -637,6 +651,7 @@ export type Database = {
           use_km_rate: boolean
           vehicle_id: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string
           date: string
@@ -646,7 +661,7 @@ export type Database = {
           driver_id: string
           group_id: string
           id: string
-          passenger_ids?: Json
+          passenger_ids?: NonNullable<Json>
           price_per_unit_milli: number
           round_trip?: boolean
           server_seq: number
@@ -665,7 +680,7 @@ export type Database = {
           driver_id?: string
           group_id?: string
           id?: string
-          passenger_ids?: Json
+          passenger_ids?: NonNullable<Json>
           price_per_unit_milli?: number
           round_trip?: boolean
           server_seq?: number
@@ -721,6 +736,7 @@ export type Database = {
           to_member: string
           updated_at: string
         }
+        ComputedFields: never
         Insert: {
           amount_cents: number
           created_at?: string
@@ -787,6 +803,7 @@ export type Database = {
           updated_at: string
           wear_milli_per_km: number
         }
+        ComputedFields: never
         Insert: {
           consumption_milli_per100km: number
           created_at?: string
@@ -829,10 +846,19 @@ export type Database = {
     }
     Functions: {
       can_bootstrap_group: { Args: { gid: string }; Returns: boolean }
-      cleanup_fuel_tables: { Args: never; Returns: undefined }
-      cleanup_fx_rates: { Args: never; Returns: undefined }
-      cleanup_inactive_accounts: { Args: never; Returns: undefined }
-      cleanup_join_data: { Args: never; Returns: undefined }
+      cleanup_fuel_tables: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      cleanup_fx_rates: { Args: Record<PropertyKey, never>; Returns: undefined }
+      cleanup_inactive_accounts: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      cleanup_join_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       connect_member: {
         Args: { gid: string; member_id: string }
         Returns: Json
@@ -843,7 +869,7 @@ export type Database = {
       }
       create_invite: { Args: { gid: string }; Returns: string }
       delete_account_data: { Args: { p_uid: string }; Returns: Json }
-      delete_my_data: { Args: never; Returns: Json }
+      delete_my_data: { Args: Record<PropertyKey, never>; Returns: Json }
       is_group_member: { Args: { gid: string }; Returns: boolean }
       join_group: {
         Args: { claim_member_id?: string; token: string }
@@ -852,8 +878,11 @@ export type Database = {
       remove_membership: { Args: { membership_id: string }; Returns: undefined }
       revoke_invite: { Args: { invite_id: string }; Returns: undefined }
       upsert_expense: { Args: { payload: Json }; Returns: Json }
-      warm_fuel_national: { Args: never; Returns: undefined }
-      warm_fx_rates: { Args: never; Returns: undefined }
+      warm_fuel_national: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      warm_fx_rates: { Args: Record<PropertyKey, never>; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
@@ -989,4 +1018,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-

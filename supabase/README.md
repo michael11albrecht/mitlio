@@ -27,8 +27,8 @@ Never run `supabase link` / `supabase db push` from an agent; deploys are an own
 
 ## Run locally (needs Docker)
 
-CLI: **v2.70.0** (pinned in `.github/workflows/db.yml`; install the same version, e.g. a release tarball from
-<https://github.com/supabase/cli/releases/tag/v2.70.0>).
+CLI: **v3.2.0** (pinned in `.github/workflows/db.yml`; install the same version, e.g. a release tarball from
+<https://github.com/supabase/cli/releases/tag/v3.2.0>).
 
 ```sh
 make db-up      # supabase start
