@@ -3629,6 +3629,522 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Geschafft'**
   String get setupCelebration;
+
+  /// No description provided for @carsEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Meine Autos'**
+  String get carsEntry;
+
+  /// No description provided for @carsEntryHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Deine Autos und was ein Kilometer kostet'**
+  String get carsEntryHint;
+
+  /// No description provided for @carsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Meine Autos'**
+  String get carsTitle;
+
+  /// No description provided for @carsEmptyTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch kein Auto'**
+  String get carsEmptyTitle;
+
+  /// No description provided for @carsEmptyMessage.
+  ///
+  /// In de, this message translates to:
+  /// **'Richte dein Auto einmal ein, dann siehst du, was jeder Kilometer kostet.'**
+  String get carsEmptyMessage;
+
+  /// No description provided for @carsAdd.
+  ///
+  /// In de, this message translates to:
+  /// **'Auto hinzufügen'**
+  String get carsAdd;
+
+  /// No description provided for @carsAnother.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch ein Auto?'**
+  String get carsAnother;
+
+  /// No description provided for @carRemoved.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} entfernt'**
+  String carRemoved(String name);
+
+  /// No description provided for @carRemoveLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} entfernen'**
+  String carRemoveLabel(String name);
+
+  /// No description provided for @carRowSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'{fuel}, {consumption}'**
+  String carRowSubtitle(String fuel, String consumption);
+
+  /// No description provided for @carFuelPetrol.
+  ///
+  /// In de, this message translates to:
+  /// **'Benzin'**
+  String get carFuelPetrol;
+
+  /// No description provided for @carFuelDiesel.
+  ///
+  /// In de, this message translates to:
+  /// **'Diesel'**
+  String get carFuelDiesel;
+
+  /// No description provided for @carFuelElectric.
+  ///
+  /// In de, this message translates to:
+  /// **'Strom'**
+  String get carFuelElectric;
+
+  /// No description provided for @carFuelOther.
+  ///
+  /// In de, this message translates to:
+  /// **'Andere'**
+  String get carFuelOther;
+
+  /// No description provided for @carUnitLitres.
+  ///
+  /// In de, this message translates to:
+  /// **'l/100 km'**
+  String get carUnitLitres;
+
+  /// No description provided for @carUnitKwh.
+  ///
+  /// In de, this message translates to:
+  /// **'kWh/100 km'**
+  String get carUnitKwh;
+
+  /// No description provided for @carHasCarTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Hast du ein Auto?'**
+  String get carHasCarTitle;
+
+  /// No description provided for @carNameTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie heißt dein Auto?'**
+  String get carNameTitle;
+
+  /// No description provided for @carNameLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Name, z. B. Golf'**
+  String get carNameLabel;
+
+  /// No description provided for @carTypeSmall.
+  ///
+  /// In de, this message translates to:
+  /// **'Kleinwagen'**
+  String get carTypeSmall;
+
+  /// No description provided for @carTypeCompact.
+  ///
+  /// In de, this message translates to:
+  /// **'Kompakt'**
+  String get carTypeCompact;
+
+  /// No description provided for @carTypeSuv.
+  ///
+  /// In de, this message translates to:
+  /// **'SUV'**
+  String get carTypeSuv;
+
+  /// No description provided for @carTypeVan.
+  ///
+  /// In de, this message translates to:
+  /// **'Van'**
+  String get carTypeVan;
+
+  /// No description provided for @carFuelTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Womit fährt es?'**
+  String get carFuelTitle;
+
+  /// No description provided for @carConsumptionTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie viel verbraucht es?'**
+  String get carConsumptionTitle;
+
+  /// No description provided for @carConsumptionLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbrauch'**
+  String get carConsumptionLabel;
+
+  /// No description provided for @carConsumptionDontKnow.
+  ///
+  /// In de, this message translates to:
+  /// **'Weiß ich nicht'**
+  String get carConsumptionDontKnow;
+
+  /// No description provided for @carConsumptionTypical.
+  ///
+  /// In de, this message translates to:
+  /// **'Typisch für dein Auto: {value} {unit}'**
+  String carConsumptionTypical(String value, String unit);
+
+  /// No description provided for @carConsumptionInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte gib eine Zahl wie 6,5 ein.'**
+  String get carConsumptionInvalid;
+
+  /// No description provided for @carExtraTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Was kostet dich ein Kilometer noch?'**
+  String get carExtraTitle;
+
+  /// No description provided for @carExtraFlat.
+  ///
+  /// In de, this message translates to:
+  /// **'Pauschale (≈ {value} ct/km)'**
+  String carExtraFlat(String value);
+
+  /// No description provided for @carExtraFlatHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Schnell: nur ein Zuschlag für Verschleiß'**
+  String get carExtraFlatHint;
+
+  /// No description provided for @carExtraExact.
+  ///
+  /// In de, this message translates to:
+  /// **'Genau ausrechnen (2 Min.)'**
+  String get carExtraExact;
+
+  /// No description provided for @carExtraExactHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Versicherung, Steuer, Reparaturen und mehr einmal eintragen'**
+  String get carExtraExactHint;
+
+  /// No description provided for @carPerKm.
+  ///
+  /// In de, this message translates to:
+  /// **'≈ {value} ct/km'**
+  String carPerKm(String value);
+
+  /// No description provided for @carFinishTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Auto kostet ≈ {value} ct/km'**
+  String carFinishTitle(String value);
+
+  /// No description provided for @carSummaryCar.
+  ///
+  /// In de, this message translates to:
+  /// **'{name}, {fuel}'**
+  String carSummaryCar(String name, String fuel);
+
+  /// No description provided for @carSummaryConsumption.
+  ///
+  /// In de, this message translates to:
+  /// **'Verbrauch: {value} {unit}'**
+  String carSummaryConsumption(String value, String unit);
+
+  /// No description provided for @carSummaryExtraFlat.
+  ///
+  /// In de, this message translates to:
+  /// **'Pauschale: {value} ct/km'**
+  String carSummaryExtraFlat(String value);
+
+  /// No description provided for @carSummaryExtraExact.
+  ///
+  /// In de, this message translates to:
+  /// **'Eigene Kosten: {value} ct/km'**
+  String carSummaryExtraExact(String value);
+
+  /// No description provided for @carSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Auto speichern'**
+  String get carSave;
+
+  /// No description provided for @carChartLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Kosten pro Kilometer nach Art'**
+  String get carChartLabel;
+
+  /// No description provided for @carPartValue.
+  ///
+  /// In de, this message translates to:
+  /// **'{label}: {value} ct/km'**
+  String carPartValue(String label, String value);
+
+  /// No description provided for @carPartFuel.
+  ///
+  /// In de, this message translates to:
+  /// **'Kraftstoff'**
+  String get carPartFuel;
+
+  /// No description provided for @carPartFlat.
+  ///
+  /// In de, this message translates to:
+  /// **'Pauschale'**
+  String get carPartFlat;
+
+  /// No description provided for @carPartInsurance.
+  ///
+  /// In de, this message translates to:
+  /// **'Versicherung'**
+  String get carPartInsurance;
+
+  /// No description provided for @carPartVehicleTax.
+  ///
+  /// In de, this message translates to:
+  /// **'Kfz-Steuer'**
+  String get carPartVehicleTax;
+
+  /// No description provided for @carPartMaintenance.
+  ///
+  /// In de, this message translates to:
+  /// **'Wartung und TÜV'**
+  String get carPartMaintenance;
+
+  /// No description provided for @carPartTyres.
+  ///
+  /// In de, this message translates to:
+  /// **'Reifen'**
+  String get carPartTyres;
+
+  /// No description provided for @carPartRepairs.
+  ///
+  /// In de, this message translates to:
+  /// **'Reparaturen'**
+  String get carPartRepairs;
+
+  /// No description provided for @carPartLoan.
+  ///
+  /// In de, this message translates to:
+  /// **'Kredit oder Leasing'**
+  String get carPartLoan;
+
+  /// No description provided for @carPartDepreciation.
+  ///
+  /// In de, this message translates to:
+  /// **'Wertverlust'**
+  String get carPartDepreciation;
+
+  /// No description provided for @carPartParking.
+  ///
+  /// In de, this message translates to:
+  /// **'Parken'**
+  String get carPartParking;
+
+  /// No description provided for @carPartOther.
+  ///
+  /// In de, this message translates to:
+  /// **'Sonstiges'**
+  String get carPartOther;
+
+  /// No description provided for @carCostKmTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie viele Kilometer fährst du im Jahr?'**
+  String get carCostKmTitle;
+
+  /// No description provided for @carCostKmLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Kilometer pro Jahr'**
+  String get carCostKmLabel;
+
+  /// No description provided for @carCostKmInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte gib ganze Kilometer ein, z. B. 15000.'**
+  String get carCostKmInvalid;
+
+  /// No description provided for @carCostKmPreset.
+  ///
+  /// In de, this message translates to:
+  /// **'{count} Tkm'**
+  String carCostKmPreset(int count);
+
+  /// No description provided for @carCostAmountLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Betrag'**
+  String get carCostAmountLabel;
+
+  /// No description provided for @carCostAmountInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte gib einen Betrag wie 45 oder 45,50 ein.'**
+  String get carCostAmountInvalid;
+
+  /// No description provided for @carCostMonth.
+  ///
+  /// In de, this message translates to:
+  /// **'pro Monat'**
+  String get carCostMonth;
+
+  /// No description provided for @carCostYear.
+  ///
+  /// In de, this message translates to:
+  /// **'pro Jahr'**
+  String get carCostYear;
+
+  /// No description provided for @carCostInsuranceTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Was zahlst du für die Versicherung?'**
+  String get carCostInsuranceTitle;
+
+  /// No description provided for @carCostTaxTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Was zahlst du für die Kfz-Steuer?'**
+  String get carCostTaxTitle;
+
+  /// No description provided for @carCostMaintenanceTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Was kosten Wartung und TÜV?'**
+  String get carCostMaintenanceTitle;
+
+  /// No description provided for @carCostTyresTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Was kosten Reifen?'**
+  String get carCostTyresTitle;
+
+  /// No description provided for @carCostRepairsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Was kosten Reparaturen?'**
+  String get carCostRepairsTitle;
+
+  /// No description provided for @carCostLoanTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Zahlst du Kredit oder Leasing?'**
+  String get carCostLoanTitle;
+
+  /// No description provided for @carCostPurchaseTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Was hat das Auto gekostet?'**
+  String get carCostPurchaseTitle;
+
+  /// No description provided for @carCostResaleTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Was ist es später noch wert?'**
+  String get carCostResaleTitle;
+
+  /// No description provided for @carCostYearsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie viele Jahre behältst du es?'**
+  String get carCostYearsTitle;
+
+  /// No description provided for @carCostYearsLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Jahre'**
+  String get carCostYearsLabel;
+
+  /// No description provided for @carCostYearsInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte gib ganze Jahre ein, z. B. 5.'**
+  String get carCostYearsInvalid;
+
+  /// No description provided for @carCostParkingTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Was kostet das Parken?'**
+  String get carCostParkingTitle;
+
+  /// No description provided for @carCostOtherTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Gibt es sonstige Kosten?'**
+  String get carCostOtherTitle;
+
+  /// No description provided for @carCostSoFar.
+  ///
+  /// In de, this message translates to:
+  /// **'Bisher ≈ {value} ct/km extra'**
+  String carCostSoFar(String value);
+
+  /// No description provided for @carCostBasisTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Welche Kosten sollen Mitfahrende teilen?'**
+  String get carCostBasisTitle;
+
+  /// No description provided for @carCostBasisRunning.
+  ///
+  /// In de, this message translates to:
+  /// **'Nur laufende Kosten (≈ {value} ct/km)'**
+  String carCostBasisRunning(String value);
+
+  /// No description provided for @carCostBasisRunningHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Wartung, Reifen, Reparaturen, Wertverlust. Empfohlen.'**
+  String get carCostBasisRunningHint;
+
+  /// No description provided for @carCostBasisFull.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle Kosten (≈ {value} ct/km)'**
+  String carCostBasisFull(String value);
+
+  /// No description provided for @carCostBasisFullHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Zusätzlich Versicherung, Steuer, Kredit, Parken.'**
+  String get carCostBasisFullHint;
+
+  /// No description provided for @carCostResultTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Auto kostet ≈ {value} ct/km extra'**
+  String carCostResultTitle(String value);
+
+  /// No description provided for @carCostResultAccept.
+  ///
+  /// In de, this message translates to:
+  /// **'Übernehmen'**
+  String get carCostResultAccept;
+
+  /// No description provided for @carHintOperatingCost.
+  ///
+  /// In de, this message translates to:
+  /// **'Hinweis: Zahlen Mitfahrende zusammen mehr als Kraftstoff und laufende Kosten, kann das rechtlich als gewerbliche Personenbeförderung gelten (PBefG). Keine Rechtsberatung.'**
+  String get carHintOperatingCost;
+
+  /// No description provided for @carHintCheck.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte prüfen: Dieser Wert ist ungewöhnlich hoch. Hast du dich vertippt?'**
+  String get carHintCheck;
+
+  /// No description provided for @carNameRequired.
+  ///
+  /// In de, this message translates to:
+  /// **'Gib deinem Auto einen Namen'**
+  String get carNameRequired;
 }
 
 class _AppLocalizationsDelegate

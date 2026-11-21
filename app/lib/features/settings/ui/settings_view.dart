@@ -24,6 +24,12 @@ class SettingsView extends ConsumerWidget {
       body: ListView(
         padding: Spacing.screen,
         children: [
+          ListTile(
+            leading: const Icon(Icons.directions_car_outlined),
+            title: Text(l10n.carsEntry),
+            subtitle: Text(l10n.carsEntryHint),
+            onTap: () => unawaited(context.push('/settings/cars')),
+          ),
           Text(
             l10n.privacySection,
             style: Theme.of(context).textTheme.titleSmall,

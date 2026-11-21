@@ -19,6 +19,7 @@ The fenced JSON block below is the single source: the helper parses it. Keys are
 | `setup_step_input` | Input step: type the value, tap "Weiter" | 1 |
 | `setup_step_skip` | Skip an optional step ("Überspringen") | 1 |
 | `setup_finish_action` | Finish screen to its one next action | 1 |
+| `car_setup` | Whole car flow with the flat extra cost: "Ja", name + "Weiter", fuel card, consumption + "Weiter", "Pauschale", "Auto speichern" (typing is not a tap; PU-T08) | 6 |
 
 ```json
 {
@@ -34,7 +35,8 @@ The fenced JSON block below is the single source: the helper parses it. Keys are
   "setup_step_yes_no": {"maxTaps": 1},
   "setup_step_input": {"maxTaps": 1},
   "setup_step_skip": {"maxTaps": 1},
-  "setup_finish_action": {"maxTaps": 1}
+  "setup_finish_action": {"maxTaps": 1},
+  "car_setup": {"maxTaps": 6}
 }
 ```
 
