@@ -1,4 +1,4 @@
--- In-app feedback bucket (0020, ADR-29): private, size and type limited, no client access, daily cleanup scheduled.
+-- In-app feedback bucket (0021, ADR-29): private, size and type limited, no client access, daily cleanup scheduled.
 begin;
 create extension if not exists pgtap with schema extensions;
 select plan(13);

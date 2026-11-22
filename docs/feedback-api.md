@@ -4,7 +4,7 @@ In-app feedback (ADR-29, plan P7-T10, issue #230). The app posts a report; the f
 issue labelled `user-feedback` + `needs-triage` (never `agent-implement`: user text is untrusted, a human rewrites it
 into a spec first). Implementation: `supabase/functions/submit-feedback/`, pure logic in
 `supabase/functions/_shared/feedback.ts` (Deno tests in `feedback_test.ts`, integration test with a GitHub stub in
-`tests/feedback_integration_test.ts`). Bucket and retention job: migration `0020_feedback_bucket.sql`.
+`tests/feedback_integration_test.ts`). Bucket and retention job: migration `0021_feedback_bucket.sql`.
 
 ## Availability probe
 
@@ -65,7 +65,7 @@ issue says it is untrusted. Titles are one line with `@` neutralised.
 
 ## Retention
 
-`feedback_days` = 90 in `supabase/retention.json` (DRAFT, owner decides). Daily cron `feedback-cleanup` (0020) calls
+`feedback_days` = 90 in `supabase/retention.json` (DRAFT, owner decides). Daily cron `feedback-cleanup` (0021) calls
 this function with the header `x-feedback-cleanup: <token>`; the function deletes files older than the period through
 the Storage API (a SQL delete would leave the bytes in the object store). Inert until the Vault secrets exist.
 GitHub issues are not deleted automatically; the owner closes/deletes them while triaging.
@@ -84,7 +84,7 @@ Edge Function secrets (`supabase secrets set NAME=value --project-ref <ref>`):
 Vault secrets for the retention job (SQL editor, per project): `select vault.create_secret('<value>', '<name>');` for
 `feedback_url` (`https://<ref>.supabase.co/functions/v1/submit-feedback`), `feedback_anon_key`, `feedback_cleanup_token`.
 
-The bucket is created by migration 0020 (Storage must be enabled in the project, it is by default). Also needed from
+The bucket is created by migration 0021 (Storage must be enabled in the project, it is by default). Also needed from
 the owner: sign-off of the privacy text below, a retention decision, and the labels `user-feedback` / `needs-triage`
 (GitHub creates missing labels on first use).
 

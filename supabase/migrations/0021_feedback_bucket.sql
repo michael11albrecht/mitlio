@@ -1,7 +1,7 @@
 -- squawk-ignore-file prefer-robust-stmts
 -- Justification: the Supabase CLI applies each migration file once, in a transaction; the bucket is created
 -- with "on conflict do nothing" and the policy and the function are new in this file.
--- 0020_feedback_bucket: private Storage bucket for in-app feedback + daily retention call (P7-T10, ADR-29).
+-- 0021_feedback_bucket: private Storage bucket for in-app feedback + daily retention call (P7-T10, ADR-29).
 --
 -- Privacy model:
 --   * The bucket is private. Screenshots and the optional reply address (`<id>/contact.json`) are written

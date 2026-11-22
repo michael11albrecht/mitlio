@@ -463,7 +463,7 @@ async function listItems(deps: Deps, prefix: string, offset: number): Promise<St
 
 /**
  * Retention: deletes feedback files older than the retention period through the Storage API (a SQL delete
- * would leave the files in the object store). Called daily by pg_cron (migration 0020) with the cleanup token.
+ * would leave the files in the object store). Called daily by pg_cron (migration 0021) with the cleanup token.
  */
 export async function cleanupOldFeedback(deps: Deps): Promise<{ deleted: number }> {
   const configured = Number(deps.env("FEEDBACK_RETENTION_DAYS"));
