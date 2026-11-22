@@ -1,0 +1,19 @@
+{
+  "name": "synthetic-electronics-thousands",
+  "synthetic": true,
+  "note": "German thousands separator, total confirmed by the card line.",
+  "lines": [
+    "Elektro Meier",
+    "Laptop 14 Zoll 1.299,00",
+    "Gesamtsumme 1.299,00 €",
+    "Visa 1.299,00 €",
+    "24.12.2023"
+  ],
+  "expected": {
+    "totalCents": 129900,
+    "merchant": "Elektro Meier",
+    "date": "2023-12-24",
+    "currency": "EUR",
+    "category": null
+  }
+}

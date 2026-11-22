@@ -35,6 +35,10 @@ rides of October 2026 per driver with `aggregateRides`) and is committed. `app/t
 asserts that loading plus computing equals it. Changing a scenario or a domain rule means recomputing and reviewing
 the `expected` diff.
 
+## `receipts/*.json` (receipt OCR fixtures)
+
+OCR lines plus expected `ReceiptDraft` for `parseReceipt` (P9r). Format and gate: `receipts/README.md`.
+
 ## Other files
 
 `trip_web.json`, `deeplink.json`: shared cross-platform fixtures; `agent_metrics_gh.json`: input for `tool/agent_metrics_test.sh`.

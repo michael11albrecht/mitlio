@@ -18,6 +18,8 @@ export 'src/money/money.dart';
 export 'src/payment/epc_qr.dart';
 export 'src/payment/iban.dart';
 export 'src/payment/paypal_me.dart';
+export 'src/receipt/parse_receipt.dart';
+export 'src/receipt/receipt_draft.dart';
 export 'src/recurring/recurrence_error.dart';
 export 'src/recurring/recurrence_rule.dart';
 export 'src/rides/car_catalog.dart';

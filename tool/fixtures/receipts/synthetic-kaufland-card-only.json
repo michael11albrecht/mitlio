@@ -1,0 +1,19 @@
+{
+  "name": "synthetic-kaufland-card-only",
+  "synthetic": true,
+  "note": "No SUMME line (cut off), only the card line: weak but accepted total.",
+  "lines": [
+    "Kaufland",
+    "JOGHURT 0,89",
+    "SAFT 1,99",
+    "EC-Karte 2,88",
+    "31.12.2023"
+  ],
+  "expected": {
+    "totalCents": 288,
+    "merchant": "Kaufland",
+    "date": "2023-12-31",
+    "currency": null,
+    "category": "groceries"
+  }
+}

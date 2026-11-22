@@ -1,0 +1,20 @@
+{
+  "name": "synthetic-ch-chf-apostrophe",
+  "synthetic": true,
+  "note": "Swiss format: apostrophe as thousands separator, decimal point, CHF.",
+  "lines": [
+    "Möbel Frei AG",
+    "Beispielgasse 5",
+    "Sofa Modell Alpina CHF 1'180.00",
+    "Lieferung CHF 54.50",
+    "Total CHF 1'234.50",
+    "05.06.2024"
+  ],
+  "expected": {
+    "totalCents": 123450,
+    "merchant": "Möbel Frei AG",
+    "date": "2024-06-05",
+    "currency": "CHF",
+    "category": null
+  }
+}

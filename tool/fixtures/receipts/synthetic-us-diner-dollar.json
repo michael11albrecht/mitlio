@@ -1,0 +1,21 @@
+{
+  "name": "synthetic-us-diner-dollar",
+  "synthetic": true,
+  "note": "Decimal point, dollar sign only (weak currency guess), tax and subtotal lines.",
+  "lines": [
+    "JOE'S DINER",
+    "Burger 12.00",
+    "Fries 8.00",
+    "SUBTOTAL 20.00",
+    "TAX 1.65",
+    "TOTAL $ 21.65",
+    "2024-07-04"
+  ],
+  "expected": {
+    "totalCents": 2165,
+    "merchant": "JOE'S DINER",
+    "date": "2024-07-04",
+    "currency": "USD",
+    "category": null
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "synthetic-aldi-split-lines-short-year",
+  "synthetic": true,
+  "note": "Keyword and amount arrive as separate OCR lines, two-digit year, no currency printed.",
+  "lines": [
+    "ALDI SÜD",
+    "Beispielweg 3",
+    "BUTTER 1,79",
+    "PASTA 0,99",
+    "WASSER 6 x 0,25 1,50",
+    "Datum: 03.11.23",
+    "Zu zahlen",
+    "4,28",
+    "Girocard 4,28"
+  ],
+  "expected": {
+    "totalCents": 428,
+    "merchant": "ALDI",
+    "date": "2023-11-03",
+    "currency": null,
+    "category": "groceries"
+  }
+}
