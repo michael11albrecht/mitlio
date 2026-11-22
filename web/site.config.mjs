@@ -37,3 +37,9 @@ export const ANDROID_SHA256_CERT_FINGERPRINTS = process.env.ANDROID_SHA256_CERT_
 // placeholder that fails a production build until the owner has signed off the wording.
 export const ROUTE_WEB = process.env.ROUTE_WEB === '1';
 export const ROUTE_API_URL = ROUTE_WEB && FUEL_API_URL ? new URL('route-distance', FUEL_API_URL).href : '';
+
+// Support the developer (P7-T09, ADR-28). PayPal.Me handle of the footer link (e.g. "michaelalbrecht"). Empty means no
+// link and nothing else changes: this is the web's off switch, the counterpart of the app's remote flag
+// `support_tips_enabled`. The static site has no runtime flag, so the owner sets it at build time, and only after the
+// tax clarification (plan section 12, 13c).
+export const SUPPORT_PAYPAL_ME = process.env.SUPPORT_PAYPAL_ME ?? '';

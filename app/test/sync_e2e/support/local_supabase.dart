@@ -120,6 +120,12 @@ on conflict (platform) do update
       store_url = excluded.store_url;
 ''');
   }
+
+  /// Sets the tip jar flag (migration 0020) of an `app_config` row.
+  Future<void> seedSupportTips(String platform, {required bool enabled}) => sql(
+    'update public.app_config set support_tips_enabled = $enabled '
+    "where platform = '$platform';",
+  );
 }
 
 /// One anonymous account on the local stack, with the real Supabase

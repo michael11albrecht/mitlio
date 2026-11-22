@@ -39,6 +39,7 @@ export type Database = {
           min_supported_version: string
           platform: string
           store_url: string | null
+          support_tips_enabled: boolean
           updated_at: string
         }
         ComputedFields: never
@@ -46,12 +47,14 @@ export type Database = {
           min_supported_version: string
           platform: string
           store_url?: string | null
+          support_tips_enabled?: boolean
           updated_at?: string
         }
         Update: {
           min_supported_version?: string
           platform?: string
           store_url?: string | null
+          support_tips_enabled?: boolean
           updated_at?: string
         }
         Relationships: []

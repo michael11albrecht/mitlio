@@ -7,6 +7,8 @@ import 'package:mitlio/features/settle/ui/settle_view_model.dart';
 import 'package:mitlio/features/settle/ui/transfer_sheet.dart';
 import 'package:mitlio/features/settle/ui/transfer_sheet_view_model.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
+import 'package:mitlio/features/support/data/repositories/fake_support_repository.dart';
+import 'package:mitlio/features/support/data/support_providers.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../../../helpers/entry_card_stub.dart';
@@ -176,8 +178,15 @@ final TransferSheetLoaded sheetTooHigh = _sheet(
   amount: 5000,
 );
 
-Widget scopedSettle(List<Override> overrides, Widget child) =>
-    ProviderScope(overrides: [...noEntryCards, ...overrides], child: child);
+Widget scopedSettle(List<Override> overrides, Widget child) => ProviderScope(
+  overrides: [
+    ...noEntryCards,
+    // Flag off: the settled screen shows no tip line.
+    supportRepositoryProvider.overrideWithValue(FakeSupportRepository()),
+    ...overrides,
+  ],
+  child: child,
+);
 
 const SettleView settleView = SettleView(groupId: 'g-1');
 const TransferSheet transferSheet = TransferSheet(transferKey: sheetKey);

@@ -11,6 +11,9 @@ class FakeAppConfigRemote implements AppConfigRemote {
   /// Rows by platform (`ios`, `android`).
   final Map<String, MinVersionConfig> rows;
 
+  /// Platforms whose tip jar flag (0020) is on.
+  final Set<String> supportTips = {};
+
   /// While true every call fails with [Offline].
   bool offline = false;
 
@@ -29,5 +32,14 @@ class FakeAppConfigRemote implements AppConfigRemote {
     final failure = fail;
     if (failure != null) return Err(failure);
     return Ok(rows[platform]);
+  }
+
+  @override
+  Future<Result<bool, RemoteError>> supportTipsEnabled(String platform) async {
+    calls++;
+    if (offline) return const Err(Offline());
+    final failure = fail;
+    if (failure != null) return Err(failure);
+    return Ok(supportTips.contains(platform));
   }
 }

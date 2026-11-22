@@ -3096,6 +3096,90 @@ abstract class AppLocalizations {
   /// **'Der Link ließ sich nicht öffnen. Wir haben ihn kopiert, du kannst ihn in deinen Browser einfügen.'**
   String get creditOpenFailed;
 
+  /// No description provided for @supportEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'mitlio unterstützen'**
+  String get supportEntry;
+
+  /// No description provided for @supportEntryHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Ein freiwilliges Trinkgeld, wenn dir mitlio gefällt'**
+  String get supportEntryHint;
+
+  /// No description provided for @supportPromptText.
+  ///
+  /// In de, this message translates to:
+  /// **'Gefällt dir mitlio? Du kannst die Entwicklung freiwillig unterstützen.'**
+  String get supportPromptText;
+
+  /// No description provided for @supportPromptAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Unterstützen'**
+  String get supportPromptAction;
+
+  /// No description provided for @supportPromptNever.
+  ///
+  /// In de, this message translates to:
+  /// **'Nicht mehr zeigen'**
+  String get supportPromptNever;
+
+  /// No description provided for @supportSheetTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'mitlio unterstützen'**
+  String get supportSheetTitle;
+
+  /// No description provided for @supportSheetIntro.
+  ///
+  /// In de, this message translates to:
+  /// **'mitlio hat keine Werbung und kein Tracking. Ein Trinkgeld hilft, den Betrieb zu bezahlen. Es ist freiwillig und hat nichts mit deinen Ausgleichen zu tun.'**
+  String get supportSheetIntro;
+
+  /// No description provided for @supportTipLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'{size, select, small{Kleines Trinkgeld} medium{Mittleres Trinkgeld} large{Großes Trinkgeld} other{Trinkgeld}}'**
+  String supportTipLabel(String size);
+
+  /// No description provided for @supportThanksTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Danke dir!'**
+  String get supportThanksTitle;
+
+  /// No description provided for @supportThanksBody.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Trinkgeld hilft, mitlio am Laufen zu halten.'**
+  String get supportThanksBody;
+
+  /// No description provided for @supportClose.
+  ///
+  /// In de, this message translates to:
+  /// **'Schließen'**
+  String get supportClose;
+
+  /// No description provided for @supportErrorStore.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Store ist gerade nicht erreichbar. Prüfe die Verbindung und versuche es in ein paar Minuten noch einmal.'**
+  String get supportErrorStore;
+
+  /// No description provided for @supportErrorProducts.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Trinkgelder sind im Store gerade nicht verfügbar. Versuche es später noch einmal.'**
+  String get supportErrorProducts;
+
+  /// No description provided for @supportErrorPurchase.
+  ///
+  /// In de, this message translates to:
+  /// **'Das Trinkgeld ging nicht durch. Prüfe die Verbindung und versuche es in ein paar Minuten noch einmal.'**
+  String get supportErrorPurchase;
+
   /// No description provided for @licensesTitle.
   ///
   /// In de, this message translates to:

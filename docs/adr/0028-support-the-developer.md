@@ -52,6 +52,15 @@ touches money, no PSP) limit the options.
 - New settings flag `supportPromptState` (local only: last shown, count, dismissed), no analytics.
 - Task P7-T09 builds everything behind a remote flag (off); switching it on waits for the tax answer (§12 #13c).
 
+## Implementation (P7-T09, built 2026-11-22, flag off)
+
+- **Flag:** `app_config.support_tips_enabled` (migration 0020, boolean per platform, default `false`, public read like the rest of `app_config`). The app reads it with its own query (a missing column on an older server can never break the version gate), caches the answer 12 hours in `local_settings` and treats "cannot read" as off. Owner switches it on with `update public.app_config set support_tips_enabled = true where platform in ('ios', 'android');`, only after the tax clarification (§6).
+- **Surfaces (all behind the flag):** Settings row "mitlio unterstützen"; one line under the "Alles ausgeglichen" banner; the tip jar sheet (three sizes, store price, thank-you). The line counts reaching the all-settled screen as a settlement: it shows when the 5th is reached and at least 30 days after the last time, "Nicht mehr zeigen" is permanent. Nothing is counted while the flag is off. State (`support.*` keys in `local_settings`) is local only.
+- **Products:** consumables `tip_small`, `tip_medium`, `tip_large` in App Store Connect and Play Console (price tiers are the owner's choice, the app shows the store's price).
+- **Never in the payment:** architecture rules `no-tip-in-payment-path`, `tip-only-quiet-line-on-settled-screen`, `tip-code-no-payment-imports` keep `features/support` out of the transfer sheet and the settle data layer.
+- **Errors:** store unreachable, tips not listed and a failed purchase each say what happened and what to do (retry button or "in ein paar Minuten noch einmal"); a user cancel is not an error.
+- **Web:** the static site has no runtime flag, so the footer link is a build-time setting: `SUPPORT_PAYPAL_ME=<handle>` (empty = no link, see `web/site.config.mjs`).
+
 ## Revisit when
 
 Epic v. Apple is decided (US link-out commission), the EU steering rules change, or tips exceed hosting

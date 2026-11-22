@@ -1870,6 +1870,64 @@ class AppLocalizationsEn extends AppLocalizations {
       'The link could not be opened. We copied it, so you can paste it into your browser.';
 
   @override
+  String get supportEntry => 'Support mitlio';
+
+  @override
+  String get supportEntryHint => 'A voluntary tip if you like mitlio';
+
+  @override
+  String get supportPromptText =>
+      'Like mitlio? You can support its development, entirely optional.';
+
+  @override
+  String get supportPromptAction => 'Support';
+
+  @override
+  String get supportPromptNever => 'Don\'t show again';
+
+  @override
+  String get supportSheetTitle => 'Support mitlio';
+
+  @override
+  String get supportSheetIntro =>
+      'mitlio has no ads and no tracking. A tip helps pay for running it. It is voluntary and has nothing to do with your settlements.';
+
+  @override
+  String supportTipLabel(String size) {
+    String _temp0 = intl.Intl.selectLogic(
+      size,
+      {
+        'small': 'Small tip',
+        'medium': 'Medium tip',
+        'large': 'Large tip',
+        'other': 'Tip',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get supportThanksTitle => 'Thank you!';
+
+  @override
+  String get supportThanksBody => 'Your tip helps keep mitlio running.';
+
+  @override
+  String get supportClose => 'Close';
+
+  @override
+  String get supportErrorStore =>
+      'The store cannot be reached right now. Check your connection and try again in a few minutes.';
+
+  @override
+  String get supportErrorProducts =>
+      'The tips are not available in the store right now. Try again later.';
+
+  @override
+  String get supportErrorPurchase =>
+      'The tip did not go through. Check your connection and try again in a few minutes.';
+
+  @override
   String get licensesTitle => 'Sources and licences';
 
   @override

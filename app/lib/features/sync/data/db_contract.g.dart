@@ -41,6 +41,7 @@ abstract final class DbAppConfigCols {
   static const minSupportedVersion = 'min_supported_version';
   static const platform = 'platform';
   static const storeUrl = 'store_url';
+  static const supportTipsEnabled = 'support_tips_enabled';
   static const updatedAt = 'updated_at';
 }
 
@@ -294,6 +295,7 @@ const dbContract = <String, Map<String, DbColumn>>{
     'min_supported_version': DbColumn(DbColumnType.string, nullable: false),
     'platform': DbColumn(DbColumnType.string, nullable: false),
     'store_url': DbColumn(DbColumnType.string, nullable: true),
+    'support_tips_enabled': DbColumn(DbColumnType.boolean, nullable: false),
     'updated_at': DbColumn(DbColumnType.string, nullable: false),
   },
   'device_tokens': {

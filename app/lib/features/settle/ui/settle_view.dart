@@ -16,6 +16,7 @@ import 'package:mitlio/features/profile/ui/entry_card_view_model.dart'
 import 'package:mitlio/features/profile/ui/setup_entry_card.dart';
 import 'package:mitlio/features/settle/ui/settle_view_model.dart';
 import 'package:mitlio/features/settle/ui/transfer_sheet.dart';
+import 'package:mitlio/features/support/ui/support_prompt_line.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -105,12 +106,14 @@ class _Loaded extends StatelessWidget {
     return ListView(
       padding: Spacing.screen,
       children: [
-        if (state.isSettled)
+        if (state.isSettled) ...[
           _SettledBanner(
             title: l10n.settleSettledTitle,
             message: l10n.settleSettledMessage,
-          )
-        else ...[
+          ),
+          // ADR-28: after the result, never in the payment step.
+          const SupportPromptLine(),
+        ] else ...[
           Semantics(
             header: true,
             child: Text(

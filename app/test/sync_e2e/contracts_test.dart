@@ -46,6 +46,7 @@ void main() {
       return AppConfigFixture(
         remote: SupabaseAppConfigRemote(RemoteBackend.withClient(client)),
         seed: server.seedAppConfig,
+        seedSupportTips: server.seedSupportTips,
       );
     },
   );

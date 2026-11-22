@@ -9,6 +9,8 @@ import 'package:mitlio/features/profile/ui/profile_entry_view_model.dart';
 import 'package:mitlio/features/settings/ui/author_credit_view_model.dart';
 import 'package:mitlio/features/settings/ui/crash_reporting_view_model.dart';
 import 'package:mitlio/features/settings/ui/legal_links_view_model.dart';
+import 'package:mitlio/features/support/ui/support_entry_view_model.dart';
+import 'package:mitlio/features/support/ui/tip_jar_sheet.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 
 /// Settings: today only the "Datenschutz" section (summary, links to the
@@ -57,6 +59,13 @@ class SettingsView extends ConsumerWidget {
             subtitle: Text(l10n.carsEntryHint),
             onTap: () => unawaited(context.push('/settings/cars')),
           ),
+          if (ref.watch(supportRowVisibleProvider).value ?? false)
+            ListTile(
+              leading: const Icon(Icons.favorite_border),
+              title: Text(l10n.supportEntry),
+              subtitle: Text(l10n.supportEntryHint),
+              onTap: () => unawaited(showTipJarSheet(context)),
+            ),
           const SizedBox(height: Spacing.md),
           Text(
             l10n.privacySection,

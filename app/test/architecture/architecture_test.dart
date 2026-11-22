@@ -396,6 +396,45 @@ void main() {
         },
       ),
       (
+        'no-tip-in-payment-path',
+        {
+          'app/lib/features/settle/ui/transfer_sheet.dart':
+              "import 'package:mitlio/features/support/ui/tip_jar_sheet.dart';",
+        },
+        {
+          'app/lib/features/settle/ui/transfer_sheet.dart':
+              "import 'package:mitlio/features/settle/ui/settle_summary.dart';",
+        },
+      ),
+      (
+        'no-tip-in-payment-path',
+        {
+          'app/lib/features/settle/data/services/payment_link_service.dart':
+              "import '../../../support/data/support_models.dart';",
+        },
+        {},
+      ),
+      (
+        'tip-only-quiet-line-on-settled-screen',
+        {
+          'app/lib/features/settle/ui/settle_view.dart':
+              "import 'package:mitlio/features/support/ui/tip_jar_sheet.dart';",
+        },
+        {
+          'app/lib/features/settle/ui/settle_view.dart': "import 'package:mitlio/features/support/ui/support_prompt_line.dart';",
+        },
+      ),
+      (
+        'tip-code-no-payment-imports',
+        {
+          'app/lib/features/support/ui/x_view_model.dart': "import 'package:mitlio/features/settle/ui/settle_view_model.dart';",
+        },
+        {
+          'app/lib/features/support/ui/x_view_model.dart':
+              "import 'package:mitlio/core/providers.dart';",
+        },
+      ),
+      (
         'screen-has-a11y-test',
         {
           'app/lib/features/a/ui/a_view.dart':
