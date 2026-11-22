@@ -36,10 +36,12 @@ select is((select count(*) from storage.objects where bucket_id = 'feedback-scre
 select throws_ok(
   $q$insert into storage.objects (bucket_id, name) values ('feedback-screenshots', 'fb-test/evil.png')$q$,
   '42501', null, 'authenticated cannot upload into the bucket');
-select is_empty(
-  $q$delete from storage.objects where bucket_id = 'feedback-screenshots' returning name$q$,
-  'authenticated cannot delete feedback files (no rows visible)');
 reset role;
+-- Storage itself refuses direct SQL deletes ("use the Storage API"), so deletes are covered by the policy
+-- check: the restrictive policy applies to every command (select, insert, update, delete) for both roles.
+select ok(exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects'
+    and policyname = 'feedback_screenshots_service_only' and cmd = 'ALL' and roles @> array['anon', 'authenticated']::name[]),
+  'the fence covers all commands (incl. delete) for anon and authenticated');
 
 select is((select count(*) from storage.objects where bucket_id = 'feedback-screenshots'), 1::bigint,
   'the stored file is still there');
