@@ -986,7 +986,7 @@ export type Database = {
           event: string
           group_id: string
           id: string
-          payload: NonNullable<Json>
+          payload: Json
         }[]
       }
       cleanup_auth_audit_log: {
@@ -1036,7 +1036,7 @@ export type Database = {
         }
         Returns: undefined
       }
-      invoke_notify: { Args: never; Returns: undefined }
+      invoke_notify: { Args: Record<PropertyKey, never>; Returns: undefined }
       is_group_member: { Args: { gid: string }; Returns: boolean }
       join_group: {
         Args: { claim_member_id?: string; token: string }
