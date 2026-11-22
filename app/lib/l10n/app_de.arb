@@ -1925,6 +1925,12 @@
       "number": {"type": "int"}
     }
   },
+  "profilePhotoCamera": "Foto aufnehmen",
+  "profilePhotoGallery": "Aus der Galerie",
+  "profilePhotoRemove": "Foto entfernen",
+  "profilePhotoLocalOnly": "Dein Foto bleibt nur auf diesem Gerät.",
+  "profilePhotoDenied": "mitlio darf nicht auf Kamera oder Fotos zugreifen. Erlaube es in den Einstellungen deines Geräts und versuch es dann noch einmal.",
+  "profilePhotoUnusable": "Mit diesem Bild klappt es nicht. Wähl ein anderes Foto aus oder mach ein neues.",
   "profileAvatarInitials": "Nur Initialen",
   "profileAvatarEmoji": "Symbol {emoji}",
   "@profileAvatarEmoji": {

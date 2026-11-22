@@ -2822,6 +2822,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get profilePhotoCamera => 'Take a photo';
+
+  @override
+  String get profilePhotoGallery => 'From gallery';
+
+  @override
+  String get profilePhotoRemove => 'Remove photo';
+
+  @override
+  String get profilePhotoLocalOnly => 'Your photo stays on this device only.';
+
+  @override
+  String get profilePhotoDenied =>
+      'mitlio is not allowed to use the camera or your photos. Allow it in your device settings, then try again.';
+
+  @override
+  String get profilePhotoUnusable =>
+      'This picture did not work. Pick another photo or take a new one.';
+
+  @override
   String get profileAvatarInitials => 'Initials only';
 
   @override

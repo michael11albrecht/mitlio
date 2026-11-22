@@ -1404,6 +1404,12 @@
       "number": {"type": "int"}
     }
   },
+  "profilePhotoCamera": "Take a photo",
+  "profilePhotoGallery": "From gallery",
+  "profilePhotoRemove": "Remove photo",
+  "profilePhotoLocalOnly": "Your photo stays on this device only.",
+  "profilePhotoDenied": "mitlio is not allowed to use the camera or your photos. Allow it in your device settings, then try again.",
+  "profilePhotoUnusable": "This picture did not work. Pick another photo or take a new one.",
   "profileAvatarInitials": "Initials only",
   "profileAvatarEmoji": "Symbol {emoji}",
   "@profileAvatarEmoji": {

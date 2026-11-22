@@ -12,6 +12,8 @@ import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/profile_photo_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/profile_providers.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
 import 'package:mitlio/features/setup/data/drift_setup_state_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -45,18 +47,29 @@ class DriftDebugDataControl implements DebugDataControl {
     required this._groups,
     required this._members,
     this._seeder,
+    this._photos,
   });
 
   final AppDatabase _db;
   final GroupsRepository _groups;
   final MembersRepository _members;
   final ScenarioSeeder? _seeder;
+  final ProfilePhotoRepository? _photos;
 
   /// Deletes every row. Tables are declared parents first, so deleting in
   /// reverse order never violates a foreign key. `local_settings` stays: it
   /// holds the install's HLC node id, which is not user data.
   @override
-  Future<void> wipe() => _db.transaction(() async {
+  Future<void> wipe() async {
+    // The profile photo is user data too (a file, not a row).
+    final removed = await _photos?.remove();
+    if (removed case Err(:final error)) {
+      throw StateError('profile photo not removed: $error');
+    }
+    await _wipeRows();
+  }
+
+  Future<void> _wipeRows() => _db.transaction(() async {
     for (final table in _db.allTables.toList().reversed) {
       if (table == _db.localSettings) continue;
       await _db.delete(table).go();
@@ -100,6 +113,7 @@ final debugDataControlProvider = Provider<DebugDataControl>(
     db: ref.watch(appDatabaseProvider),
     groups: ref.watch(groupsRepositoryProvider),
     members: ref.watch(membersRepositoryProvider),
+    photos: ref.watch(profilePhotoRepositoryProvider),
     seeder: ScenarioSeeder(
       source: (name) => rootBundle.loadString('assets/scenarios/$name.json'),
       groups: ref.watch(groupsRepositoryProvider),

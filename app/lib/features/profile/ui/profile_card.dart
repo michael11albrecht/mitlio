@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/member_avatar.dart';
+import 'package:mitlio/features/profile/ui/profile_photo_view_model.dart';
 import 'package:mitlio/features/profile/ui/profile_setup_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 
@@ -9,12 +13,13 @@ const _selfId = 'me';
 
 /// The profile's round avatar: an emoji or the initials on the chosen
 /// colour ([color] is its ARGB value), else on the colour derived from the
-/// name.
+/// name. A [photo] (the processed PNG) replaces all of that.
 class ProfileAvatar extends StatelessWidget {
   const ProfileAvatar({
     required this.name,
     this.color,
     this.emoji,
+    this.photo,
     this.size = Sizes.avatar,
     super.key,
   });
@@ -22,6 +27,7 @@ class ProfileAvatar extends StatelessWidget {
   final String name;
   final int? color;
   final String? emoji;
+  final Uint8List? photo;
   final double size;
 
   /// The theme colour pair for [argb] if it is one of the avatar palette
@@ -60,18 +66,27 @@ class ProfileAvatar extends StatelessWidget {
         height: diameter,
         child: DecoratedBox(
           decoration: BoxDecoration(color: background, shape: BoxShape.circle),
-          child: Center(
-            child: MediaQuery.withNoTextScaling(
-              child: Text(
-                emoji ?? MemberAvatar.initials(name),
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: foreground,
-                  fontSize: diameter * 0.4,
-                  height: 1,
+          child: photo != null
+              ? ClipOval(
+                  child: Image.memory(
+                    photo!,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
+                    excludeFromSemantics: true,
+                  ),
+                )
+              : Center(
+                  child: MediaQuery.withNoTextScaling(
+                    child: Text(
+                      emoji ?? MemberAvatar.initials(name),
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: foreground,
+                        fontSize: diameter * 0.4,
+                        height: 1,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
         ),
       ),
     );
@@ -80,13 +95,13 @@ class ProfileAvatar extends StatelessWidget {
 
 /// The profile as friends will see it: avatar, name, the PayPal.Me link and
 /// the end of the IBAN (never all of it).
-class ProfileCard extends StatelessWidget {
+class ProfileCard extends ConsumerWidget {
   const ProfileCard({required this.data, super.key});
 
   final ProfileCardData data;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final profile = data.profile;
@@ -103,6 +118,7 @@ class ProfileCard extends StatelessWidget {
               name: profile.displayName,
               color: profile.avatarColor,
               emoji: profile.avatarEmoji,
+              photo: ref.watch(profilePhotoViewModelProvider).photo,
               size: Sizes.profileAvatar / 2,
             ),
             const SizedBox(width: Spacing.md),
