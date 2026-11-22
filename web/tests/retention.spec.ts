@@ -14,6 +14,7 @@ const jobs = [
   { key: 'fx_rates_days', file: 'supabase/migrations/0006_fx_rates.sql', stmt: /from public\.fx_rates where fetched_at < now\(\) - (interval '[^']+')/ },
   { key: 'join_audit_days', file: 'supabase/migrations/0013_retention.sql', stmt: /from public\.group_join_audit where joined_at < now\(\) - (interval '[^']+')/ },
   { key: 'expired_invites_days_after_expiry', file: 'supabase/migrations/0013_retention.sql', stmt: /from public\.group_invites where expires_at < now\(\) - (interval '[^']+')/ },
+  { key: 'auth_audit_days', file: 'supabase/migrations/0018_auth_audit_purge.sql', stmt: /from auth\.audit_log_entries where created_at < now\(\) - (interval '[^']+')/ },
   { key: 'inactive_account_months', unit: 'month', file: 'supabase/migrations/0014_inactive_accounts_cleanup.sql', stmt: /< now\(\) - (interval '[^']+')\s*loop/ },
 ] as const;
 
