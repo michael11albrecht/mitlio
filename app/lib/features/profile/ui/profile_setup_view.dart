@@ -15,6 +15,7 @@ import 'package:mitlio/core/widgets/error_state.dart';
 import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/features/profile/ui/iban_input.dart';
 import 'package:mitlio/features/profile/ui/profile_card.dart';
+import 'package:mitlio/features/profile/ui/profile_photo_view_model.dart';
 import 'package:mitlio/features/profile/ui/profile_setup_view_model.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
@@ -126,6 +127,7 @@ class _NameStepState extends ConsumerState<_NameStep> {
         valueListenable: _name,
         builder: (context, value, _) => ProfileAvatar(
           name: value.text,
+          photo: ref.watch(profilePhotoViewModelProvider).photo,
           size: Sizes.profileAvatar,
         ),
       ),
@@ -188,10 +190,48 @@ class _AvatarStepState extends ConsumerState<_AvatarStep> {
     }
   }
 
+  Future<void> _pick(
+    Future<RepoResult<PhotoOutcome>> Function(ProfilePhotoViewModel vm) ask,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
+    final result = await ask(ref.read(profilePhotoViewModelProvider.notifier));
+    final message = switch (result) {
+      Err(:final error) => repositoryErrorMessage(l10n, error),
+      Ok(value: PhotoOutcome.denied) => l10n.profilePhotoDenied,
+      Ok(value: PhotoOutcome.unusable) => l10n.profilePhotoUnusable,
+      Ok() => null,
+    };
+    if (message == null) return;
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _removePhoto() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
+    final result = await ref
+        .read(profilePhotoViewModelProvider.notifier)
+        .remove();
+    if (result case Err(:final error)) {
+      showErrorSnackBar(messenger, l10n, error);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    ref.listen(profilePhotoViewModelProvider.select((s) => s.loadError), (
+      _,
+      error,
+    ) {
+      if (error != null) {
+        showErrorSnackBar(ScaffoldMessenger.of(context), l10n, error);
+      }
+    });
+    final photo = ref.watch(profilePhotoViewModelProvider);
     final name =
         ref
                 .watch(setupFlowViewModelProvider(profileSetupFlow))
@@ -207,6 +247,7 @@ class _AvatarStepState extends ConsumerState<_AvatarStep> {
         name: name,
         color: _color,
         emoji: _emoji,
+        photo: photo.photo,
         size: Sizes.profileAvatar,
       ),
       onNext: () => widget.s.onNext({
@@ -218,6 +259,39 @@ class _AvatarStepState extends ConsumerState<_AvatarStep> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (photo.canPick || photo.photo != null) ...[
+            Wrap(
+              spacing: Spacing.sm,
+              runSpacing: Spacing.sm,
+              children: [
+                if (photo.canPick) ...[
+                  OutlinedButton.icon(
+                    onPressed: () => _pick((vm) => vm.takePhoto()),
+                    icon: const Icon(Icons.photo_camera_outlined),
+                    label: Text(l10n.profilePhotoCamera),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () => _pick((vm) => vm.chooseFromGallery()),
+                    icon: const Icon(Icons.photo_library_outlined),
+                    label: Text(l10n.profilePhotoGallery),
+                  ),
+                ],
+                if (photo.photo != null)
+                  TextButton(
+                    onPressed: _removePhoto,
+                    child: Text(l10n.profilePhotoRemove),
+                  ),
+              ],
+            ),
+            const SizedBox(height: Spacing.xs),
+            Text(
+              l10n.profilePhotoLocalOnly,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: Spacing.md),
+          ],
           Wrap(
             spacing: Spacing.sm,
             runSpacing: Spacing.sm,

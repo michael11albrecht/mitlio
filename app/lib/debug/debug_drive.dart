@@ -22,6 +22,7 @@ import 'package:mitlio/debug/handlers/join.dart';
 import 'package:mitlio/debug/handlers/my_qr.dart';
 import 'package:mitlio/debug/handlers/payment.dart';
 import 'package:mitlio/debug/handlers/personal.dart';
+import 'package:mitlio/debug/handlers/profile_photo.dart';
 import 'package:mitlio/debug/handlers/push.dart';
 import 'package:mitlio/debug/handlers/rare_flows.dart';
 import 'package:mitlio/debug/handlers/recurring.dart';
@@ -135,6 +136,7 @@ void registerDebugDrive(ProviderContainer container) {
     ...personalDriveHandlers(container),
     ...myQrDriveHandlers(container),
     ...feedbackDriveHandlers(container),
+    ...profilePhotoDriveHandlers(container),
     ...rareFlowsDriveHandlers(container),
     ...recurringDriveHandlers(container),
     ...ridesDriveHandlers(container),

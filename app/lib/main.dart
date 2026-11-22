@@ -30,6 +30,8 @@ import 'package:mitlio/features/fuel/data/services/geolocator_location_service.d
 import 'package:mitlio/features/fx/data/repositories/fx_providers.dart';
 import 'package:mitlio/features/fx/data/services/fx_rate_service.dart';
 import 'package:mitlio/features/onboarding/ui/first_group_view_model.dart';
+import 'package:mitlio/features/profile/data/repositories/profile_photo_repository.dart';
+import 'package:mitlio/features/profile/data/repositories/profile_providers.dart';
 import 'package:mitlio/features/profile/ui/car_setup_view_model.dart'
     show carFlowConfigs;
 import 'package:mitlio/features/profile/ui/profile_setup_view_model.dart';
@@ -132,6 +134,10 @@ Future<void> main() async {
         ...carFlowConfigs,
       }),
       appDatabaseProvider.overrideWithValue(db),
+      // The profile photo: one file in the private folder, never uploaded.
+      profilePhotoRepositoryProvider.overrideWithValue(
+        FileProfilePhotoRepository(File('${dir.path}/profile_photo.png')),
+      ),
       crashReporterProvider.overrideWithValue(crashReporter),
       // No pushServiceProvider override: Firebase arrives with P6b-T01, until
       // then the app reports "no push in this build" (UnavailablePushService).

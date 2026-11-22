@@ -47,6 +47,7 @@ void main() {
         'setup_finish_action': 1,
         'car_setup': 6,
         'profile_setup': 8,
+        'profile_photo': 1,
         'first_group': 4,
         'commute_template': 8,
         'send_feedback': 3,

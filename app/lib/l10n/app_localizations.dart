@@ -4686,6 +4686,42 @@ abstract class AppLocalizations {
   /// **'Farbe {number}'**
   String profileAvatarColor(int number);
 
+  /// No description provided for @profilePhotoCamera.
+  ///
+  /// In de, this message translates to:
+  /// **'Foto aufnehmen'**
+  String get profilePhotoCamera;
+
+  /// No description provided for @profilePhotoGallery.
+  ///
+  /// In de, this message translates to:
+  /// **'Aus der Galerie'**
+  String get profilePhotoGallery;
+
+  /// No description provided for @profilePhotoRemove.
+  ///
+  /// In de, this message translates to:
+  /// **'Foto entfernen'**
+  String get profilePhotoRemove;
+
+  /// No description provided for @profilePhotoLocalOnly.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Foto bleibt nur auf diesem Gerät.'**
+  String get profilePhotoLocalOnly;
+
+  /// No description provided for @profilePhotoDenied.
+  ///
+  /// In de, this message translates to:
+  /// **'mitlio darf nicht auf Kamera oder Fotos zugreifen. Erlaube es in den Einstellungen deines Geräts und versuch es dann noch einmal.'**
+  String get profilePhotoDenied;
+
+  /// No description provided for @profilePhotoUnusable.
+  ///
+  /// In de, this message translates to:
+  /// **'Mit diesem Bild klappt es nicht. Wähl ein anderes Foto aus oder mach ein neues.'**
+  String get profilePhotoUnusable;
+
   /// No description provided for @profileAvatarInitials.
   ///
   /// In de, this message translates to:
