@@ -42,6 +42,11 @@ test.describe('retention.json matches the cleanup jobs', () => {
     expect(Number(match?.[1])).toBe(retention.expense_revisions_per_expense);
   });
 
+  test('the feedback cleanup default matches feedback_days', () => {
+    const match = /DEFAULT_RETENTION_DAYS = (\d+)/.exec(read('supabase/functions/_shared/feedback.ts'));
+    expect(Number(match?.[1])).toBe(retention.feedback_days);
+  });
+
   test('every key is documented in docs/retention.md', () => {
     const doc = read('docs/retention.md');
     for (const key of Object.keys(retention)) expect(doc, key).toContain(key);

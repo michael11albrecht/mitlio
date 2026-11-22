@@ -34,8 +34,9 @@ enabled = false
 [local_smtp]
 enabled = false
 
+# On for the private feedback bucket (migration 0021, ADR-29).
 [storage]
-enabled = false
+enabled = true
 
 [edge_runtime]
 enabled = true

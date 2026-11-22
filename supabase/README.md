@@ -24,6 +24,8 @@ Never run `supabase link` / `supabase db push` from an agent; deploys are an own
 | `migrations/0016_notification_triggers.sql` | P6b-T03: writes of expenses (deferred to commit), settlements and members queue `notification_outbox` rows, only for user-visible changes by a signed-in actor, idempotent via `dedupe_key`. Pure recipient/coalesce/message logic: `functions/_shared/notify.ts`. |
 | `migrations/0012_app_config.sql` | `app_config` (min_supported_version per platform, ADR-27 §2.3): the one anon-readable app table (the gate runs before sign-in), no client writes, owner edits it in the SQL editor. `join_group`'s `P0429` now carries `hint = 'retry_after_seconds=<n>'`. |
 | `functions/` | Edge Functions (Deno 2.1.4). `fuel-prices/`, `fx-rates/` + pure logic in `_shared/`; `tests/coverage_gate.sh` (unit, >= 90 %) and `tests/run_integration.sh` (`functions serve` + provider stub). CI only; never `functions deploy` from an agent. |
+| `migrations/0021_feedback_bucket.sql` | P7-T10 (ADR-29): private Storage bucket `feedback-screenshots` (5 MB, images + json, restrictive policy keeps client roles out) and the daily `feedback-cleanup` cron job (calls `submit-feedback`; inert without Vault secrets). Needs `[storage] enabled = true` in `config.toml`. |
+| `functions/submit-feedback/` | P7-T10: in-app feedback to a GitHub issue (`user-feedback` + `needs-triage`), screenshots to the private bucket, 503 `provider_unconfigured` until `FEEDBACK_GITHUB_TOKEN` exists. Contract and owner steps: `../docs/feedback-api.md`. |
 | `functions/route-distance/` | P9-T08: start/destination text to coordinates and driving distance via openrouteservice (primary) or Geoapify (fallback), no migration (reuses `consume_rate_limit`). Contract: `../docs/route-distance-api.md`. |
 | `tests/database/*.sql` | pgTAP: `rls_policies.sql` (per-table matrix), `rls_bootstrap.sql`, `rls_coverage.sql` (every table has RLS and tests), `schema_invariants.sql`. |
 
@@ -60,7 +62,7 @@ make help       # without Docker the Docker targets print "needs Docker" and exi
 1. `supabase link`, then `supabase db push --dry-run` (printed to the job summary), then `supabase db push --yes`.
    No `--include-all`: out-of-order migrations fail instead of being applied silently.
 2. `supabase functions deploy <name> --use-api` for every directory in `functions/` with an `index.ts`
-   (`fuel-prices`, `fx-rates`, `route-distance`). `_shared/` and `tests/` are not functions. `verify_jwt` stays at its default
+   (`fuel-prices`, `fx-rates`, `route-distance`, `contact`, `submit-feedback`). `_shared/` and `tests/` are not functions. `verify_jwt` stays at its default
    (on); clients and pg_cron call with the anon key as bearer token.
 3. Smoke check: `supabase migration list` must show every local migration applied remotely, else the job fails.
 
@@ -93,10 +95,13 @@ The access token expires after 90 days: rotate it in the `staging` environment b
   | `ROUTE_RATE_LIMIT_SALT`, `ROUTE_ALLOWED_ORIGINS` | route-distance | salt for hashed rate-limit keys, CORS origins |
   | `ROUTE_SUGGEST_PER_MIN`, `ROUTE_DISTANCE_PER_MIN`, `ROUTE_SUGGEST_DAILY`, `ROUTE_DISTANCE_DAILY` | route-distance | optional limits (defaults 30/10 per user and minute, 1000/1500 global per UTC day: keep the daily ones below the provider quota) |
 
+  | `FEEDBACK_GITHUB_TOKEN`, `FEEDBACK_CLEANUP_TOKEN`, `FEEDBACK_*` | submit-feedback | GitHub token (Issues write only) and the cleanup secret; see `docs/feedback-api.md`. Without the token the function answers 503 and the app hides Feedback |
+
   `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected by the platform.
 - pg_cron warm-up jobs read Vault secrets and silently do nothing until they exist: `fuel_prices_url`,
   `fuel_prices_anon_key`, `fuel_prices_warm_token` (same value as `FUEL_WARM_TOKEN`), and `fx_rates_url`,
-  `fx_rates_anon_key`, `fx_rates_warm_token` (same value as `FX_WARM_TOKEN`). Create them in the SQL editor with
+  `fx_rates_anon_key`, `fx_rates_warm_token` (same value as `FX_WARM_TOKEN`), and `feedback_url`,
+  `feedback_anon_key`, `feedback_cleanup_token` (same value as `FEEDBACK_CLEANUP_TOKEN`). Create them in the SQL editor with
   `select vault.create_secret('<value>', '<name>');`.
 
 ## Auth audit logs (#206, owner step per project)

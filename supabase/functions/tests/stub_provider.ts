@@ -15,6 +15,7 @@ interface Seen {
 let listCalls: Seen[] = [];
 let oilCalls = 0;
 let fxCalls: { path: string; headers: Record<string, string> }[] = [];
+let githubCalls: { path: string; headers: Record<string, string>; body: string }[] = [];
 
 // Frankfurter imitation: rates per 1 unit of `from`. Dated requests answer the last working day.
 const fxRates: Record<string, Record<string, number>> = {
@@ -78,13 +79,23 @@ Deno.serve({ hostname: "0.0.0.0", port: 8787 }, (req) => {
     req.headers.forEach((v, k) => (headers[k] = v));
     return fxResponse(url, headers);
   }
+  // GitHub imitation for submit-feedback: records the issue request, answers 201.
+  if (req.method === "POST" && /^\/github\/repos\/[^/]+\/[^/]+\/issues$/.test(url.pathname)) {
+    return req.text().then((body) => {
+      const headers: Record<string, string> = {};
+      req.headers.forEach((v, k) => (headers[k] = v));
+      githubCalls.push({ path: url.pathname, headers, body });
+      return Response.json({ number: 1, html_url: "https://github.test/1" }, { status: 201 });
+    });
+  }
   if (url.pathname === "/__stats") {
-    return Response.json({ list: listCalls, oil: oilCalls, fx: fxCalls });
+    return Response.json({ list: listCalls, oil: oilCalls, fx: fxCalls, github: githubCalls });
   }
   if (url.pathname === "/__reset") {
     listCalls = [];
     oilCalls = 0;
     fxCalls = [];
+    githubCalls = [];
     return Response.json({});
   }
   return new Response("not found", { status: 404 });

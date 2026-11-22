@@ -6,6 +6,7 @@
   "fuel_cache_days": 2,
   "sentry_days": 30,
   "email_months": 12,
+  "feedback_days": 90,
   "privacy_request_years": 3,
   "platform_logs_max_days": 7,
   "inactive_account_months": 13,
