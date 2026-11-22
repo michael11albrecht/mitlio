@@ -16,6 +16,7 @@ import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
+import 'package:mitlio/features/recurring/data/repositories/recurring_providers.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
 import 'package:mitlio/features/sync/data/repositories/fake_connections_repository.dart';
 import 'package:mitlio/features/sync/data/sync_coordinator.dart';
@@ -90,6 +91,7 @@ class ExpensesApp {
     groupsRepositoryProvider.overrideWithValue(base.groups),
     membersRepositoryProvider.overrideWithValue(base.members),
     settlementsRepositoryProvider.overrideWithValue(base.settlements),
+    recurringRepositoryProvider.overrideWithValue(base.recurring),
     expensesRepositoryProvider.overrideWithValue(expenses),
     syncCoordinatorProvider.overrideWithValue(const NoSyncCoordinator()),
     connectionsRepositoryProvider.overrideWithValue(
@@ -327,6 +329,7 @@ ExpenseFormReady formReady({
   Currency currency = Currency.eur,
   int? ratePpm,
   int? groupAmountCents,
+  RecurrenceFrequency? recurrence,
 }) => ExpenseFormReady(
   group: sampleGroup,
   members: sampleMembers,
@@ -357,6 +360,7 @@ ExpenseFormReady formReady({
   payerError: payerError,
   showErrors: showErrors,
   saving: false,
+  recurrence: recurrence,
 );
 
 /// 120,00 € between four people, empty title: the typical state mid-entry.
@@ -415,3 +419,11 @@ Future<ProviderContainer> pumpExpenses(
   await tester.pumpAndSettle();
   return container;
 }
+
+/// 900,00 € rent that repeats monthly: the chip is on and says when it starts.
+final ExpenseFormReady recurringForm = formReady(
+  title: 'Miete',
+  amountCents: 90000,
+  preview: {'m-0': 22500, 'm-1': 22500, 'm-2': 22500, 'm-3': 22500},
+  recurrence: RecurrenceFrequency.monthly,
+);

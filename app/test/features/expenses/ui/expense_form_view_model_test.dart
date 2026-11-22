@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:mitlio/features/expenses/ui/expense_form_view_model.dart';
+import 'package:mitlio/features/recurring/data/repositories/recurring_repository.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 import '../../repo_test_support.dart';
@@ -549,6 +550,104 @@ void main() {
     });
   });
 
+  group('recurring', () {
+    Future<List<RecurringExpense>> rules() async =>
+        ok(await app.base.recurring.all());
+
+    Future<ExpenseFormViewModel> filled() async {
+      final f = await open();
+      f.setTitle('Miete');
+      f.setAmount(90000);
+      return f;
+    }
+
+    test('is off by default and offered for a new expense', () async {
+      await open();
+      expect(ready().recurrence, isNull);
+      expect(ready().canRecur, isTrue);
+      expect(vm().debugSnapshot()['recurrence'], isNull);
+    });
+
+    test('a one-off expense creates no rule', () async {
+      final f = await filled();
+      ok(await f.save());
+      expect(await rules(), isEmpty);
+    });
+
+    test('stores the expense and a rule that continues after it', () async {
+      final f = await filled();
+      f.setCategory('stay');
+      f.setRecurrence(RecurrenceFrequency.monthly);
+      expect(vm().debugSnapshot()['recurrence'], 'monthly');
+      final saved = ok(await f.save());
+      await pumpEventQueue();
+      final rule = (await rules()).single;
+      expect(rule.title, 'Miete');
+      expect(rule.amountCents, 90000);
+      expect(rule.payers, saved.expense.payers);
+      expect(rule.split, saved.split);
+      expect(rule.category, 'stay');
+      expect(rule.rule.frequency, RecurrenceFrequency.monthly);
+      expect(rule.rule.start, DateTime.utc(2026, 3));
+      // The first one is the expense just saved: not made twice.
+      expect(rule.lastGenerated, DateTime.utc(2026, 3));
+      expect(await app.expenses.watchExpenses(app.trip.id).first, hasLength(1));
+    });
+
+    test('a start in the past is caught up, month ends clamped', () async {
+      final f = await filled();
+      f.setDate(DateTime.utc(2026, 1, 31));
+      f.setRecurrence(RecurrenceFrequency.monthly);
+      ok(await f.save());
+      await pumpEventQueue();
+      final days = [
+        for (final e in await app.expenses.watchExpenses(app.trip.id).first)
+          e.expense.date.toIso8601String().substring(0, 10),
+      ]..sort();
+      // Today is 1 March 2026.
+      expect(days, ['2026-01-31', '2026-02-28']);
+    });
+
+    test('a failing rule store keeps the form and stores no expense', () async {
+      final f = await filled();
+      f.setRecurrence(RecurrenceFrequency.weekly);
+      app.base.recurring.failWith = const Storage('disk');
+      expect(err(await f.save()), const Storage('disk'));
+      expect(await app.expenses.watchExpenses(app.trip.id).first, isEmpty);
+      expect(ready().saving, isFalse);
+      app.base.recurring.failWith = null;
+      ok(await f.save());
+      expect(await rules(), hasLength(1));
+    });
+
+    test('a failing expense takes the rule back', () async {
+      final f = await filled();
+      f.setRecurrence(RecurrenceFrequency.yearly);
+      app.expenses.failWith = const Storage('disk');
+      expect(err(await f.save()), const Storage('disk'));
+      expect(await rules(), isEmpty);
+    });
+
+    test('a foreign amount cannot repeat', () async {
+      final f = await filled();
+      f.setRecurrence(RecurrenceFrequency.monthly);
+      f.setCurrency(Currency.usd);
+      expect(ready().canRecur, isFalse);
+      f.setRate(920000);
+      f.setAmount(1000);
+      ok(await f.save());
+      await pumpEventQueue();
+      expect(await rules(), isEmpty);
+    });
+
+    test('editing an expense offers no recurrence', () async {
+      final entry = await app.add();
+      final key = (groupId: app.trip.id, expenseId: entry.expense.id);
+      await open(key);
+      expect(ready(key).canRecur, isFalse);
+    });
+  });
+
   test('debugSnapshot describes loading, error and the filled form', () async {
     container.listen(expenseFormViewModelProvider(newKey()), (_, _) {});
     expect(vm().debugSnapshot()['status'], 'loading');
@@ -566,6 +665,7 @@ void main() {
       'currency': 'EUR',
       'date': '2026-03-01',
       'category': 'food',
+      'recurrence': null,
       'multiPayer': false,
       'payers': {id(0): 1000},
       'mode': 'equal',

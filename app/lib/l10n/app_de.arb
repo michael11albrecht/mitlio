@@ -2123,5 +2123,92 @@
   "carLinkFailed": "Konnte nicht prüfen, ob dieses Auto aus Meine Autos kommt. Tippe auf „Nochmal versuchen“.",
   "carEditTitle": "Auto bearbeiten",
   "carUpdatedInGroups": "{count, plural, =1{In 1 Gruppe aktualisiert} other{In {count} Gruppen aktualisiert}}",
-  "profileEntrySaved": "{kind, select, paypal{PayPal.Me gespeichert} iban{IBAN gespeichert} both{PayPal.Me und IBAN gespeichert} other{Noch keine Zahlungsdaten}}"
+  "profileEntrySaved": "{kind, select, paypal{PayPal.Me gespeichert} iban{IBAN gespeichert} both{PayPal.Me und IBAN gespeichert} other{Noch keine Zahlungsdaten}}",
+  "recurringChip": "Wiederkehrend",
+  "recurringEveryDays": "{count, plural, =1{Täglich} other{Alle {count} Tage}}",
+  "recurringEveryWeeks": "{count, plural, =1{Wöchentlich} other{Alle {count} Wochen}}",
+  "recurringEveryMonths": "{count, plural, =1{Monatlich} other{Alle {count} Monate}}",
+  "recurringEveryYears": "{count, plural, =1{Jährlich} other{Alle {count} Jahre}}",
+  "recurringFormHint": "Ab {date}, danach legt mitlio die Ausgabe automatisch an.",
+  "@recurringFormHint": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringTitle": "Wiederkehrende Ausgaben",
+  "recurringEmpty": "Noch nichts Wiederkehrendes. Tippe beim Hinzufügen einer Ausgabe auf „Wiederkehrend“.",
+  "recurringNext": "Nächste: {date}",
+  "@recurringNext": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringEnded": "Beendet",
+  "recurringPaused": "Pausiert",
+  "recurringPause": "Pausieren",
+  "recurringResume": "Fortsetzen",
+  "recurringDelete": "Löschen",
+  "recurringPausedDone": "„{title}“ pausiert",
+  "@recurringPausedDone": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringResumedDone": "„{title}“ läuft wieder",
+  "@recurringResumedDone": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringDeletedDone": "„{title}“ gelöscht. Bereits angelegte Ausgaben bleiben.",
+  "@recurringDeletedDone": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringCreated": "{count, plural, =1{1 wiederkehrende Ausgabe angelegt.} other{{count} wiederkehrende Ausgaben angelegt.}}",
+  "recurringSkipped": "{count, plural, =1{Ein älterer Termin wurde übersprungen.} other{{count} ältere Termine wurden übersprungen.}}",
+  "recurringFailed": "„{title}“ konnte nicht angelegt werden. {reason}",
+  "@recurringFailed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringFailedMore": "„{title}“ und {more} weitere konnten nicht angelegt werden. {reason}",
+  "@recurringFailedMore": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "more": {
+        "type": "int"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringCheckFailed": "Wiederkehrende Ausgaben konnten nicht geprüft werden. {reason}",
+  "@recurringCheckFailed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  }
 }

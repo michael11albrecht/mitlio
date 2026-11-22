@@ -15,6 +15,7 @@ const _localOnlyTables = {
   'local_sync_cursor',
   'local_settings',
   'local_places',
+  'local_recurring_expenses',
   'profile',
   'local_profile_bank',
   'user_vehicles',

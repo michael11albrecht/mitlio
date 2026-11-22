@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/router.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/features/push/ui/push_host.dart';
+import 'package:mitlio/features/recurring/ui/recurring_host.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 
 /// App strings plus Material/Widgets/Cupertino framework strings (de, en).
@@ -21,7 +22,8 @@ class MitlioApp extends ConsumerWidget {
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).appName,
       routerConfig: ref.watch(routerProvider),
-      builder: (context, child) => PushHost(child: child!),
+      builder: (context, child) =>
+          PushHost(child: RecurringHost(child: child!)),
       theme: MitlioTheme.light,
       darkTheme: MitlioTheme.dark,
       // themeMode stays at its default, ThemeMode.system.

@@ -64,4 +64,5 @@ Future<void> main() async {
   await form('expense_form_equal', equalForm);
   await form('expense_form_exact_error', exactErrorForm);
   await form('expense_form_foreign', foreignForm);
+  await form('expense_form_recurring', recurringForm);
 }

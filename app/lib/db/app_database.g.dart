@@ -11128,6 +11128,896 @@ class UserVehicleCostsCompanion extends UpdateCompanion<UserVehicleCostsRow> {
   }
 }
 
+class $LocalRecurringExpensesTable extends LocalRecurringExpenses
+    with TableInfo<$LocalRecurringExpensesTable, RecurringExpenseRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalRecurringExpensesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountCentsMeta = const VerificationMeta(
+    'amountCents',
+  );
+  @override
+  late final GeneratedColumn<int> amountCents = GeneratedColumn<int>(
+    'amount_cents',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(amountCents).isBiggerThanValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payersJsonMeta = const VerificationMeta(
+    'payersJson',
+  );
+  @override
+  late final GeneratedColumn<String> payersJson = GeneratedColumn<String>(
+    'payers_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _splitModeMeta = const VerificationMeta(
+    'splitMode',
+  );
+  @override
+  late final GeneratedColumn<String> splitMode = GeneratedColumn<String>(
+    'split_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _splitWeightsJsonMeta = const VerificationMeta(
+    'splitWeightsJson',
+  );
+  @override
+  late final GeneratedColumn<String> splitWeightsJson = GeneratedColumn<String>(
+    'split_weights_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _frequencyMeta = const VerificationMeta(
+    'frequency',
+  );
+  @override
+  late final GeneratedColumn<String> frequency = GeneratedColumn<String>(
+    'frequency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _intervalCountMeta = const VerificationMeta(
+    'intervalCount',
+  );
+  @override
+  late final GeneratedColumn<int> intervalCount = GeneratedColumn<int>(
+    'interval_count',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(intervalCount).isBiggerOrEqualValue(1),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startDateMeta = const VerificationMeta(
+    'startDate',
+  );
+  @override
+  late final GeneratedColumn<String> startDate = GeneratedColumn<String>(
+    'start_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endDateMeta = const VerificationMeta(
+    'endDate',
+  );
+  @override
+  late final GeneratedColumn<String> endDate = GeneratedColumn<String>(
+    'end_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastGeneratedMeta = const VerificationMeta(
+    'lastGenerated',
+  );
+  @override
+  late final GeneratedColumn<String> lastGenerated = GeneratedColumn<String>(
+    'last_generated',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _pausedMeta = const VerificationMeta('paused');
+  @override
+  late final GeneratedColumn<bool> paused = GeneratedColumn<bool>(
+    'paused',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("paused" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    groupId,
+    title,
+    amountCents,
+    payersJson,
+    splitMode,
+    splitWeightsJson,
+    category,
+    frequency,
+    intervalCount,
+    startDate,
+    endDate,
+    lastGenerated,
+    paused,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_recurring_expenses';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RecurringExpenseRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('amount_cents')) {
+      context.handle(
+        _amountCentsMeta,
+        amountCents.isAcceptableOrUnknown(
+          data['amount_cents']!,
+          _amountCentsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountCentsMeta);
+    }
+    if (data.containsKey('payers_json')) {
+      context.handle(
+        _payersJsonMeta,
+        payersJson.isAcceptableOrUnknown(data['payers_json']!, _payersJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_payersJsonMeta);
+    }
+    if (data.containsKey('split_mode')) {
+      context.handle(
+        _splitModeMeta,
+        splitMode.isAcceptableOrUnknown(data['split_mode']!, _splitModeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_splitModeMeta);
+    }
+    if (data.containsKey('split_weights_json')) {
+      context.handle(
+        _splitWeightsJsonMeta,
+        splitWeightsJson.isAcceptableOrUnknown(
+          data['split_weights_json']!,
+          _splitWeightsJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_splitWeightsJsonMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    }
+    if (data.containsKey('frequency')) {
+      context.handle(
+        _frequencyMeta,
+        frequency.isAcceptableOrUnknown(data['frequency']!, _frequencyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_frequencyMeta);
+    }
+    if (data.containsKey('interval_count')) {
+      context.handle(
+        _intervalCountMeta,
+        intervalCount.isAcceptableOrUnknown(
+          data['interval_count']!,
+          _intervalCountMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_intervalCountMeta);
+    }
+    if (data.containsKey('start_date')) {
+      context.handle(
+        _startDateMeta,
+        startDate.isAcceptableOrUnknown(data['start_date']!, _startDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startDateMeta);
+    }
+    if (data.containsKey('end_date')) {
+      context.handle(
+        _endDateMeta,
+        endDate.isAcceptableOrUnknown(data['end_date']!, _endDateMeta),
+      );
+    }
+    if (data.containsKey('last_generated')) {
+      context.handle(
+        _lastGeneratedMeta,
+        lastGenerated.isAcceptableOrUnknown(
+          data['last_generated']!,
+          _lastGeneratedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('paused')) {
+      context.handle(
+        _pausedMeta,
+        paused.isAcceptableOrUnknown(data['paused']!, _pausedMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RecurringExpenseRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecurringExpenseRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      amountCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_cents'],
+      )!,
+      payersJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payers_json'],
+      )!,
+      splitMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}split_mode'],
+      )!,
+      splitWeightsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}split_weights_json'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      ),
+      frequency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}frequency'],
+      )!,
+      intervalCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}interval_count'],
+      )!,
+      startDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}start_date'],
+      )!,
+      endDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}end_date'],
+      ),
+      lastGenerated: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_generated'],
+      ),
+      paused: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}paused'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalRecurringExpensesTable createAlias(String alias) {
+    return $LocalRecurringExpensesTable(attachedDatabase, alias);
+  }
+}
+
+class RecurringExpenseRow extends DataClass
+    implements Insertable<RecurringExpenseRow> {
+  final String id;
+  final String groupId;
+  final String title;
+
+  /// In the group currency.
+  final int amountCents;
+
+  /// JSON `{memberId: cents}`.
+  final String payersJson;
+
+  /// `equal`, `shares`, `percent` or `exact` (see `splitModeOf`).
+  final String splitMode;
+
+  /// JSON `{memberId: weight}` as persisted for expenses (`splitWeightOf`).
+  final String splitWeightsJson;
+  final String? category;
+
+  /// `daily`, `weekly`, `monthly` or `yearly`.
+  final String frequency;
+  final int intervalCount;
+
+  /// `YYYY-MM-DD`.
+  final String startDate;
+  final String? endDate;
+
+  /// The newest date an expense was created for; null while none was.
+  final String? lastGenerated;
+  final bool paused;
+  final DateTime createdAt;
+  const RecurringExpenseRow({
+    required this.id,
+    required this.groupId,
+    required this.title,
+    required this.amountCents,
+    required this.payersJson,
+    required this.splitMode,
+    required this.splitWeightsJson,
+    this.category,
+    required this.frequency,
+    required this.intervalCount,
+    required this.startDate,
+    this.endDate,
+    this.lastGenerated,
+    required this.paused,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['group_id'] = Variable<String>(groupId);
+    map['title'] = Variable<String>(title);
+    map['amount_cents'] = Variable<int>(amountCents);
+    map['payers_json'] = Variable<String>(payersJson);
+    map['split_mode'] = Variable<String>(splitMode);
+    map['split_weights_json'] = Variable<String>(splitWeightsJson);
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<String>(category);
+    }
+    map['frequency'] = Variable<String>(frequency);
+    map['interval_count'] = Variable<int>(intervalCount);
+    map['start_date'] = Variable<String>(startDate);
+    if (!nullToAbsent || endDate != null) {
+      map['end_date'] = Variable<String>(endDate);
+    }
+    if (!nullToAbsent || lastGenerated != null) {
+      map['last_generated'] = Variable<String>(lastGenerated);
+    }
+    map['paused'] = Variable<bool>(paused);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  LocalRecurringExpensesCompanion toCompanion(bool nullToAbsent) {
+    return LocalRecurringExpensesCompanion(
+      id: Value(id),
+      groupId: Value(groupId),
+      title: Value(title),
+      amountCents: Value(amountCents),
+      payersJson: Value(payersJson),
+      splitMode: Value(splitMode),
+      splitWeightsJson: Value(splitWeightsJson),
+      category: category == null && nullToAbsent
+          ? const Value.absent()
+          : Value(category),
+      frequency: Value(frequency),
+      intervalCount: Value(intervalCount),
+      startDate: Value(startDate),
+      endDate: endDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endDate),
+      lastGenerated: lastGenerated == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastGenerated),
+      paused: Value(paused),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory RecurringExpenseRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecurringExpenseRow(
+      id: serializer.fromJson<String>(json['id']),
+      groupId: serializer.fromJson<String>(json['groupId']),
+      title: serializer.fromJson<String>(json['title']),
+      amountCents: serializer.fromJson<int>(json['amountCents']),
+      payersJson: serializer.fromJson<String>(json['payersJson']),
+      splitMode: serializer.fromJson<String>(json['splitMode']),
+      splitWeightsJson: serializer.fromJson<String>(json['splitWeightsJson']),
+      category: serializer.fromJson<String?>(json['category']),
+      frequency: serializer.fromJson<String>(json['frequency']),
+      intervalCount: serializer.fromJson<int>(json['intervalCount']),
+      startDate: serializer.fromJson<String>(json['startDate']),
+      endDate: serializer.fromJson<String?>(json['endDate']),
+      lastGenerated: serializer.fromJson<String?>(json['lastGenerated']),
+      paused: serializer.fromJson<bool>(json['paused']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'groupId': serializer.toJson<String>(groupId),
+      'title': serializer.toJson<String>(title),
+      'amountCents': serializer.toJson<int>(amountCents),
+      'payersJson': serializer.toJson<String>(payersJson),
+      'splitMode': serializer.toJson<String>(splitMode),
+      'splitWeightsJson': serializer.toJson<String>(splitWeightsJson),
+      'category': serializer.toJson<String?>(category),
+      'frequency': serializer.toJson<String>(frequency),
+      'intervalCount': serializer.toJson<int>(intervalCount),
+      'startDate': serializer.toJson<String>(startDate),
+      'endDate': serializer.toJson<String?>(endDate),
+      'lastGenerated': serializer.toJson<String?>(lastGenerated),
+      'paused': serializer.toJson<bool>(paused),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  RecurringExpenseRow copyWith({
+    String? id,
+    String? groupId,
+    String? title,
+    int? amountCents,
+    String? payersJson,
+    String? splitMode,
+    String? splitWeightsJson,
+    Value<String?> category = const Value.absent(),
+    String? frequency,
+    int? intervalCount,
+    String? startDate,
+    Value<String?> endDate = const Value.absent(),
+    Value<String?> lastGenerated = const Value.absent(),
+    bool? paused,
+    DateTime? createdAt,
+  }) => RecurringExpenseRow(
+    id: id ?? this.id,
+    groupId: groupId ?? this.groupId,
+    title: title ?? this.title,
+    amountCents: amountCents ?? this.amountCents,
+    payersJson: payersJson ?? this.payersJson,
+    splitMode: splitMode ?? this.splitMode,
+    splitWeightsJson: splitWeightsJson ?? this.splitWeightsJson,
+    category: category.present ? category.value : this.category,
+    frequency: frequency ?? this.frequency,
+    intervalCount: intervalCount ?? this.intervalCount,
+    startDate: startDate ?? this.startDate,
+    endDate: endDate.present ? endDate.value : this.endDate,
+    lastGenerated: lastGenerated.present
+        ? lastGenerated.value
+        : this.lastGenerated,
+    paused: paused ?? this.paused,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  RecurringExpenseRow copyWithCompanion(LocalRecurringExpensesCompanion data) {
+    return RecurringExpenseRow(
+      id: data.id.present ? data.id.value : this.id,
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      title: data.title.present ? data.title.value : this.title,
+      amountCents: data.amountCents.present
+          ? data.amountCents.value
+          : this.amountCents,
+      payersJson: data.payersJson.present
+          ? data.payersJson.value
+          : this.payersJson,
+      splitMode: data.splitMode.present ? data.splitMode.value : this.splitMode,
+      splitWeightsJson: data.splitWeightsJson.present
+          ? data.splitWeightsJson.value
+          : this.splitWeightsJson,
+      category: data.category.present ? data.category.value : this.category,
+      frequency: data.frequency.present ? data.frequency.value : this.frequency,
+      intervalCount: data.intervalCount.present
+          ? data.intervalCount.value
+          : this.intervalCount,
+      startDate: data.startDate.present ? data.startDate.value : this.startDate,
+      endDate: data.endDate.present ? data.endDate.value : this.endDate,
+      lastGenerated: data.lastGenerated.present
+          ? data.lastGenerated.value
+          : this.lastGenerated,
+      paused: data.paused.present ? data.paused.value : this.paused,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecurringExpenseRow(')
+          ..write('id: $id, ')
+          ..write('groupId: $groupId, ')
+          ..write('title: $title, ')
+          ..write('amountCents: $amountCents, ')
+          ..write('payersJson: $payersJson, ')
+          ..write('splitMode: $splitMode, ')
+          ..write('splitWeightsJson: $splitWeightsJson, ')
+          ..write('category: $category, ')
+          ..write('frequency: $frequency, ')
+          ..write('intervalCount: $intervalCount, ')
+          ..write('startDate: $startDate, ')
+          ..write('endDate: $endDate, ')
+          ..write('lastGenerated: $lastGenerated, ')
+          ..write('paused: $paused, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    groupId,
+    title,
+    amountCents,
+    payersJson,
+    splitMode,
+    splitWeightsJson,
+    category,
+    frequency,
+    intervalCount,
+    startDate,
+    endDate,
+    lastGenerated,
+    paused,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecurringExpenseRow &&
+          other.id == this.id &&
+          other.groupId == this.groupId &&
+          other.title == this.title &&
+          other.amountCents == this.amountCents &&
+          other.payersJson == this.payersJson &&
+          other.splitMode == this.splitMode &&
+          other.splitWeightsJson == this.splitWeightsJson &&
+          other.category == this.category &&
+          other.frequency == this.frequency &&
+          other.intervalCount == this.intervalCount &&
+          other.startDate == this.startDate &&
+          other.endDate == this.endDate &&
+          other.lastGenerated == this.lastGenerated &&
+          other.paused == this.paused &&
+          other.createdAt == this.createdAt);
+}
+
+class LocalRecurringExpensesCompanion
+    extends UpdateCompanion<RecurringExpenseRow> {
+  final Value<String> id;
+  final Value<String> groupId;
+  final Value<String> title;
+  final Value<int> amountCents;
+  final Value<String> payersJson;
+  final Value<String> splitMode;
+  final Value<String> splitWeightsJson;
+  final Value<String?> category;
+  final Value<String> frequency;
+  final Value<int> intervalCount;
+  final Value<String> startDate;
+  final Value<String?> endDate;
+  final Value<String?> lastGenerated;
+  final Value<bool> paused;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const LocalRecurringExpensesCompanion({
+    this.id = const Value.absent(),
+    this.groupId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.amountCents = const Value.absent(),
+    this.payersJson = const Value.absent(),
+    this.splitMode = const Value.absent(),
+    this.splitWeightsJson = const Value.absent(),
+    this.category = const Value.absent(),
+    this.frequency = const Value.absent(),
+    this.intervalCount = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.endDate = const Value.absent(),
+    this.lastGenerated = const Value.absent(),
+    this.paused = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalRecurringExpensesCompanion.insert({
+    required String id,
+    required String groupId,
+    required String title,
+    required int amountCents,
+    required String payersJson,
+    required String splitMode,
+    required String splitWeightsJson,
+    this.category = const Value.absent(),
+    required String frequency,
+    required int intervalCount,
+    required String startDate,
+    this.endDate = const Value.absent(),
+    this.lastGenerated = const Value.absent(),
+    this.paused = const Value.absent(),
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       groupId = Value(groupId),
+       title = Value(title),
+       amountCents = Value(amountCents),
+       payersJson = Value(payersJson),
+       splitMode = Value(splitMode),
+       splitWeightsJson = Value(splitWeightsJson),
+       frequency = Value(frequency),
+       intervalCount = Value(intervalCount),
+       startDate = Value(startDate),
+       createdAt = Value(createdAt);
+  static Insertable<RecurringExpenseRow> custom({
+    Expression<String>? id,
+    Expression<String>? groupId,
+    Expression<String>? title,
+    Expression<int>? amountCents,
+    Expression<String>? payersJson,
+    Expression<String>? splitMode,
+    Expression<String>? splitWeightsJson,
+    Expression<String>? category,
+    Expression<String>? frequency,
+    Expression<int>? intervalCount,
+    Expression<String>? startDate,
+    Expression<String>? endDate,
+    Expression<String>? lastGenerated,
+    Expression<bool>? paused,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (groupId != null) 'group_id': groupId,
+      if (title != null) 'title': title,
+      if (amountCents != null) 'amount_cents': amountCents,
+      if (payersJson != null) 'payers_json': payersJson,
+      if (splitMode != null) 'split_mode': splitMode,
+      if (splitWeightsJson != null) 'split_weights_json': splitWeightsJson,
+      if (category != null) 'category': category,
+      if (frequency != null) 'frequency': frequency,
+      if (intervalCount != null) 'interval_count': intervalCount,
+      if (startDate != null) 'start_date': startDate,
+      if (endDate != null) 'end_date': endDate,
+      if (lastGenerated != null) 'last_generated': lastGenerated,
+      if (paused != null) 'paused': paused,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalRecurringExpensesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? groupId,
+    Value<String>? title,
+    Value<int>? amountCents,
+    Value<String>? payersJson,
+    Value<String>? splitMode,
+    Value<String>? splitWeightsJson,
+    Value<String?>? category,
+    Value<String>? frequency,
+    Value<int>? intervalCount,
+    Value<String>? startDate,
+    Value<String?>? endDate,
+    Value<String?>? lastGenerated,
+    Value<bool>? paused,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return LocalRecurringExpensesCompanion(
+      id: id ?? this.id,
+      groupId: groupId ?? this.groupId,
+      title: title ?? this.title,
+      amountCents: amountCents ?? this.amountCents,
+      payersJson: payersJson ?? this.payersJson,
+      splitMode: splitMode ?? this.splitMode,
+      splitWeightsJson: splitWeightsJson ?? this.splitWeightsJson,
+      category: category ?? this.category,
+      frequency: frequency ?? this.frequency,
+      intervalCount: intervalCount ?? this.intervalCount,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      lastGenerated: lastGenerated ?? this.lastGenerated,
+      paused: paused ?? this.paused,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (amountCents.present) {
+      map['amount_cents'] = Variable<int>(amountCents.value);
+    }
+    if (payersJson.present) {
+      map['payers_json'] = Variable<String>(payersJson.value);
+    }
+    if (splitMode.present) {
+      map['split_mode'] = Variable<String>(splitMode.value);
+    }
+    if (splitWeightsJson.present) {
+      map['split_weights_json'] = Variable<String>(splitWeightsJson.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (frequency.present) {
+      map['frequency'] = Variable<String>(frequency.value);
+    }
+    if (intervalCount.present) {
+      map['interval_count'] = Variable<int>(intervalCount.value);
+    }
+    if (startDate.present) {
+      map['start_date'] = Variable<String>(startDate.value);
+    }
+    if (endDate.present) {
+      map['end_date'] = Variable<String>(endDate.value);
+    }
+    if (lastGenerated.present) {
+      map['last_generated'] = Variable<String>(lastGenerated.value);
+    }
+    if (paused.present) {
+      map['paused'] = Variable<bool>(paused.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalRecurringExpensesCompanion(')
+          ..write('id: $id, ')
+          ..write('groupId: $groupId, ')
+          ..write('title: $title, ')
+          ..write('amountCents: $amountCents, ')
+          ..write('payersJson: $payersJson, ')
+          ..write('splitMode: $splitMode, ')
+          ..write('splitWeightsJson: $splitWeightsJson, ')
+          ..write('category: $category, ')
+          ..write('frequency: $frequency, ')
+          ..write('intervalCount: $intervalCount, ')
+          ..write('startDate: $startDate, ')
+          ..write('endDate: $endDate, ')
+          ..write('lastGenerated: $lastGenerated, ')
+          ..write('paused: $paused, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -11163,6 +12053,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $UserVehicleCostsTable userVehicleCosts = $UserVehicleCostsTable(
     this,
   );
+  late final $LocalRecurringExpensesTable localRecurringExpenses =
+      $LocalRecurringExpensesTable(this);
   late final Index membersGroupId = Index(
     'members_group_id',
     'CREATE INDEX members_group_id ON members (group_id)',
@@ -11219,6 +12111,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'expense_revisions_group_id',
     'CREATE INDEX expense_revisions_group_id ON expense_revisions (group_id)',
   );
+  late final Index localRecurringExpensesGroupId = Index(
+    'local_recurring_expenses_group_id',
+    'CREATE INDEX local_recurring_expenses_group_id ON local_recurring_expenses (group_id)',
+  );
   late final GroupsDao groupsDao = GroupsDao(this as AppDatabase);
   late final MembersDao membersDao = MembersDao(this as AppDatabase);
   late final ExpensesDao expensesDao = ExpensesDao(this as AppDatabase);
@@ -11240,6 +12136,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final UserVehiclesDao userVehiclesDao = UserVehiclesDao(
     this as AppDatabase,
   );
+  late final RecurringDao recurringDao = RecurringDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -11266,6 +12163,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     localProfileBank,
     userVehicles,
     userVehicleCosts,
+    localRecurringExpenses,
     membersGroupId,
     expensesGroupId,
     expensePayersExpenseId,
@@ -11280,6 +12178,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     ridesGroupDate,
     expenseRevisionsExpenseRevision,
     expenseRevisionsGroupId,
+    localRecurringExpensesGroupId,
   ];
   @override
   DriftDatabaseOptions get options =>
@@ -22376,6 +23275,437 @@ typedef $$UserVehicleCostsTableProcessedTableManager =
       UserVehicleCostsRow,
       PrefetchHooks Function({bool userVehicleId})
     >;
+typedef $$LocalRecurringExpensesTableCreateCompanionBuilder =
+    LocalRecurringExpensesCompanion Function({
+      required String id,
+      required String groupId,
+      required String title,
+      required int amountCents,
+      required String payersJson,
+      required String splitMode,
+      required String splitWeightsJson,
+      Value<String?> category,
+      required String frequency,
+      required int intervalCount,
+      required String startDate,
+      Value<String?> endDate,
+      Value<String?> lastGenerated,
+      Value<bool> paused,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$LocalRecurringExpensesTableUpdateCompanionBuilder =
+    LocalRecurringExpensesCompanion Function({
+      Value<String> id,
+      Value<String> groupId,
+      Value<String> title,
+      Value<int> amountCents,
+      Value<String> payersJson,
+      Value<String> splitMode,
+      Value<String> splitWeightsJson,
+      Value<String?> category,
+      Value<String> frequency,
+      Value<int> intervalCount,
+      Value<String> startDate,
+      Value<String?> endDate,
+      Value<String?> lastGenerated,
+      Value<bool> paused,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$LocalRecurringExpensesTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalRecurringExpensesTable> {
+  $$LocalRecurringExpensesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupId => $composableBuilder(
+    column: $table.groupId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountCents => $composableBuilder(
+    column: $table.amountCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payersJson => $composableBuilder(
+    column: $table.payersJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get splitMode => $composableBuilder(
+    column: $table.splitMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get splitWeightsJson => $composableBuilder(
+    column: $table.splitWeightsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get frequency => $composableBuilder(
+    column: $table.frequency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get intervalCount => $composableBuilder(
+    column: $table.intervalCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get startDate => $composableBuilder(
+    column: $table.startDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get endDate => $composableBuilder(
+    column: $table.endDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastGenerated => $composableBuilder(
+    column: $table.lastGenerated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get paused => $composableBuilder(
+    column: $table.paused,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalRecurringExpensesTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalRecurringExpensesTable> {
+  $$LocalRecurringExpensesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupId => $composableBuilder(
+    column: $table.groupId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountCents => $composableBuilder(
+    column: $table.amountCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payersJson => $composableBuilder(
+    column: $table.payersJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get splitMode => $composableBuilder(
+    column: $table.splitMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get splitWeightsJson => $composableBuilder(
+    column: $table.splitWeightsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get frequency => $composableBuilder(
+    column: $table.frequency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get intervalCount => $composableBuilder(
+    column: $table.intervalCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get startDate => $composableBuilder(
+    column: $table.startDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get endDate => $composableBuilder(
+    column: $table.endDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastGenerated => $composableBuilder(
+    column: $table.lastGenerated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get paused => $composableBuilder(
+    column: $table.paused,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalRecurringExpensesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalRecurringExpensesTable> {
+  $$LocalRecurringExpensesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get groupId =>
+      $composableBuilder(column: $table.groupId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<int> get amountCents => $composableBuilder(
+    column: $table.amountCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get payersJson => $composableBuilder(
+    column: $table.payersJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get splitMode =>
+      $composableBuilder(column: $table.splitMode, builder: (column) => column);
+
+  GeneratedColumn<String> get splitWeightsJson => $composableBuilder(
+    column: $table.splitWeightsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get frequency =>
+      $composableBuilder(column: $table.frequency, builder: (column) => column);
+
+  GeneratedColumn<int> get intervalCount => $composableBuilder(
+    column: $table.intervalCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => column);
+
+  GeneratedColumn<String> get endDate =>
+      $composableBuilder(column: $table.endDate, builder: (column) => column);
+
+  GeneratedColumn<String> get lastGenerated => $composableBuilder(
+    column: $table.lastGenerated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get paused =>
+      $composableBuilder(column: $table.paused, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$LocalRecurringExpensesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalRecurringExpensesTable,
+          RecurringExpenseRow,
+          $$LocalRecurringExpensesTableFilterComposer,
+          $$LocalRecurringExpensesTableOrderingComposer,
+          $$LocalRecurringExpensesTableAnnotationComposer,
+          $$LocalRecurringExpensesTableCreateCompanionBuilder,
+          $$LocalRecurringExpensesTableUpdateCompanionBuilder,
+          (
+            RecurringExpenseRow,
+            BaseReferences<
+              _$AppDatabase,
+              $LocalRecurringExpensesTable,
+              RecurringExpenseRow
+            >,
+          ),
+          RecurringExpenseRow,
+          PrefetchHooks Function()
+        > {
+  $$LocalRecurringExpensesTableTableManager(
+    _$AppDatabase db,
+    $LocalRecurringExpensesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalRecurringExpensesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$LocalRecurringExpensesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$LocalRecurringExpensesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> groupId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<int> amountCents = const Value.absent(),
+                Value<String> payersJson = const Value.absent(),
+                Value<String> splitMode = const Value.absent(),
+                Value<String> splitWeightsJson = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                Value<String> frequency = const Value.absent(),
+                Value<int> intervalCount = const Value.absent(),
+                Value<String> startDate = const Value.absent(),
+                Value<String?> endDate = const Value.absent(),
+                Value<String?> lastGenerated = const Value.absent(),
+                Value<bool> paused = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalRecurringExpensesCompanion(
+                id: id,
+                groupId: groupId,
+                title: title,
+                amountCents: amountCents,
+                payersJson: payersJson,
+                splitMode: splitMode,
+                splitWeightsJson: splitWeightsJson,
+                category: category,
+                frequency: frequency,
+                intervalCount: intervalCount,
+                startDate: startDate,
+                endDate: endDate,
+                lastGenerated: lastGenerated,
+                paused: paused,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String groupId,
+                required String title,
+                required int amountCents,
+                required String payersJson,
+                required String splitMode,
+                required String splitWeightsJson,
+                Value<String?> category = const Value.absent(),
+                required String frequency,
+                required int intervalCount,
+                required String startDate,
+                Value<String?> endDate = const Value.absent(),
+                Value<String?> lastGenerated = const Value.absent(),
+                Value<bool> paused = const Value.absent(),
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => LocalRecurringExpensesCompanion.insert(
+                id: id,
+                groupId: groupId,
+                title: title,
+                amountCents: amountCents,
+                payersJson: payersJson,
+                splitMode: splitMode,
+                splitWeightsJson: splitWeightsJson,
+                category: category,
+                frequency: frequency,
+                intervalCount: intervalCount,
+                startDate: startDate,
+                endDate: endDate,
+                lastGenerated: lastGenerated,
+                paused: paused,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $LocalRecurringExpensesTable,
+                    RecurringExpenseRow
+                  >(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $LocalRecurringExpensesTable,
+                    RecurringExpenseRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalRecurringExpensesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalRecurringExpensesTable,
+      RecurringExpenseRow,
+      $$LocalRecurringExpensesTableFilterComposer,
+      $$LocalRecurringExpensesTableOrderingComposer,
+      $$LocalRecurringExpensesTableAnnotationComposer,
+      $$LocalRecurringExpensesTableCreateCompanionBuilder,
+      $$LocalRecurringExpensesTableUpdateCompanionBuilder,
+      (
+        RecurringExpenseRow,
+        BaseReferences<
+          _$AppDatabase,
+          $LocalRecurringExpensesTable,
+          RecurringExpenseRow
+        >,
+      ),
+      RecurringExpenseRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -22422,4 +23752,9 @@ class $AppDatabaseManager {
       $$UserVehiclesTableTableManager(_db, _db.userVehicles);
   $$UserVehicleCostsTableTableManager get userVehicleCosts =>
       $$UserVehicleCostsTableTableManager(_db, _db.userVehicleCosts);
+  $$LocalRecurringExpensesTableTableManager get localRecurringExpenses =>
+      $$LocalRecurringExpensesTableTableManager(
+        _db,
+        _db.localRecurringExpenses,
+      );
 }

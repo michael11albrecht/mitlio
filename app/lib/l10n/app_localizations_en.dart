@@ -3141,4 +3141,135 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get recurringChip => 'Recurring';
+
+  @override
+  String recurringEveryDays(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Every $count days',
+      one: 'Daily',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringEveryWeeks(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Every $count weeks',
+      one: 'Weekly',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringEveryMonths(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Every $count months',
+      one: 'Monthly',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringEveryYears(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Every $count years',
+      one: 'Yearly',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringFormHint(String date) {
+    return 'From $date, mitlio then adds this expense automatically.';
+  }
+
+  @override
+  String get recurringTitle => 'Recurring expenses';
+
+  @override
+  String get recurringEmpty =>
+      'Nothing recurring yet. Tap \"Recurring\" when you add an expense.';
+
+  @override
+  String recurringNext(String date) {
+    return 'Next: $date';
+  }
+
+  @override
+  String get recurringEnded => 'Ended';
+
+  @override
+  String get recurringPaused => 'Paused';
+
+  @override
+  String get recurringPause => 'Pause';
+
+  @override
+  String get recurringResume => 'Resume';
+
+  @override
+  String get recurringDelete => 'Delete';
+
+  @override
+  String recurringPausedDone(String title) {
+    return '\"$title\" paused';
+  }
+
+  @override
+  String recurringResumedDone(String title) {
+    return '\"$title\" is running again';
+  }
+
+  @override
+  String recurringDeletedDone(String title) {
+    return '\"$title\" deleted. Expenses already added stay.';
+  }
+
+  @override
+  String recurringCreated(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count recurring expenses added.',
+      one: '1 recurring expense added.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringSkipped(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count older dates were skipped.',
+      one: 'One older date was skipped.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringFailed(String title, String reason) {
+    return '\"$title\" could not be added. $reason';
+  }
+
+  @override
+  String recurringFailedMore(String title, int more, String reason) {
+    return '\"$title\" and $more more could not be added. $reason';
+  }
+
+  @override
+  String recurringCheckFailed(String reason) {
+    return 'Recurring expenses could not be checked. $reason';
+  }
 }

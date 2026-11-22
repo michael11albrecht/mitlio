@@ -6,6 +6,7 @@ import 'package:mitlio/features/expenses/ui/expense_form_view_model.dart';
 import 'package:mitlio/features/expenses/ui/expenses_view_model.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view_model.dart';
 import 'package:mitlio/features/groups/ui/groups_view_model.dart';
+import 'package:mitlio/features/recurring/ui/recurring_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_view_model.dart';
 import 'package:mitlio/features/rides/ui/template_form_view_model.dart';
@@ -46,6 +47,16 @@ String? _openTripGroupId(ProviderContainer c) {
   return segments.length == 3 &&
           segments.first == 'groups' &&
           segments[2] == 'trip'
+      ? segments[1]
+      : null;
+}
+
+/// Id of the group whose recurring expenses list is the current route.
+String? _openRecurringGroupId(ProviderContainer c) {
+  final segments = c.read(routerProvider).state.uri.pathSegments;
+  return segments.length == 3 &&
+          segments.first == 'groups' &&
+          segments[2] == 'recurring'
       ? segments[1]
       : null;
 }
@@ -109,6 +120,12 @@ DebugSnapshotRegistry buildSnapshotRegistry(ProviderContainer c) =>
             : c
                   .read(expenseFormViewModelProvider(key).notifier)
                   .debugSnapshot();
+      })
+      ..register('recurring', () {
+        final id = _openRecurringGroupId(c);
+        return id == null
+            ? {'status': 'not_open'}
+            : c.read(recurringViewModelProvider(id).notifier).debugSnapshot();
       })
       ..register('trip', () {
         final id = _openTripGroupId(c);

@@ -3158,4 +3158,135 @@ class AppLocalizationsDe extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get recurringChip => 'Wiederkehrend';
+
+  @override
+  String recurringEveryDays(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Alle $count Tage',
+      one: 'Täglich',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringEveryWeeks(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Alle $count Wochen',
+      one: 'Wöchentlich',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringEveryMonths(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Alle $count Monate',
+      one: 'Monatlich',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringEveryYears(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Alle $count Jahre',
+      one: 'Jährlich',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringFormHint(String date) {
+    return 'Ab $date, danach legt mitlio die Ausgabe automatisch an.';
+  }
+
+  @override
+  String get recurringTitle => 'Wiederkehrende Ausgaben';
+
+  @override
+  String get recurringEmpty =>
+      'Noch nichts Wiederkehrendes. Tippe beim Hinzufügen einer Ausgabe auf „Wiederkehrend“.';
+
+  @override
+  String recurringNext(String date) {
+    return 'Nächste: $date';
+  }
+
+  @override
+  String get recurringEnded => 'Beendet';
+
+  @override
+  String get recurringPaused => 'Pausiert';
+
+  @override
+  String get recurringPause => 'Pausieren';
+
+  @override
+  String get recurringResume => 'Fortsetzen';
+
+  @override
+  String get recurringDelete => 'Löschen';
+
+  @override
+  String recurringPausedDone(String title) {
+    return '„$title“ pausiert';
+  }
+
+  @override
+  String recurringResumedDone(String title) {
+    return '„$title“ läuft wieder';
+  }
+
+  @override
+  String recurringDeletedDone(String title) {
+    return '„$title“ gelöscht. Bereits angelegte Ausgaben bleiben.';
+  }
+
+  @override
+  String recurringCreated(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count wiederkehrende Ausgaben angelegt.',
+      one: '1 wiederkehrende Ausgabe angelegt.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringSkipped(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ältere Termine wurden übersprungen.',
+      one: 'Ein älterer Termin wurde übersprungen.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringFailed(String title, String reason) {
+    return '„$title“ konnte nicht angelegt werden. $reason';
+  }
+
+  @override
+  String recurringFailedMore(String title, int more, String reason) {
+    return '„$title“ und $more weitere konnten nicht angelegt werden. $reason';
+  }
+
+  @override
+  String recurringCheckFailed(String reason) {
+    return 'Wiederkehrende Ausgaben konnten nicht geprüft werden. $reason';
+  }
 }

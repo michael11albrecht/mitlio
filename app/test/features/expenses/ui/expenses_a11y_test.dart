@@ -37,6 +37,7 @@ void main() {
       ('equal', equalForm),
       ('exact with error', exactErrorForm),
       ('foreign currency', foreignForm),
+      ('recurring', recurringForm),
       (
         'shares',
         formReady(

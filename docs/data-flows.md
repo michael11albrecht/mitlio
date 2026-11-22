@@ -47,6 +47,7 @@ Stored on the server (tables of migrations 0001 to 0014):
   name, title, amount, currency, member ids; no client access, no IBAN, no notes). Deleted with the account.
 
 Never sent: full IBAN, BIC, account holder (`local_member_bank`, `local_profile_bank`), saved places (`local_places`),
+recurring expense rules (`local_recurring_expenses`, P9-T03: device-local for v1, only the expenses they create sync),
 route lookup text and place labels (only the distance goes into the ride), location, the crash-report choice.
 
 Notes for the policy text:
