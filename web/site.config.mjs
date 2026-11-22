@@ -29,3 +29,11 @@ export const CONTACT_API_URL = FUEL_API_URL ? new URL('contact', FUEL_API_URL).h
 // (AA:BB:...:FF, 32 bytes), including the Play App Signing key once the app is on Play.
 export const APPLE_TEAM_ID = process.env.APPLE_TEAM_ID ?? '';
 export const ANDROID_SHA256_CERT_FINGERPRINTS = process.env.ANDROID_SHA256_CERT_FINGERPRINTS ?? '';
+
+// From-to route field (PW-T12, issue #207). OFF by default: set ROUTE_WEB=1 at build time to render the collapsed
+// "Start und Ziel" row. It talks to the `route-distance` Edge Function next to `fuel-prices` (same Supabase origin, so
+// the CSP connect-src needs no change) and sends typed addresses to openrouteservice. The Datenschutz section that
+// names it (src/i18n/legal.ts, routePrivacy) is rendered by the same flag and still carries an [[ENTWURF ...]]
+// placeholder that fails a production build until the owner has signed off the wording.
+export const ROUTE_WEB = process.env.ROUTE_WEB === '1';
+export const ROUTE_API_URL = ROUTE_WEB && FUEL_API_URL ? new URL('route-distance', FUEL_API_URL).href : '';

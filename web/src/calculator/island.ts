@@ -25,6 +25,7 @@ import {
   type TripInput,
 } from './core';
 import { initFuel } from './fuel';
+import { initRoute } from './route';
 import { buildDeepLink } from '../lib/deeplink';
 import { buildShareText, whatsappHref } from '../lib/share';
 
@@ -226,6 +227,17 @@ if (root) {
       state = { ...state, price: text };
       touched.add('price');
       input.price.value = text;
+      commit();
+    },
+  });
+
+  // From-to route field; absent unless ROUTE_WEB=1 (then the row is not rendered and nothing here runs).
+  initRoute({
+    locale,
+    applyKm: (text) => {
+      state = { ...state, km: text };
+      touched.add('km');
+      input.km.value = text;
       commit();
     },
   });

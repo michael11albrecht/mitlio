@@ -12,6 +12,7 @@
 // Every retention period in the text is interpolated from supabase/retention.json (docs/retention.md), so the
 // text cannot drift from the code. Change a period there, not here.
 import retention from '../../../supabase/retention.json' with { type: 'json' };
+import { ROUTE_WEB } from '../../site.config.mjs';
 import type { Locale } from './index';
 
 export interface LegalSection {
@@ -703,15 +704,71 @@ const syncEn: SyncPrivacy = {
   },
 };
 
-/** Both languages: the live text, plus the sync variant when `syncLive` is true. */
-export function buildLegalTexts(syncLive: boolean): Record<Locale, Record<LegalKey, LegalText>> {
+// ---------------------------------------------------------------------------------------------------------------
+// From-to route field on the website (PW-T12, issue #207). ENTWURF / DRAFT: NOT legally reviewed.
+// Rendered only when the website is built with ROUTE_WEB=1 (site.config.mjs), the same flag that renders the field.
+// The [[ENTWURF ...]] marker is a placeholder on purpose: a production build fails while it is in the text
+// (assertNoPlaceholders), so the field cannot go live with an unreviewed privacy claim. After the owner's legal
+// sign-off, delete the marker paragraph in both languages.
+//
+// Checked against docs/route-distance-api.md and supabase/functions/_shared/route.ts: the typed text goes to our
+// Edge Function, which sends it to openrouteservice; only the function's egress IP reaches the provider; the
+// function logs neither text nor coordinates; rate limiting keeps only a salted hash.
+// ---------------------------------------------------------------------------------------------------------------
+
+export const routePrivacySectionDe: LegalSection = {
+  heading: 'Strecke berechnen (Website)',
+  paragraphs: [
+    'Im Rechner auf der Website kannst du optional „Start und Ziel eingeben, Strecke berechnen“ aufklappen. Erst wenn du dort mindestens 3 Zeichen tippst, sendet dein Browser den Text an unseren Server (Edge Function bei Supabase). Beim Laden der Seite wird nichts gesendet. Die Eingabe ist verzögert (ca. 0,3 Sekunden nach dem letzten Tastendruck), damit nicht jeder Buchstabe einzeln gesendet wird.',
+    'Unser Server leitet den Text für die Adressvorschläge und, nach deiner Auswahl, die Koordinaten von Start und Ziel für die Streckenberechnung an openrouteservice weiter (HeiGIT gGmbH, Heidelberg, Deutschland). openrouteservice sieht nur die Adresse unseres Servers, nicht deine IP-Adresse und keine Nutzerkennung. Eine Adresse, die du tippst, kann ein personenbezogenes Datum sein (zum Beispiel deine Wohnadresse). Wir speichern weder den Text noch die Koordinaten und schreiben sie nicht in Protokolle.',
+    'Für den Missbrauchsschutz gilt „Missbrauchsschutz (Rate Limit)“: Dort liegt nur ein gesalzener Hash deiner Anfrage-Kennung, nie der Text.',
+    'Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (du löst die Berechnung selbst aus). Die Funktion ist freiwillig. Die Kilometer kannst du jederzeit von Hand eintragen. Die Karten- und Routendaten stammen von OpenStreetMap-Mitwirkenden (ODbL), bereitgestellt über openrouteservice.',
+    '[[ENTWURF: Rechtsprüfung durch den Inhaber steht aus (Rechtsgrundlage, Auftragsverarbeitung bzw. Verantwortlichkeit mit HeiGIT, Ersatzanbieter Geoapify falls aktiviert). Diesen Absatz nach der Freigabe entfernen.]]',
+  ],
+};
+
+export const routePrivacySectionEn: LegalSection = {
+  heading: 'Calculating a route (website)',
+  paragraphs: [
+    'In the calculator on the website you can optionally open “Enter start and destination, calculate distance”. Only once you type at least 3 characters there does your browser send the text to our server (an Edge Function at Supabase). Nothing is sent when the page loads. Input is debounced (about 0.3 seconds after the last keystroke) so that not every single letter is sent.',
+    'Our server forwards the text for the address suggestions and, after you pick, the coordinates of start and destination for the route calculation to openrouteservice (HeiGIT gGmbH, Heidelberg, Germany). openrouteservice only sees the address of our server, not your IP address and no user ID. An address you type can be personal data (for example your home address). We store neither the text nor the coordinates and do not write them to logs.',
+    'For abuse protection, “Abuse protection (rate limit)” applies: only a salted hash of your request identifier is kept there, never the text.',
+    'The legal basis is Art. 6(1)(b) GDPR (you trigger the calculation yourself). The feature is optional. You can always enter the kilometres by hand. Map and route data come from OpenStreetMap contributors (ODbL), provided via openrouteservice.',
+    '[[ENTWURF: legal review by the owner is outstanding (legal basis, processing or joint responsibility with HeiGIT, fallback provider Geoapify if enabled). Remove this paragraph after sign-off.]]',
+  ],
+};
+
+const routeRecipientDe = 'HeiGIT gGmbH (openrouteservice): erhält Adresstext und Koordinaten ohne deine IP-Adresse, siehe „Strecke berechnen (Website)“.';
+const routeRecipientEn = 'HeiGIT gGmbH (openrouteservice): receives address text and coordinates without your IP address, see “Calculating a route (website)”.';
+
+/** The privacy text plus the route section after the fuel section and a recipient line. Throws on a renamed heading. */
+export function withRoute(text: LegalText, section: LegalSection, insertAfter: string, recipients: string, recipient: string): LegalText {
+  const headings = text.sections.map((s) => s.heading);
+  for (const heading of [insertAfter, recipients]) {
+    if (!headings.includes(heading)) throw new Error(`Route privacy text refers to unknown section "${heading}"`);
+  }
+  const withRecipient = text.sections.map((s) => (s.heading === recipients ? { ...s, items: [...(s.items ?? []), recipient] } : s));
+  const at = headings.indexOf(insertAfter) + 1;
+  return { sections: [...withRecipient.slice(0, at), section, ...withRecipient.slice(at)] };
+}
+
+/** Both languages: the live text, plus the sync variant when `syncLive` and the route section when `routeLive`. */
+export function buildLegalTexts(syncLive: boolean, routeLive = false): Record<Locale, Record<LegalKey, LegalText>> {
+  const privacyDe = syncLive ? withSync(de.privacy, syncDe) : de.privacy;
+  const privacyEn = syncLive ? withSync(en.privacy, syncEn) : en.privacy;
   return {
-    de: { imprint: de.imprint, privacy: syncLive ? withSync(de.privacy, syncDe) : de.privacy },
-    en: { imprint: en.imprint, privacy: syncLive ? withSync(en.privacy, syncEn) : en.privacy },
+    de: {
+      imprint: de.imprint,
+      privacy: routeLive ? withRoute(privacyDe, routePrivacySectionDe, 'Spritpreise', 'Empfänger', routeRecipientDe) : privacyDe,
+    },
+    en: {
+      imprint: en.imprint,
+      privacy: routeLive ? withRoute(privacyEn, routePrivacySectionEn, 'Fuel prices', 'Recipients', routeRecipientEn) : privacyEn,
+    },
   };
 }
 
-export const legalTexts = buildLegalTexts(SYNC_PRIVACY_RENDERED);
+export const legalTexts = buildLegalTexts(SYNC_PRIVACY_RENDERED, ROUTE_WEB);
 
 /** The sections that must be part of the rendered privacy text once the app talks to a Supabase project. */
 export const syncPrivacySections: Record<Locale, readonly LegalSection[]> = {

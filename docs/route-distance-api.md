@@ -113,3 +113,14 @@ doubles the distance. Failures (offline, rate limit with minutes, no route, serv
 manual entry never depends on the service. Only the distance is stored on a ride, never the labels. Saved places
 (Zuhause, Arbeit) live in the local-only Drift table `local_places` and are wiped by "delete my data".
 DebugDrive: `ext.mitlio.route.suggest`, `route.distance`, `route.manualEdit`, `route.recalculate`, `route.reset`.
+
+## Web calculator (PW-T12, #207)
+
+The website calculator has the same collapsed "Start und Ziel eingeben, Strecke berechnen" row (`web/src/calculator/route.ts`).
+It is **off by default**: build with `ROUTE_WEB=1` (and `FUEL_API_URL`) to render it. The endpoint is
+`route-distance` next to `fuel-prices`, so the CSP `connect-src` already covers it. The same flag renders the draft
+Datenschutz section (`web/src/i18n/legal.ts`), which carries an `[[ENTWURF ...]]` placeholder: a production build fails
+until the owner has signed off the wording and removed it. Owner steps: `ORS_API_KEY` secret and
+`ROUTE_ALLOWED_ORIGINS` (the web origins, e.g. `https://mitlio.web.app,https://mitlio.de,https://www.mitlio.de`, set with
+`supabase secrets set`; unlike `FUEL_ALLOWED_ORIGINS` no workflow sets it). Typing is debounced (300 ms, from 3
+characters); `Retry-After` is exposed by CORS so the 429 message can name the wait.

@@ -339,6 +339,8 @@ export function corsHeaders(origin: string | null, allowlist: string): Record<st
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
+    // The web calculator shows the retry time of a 429; a browser only reads this header when exposed.
+    "Access-Control-Expose-Headers": "Retry-After",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
   };

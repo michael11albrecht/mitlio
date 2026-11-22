@@ -368,6 +368,7 @@ Deno.test("corsHeaders", () => {
   const h = corsHeaders("https://a.test", "https://x.test, https://a.test");
   assertEquals(h["Access-Control-Allow-Origin"], "https://a.test");
   assertEquals(h["Access-Control-Allow-Methods"], "POST, OPTIONS");
+  assertEquals(h["Access-Control-Expose-Headers"], "Retry-After");
 });
 
 // ---------------------------------------------------------------------------
