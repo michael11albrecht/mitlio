@@ -1,8 +1,9 @@
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/rides/ui/driver_prompt_sheet.dart';
+import 'package:mitlio/features/rides/ui/month_settle_view.dart';
 import 'package:mitlio/features/rides/ui/ride_calendar.dart';
-import 'package:mitlio/features/rides/ui/ride_settle_widgets.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_view.dart';
@@ -77,17 +78,25 @@ void main() {
     semantics.dispose();
   });
 
-  group('settlement sheet', () {
-    for (final (name, state) in <(String, RidesLoaded)>[
-      ('preview', settleDueRides),
-      ('nothing to settle', settledMonthRides),
-    ]) {
+  group('month settlement flow', () {
+    final month = settleDueRides.month;
+    for (final (name, state, progress)
+        in <(String, RidesLoaded, List<Override>)>[
+          ('rides', settleDueRides, monthSettleProgress(month)),
+          ('amounts', settleDueRides, monthSettleProgress(month, step: 1)),
+          (
+            'confirm',
+            settleDueRides,
+            monthSettleProgress(month, finished: true),
+          ),
+          ('nothing to settle', settledMonthRides, monthSettleProgress(month)),
+        ]) {
       forEachMode(
         name,
-        () => scopedRides(
-          ridesStateOverride(state),
-          const RideSettleSheet(groupId: 'g-1'),
-        ),
+        () => scopedRides([
+          ...ridesStateOverride(state),
+          ...progress,
+        ], const MonthSettleView(groupId: 'g-1')),
         (tester, _, _) => expectAccessible(tester),
       );
     }

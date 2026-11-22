@@ -87,7 +87,7 @@ class OnboardingBody extends ConsumerWidget {
               _Hint(l10n.onboardingCommuteHint),
               const SizedBox(height: Spacing.md),
               FilledButton.tonal(
-                onPressed: () => unawaited(context.push('/groups/new')),
+                onPressed: () => unawaited(context.push('/welcome/group')),
                 child: Text(l10n.onboardingGroup),
               ),
               _Hint(l10n.onboardingGroupHint),

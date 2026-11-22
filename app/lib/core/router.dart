@@ -9,6 +9,7 @@ import 'package:mitlio/features/groups/ui/archived_groups_view.dart';
 import 'package:mitlio/features/groups/ui/group_detail_view.dart';
 import 'package:mitlio/features/groups/ui/group_form_view.dart';
 import 'package:mitlio/features/groups/ui/groups_view.dart';
+import 'package:mitlio/features/onboarding/ui/first_group_view.dart';
 import 'package:mitlio/features/onboarding/ui/onboarding_view.dart';
 import 'package:mitlio/features/profile/ui/car_cost_flow_view.dart';
 import 'package:mitlio/features/profile/ui/car_edit_view.dart';
@@ -17,6 +18,8 @@ import 'package:mitlio/features/profile/ui/my_cars_view.dart';
 import 'package:mitlio/features/profile/ui/my_qr_view.dart';
 import 'package:mitlio/features/profile/ui/profile_setup_view.dart';
 import 'package:mitlio/features/push/ui/notification_settings_view.dart';
+import 'package:mitlio/features/rides/ui/commute_template_view.dart';
+import 'package:mitlio/features/rides/ui/month_settle_view.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/template_form_view.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view.dart';
@@ -50,6 +53,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'welcome',
             builder: (context, state) => const OnboardingView(),
+            routes: [
+              GoRoute(
+                path: 'group',
+                builder: (context, state) => const FirstGroupView(),
+              ),
+            ],
           ),
           // The trip calculator without a group (first run).
           GoRoute(
@@ -154,6 +163,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                     RidesSetupView(groupId: state.pathParameters['id']!),
               ),
               GoRoute(
+                path: 'rides/settle',
+                builder: (context, state) =>
+                    MonthSettleView(groupId: state.pathParameters['id']!),
+              ),
+              GoRoute(
                 path: 'rides/vehicles/new',
                 builder: (context, state) => VehicleFormView(
                   groupId: state.pathParameters['id']!,
@@ -170,7 +184,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'rides/templates/new',
                 builder: (context, state) =>
-                    TemplateFormView(groupId: state.pathParameters['id']!),
+                    CommuteTemplateView(groupId: state.pathParameters['id']!),
               ),
               GoRoute(
                 path: 'rides/templates/:templateId',

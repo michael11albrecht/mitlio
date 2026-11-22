@@ -2209,6 +2209,84 @@ abstract class AppLocalizations {
   /// **'Maut (optional)'**
   String get templateTollsLabel;
 
+  /// No description provided for @commuteNameTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie heißt die Strecke?'**
+  String get commuteNameTitle;
+
+  /// No description provided for @commuteRouteTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie weit ist es?'**
+  String get commuteRouteTitle;
+
+  /// No description provided for @commuteVehicleTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Mit welchem Auto?'**
+  String get commuteVehicleTitle;
+
+  /// No description provided for @commutePeopleTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer fährt, wer fährt mit?'**
+  String get commutePeopleTitle;
+
+  /// No description provided for @commuteTollsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Gibt es Maut?'**
+  String get commuteTollsTitle;
+
+  /// No description provided for @commuteFinishTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Deine Strecke „{name}“'**
+  String commuteFinishTitle(String name);
+
+  /// No description provided for @commuteSummaryRoundTrip.
+  ///
+  /// In de, this message translates to:
+  /// **'{km} km, hin und zurück'**
+  String commuteSummaryRoundTrip(String km);
+
+  /// No description provided for @commuteSummaryOneWay.
+  ///
+  /// In de, this message translates to:
+  /// **'{km} km, einfach'**
+  String commuteSummaryOneWay(String km);
+
+  /// No description provided for @commuteSummaryVehicle.
+  ///
+  /// In de, this message translates to:
+  /// **'Auto: {name}'**
+  String commuteSummaryVehicle(String name);
+
+  /// No description provided for @commuteSummaryDriver.
+  ///
+  /// In de, this message translates to:
+  /// **'Fährt meistens: {name}'**
+  String commuteSummaryDriver(String name);
+
+  /// No description provided for @commuteSummaryPassengers.
+  ///
+  /// In de, this message translates to:
+  /// **'Fährt mit: {names}'**
+  String commuteSummaryPassengers(String names);
+
+  /// No description provided for @commuteSummaryTolls.
+  ///
+  /// In de, this message translates to:
+  /// **'Maut: {amount}'**
+  String commuteSummaryTolls(String amount);
+
+  /// No description provided for @commuteSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Strecke speichern'**
+  String get commuteSave;
+
   /// No description provided for @templateErrorName.
   ///
   /// In de, this message translates to:
@@ -2292,6 +2370,30 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Abrechnen'**
   String get ridesSettleAction;
+
+  /// No description provided for @monthSettleRidesTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Das war im {month} los'**
+  String monthSettleRidesTitle(String month);
+
+  /// No description provided for @monthSettleAmountsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer bekommt was?'**
+  String get monthSettleAmountsTitle;
+
+  /// No description provided for @monthSettleSummaryRides.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{1 Fahrt wird gesperrt} other{{count} Fahrten werden gesperrt}}'**
+  String monthSettleSummaryRides(int count);
+
+  /// No description provided for @monthSettleSummaryExpenses.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{Daraus wird 1 Ausgabe} other{Daraus werden {count} Ausgaben}}'**
+  String monthSettleSummaryExpenses(int count);
 
   /// No description provided for @ridesSettleDone.
   ///
@@ -2790,6 +2892,78 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Für Reisen, die WG oder einen Abend zu mehreren.'**
   String get onboardingGroupHint;
+
+  /// No description provided for @firstGroupNameTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie heißt deine Gruppe?'**
+  String get firstGroupNameTitle;
+
+  /// No description provided for @firstGroupPeopleTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wer ist dabei?'**
+  String get firstGroupPeopleTitle;
+
+  /// No description provided for @firstGroupPeopleLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Name'**
+  String get firstGroupPeopleLabel;
+
+  /// No description provided for @firstGroupPeopleAdd.
+  ///
+  /// In de, this message translates to:
+  /// **'Hinzufügen'**
+  String get firstGroupPeopleAdd;
+
+  /// No description provided for @firstGroupPeopleHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Trag die anderen ein. Du kannst später jederzeit weitere hinzufügen.'**
+  String get firstGroupPeopleHint;
+
+  /// No description provided for @firstGroupPeopleRemove.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} entfernen'**
+  String firstGroupPeopleRemove(String name);
+
+  /// No description provided for @firstGroupCurrencyTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'In welcher Währung?'**
+  String get firstGroupCurrencyTitle;
+
+  /// No description provided for @firstGroupFinishTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'„{name}“ ist startklar'**
+  String firstGroupFinishTitle(String name);
+
+  /// No description provided for @firstGroupSummaryPeople.
+  ///
+  /// In de, this message translates to:
+  /// **'Dabei: {people}'**
+  String firstGroupSummaryPeople(String people);
+
+  /// No description provided for @firstGroupSummaryAlone.
+  ///
+  /// In de, this message translates to:
+  /// **'Erstmal nur du'**
+  String get firstGroupSummaryAlone;
+
+  /// No description provided for @firstGroupSummaryCurrency.
+  ///
+  /// In de, this message translates to:
+  /// **'Währung: {currency}'**
+  String firstGroupSummaryCurrency(String currency);
+
+  /// No description provided for @firstGroupCreate.
+  ///
+  /// In de, this message translates to:
+  /// **'Los geht’s'**
+  String get firstGroupCreate;
 
   /// No description provided for @onboardingTripOnly.
   ///

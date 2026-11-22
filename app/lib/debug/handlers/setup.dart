@@ -17,7 +17,13 @@ Map<String, DriveHandler> setupDriveHandlers(ProviderContainer c) {
   ) async {
     final flowId = p['flowId'];
     if (flowId == null) return invalidParams('need flowId');
-    final config = c.read(setupFlowConfigsProvider)[flowId];
+    final flows = c.read(setupFlowConfigsProvider);
+    final colon = flowId.indexOf(':');
+    final config = colon < 0
+        ? flows[flowId]
+        : flows[flowId.substring(0, colon)]?.scopedTo(
+            flowId.substring(colon + 1),
+          );
     if (config == null) return driveError(NotFound('setup flow', flowId));
     final vm = c.read(setupFlowViewModelProvider(config).notifier);
     await vm.restoring;

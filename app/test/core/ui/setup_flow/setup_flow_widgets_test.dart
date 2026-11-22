@@ -42,6 +42,18 @@ void main() {
       expect(text(_de.setupNext), findsOneWidget);
     });
 
+    testWidgets('moving on closes the keyboard of the step left behind', (
+      tester,
+    ) async {
+      await pumpFlow(tester);
+      await tester.enterText(find.byType(TextField), 'Anna');
+      expect(tester.testTextInput.isVisible, isTrue);
+      await tester.tap(text(_de.setupNext));
+      await tester.pumpAndSettle();
+      expect(text('Schritt 2 von 4'), findsOneWidget);
+      expect(tester.testTextInput.isVisible, isFalse);
+    });
+
     testWidgets('a required step shows a plain error and stays', (
       tester,
     ) async {
@@ -345,17 +357,29 @@ void main() {
           .setMockMethodCallHandler(SystemChannels.platform, null),
     );
 
-    Widget finish({bool reduceMotion = false}) => Builder(
-      builder: (context) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(disableAnimations: reduceMotion),
-        child: FinishStep(
-          title: 'Alles eingerichtet',
-          summary: const ['Name: Anna'],
-          actionLabel: 'Los',
-          onAction: () {},
-        ),
-      ),
-    );
+    Widget finish({bool reduceMotion = false, bool celebrate = true}) =>
+        Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(disableAnimations: reduceMotion),
+            child: FinishStep(
+              title: 'Alles eingerichtet',
+              summary: const ['Name: Anna'],
+              actionLabel: 'Los',
+              onAction: () {},
+              celebrate: celebrate,
+            ),
+          ),
+        );
+
+    testWidgets('celebrate: false is just "Fertig": no animation, no haptic', (
+      tester,
+    ) async {
+      await tester.pumpWidget(themedApp(finish(celebrate: false)));
+      expect(tester.hasRunningAnimations, isFalse);
+      expect(haptics, isEmpty);
+      expect(find.text('Alles eingerichtet'), findsOneWidget);
+    });
 
     testWidgets('celebrates with one light haptic tick', (tester) async {
       await tester.pumpWidget(themedApp(finish()));

@@ -57,7 +57,7 @@ void main() {
   setUp(() => app = FakeApp());
 
   group('home', () {
-    testWidgets('empty: the first-run screen leads to the form', (
+    testWidgets('empty: the first-run screen leads to the first-group flow', (
       tester,
     ) async {
       await pumpMitlio(tester, app);
@@ -66,7 +66,7 @@ void main() {
 
       await tester.tap(find.text('Gruppe für Ausgaben anlegen'));
       await tester.pumpAndSettle();
-      expect(find.text('Neue Gruppe'), findsOneWidget);
+      expect(find.text('Wie heißt deine Gruppe?'), findsOneWidget);
     });
 
     testWidgets('lists groups; the floating button starts a new one', (
@@ -107,10 +107,9 @@ void main() {
     testWidgets('name, create, then add people one after another', (
       tester,
     ) async {
-      await pumpMitlio(tester, app);
+      // Later groups: the compact form (the first one is a step flow).
+      await pumpMitlio(tester, app, location: '/groups/new');
       final taps = TapCounter(tester);
-      await taps.tap(find.text('Gruppe für Ausgaben anlegen'));
-      await tester.pumpAndSettle();
 
       await taps.enterText(find.byType(TextField), 'Skiwochenende');
       await taps.tap(find.text('Gruppe anlegen'));

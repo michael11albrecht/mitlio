@@ -188,19 +188,33 @@ void main() {
       await tester.tap(find.text('Speichern'));
       await tester.pumpAndSettle();
 
-      // The car form hands over to the route form.
-      expect(find.text('Neue Strecke'), findsOneWidget);
+      // The car form hands over to the route flow (name, distance, car,
+      // people, tolls, finish).
+      expect(find.text('Wie heißt die Strecke?'), findsOneWidget);
       await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Arbeit');
+      await tester.tap(find.text('Weiter'));
+      await tester.pumpAndSettle();
       await tester.enterText(
         find.widgetWithText(TextField, 'Entfernung einfach (km)'),
         '20',
       );
       await tester.pump();
+      await tester.tap(find.text('Weiter'));
+      await tester.pumpAndSettle();
+      // The only car is already chosen.
+      expect(find.text('Mit welchem Auto?'), findsOneWidget);
+      await tester.tap(find.text('Weiter'));
+      await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(ChoiceChip, 'Ann'));
       await tester.pump();
       await tester.tap(find.widgetWithText(FilterChip, 'Ben'));
       await tester.pump();
-      await tester.tap(find.text('Speichern'));
+      await tester.tap(find.text('Weiter'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Überspringen'));
+      await tester.pumpAndSettle();
+      expect(find.text('Deine Strecke „Arbeit“'), findsOneWidget);
+      await tester.tap(find.text('Strecke speichern'));
       await tester.pumpAndSettle();
 
       // Back on the tab, ready to log.
@@ -217,7 +231,7 @@ void main() {
       expect(find.text('Strecke anlegen'), findsOneWidget);
       await tester.tap(find.text('Strecke anlegen'));
       await tester.pumpAndSettle();
-      expect(find.text('Neue Strecke'), findsOneWidget);
+      expect(find.text('Wie heißt die Strecke?'), findsOneWidget);
     });
 
     rideTest('forms explain what is missing', (tester) async {
@@ -227,9 +241,14 @@ void main() {
         app,
         location: '/groups/${app.group.id}/rides/templates/new',
       );
-      await tester.tap(find.text('Speichern'));
+      await tester.tap(find.text('Weiter'));
       await tester.pump();
       expect(find.text('Gib einen Namen ein'), findsOneWidget);
+      await tester.enterText(find.widgetWithText(TextField, 'Name'), 'Arbeit');
+      await tester.tap(find.text('Weiter'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Weiter'));
+      await tester.pump();
       expect(find.text('Gib die Entfernung ein'), findsOneWidget);
 
       await pumpRides(
@@ -455,7 +474,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Strecke hinzufügen'));
       await tester.pumpAndSettle();
-      expect(find.text('Neue Strecke'), findsOneWidget);
+      expect(find.text('Wie heißt die Strecke?'), findsOneWidget);
     });
   });
 

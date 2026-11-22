@@ -45,7 +45,8 @@ void main() {
 
     c.read(routerProvider).go('/groups/$g/rides/templates/new');
     await tester.pumpAndSettle();
-    expect(live.snapshot('template_form'), containsPair('editing', false));
+    // A new route is the commute template flow: driven with `setup.*`.
+    expect(live.snapshot('template_form'), {'status': 'not_open'});
     expect(live.snapshot('vehicle_form'), {'status': 'not_open'});
 
     c.read(routerProvider).go('/groups/$g/rides/templates/${app.work.id}');

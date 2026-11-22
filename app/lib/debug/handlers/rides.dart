@@ -49,7 +49,8 @@ DateTime? _day(String? raw) {
         );
 }
 
-Month? _month(String? raw) {
+/// `YYYY-MM` of a drive param, or null if it is not one.
+Month? driveMonth(String? raw) {
   final m = RegExp(r'^(\d{4})-(\d{2})$').firstMatch(raw ?? '');
   final month = m == null ? null : int.parse(m.group(2)!);
   return m == null || month! < 1 || month > 12
@@ -152,7 +153,7 @@ Map<String, DriveHandler> ridesDriveHandlers(ProviderContainer c) {
     },
     'rides.settle': (p) async {
       final groupId = p['groupId'];
-      final month = _month(p['month']);
+      final month = driveMonth(p['month']);
       if (groupId == null || month == null) {
         return invalidParams('need groupId and month (YYYY-MM)');
       }
@@ -174,7 +175,7 @@ Map<String, DriveHandler> ridesDriveHandlers(ProviderContainer c) {
     },
     'rides.fairness': (p) async {
       final groupId = p['groupId'];
-      final month = _month(p['month']);
+      final month = driveMonth(p['month']);
       if (groupId == null || month == null) {
         return invalidParams('need groupId and month (YYYY-MM)');
       }

@@ -1,16 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:mitlio/core/error_snack_bar.dart';
 import 'package:mitlio/core/money_format.dart';
 import 'package:mitlio/core/theme/theme.dart';
 import 'package:mitlio/core/widgets/member_avatar.dart';
 import 'package:mitlio/core/widgets/money_text.dart';
-import 'package:mitlio/core/widgets/undo_snack_bar.dart';
-import 'package:mitlio/features/rides/ui/ride_settle_view_model.dart';
 import 'package:mitlio/features/rides/ui/ride_settlement.dart';
 import 'package:mitlio/features/rides/ui/rides_calculator.dart';
 import 'package:mitlio/features/rides/ui/rides_view_model.dart';
@@ -90,129 +86,16 @@ class SettleCard extends StatelessWidget {
   }
 }
 
-/// Opens the settlement preview of the shown month.
-Future<void> showRideSettleSheet(BuildContext context, String groupId) =>
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (_) => RideSettleSheet(groupId: groupId),
-    );
-
-/// Preview first ("Anna bekommt 46,80 € für 12 Fahrten", then who owes
-/// what), then one primary action. Settling pops the sheet and offers undo.
-class RideSettleSheet extends ConsumerWidget {
-  const RideSettleSheet({required this.groupId, super.key});
-
-  final String groupId;
-
-  Future<void> _settle(
-    BuildContext context,
-    WidgetRef ref,
-    RidesLoaded state,
-  ) async {
-    final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
-    final month = state.month;
-    final monthLabel = monthName(context, month);
-    final period = monthYearName(context, month);
-    final result = await ref
-        .read(rideSettleViewModelProvider(groupId).notifier)
-        .settle(
-          month,
-          titleOf: (name, _) => l10n.ridesSettleExpenseTitle(period, name),
-        );
-    if (!context.mounted) return;
-    switch (result) {
-      case Ok(:final value):
-        navigator.pop();
-        showUndoSnackBar(
-          context,
-          message: l10n.ridesSettleDone(monthLabel),
-          undo: value.undo,
-        );
-      case Err(:final error):
-        showErrorSnackBar(messenger, l10n, error);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final state = ref.watch(ridesViewModelProvider(groupId));
-    if (state is! RidesLoaded) return const SizedBox.shrink();
-    final busy = ref.watch(rideSettleViewModelProvider(groupId));
-    final plan = state.settlementPlan;
-    final order = [for (final m in state.members) m.id];
-    final money = MoneyFormat.of(context);
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: Spacing.screen.copyWith(top: Spacing.xs),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Semantics(
-              header: true,
-              child: Text(
-                l10n.ridesSettleTitle(monthName(context, state.month)),
-                style: theme.textTheme.titleLarge,
-              ),
-            ),
-            const SizedBox(height: Spacing.md),
-            if (plan == null)
-              Text(
-                l10n.ridesSettleNothing,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              )
-            else ...[
-              for (final driver in plan.drivers)
-                _DriverBlock(
-                  line: l10n.ridesSettleDriverLine(
-                    state.member(driver.driverId)?.name ?? '',
-                    money.format(driver.getsCents, state.group.currency),
-                    driver.rideCount,
-                  ),
-                  driverId: driver.driverId,
-                  driverName: state.member(driver.driverId)?.name ?? '',
-                  state: state,
-                  shares: driver.sharesOf(order),
-                ),
-              Text(
-                l10n.ridesSettleNote,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: Spacing.md),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: busy
-                      ? null
-                      : () => unawaited(_settle(context, ref, state)),
-                  child: Text(l10n.ridesSettleAction),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DriverBlock extends StatelessWidget {
-  const _DriverBlock({
+/// One driver of a settlement: "Anna bekommt 46,80 € für 12 Fahrten", then
+/// who owes what.
+class SettleDriverBlock extends StatelessWidget {
+  const SettleDriverBlock({
     required this.line,
     required this.driverId,
     required this.driverName,
     required this.state,
     required this.shares,
+    super.key,
   });
 
   final String line;

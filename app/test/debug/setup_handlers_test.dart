@@ -39,6 +39,19 @@ void main() {
     });
   });
 
+  test('a flow id with a scope drives its own copy of the flow', () async {
+    final h = launch();
+    var r = await h['setup.next']!({'flowId': 'demo:g1', 'answer': 'Anna'});
+    expect(r['flowId'], 'demo:g1');
+    expect(r['answers'], {'name': 'Anna'});
+    r = await h['setup.state']!({'flowId': 'demo:g2'});
+    expect(r['answers'], <String, Object?>{}, reason: 'other scope');
+    r = await h['setup.state']!({'flowId': 'demo'});
+    expect(r['answers'], <String, Object?>{}, reason: 'unscoped');
+    r = await h['setup.state']!({'flowId': 'nope:g1'});
+    expect(r['error'], 'not_found');
+  });
+
   test('next, skip and back drive the flow and return the state', () async {
     final h = launch();
     var r = await h['setup.next']!({'flowId': 'demo', 'answer': 'Anna'});

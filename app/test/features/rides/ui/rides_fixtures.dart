@@ -21,13 +21,17 @@ import 'package:mitlio/features/rides/data/repositories/fake_rides_repository.da
 import 'package:mitlio/features/rides/data/repositories/fake_vehicles_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_repository.dart';
+import 'package:mitlio/features/rides/ui/commute_template_view_model.dart';
+import 'package:mitlio/features/rides/ui/month_settle_flow_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_calculator.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_view_model.dart';
 import 'package:mitlio/features/rides/ui/template_form_view_model.dart';
 import 'package:mitlio/features/rides/ui/vehicle_form_view_model.dart';
 import 'package:mitlio/features/settlements/data/repositories/settlements_providers.dart';
+import 'package:mitlio/features/setup/data/fake_setup_state_repository.dart';
 import 'package:mitlio/features/setup/data/setup_providers.dart';
+import 'package:mitlio/features/setup/data/setup_state_repository.dart';
 import 'package:mitlio/features/sync/data/repositories/fake_connections_repository.dart';
 import 'package:mitlio/features/sync/data/sync_coordinator.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
@@ -519,6 +523,52 @@ List<Override> templateFormOverride(TemplateFormState state) => [
     (key) => StubTemplateFormViewModel(key, state),
   ),
 ];
+
+/// The month settlement flow of group `g-1` for [month], as if the user had
+/// got to step [step] (or the finish screen) of the review.
+List<Override> monthSettleProgress(
+  Month month, {
+  int step = 0,
+  bool finished = false,
+}) {
+  final store = FakeSetupStateRepository();
+  store.stored[monthSettleFlowFor((groupId: 'g-1', month: month))
+      .id] = SetupProgress(
+    stepIndex: step,
+    answers: {
+      for (final id in [MonthSettleStep.rides, MonthSettleStep.amounts])
+        if (finished || id == MonthSettleStep.rides && step > 0) id: true,
+    },
+    finished: finished,
+  ).toJson();
+  return [setupStateRepositoryProvider.overrideWithValue(store)];
+}
+
+/// The commute template flow of group `g-1`, as if the user had got to step
+/// [step] (or the finish screen) with every earlier step answered.
+List<Override> commuteProgress({int step = 0, bool finished = false}) {
+  final all = <String, Object?>{
+    CommuteStep.name: 'Arbeit',
+    CommuteStep.route: commuteRouteAnswer(20000, roundTrip: true),
+    CommuteStep.vehicle: 'v-1',
+    CommuteStep.people: commutePeopleAnswer(
+      driverId: 'm-0',
+      passengerIds: ['m-1'],
+    ),
+    CommuteStep.tolls: 250,
+  };
+  final ids = all.keys.toList();
+  final store = FakeSetupStateRepository();
+  store.stored[commuteTemplateFlowFor('g-1').id] = SetupProgress(
+    stepIndex: step,
+    answers: {
+      for (final (i, id) in ids.indexed)
+        if (finished || i < step) id: all[id],
+    },
+    finished: finished,
+  ).toJson();
+  return [setupStateRepositoryProvider.overrideWithValue(store)];
+}
 
 Widget scopedRides(List<Override> overrides, Widget child) =>
     ProviderScope(overrides: [...noEntryCards, ...overrides], child: child);

@@ -161,7 +161,9 @@ DebugSnapshotRegistry buildSnapshotRegistry(ProviderContainer c) =>
       })
       ..register('template_form', () {
         final key = _openRidesForm(c);
-        return key == null || key.kind != 'templates'
+        // A new route is the commute template flow (`setup.state`), not this
+        // form.
+        return key == null || key.kind != 'templates' || key.id == null
             ? {'status': 'not_open'}
             : c
                   .read(

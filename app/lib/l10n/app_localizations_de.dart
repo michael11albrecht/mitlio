@@ -1321,6 +1321,59 @@ class AppLocalizationsDe extends AppLocalizations {
   String get templateTollsLabel => 'Maut (optional)';
 
   @override
+  String get commuteNameTitle => 'Wie heißt die Strecke?';
+
+  @override
+  String get commuteRouteTitle => 'Wie weit ist es?';
+
+  @override
+  String get commuteVehicleTitle => 'Mit welchem Auto?';
+
+  @override
+  String get commutePeopleTitle => 'Wer fährt, wer fährt mit?';
+
+  @override
+  String get commuteTollsTitle => 'Gibt es Maut?';
+
+  @override
+  String commuteFinishTitle(String name) {
+    return 'Deine Strecke „$name“';
+  }
+
+  @override
+  String commuteSummaryRoundTrip(String km) {
+    return '$km km, hin und zurück';
+  }
+
+  @override
+  String commuteSummaryOneWay(String km) {
+    return '$km km, einfach';
+  }
+
+  @override
+  String commuteSummaryVehicle(String name) {
+    return 'Auto: $name';
+  }
+
+  @override
+  String commuteSummaryDriver(String name) {
+    return 'Fährt meistens: $name';
+  }
+
+  @override
+  String commuteSummaryPassengers(String names) {
+    return 'Fährt mit: $names';
+  }
+
+  @override
+  String commuteSummaryTolls(String amount) {
+    return 'Maut: $amount';
+  }
+
+  @override
+  String get commuteSave => 'Strecke speichern';
+
+  @override
   String get templateErrorName => 'Gib einen Namen ein';
 
   @override
@@ -1381,6 +1434,36 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ridesSettleAction => 'Abrechnen';
+
+  @override
+  String monthSettleRidesTitle(String month) {
+    return 'Das war im $month los';
+  }
+
+  @override
+  String get monthSettleAmountsTitle => 'Wer bekommt was?';
+
+  @override
+  String monthSettleSummaryRides(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Fahrten werden gesperrt',
+      one: '1 Fahrt wird gesperrt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String monthSettleSummaryExpenses(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Daraus werden $count Ausgaben',
+      one: 'Daraus wird 1 Ausgabe',
+    );
+    return '$_temp0';
+  }
 
   @override
   String ridesSettleDone(String month) {
@@ -1672,6 +1755,51 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get onboardingGroupHint =>
       'Für Reisen, die WG oder einen Abend zu mehreren.';
+
+  @override
+  String get firstGroupNameTitle => 'Wie heißt deine Gruppe?';
+
+  @override
+  String get firstGroupPeopleTitle => 'Wer ist dabei?';
+
+  @override
+  String get firstGroupPeopleLabel => 'Name';
+
+  @override
+  String get firstGroupPeopleAdd => 'Hinzufügen';
+
+  @override
+  String get firstGroupPeopleHint =>
+      'Trag die anderen ein. Du kannst später jederzeit weitere hinzufügen.';
+
+  @override
+  String firstGroupPeopleRemove(String name) {
+    return '$name entfernen';
+  }
+
+  @override
+  String get firstGroupCurrencyTitle => 'In welcher Währung?';
+
+  @override
+  String firstGroupFinishTitle(String name) {
+    return '„$name“ ist startklar';
+  }
+
+  @override
+  String firstGroupSummaryPeople(String people) {
+    return 'Dabei: $people';
+  }
+
+  @override
+  String get firstGroupSummaryAlone => 'Erstmal nur du';
+
+  @override
+  String firstGroupSummaryCurrency(String currency) {
+    return 'Währung: $currency';
+  }
+
+  @override
+  String get firstGroupCreate => 'Los geht’s';
 
   @override
   String get onboardingTripOnly => 'Nur eine Fahrt berechnen';

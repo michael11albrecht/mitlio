@@ -2,8 +2,8 @@ import 'package:alchemist/alchemist.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mitlio/core/repository_error.dart';
 import 'package:mitlio/features/rides/ui/driver_prompt_sheet.dart';
+import 'package:mitlio/features/rides/ui/month_settle_view.dart';
 import 'package:mitlio/features/rides/ui/ride_calendar.dart';
-import 'package:mitlio/features/rides/ui/ride_settle_widgets.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view_model.dart';
 import 'package:mitlio/features/rides/ui/rides_view.dart';
@@ -114,16 +114,31 @@ Future<void> main() async {
   await tab('rides_settled_month', settledMonthRides);
   // Somebody who does not drive: the hint in the fairness card.
   await tab('rides_non_driver', nonDriverRides, height: 1500);
-  for (final (name, state) in [
-    ('ride_settle_sheet', settleDueRides),
-    ('ride_settle_sheet_nothing', settledMonthRides),
+  final settleMonth = settleDueRides.month;
+  for (final (name, state, progress) in [
+    ('month_settle_rides', settleDueRides, monthSettleProgress(settleMonth)),
+    (
+      'month_settle_amounts',
+      settleDueRides,
+      monthSettleProgress(settleMonth, step: 1),
+    ),
+    (
+      'month_settle_confirm',
+      settleDueRides,
+      monthSettleProgress(settleMonth, finished: true),
+    ),
+    (
+      'month_settle_nothing',
+      settledMonthRides,
+      monthSettleProgress(settleMonth),
+    ),
   ]) {
     await matrixGolden(
       name,
-      () => scopedRides(
-        ridesStateOverride(state),
-        const RideSettleSheet(groupId: 'g-1'),
-      ),
+      () => scopedRides([
+        ...ridesStateOverride(state),
+        ...progress,
+      ], const MonthSettleView(groupId: 'g-1')),
       width: _width,
       height: 820,
     );

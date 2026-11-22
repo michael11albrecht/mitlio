@@ -21,6 +21,7 @@ class FinishStep extends StatefulWidget {
     this.onSecondary,
     this.preview,
     this.onBack,
+    this.celebrate = true,
     super.key,
   });
 
@@ -44,6 +45,10 @@ class FinishStep extends StatefulWidget {
   /// Back to the last step.
   final VoidCallback? onBack;
 
+  /// False for flows that end with just "Fertig" (ADR-25 §4): the check is
+  /// shown still, without animation or haptic tick.
+  final bool celebrate;
+
   @override
   State<FinishStep> createState() => _FinishStepState();
 }
@@ -63,8 +68,8 @@ class _FinishStepState extends State<FinishStep>
     super.didChangeDependencies();
     if (_started) return;
     _started = true;
-    unawaited(HapticFeedback.lightImpact());
-    if (MediaQuery.disableAnimationsOf(context)) {
+    if (widget.celebrate) unawaited(HapticFeedback.lightImpact());
+    if (!widget.celebrate || MediaQuery.disableAnimationsOf(context)) {
       _controller.value = 1;
     } else {
       _controller.forward();
