@@ -6,20 +6,20 @@ import 'package:mitlio/db/daos/sync_state_dao.dart';
 
 import 'generated/schema.dart';
 
-/// Fails when the Drift tables drift from `drift_schemas/drift_schema_v7.json`.
+/// Fails when the Drift tables drift from `drift_schemas/drift_schema_v8.json`.
 /// A schema change needs a version bump, a migration and `make db-schema`.
 void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('fresh v7 schema matches the exported v7 schema', () async {
-    final connection = await verifier.startAt(7);
+  test('fresh v8 schema matches the exported v8 schema', () async {
+    final connection = await verifier.startAt(8);
     final db = AppDatabase(connection);
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 7);
+    await verifier.migrateAndValidate(db, 8);
   });
 
-  test('v1 -> v7 keeps data and adds the rides and revisions tables', () async {
+  test('v1 -> v8 keeps data and adds the rides and revisions tables', () async {
     final schema = await verifier.schemaAt(1);
     schema.rawDatabase
       ..execute(
@@ -35,7 +35,7 @@ void main() {
 
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 7);
+    await verifier.migrateAndValidate(db, 8);
 
     final groups = await db.groupsDao.watchGroups().first;
     expect(groups.single.name, 'Trip');
@@ -50,7 +50,7 @@ void main() {
     expect(await db.select(db.expenseRevisions).get(), isEmpty);
   });
 
-  test('v2 -> v7 keeps expenses and adds a usable revisions table', () async {
+  test('v2 -> v8 keeps expenses and adds a usable revisions table', () async {
     final schema = await verifier.schemaAt(2);
     schema.rawDatabase
       ..execute(
@@ -80,7 +80,7 @@ void main() {
 
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 7);
+    await verifier.migrateAndValidate(db, 8);
 
     expect((await db.select(db.expenses).get()).single.title, 'Dinner');
     expect(await db.select(db.expenseRevisions).get(), isEmpty);
@@ -96,7 +96,7 @@ void main() {
   });
 
   test(
-    'v3 -> v7 makes existing members drivers and adds the prompt flags',
+    'v3 -> v8 makes existing members drivers and adds the prompt flags',
     () async {
       final schema = await verifier.schemaAt(3);
       schema.rawDatabase
@@ -113,7 +113,7 @@ void main() {
 
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 7);
+      await verifier.migrateAndValidate(db, 8);
 
       final member = (await db.membersDao.listAllByGroup('g1')).single;
       expect(member.canDrive, isTrue);
@@ -123,7 +123,7 @@ void main() {
     },
   );
 
-  test('v4 -> v7 adds the local places table and keeps the rest', () async {
+  test('v4 -> v8 adds the local places table and keeps the rest', () async {
     final schema = await verifier.schemaAt(4);
     schema.rawDatabase.execute(
       'INSERT INTO groups (id, name, currency, created_by, created_at, '
@@ -133,7 +133,7 @@ void main() {
 
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 7);
+    await verifier.migrateAndValidate(db, 8);
 
     expect((await db.groupsDao.watchGroups().first).single.name, 'Trip');
     expect(await db.localPlacesDao.all(), isEmpty);
@@ -150,7 +150,7 @@ void main() {
   });
 
   test(
-    'v5 -> v7 adds the sync tables, keeps data, recreates the outbox',
+    'v5 -> v8 adds the sync tables, keeps data, recreates the outbox',
     () async {
       final schema = await verifier.schemaAt(5);
       schema.rawDatabase
@@ -167,7 +167,7 @@ void main() {
 
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 7);
+      await verifier.migrateAndValidate(db, 8);
 
       expect((await db.groupsDao.watchGroups().first).single.name, 'Trip');
       final member = (await db.membersDao.listAllByGroup('g1')).single;
@@ -198,7 +198,7 @@ void main() {
   );
 
   test(
-    'v6 -> v7 adds the profile tables and the vehicle source link',
+    'v6 -> v8 adds the profile tables and the vehicle source link',
     () async {
       final schema = await verifier.schemaAt(6);
       schema.rawDatabase
@@ -223,7 +223,7 @@ void main() {
 
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 7);
+      await verifier.migrateAndValidate(db, 8);
 
       final vehicle = (await db.select(db.vehicles).get()).single;
       expect(vehicle.name, 'Golf');
@@ -234,4 +234,36 @@ void main() {
       expect(await db.select(db.userVehicleCosts).get(), isEmpty);
     },
   );
+
+  test('v7 -> v8 adds the local recurring rules table', () async {
+    final schema = await verifier.schemaAt(7);
+    schema.rawDatabase.execute(
+      'INSERT INTO groups (id, name, currency, created_by, created_at, '
+      'updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+      ['g1', 'Trip', 'EUR', 'dev', '2026-01-01T00:00:00.000Z', '0001'],
+    );
+
+    final db = AppDatabase(schema.newConnection());
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 8);
+
+    expect((await db.groupsDao.watchGroups().first).single.name, 'Trip');
+    expect(await db.recurringDao.all(), isEmpty);
+    await db.recurringDao.upsert(
+      LocalRecurringExpensesCompanion.insert(
+        id: 'r1',
+        groupId: 'g1',
+        title: 'Rent',
+        amountCents: 50000,
+        payersJson: '{"m1":50000}',
+        splitMode: 'equal',
+        splitWeightsJson: '{"m1":1}',
+        frequency: 'monthly',
+        intervalCount: 1,
+        startDate: '2026-01-31',
+        createdAt: DateTime.utc(2026),
+      ),
+    );
+    expect((await db.recurringDao.all()).single.title, 'Rent');
+  });
 }

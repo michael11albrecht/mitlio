@@ -444,3 +444,48 @@ class UserVehicleCosts extends Table {
   @override
   Set<Column<Object>> get primaryKey => {userVehicleId};
 }
+
+/// Recurring expense rules (P9-T03, schema v8). Local only for v1: a rule
+/// lives on the device that created it and is never synced; the expenses it
+/// generates are ordinary synced expenses. Covered by "delete my data" with
+/// the rest of the database. A rule is a template (what, how much, who paid,
+/// how it is split) plus the date engine inputs and the last date it
+/// generated an expense for.
+@DataClassName('RecurringExpenseRow')
+@TableIndex(name: 'local_recurring_expenses_group_id', columns: {#groupId})
+class LocalRecurringExpenses extends Table {
+  TextColumn get id => text()();
+  TextColumn get groupId => text()();
+  TextColumn get title => text()();
+
+  /// In the group currency.
+  IntColumn get amountCents =>
+      integer().check(amountCents.isBiggerThanValue(0))();
+
+  /// JSON `{memberId: cents}`.
+  TextColumn get payersJson => text()();
+
+  /// `equal`, `shares`, `percent` or `exact` (see `splitModeOf`).
+  TextColumn get splitMode => text()();
+
+  /// JSON `{memberId: weight}` as persisted for expenses (`splitWeightOf`).
+  TextColumn get splitWeightsJson => text()();
+  TextColumn get category => text().nullable()();
+
+  /// `daily`, `weekly`, `monthly` or `yearly`.
+  TextColumn get frequency => text()();
+  IntColumn get intervalCount =>
+      integer().check(intervalCount.isBiggerOrEqualValue(1))();
+
+  /// `YYYY-MM-DD`.
+  TextColumn get startDate => text()();
+  TextColumn get endDate => text().nullable()();
+
+  /// The newest date an expense was created for; null while none was.
+  TextColumn get lastGenerated => text().nullable()();
+  BoolColumn get paused => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}

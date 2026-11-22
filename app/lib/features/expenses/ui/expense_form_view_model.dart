@@ -13,6 +13,8 @@ import 'package:mitlio/features/groups/data/repositories/groups_providers.dart';
 import 'package:mitlio/features/groups/data/repositories/groups_repository.dart';
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/members/data/repositories/members_repository.dart';
+import 'package:mitlio/features/recurring/ui/recurring_catch_up_view_model.dart';
+import 'package:mitlio/features/recurring/ui/recurring_view_model.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
 export 'package:mitlio/features/fx/data/fx_suggestion.dart' show FxSuggestion;
@@ -71,6 +73,7 @@ final class ExpenseFormReady extends ExpenseFormState {
     required this.payerError,
     required this.showErrors,
     required this.saving,
+    this.recurrence,
     this.rateSuggestion,
   });
 
@@ -135,6 +138,10 @@ final class ExpenseFormReady extends ExpenseFormState {
   final bool showErrors;
   final bool saving;
 
+  /// "Wiederkehrend": how often this expense repeats from [date] on; null for
+  /// a one-off expense.
+  final RecurrenceFrequency? recurrence;
+
   /// The ECB reference rate for [currency] on [date], while one is known
   /// (backend configured, online, currency published); never forced on the
   /// user: it fills an empty rate and can be overridden.
@@ -142,6 +149,11 @@ final class ExpenseFormReady extends ExpenseFormState {
 
   /// The amount is paid in a currency other than the group's.
   bool get isForeign => currency != group.currency;
+
+  /// A new expense in the group currency can repeat. A foreign amount would
+  /// repeat with a stale rate, and an existing expense is not turned into a
+  /// rule afterwards.
+  bool get canRecur => !editing && !isForeign;
 
   /// Foreign amount entered but no usable rate yet.
   bool get rateMissing => isForeign && ratePpm == null;
@@ -199,6 +211,7 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
   var _showErrors = false;
   var _saving = false;
   var _loaded = false;
+  RecurrenceFrequency? _recurrence;
 
   @override
   ExpenseFormState build() {
@@ -441,6 +454,7 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
         payerError: payerError,
         showErrors: _showErrors,
         saving: _saving,
+        recurrence: _recurrence,
         rateSuggestion: _suggestion,
       ),
     );
@@ -562,6 +576,13 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
     }
   }
 
+  /// Repeats this expense every [frequency] from its date on; null makes it a
+  /// one-off again.
+  void setRecurrence(RecurrenceFrequency? frequency) {
+    _recurrence = frequency;
+    _emit();
+  }
+
   /// Only the calendar day counts.
   void setDate(DateTime day) {
     _date = DateTime.utc(day.year, day.month, day.day);
@@ -677,13 +698,50 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
     );
     _saving = true;
     _emit();
-    final list = ref.read(expensesViewModelProvider(key.groupId).notifier);
-    final id = key.expenseId;
-    final result = await (id == null
-        ? list.add(draft)
-        : list.update(id, draft));
+    final result = await _store(draft, ready);
     _saving = false;
     _emit();
+    return result;
+  }
+
+  /// Stores the expense, and for a recurring one the rule first: the rule
+  /// starts with this very date as generated, so the expense is not made
+  /// twice. If the expense then fails, the rule is taken back.
+  Future<RepoResult<ExpenseEntry>> _store(
+    ExpenseDraft draft,
+    ExpenseFormReady ready,
+  ) async {
+    final list = ref.read(expensesViewModelProvider(key.groupId).notifier);
+    final id = key.expenseId;
+    final frequency = ready.canRecur ? _recurrence : null;
+    if (id != null || frequency == null) {
+      return id == null ? list.add(draft) : list.update(id, draft);
+    }
+    final created = RecurrenceRule.create(start: _date, frequency: frequency);
+    if (created case Err()) return const Err(InvalidData('bad recurrence'));
+    final rules = ref.read(recurringViewModelProvider(key.groupId).notifier);
+    final rule = await rules.create(
+      RecurringDraft(
+        title: _title,
+        amountCents: draft.amountCents,
+        payers: draft.payers,
+        split: draft.split,
+        category: _category,
+        rule: (created as Ok<RecurrenceRule, RecurrenceError>).value,
+        lastGenerated: _date,
+      ),
+    );
+    if (rule case Err(:final error)) return Err(error);
+    final result = await list.add(draft);
+    if (result is Err) {
+      final undone = await rules.delete(
+        (rule as Ok<RecurringExpense, RepositoryError>).value.id,
+      );
+      if (undone case Err(:final error)) return Err(error);
+    } else {
+      // Fill the gap if the date lies in the past (capped, reported).
+      unawaited(ref.read(recurringCatchUpViewModelProvider.notifier).run());
+    }
     return result;
   }
 
@@ -712,6 +770,7 @@ class ExpenseFormViewModel extends Notifier<ExpenseFormState> {
     },
     'date': isoDay(s.date),
     'category': s.category,
+    'recurrence': s.recurrence?.name,
     'multiPayer': s.multiPayer,
     'payers': _payers(),
     'mode': s.mode.name,

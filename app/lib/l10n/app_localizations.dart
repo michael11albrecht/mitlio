@@ -5195,6 +5195,138 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'{kind, select, paypal{PayPal.Me gespeichert} iban{IBAN gespeichert} both{PayPal.Me und IBAN gespeichert} other{Noch keine Zahlungsdaten}}'**
   String profileEntrySaved(String kind);
+
+  /// No description provided for @recurringChip.
+  ///
+  /// In de, this message translates to:
+  /// **'Wiederkehrend'**
+  String get recurringChip;
+
+  /// No description provided for @recurringEveryDays.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{Täglich} other{Alle {count} Tage}}'**
+  String recurringEveryDays(num count);
+
+  /// No description provided for @recurringEveryWeeks.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{Wöchentlich} other{Alle {count} Wochen}}'**
+  String recurringEveryWeeks(num count);
+
+  /// No description provided for @recurringEveryMonths.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{Monatlich} other{Alle {count} Monate}}'**
+  String recurringEveryMonths(num count);
+
+  /// No description provided for @recurringEveryYears.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{Jährlich} other{Alle {count} Jahre}}'**
+  String recurringEveryYears(num count);
+
+  /// No description provided for @recurringFormHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Ab {date}, danach legt mitlio die Ausgabe automatisch an.'**
+  String recurringFormHint(String date);
+
+  /// No description provided for @recurringTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wiederkehrende Ausgaben'**
+  String get recurringTitle;
+
+  /// No description provided for @recurringEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch nichts Wiederkehrendes. Tippe beim Hinzufügen einer Ausgabe auf „Wiederkehrend“.'**
+  String get recurringEmpty;
+
+  /// No description provided for @recurringNext.
+  ///
+  /// In de, this message translates to:
+  /// **'Nächste: {date}'**
+  String recurringNext(String date);
+
+  /// No description provided for @recurringEnded.
+  ///
+  /// In de, this message translates to:
+  /// **'Beendet'**
+  String get recurringEnded;
+
+  /// No description provided for @recurringPaused.
+  ///
+  /// In de, this message translates to:
+  /// **'Pausiert'**
+  String get recurringPaused;
+
+  /// No description provided for @recurringPause.
+  ///
+  /// In de, this message translates to:
+  /// **'Pausieren'**
+  String get recurringPause;
+
+  /// No description provided for @recurringResume.
+  ///
+  /// In de, this message translates to:
+  /// **'Fortsetzen'**
+  String get recurringResume;
+
+  /// No description provided for @recurringDelete.
+  ///
+  /// In de, this message translates to:
+  /// **'Löschen'**
+  String get recurringDelete;
+
+  /// No description provided for @recurringPausedDone.
+  ///
+  /// In de, this message translates to:
+  /// **'„{title}“ pausiert'**
+  String recurringPausedDone(String title);
+
+  /// No description provided for @recurringResumedDone.
+  ///
+  /// In de, this message translates to:
+  /// **'„{title}“ läuft wieder'**
+  String recurringResumedDone(String title);
+
+  /// No description provided for @recurringDeletedDone.
+  ///
+  /// In de, this message translates to:
+  /// **'„{title}“ gelöscht. Bereits angelegte Ausgaben bleiben.'**
+  String recurringDeletedDone(String title);
+
+  /// No description provided for @recurringCreated.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{1 wiederkehrende Ausgabe angelegt.} other{{count} wiederkehrende Ausgaben angelegt.}}'**
+  String recurringCreated(num count);
+
+  /// No description provided for @recurringSkipped.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{Ein älterer Termin wurde übersprungen.} other{{count} ältere Termine wurden übersprungen.}}'**
+  String recurringSkipped(num count);
+
+  /// No description provided for @recurringFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'„{title}“ konnte nicht angelegt werden. {reason}'**
+  String recurringFailed(String title, String reason);
+
+  /// No description provided for @recurringFailedMore.
+  ///
+  /// In de, this message translates to:
+  /// **'„{title}“ und {more} weitere konnten nicht angelegt werden. {reason}'**
+  String recurringFailedMore(String title, int more, String reason);
+
+  /// No description provided for @recurringCheckFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Wiederkehrende Ausgaben konnten nicht geprüft werden. {reason}'**
+  String recurringCheckFailed(String reason);
 }
 
 class _AppLocalizationsDelegate

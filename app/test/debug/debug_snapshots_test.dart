@@ -36,6 +36,7 @@ void main() {
       'group',
       'expenses',
       'expense_form',
+      'recurring',
       'trip',
       'balances',
       'statistics',
@@ -57,6 +58,27 @@ void main() {
         {'id': id, 'name': 'Trip', 'currency': 'EUR'},
       ],
     });
+  });
+
+  testWidgets('recurring follows the open route and is not_open elsewhere', (
+    tester,
+  ) async {
+    final id = await newGroup();
+    final c = await pumpMitlio(tester, app);
+    final live = buildSnapshotRegistry(c);
+    expect(live.snapshot('recurring'), {'status': 'not_open'});
+
+    c.read(routerProvider).go('/groups/$id/recurring');
+    await tester.pumpAndSettle();
+    expect(live.snapshot('recurring'), {
+      'status': 'empty',
+      'groupId': id,
+      'rules': <Object>[],
+    });
+
+    c.read(routerProvider).go('/groups/$id');
+    await tester.pumpAndSettle();
+    expect(live.snapshot('recurring'), {'status': 'not_open'});
   });
 
   testWidgets('group follows the open route and is not_open elsewhere', (

@@ -25,6 +25,8 @@ import 'package:mitlio/features/profile/data/repositories/fake_profile_bank_repo
 import 'package:mitlio/features/profile/data/repositories/fake_profile_repository.dart';
 import 'package:mitlio/features/profile/data/repositories/fake_user_vehicles_repository.dart';
 import 'package:mitlio/features/profile/data/repositories/profile_providers.dart';
+import 'package:mitlio/features/recurring/data/repositories/fake_recurring_repository.dart';
+import 'package:mitlio/features/recurring/data/repositories/recurring_providers.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_rides_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_vehicles_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/rides_providers.dart';
@@ -278,6 +280,9 @@ class FakeApp {
   );
   FakeSetupStateRepository setupState = FakeSetupStateRepository();
 
+  /// Recurring rules: empty unless a test adds to them.
+  late final recurring = FakeRecurringRepository(clock: clock);
+
   /// Links opened and text copied by the payment actions.
   final launcher = FakeLinkLauncher();
 
@@ -320,6 +325,7 @@ class FakeApp {
     profileBankRepositoryProvider.overrideWithValue(profileBank),
     userVehiclesRepositoryProvider.overrideWithValue(userVehicles),
     setupStateRepositoryProvider.overrideWithValue(setupState),
+    recurringRepositoryProvider.overrideWithValue(recurring),
   ];
 
   /// The fuel price backend and location, off by default (chips hidden):

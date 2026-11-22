@@ -15,6 +15,7 @@ import 'package:mitlio/features/groups/data/repositories/groups_repository.dart'
 import 'package:mitlio/features/members/data/repositories/members_providers.dart';
 import 'package:mitlio/features/profile/data/repositories/profile_providers.dart';
 import 'package:mitlio/features/profile/ui/group_car_picker_view_model.dart';
+import 'package:mitlio/features/recurring/data/repositories/recurring_providers.dart';
 import 'package:mitlio/features/rides/data/repositories/car_catalog_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_ride_templates_repository.dart';
 import 'package:mitlio/features/rides/data/repositories/fake_rides_repository.dart';
@@ -296,6 +297,7 @@ class RidesApp {
     profileRepositoryProvider.overrideWithValue(base.profile),
     profileBankRepositoryProvider.overrideWithValue(base.profileBank),
     setupStateRepositoryProvider.overrideWithValue(base.setupState),
+    recurringRepositoryProvider.overrideWithValue(base.recurring),
   ];
 
   ProviderContainer container({List<Override> extra = const []}) =>

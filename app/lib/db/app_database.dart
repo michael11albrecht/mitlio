@@ -6,6 +6,7 @@ import 'package:mitlio/db/daos/local_places_dao.dart';
 import 'package:mitlio/db/daos/local_profile_bank_dao.dart';
 import 'package:mitlio/db/daos/members_dao.dart';
 import 'package:mitlio/db/daos/profile_dao.dart';
+import 'package:mitlio/db/daos/recurring_dao.dart';
 import 'package:mitlio/db/daos/rides_dao.dart';
 import 'package:mitlio/db/daos/settlements_dao.dart';
 import 'package:mitlio/db/daos/sync_state_dao.dart';
@@ -39,6 +40,7 @@ part 'app_database.g.dart';
     LocalProfileBank,
     UserVehicles,
     UserVehicleCosts,
+    LocalRecurringExpenses,
   ],
   daos: [
     GroupsDao,
@@ -52,13 +54,14 @@ part 'app_database.g.dart';
     ProfileDao,
     LocalProfileBankDao,
     UserVehiclesDao,
+    RecurringDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -70,11 +73,18 @@ class AppDatabase extends _$AppDatabase {
       if (from < 5) await _from4To5(m);
       if (from < 6) await _from5To6(m);
       if (from < 7) await _from6To7(m);
+      if (from < 8) await _from7To8(m);
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },
   );
+
+  /// v8: recurring expense rules (P9-T03), local only.
+  Future<void> _from7To8(Migrator m) async {
+    await m.createTable(localRecurringExpenses);
+    await m.createIndex(localRecurringExpensesGroupId);
+  }
 
   /// v7: personal profile and vehicles (PU-T04, ADR-25), all local only, and
   /// the link from a group vehicle to its personal source.

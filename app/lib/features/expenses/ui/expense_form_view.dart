@@ -16,6 +16,7 @@ import 'package:mitlio/features/expenses/ui/expense_form_view_model.dart';
 import 'package:mitlio/features/expenses/ui/expense_history_view.dart';
 import 'package:mitlio/features/expenses/ui/expenses_view.dart';
 import 'package:mitlio/features/expenses/ui/fx_suggestion_line.dart';
+import 'package:mitlio/features/recurring/ui/recurring_labels.dart';
 import 'package:mitlio/l10n/app_localizations.dart';
 import 'package:mitlio_domain/mitlio_domain.dart';
 
@@ -259,13 +260,56 @@ class _FormBody extends StatelessWidget {
         const SizedBox(height: Spacing.sm),
         Align(
           alignment: AlignmentDirectional.centerStart,
-          child: ActionChip(
-            avatar: const Icon(Icons.event_outlined),
-            tooltip: l10n.expenseDateChange,
-            label: Text(_dateLabel(context)),
-            onPressed: onPickDate,
+          child: Wrap(
+            spacing: Spacing.sm,
+            children: [
+              ActionChip(
+                avatar: const Icon(Icons.event_outlined),
+                tooltip: l10n.expenseDateChange,
+                label: Text(_dateLabel(context)),
+                onPressed: onPickDate,
+              ),
+              // Stays one quiet chip until it is wanted (rule #0).
+              if (form.canRecur)
+                FilterChip(
+                  avatar: const Icon(Icons.repeat),
+                  label: Text(l10n.recurringChip),
+                  selected: form.recurrence != null,
+                  showCheckmark: false,
+                  onSelected: (on) => vm.setRecurrence(
+                    on ? RecurrenceFrequency.monthly : null,
+                  ),
+                ),
+            ],
           ),
         ),
+        if (form.canRecur && form.recurrence != null) ...[
+          const SizedBox(height: Spacing.sm),
+          Wrap(
+            spacing: Spacing.sm,
+            children: [
+              for (final f in const [
+                RecurrenceFrequency.weekly,
+                RecurrenceFrequency.monthly,
+                RecurrenceFrequency.yearly,
+              ])
+                ChoiceChip(
+                  label: Text(recurrenceLabel(l10n, f, 1)),
+                  selected: form.recurrence == f,
+                  onSelected: (_) => vm.setRecurrence(f),
+                ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: Spacing.sm),
+            child: Text(
+              l10n.recurringFormHint(
+                MaterialLocalizations.of(context).formatMediumDate(form.date),
+              ),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        ],
         _Section(l10n.expensePayerSection),
         if (form.multiPayer) ..._multiPayers(context) else _singlePayer(),
         Align(

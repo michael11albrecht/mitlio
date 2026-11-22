@@ -19,6 +19,7 @@ import 'package:mitlio/features/profile/ui/my_cars_view.dart';
 import 'package:mitlio/features/profile/ui/my_qr_view.dart';
 import 'package:mitlio/features/profile/ui/profile_setup_view.dart';
 import 'package:mitlio/features/push/ui/notification_settings_view.dart';
+import 'package:mitlio/features/recurring/ui/recurring_view.dart';
 import 'package:mitlio/features/rides/ui/commute_template_view.dart';
 import 'package:mitlio/features/rides/ui/month_settle_view.dart';
 import 'package:mitlio/features/rides/ui/rides_setup_view.dart';
@@ -150,6 +151,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'settle',
                 builder: (context, state) =>
                     SettleView(groupId: state.pathParameters['id']!),
+              ),
+              GoRoute(
+                path: 'recurring',
+                builder: (context, state) =>
+                    RecurringView(groupId: state.pathParameters['id']!),
               ),
               GoRoute(
                 path: 'notifications',

@@ -33,6 +33,7 @@ void main() {
       expect(UxBudgets.load().maxTaps, {
         'log_commute_ride': 3,
         'add_equal_split_expense': 5,
+        'add_recurring_expense': 4,
         'mark_transfer_paid': 2,
         'create_group_with_members': 3,
         'share_group_link': 1,

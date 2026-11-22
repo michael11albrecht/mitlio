@@ -517,6 +517,14 @@ expenses. It only produces dates; creating the expense from a due date is the ca
   `today` (inclusive). If more than `maxCount` are due (long offline time) only the newest `maxCount` are returned.
 - Errors: `InvalidInterval`, `EndBeforeStart`.
 
+App side (`app/lib/features/recurring/`): a rule is the template of one expense (title, amount in the group currency,
+payers, split as persisted for expenses, category) plus the `RecurrenceRule` inputs and `lastGenerated`. Rules are
+**local only** in schema v8 (`local_recurring_expenses`): they are not synced, only the expenses they create are. On app
+start and on resume `RecurringCatchUpViewModel.run` creates one expense per due date, oldest first, at most 12 per rule;
+dates beyond that are skipped and reported. After each expense it records `lastGenerated`; if that fails the expense is
+taken back, so a date is never made twice. Pausing skips the dates that pass; resuming does not make them up. Foreign-
+currency amounts do not repeat.
+
 ## Car catalog (P9-T09)
 
 The vehicle form suggests cars from a bundled catalog built offline from the EEA CO2 monitoring data

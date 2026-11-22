@@ -1602,5 +1602,92 @@
   "carLinkFailed": "Could not check whether this car comes from My cars. Tap \"Try again\".",
   "carEditTitle": "Edit car",
   "carUpdatedInGroups": "{count, plural, =1{Updated in 1 group} other{Updated in {count} groups}}",
-  "profileEntrySaved": "{kind, select, paypal{PayPal.Me saved} iban{IBAN saved} both{PayPal.Me and IBAN saved} other{No payment details yet}}"
+  "profileEntrySaved": "{kind, select, paypal{PayPal.Me saved} iban{IBAN saved} both{PayPal.Me and IBAN saved} other{No payment details yet}}",
+  "recurringChip": "Recurring",
+  "recurringEveryDays": "{count, plural, =1{Daily} other{Every {count} days}}",
+  "recurringEveryWeeks": "{count, plural, =1{Weekly} other{Every {count} weeks}}",
+  "recurringEveryMonths": "{count, plural, =1{Monthly} other{Every {count} months}}",
+  "recurringEveryYears": "{count, plural, =1{Yearly} other{Every {count} years}}",
+  "recurringFormHint": "From {date}, mitlio then adds this expense automatically.",
+  "@recurringFormHint": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringTitle": "Recurring expenses",
+  "recurringEmpty": "Nothing recurring yet. Tap \"Recurring\" when you add an expense.",
+  "recurringNext": "Next: {date}",
+  "@recurringNext": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringEnded": "Ended",
+  "recurringPaused": "Paused",
+  "recurringPause": "Pause",
+  "recurringResume": "Resume",
+  "recurringDelete": "Delete",
+  "recurringPausedDone": "\"{title}\" paused",
+  "@recurringPausedDone": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringResumedDone": "\"{title}\" is running again",
+  "@recurringResumedDone": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringDeletedDone": "\"{title}\" deleted. Expenses already added stay.",
+  "@recurringDeletedDone": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringCreated": "{count, plural, =1{1 recurring expense added.} other{{count} recurring expenses added.}}",
+  "recurringSkipped": "{count, plural, =1{One older date was skipped.} other{{count} older dates were skipped.}}",
+  "recurringFailed": "\"{title}\" could not be added. {reason}",
+  "@recurringFailed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringFailedMore": "\"{title}\" and {more} more could not be added. {reason}",
+  "@recurringFailedMore": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "more": {
+        "type": "int"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringCheckFailed": "Recurring expenses could not be checked. {reason}",
+  "@recurringCheckFailed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -8,6 +8,7 @@ The fenced JSON block below is the single source: the helper parses it. Keys are
 |---|---|---|
 | `log_commute_ride` | Log a commute ride | 3 |
 | `add_equal_split_expense` | Add an equal-split expense (plus typing the amount/title) | 5 |
+| `add_recurring_expense` | Add an expense that repeats monthly: the equal-split flow plus one tap on "Wiederkehrend" (P9-T03; typing is not a tap) | 4 |
 | `mark_transfer_paid` | Mark a transfer as paid | 2 |
 | `create_group_with_members` | Create a group and add its people (typing names and keyboard enter are not taps) | 3 |
 | `share_group_link` | Group detail to the share sheet with link and QR | 1 |
@@ -29,6 +30,7 @@ The fenced JSON block below is the single source: the helper parses it. Keys are
 {
   "log_commute_ride": {"maxTaps": 3},
   "add_equal_split_expense": {"maxTaps": 5},
+  "add_recurring_expense": {"maxTaps": 4},
   "mark_transfer_paid": {"maxTaps": 2},
   "create_group_with_members": {"maxTaps": 3},
   "share_group_link": {"maxTaps": 1},
