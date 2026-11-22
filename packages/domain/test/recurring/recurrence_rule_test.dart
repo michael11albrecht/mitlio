@@ -187,6 +187,116 @@ void main() {
     });
   });
 
+  group('occurrence argument check', () {
+    test('negative n throws ArgumentError naming n with its message', () {
+      final r = _rule(_d(2026, 1, 1), RecurrenceFrequency.daily);
+      expect(
+        () => r.occurrence(-1),
+        throwsA(
+          isA<ArgumentError>()
+              .having((e) => e.name, 'name', 'n')
+              .having((e) => e.invalidValue, 'invalidValue', -1)
+              .having((e) => e.message, 'message', 'must be >= 0'),
+        ),
+      );
+    });
+
+    test('n of 0 is the start date', () {
+      final r = _rule(_d(2026, 1, 1), RecurrenceFrequency.daily);
+      expect(r.occurrence(0), _d(2026, 1, 1));
+    });
+  });
+
+  group('dueOccurrences cap boundary', () {
+    test('exactly maxCount due returns all of them', () {
+      final r = _rule(_d(2026, 1, 1), RecurrenceFrequency.daily);
+      final due = r.dueOccurrences(
+        lastGenerated: null,
+        today: _d(2026, 1, 3),
+        maxCount: 3,
+      );
+      expect(due, [_d(2026, 1, 1), _d(2026, 1, 2), _d(2026, 1, 3)]);
+    });
+  });
+
+  group('equality', () {
+    final base = _rule(
+      _d(2026, 1, 1),
+      RecurrenceFrequency.weekly,
+      interval: 2,
+      end: _d(2026, 12, 31),
+    );
+
+    test('identical field values are equal with equal hashCode', () {
+      final same = _rule(
+        _d(2026, 1, 1),
+        RecurrenceFrequency.weekly,
+        interval: 2,
+        end: _d(2026, 12, 31),
+      );
+      expect(same, base);
+      expect(same.hashCode, base.hashCode);
+    });
+
+    test('differs when any single field differs', () {
+      expect(
+        _rule(
+          _d(2026, 1, 2),
+          RecurrenceFrequency.weekly,
+          interval: 2,
+          end: _d(2026, 12, 31),
+        ),
+        isNot(base),
+      );
+      expect(
+        _rule(
+          _d(2026, 1, 1),
+          RecurrenceFrequency.daily,
+          interval: 2,
+          end: _d(2026, 12, 31),
+        ),
+        isNot(base),
+      );
+      expect(
+        _rule(
+          _d(2026, 1, 1),
+          RecurrenceFrequency.weekly,
+          interval: 3,
+          end: _d(2026, 12, 31),
+        ),
+        isNot(base),
+      );
+      expect(
+        _rule(_d(2026, 1, 1), RecurrenceFrequency.weekly, interval: 2),
+        isNot(base),
+      );
+    });
+
+    test('is not equal to a different type', () {
+      // ignore: unrelated_type_equality_checks, testing operator== with another type
+      expect(base == 'x', isFalse);
+    });
+
+    test('hashCode is Object.hash of start, frequency, interval, end', () {
+      expect(
+        base.hashCode,
+        Object.hash(
+          base.start,
+          base.frequency,
+          base.interval,
+          base.end,
+        ),
+      );
+    });
+
+    test('toString shows frequency, interval and start', () {
+      expect(
+        base.toString(),
+        'RecurrenceRule(RecurrenceFrequency.weekly/2 from ${base.start})',
+      );
+    });
+  });
+
   group('properties', () {
     Glados3(
       any.intInRange(0, 3000),
