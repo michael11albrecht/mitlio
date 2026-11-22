@@ -21,6 +21,7 @@ a new migration for the SQL (never edit a merged one), update the pgTAP test, th
 | Supabase platform logs | Supabase | at most 7 days (plan-dependent, controlled by the provider) | `platform_logs_max_days` | provider |
 | Crash reports (opt-in) | Sentry (EU) | 30 days | `sentry_days` | owner sets the project's data retention in Sentry |
 | Website server logs | Firebase Hosting (Google) | controlled by Google; we have no access and do not evaluate them | none | provider |
+| In-app feedback files (screenshots, reply address; private bucket `feedback-screenshots`) | Supabase Storage | 90 days (DRAFT, owner decides; the GitHub issue text is not auto-deleted, the owner closes it while triaging) | `feedback_days` | cron `feedback-cleanup` (0020) calling `submit-feedback`, inert until the Vault secrets exist (`docs/feedback-api.md`) |
 | Emails and contact form messages | our mailbox | 12 months after the last message | `email_months` | mailbox auto-delete rule (owner) |
 | Data protection requests and replies | our mailbox | 3 years (accountability, Art. 5(2) GDPR) | `privacy_request_years` | owner |
 

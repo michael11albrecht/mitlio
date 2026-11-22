@@ -115,3 +115,13 @@ Notes for the policy text:
 - The message ends up in our mailbox and with the e-mail providers involved; the owner decides retention there.
 - Purpose and legal basis: answering the request (Art. 6(1)(b) or (f) GDPR). The honeypot field is not personal data.
 - No cookies, no identifiers, no third-party scripts on the page. API: `docs/contact-api.md`.
+
+## In-app feedback (Settings > Feedback; ADR-29, P7-T10; DRAFT until the owner signs off)
+
+Only exists once the owner has stored the GitHub token (otherwise the function answers 503 and the app hides the row).
+
+| What the app contacts | What is sent | What the recipient can see |
+|---|---|---|
+| our Supabase `submit-feedback` Edge Function (POST, JSON) | type (problem/idea/question), the text, optional reply e-mail, up to 3 screenshots, language; app version, OS and locale only if the user switched diagnostics on | the function creates one GitHub issue (GitHub, Inc.; labels `user-feedback` + `needs-triage`) with the text and, if allowed, version/OS/locale; screenshots and the e-mail go to the private Storage bucket `feedback-screenshots` (only the service role reads them) and are deleted after `feedback_days`; Supabase sees the request IP as for any request, a salted hash of it is kept one day for the rate limit |
+
+Wording for the policy (DE/EN, DRAFT): `docs/feedback-api.md`. Contract: same file.

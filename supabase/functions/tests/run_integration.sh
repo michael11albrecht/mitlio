@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Integration test for the fuel-prices (P6c) and fx-rates (P7-T02) Edge Functions. Needs a running local stack
+# Integration test for the fuel-prices (P6c), fx-rates (P7-T02) and submit-feedback (P7-T10) Edge Functions. Needs a running local stack
 # (`supabase start`), `supabase` and `deno` on PATH. Run from anywhere; CI: .github/workflows/db.yml.
 set -euo pipefail
 cd "$(dirname "$0")/../../.."
@@ -38,6 +38,10 @@ FX_RATE_LIMIT_CAPACITY=6
 FX_RATE_LIMIT_PER_MIN=1
 FX_RATE_LIMIT_SALT=integration-test-salt
 FX_WARM_TOKEN=fx-warm-secret
+FEEDBACK_GITHUB_API_URL=http://host.docker.internal:8787/github
+FEEDBACK_RATE_LIMIT_PER_HOUR=3
+FEEDBACK_RATE_LIMIT_SALT=integration-test-salt
+FEEDBACK_CLEANUP_TOKEN=integration-cleanup-token
 EOF
 }
 
@@ -45,6 +49,7 @@ run_phase() {
   local phase="$1"
   base_env > "$tmp/$phase.env"
   [ "$phase" = key ] && echo "TANKERKOENIG_API_KEY=test-key" >> "$tmp/$phase.env"
+  [ "$phase" = key ] && echo "FEEDBACK_GITHUB_TOKEN=test-github-token" >> "$tmp/$phase.env"
   echo "=== phase: $phase ==="
   # CLI 3.x `supabase start` already runs the edge runtime; `functions serve` would reuse it and ignore
   # --env-file. Remove it so serve starts a fresh runtime with this phase's env.
@@ -66,6 +71,9 @@ run_phase() {
   [ -n "$ready" ] || { echo "function did not become ready"; exit 1; }
   PHASE="$phase" deno test --allow-net --allow-env --allow-read=supabase/functions/_shared/testdata \
     supabase/functions/tests/integration_test.ts
+  # submit-feedback (P7-T10): GitHub stub + local Storage. Without the token (nokey phase) it must answer 503.
+  FEEDBACK_FUNCTION_URL="$API_URL/functions/v1/submit-feedback" PHASE="$phase" \
+    deno test --allow-net --allow-env supabase/functions/tests/feedback_integration_test.ts
   if [ "$phase" = key ]; then
     # The fx-rates function runs in the same `functions serve` instance (P7-T02).
     FX_FUNCTION_URL="$API_URL/functions/v1/fx-rates" \
