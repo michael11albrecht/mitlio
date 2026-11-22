@@ -24,7 +24,8 @@ Files: `core/result.dart` (2), `expense/expense_error.dart` (5),
 Verified per file: `expense_error.dart` (5, #118), `split_error.dart` (5, #119)
 and `ride_period.dart` (4, #120) have no other survivors. The nightly run re-filed
 the same hash mutants as #256, #257 (`vehicle_cost.dart`, plus one real survivor, the `MoneyOverflow`
-value, now killed), #258 and #277 (`split_error.dart`, same 5 as #119); they are equivalent as described above.
+value, now killed), #258 and #277 (`split_error.dart`, same 5 as #119); they are equivalent as described above. #276 re-filed the five
+`expense_error.dart` hash mutants (lines 38, 70, 88, 107 x2); same reason, no other survivors.
 
 ## Modulo by a negated constant (3 mutants)
 
