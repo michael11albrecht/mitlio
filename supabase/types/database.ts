@@ -961,6 +961,10 @@ export type Database = {
     }
     Functions: {
       can_bootstrap_group: { Args: { gid: string }; Returns: boolean }
+      cleanup_feedback_screenshots: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_fuel_tables: {
         Args: Record<PropertyKey, never>
         Returns: undefined
