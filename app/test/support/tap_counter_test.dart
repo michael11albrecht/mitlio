@@ -48,6 +48,7 @@ void main() {
         'profile_setup': 8,
         'first_group': 4,
         'commute_template': 8,
+        'send_feedback': 3,
       });
     });
   });

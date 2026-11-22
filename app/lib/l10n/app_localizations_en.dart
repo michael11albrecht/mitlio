@@ -2612,6 +2612,119 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myQrEntryHint => 'For bank transfers to you, no amount';
 
   @override
+  String get feedbackEntry => 'Feedback';
+
+  @override
+  String get feedbackEntryHint => 'Report a problem or suggest something';
+
+  @override
+  String get feedbackTitle => 'Feedback';
+
+  @override
+  String get feedbackTypeProblem => 'Problem';
+
+  @override
+  String get feedbackTypeIdea => 'Idea';
+
+  @override
+  String get feedbackTypeQuestion => 'Question';
+
+  @override
+  String get feedbackMessageLabel => 'What would you like to tell us?';
+
+  @override
+  String get feedbackMessageHelper => 'At least 10 characters.';
+
+  @override
+  String get feedbackPublicNote =>
+      'Your text is saved as a public issue. Do not put private details in it.';
+
+  @override
+  String get feedbackScreenshotsLabel => 'Screenshots (optional, up to 3)';
+
+  @override
+  String get feedbackScreenshotsNote =>
+      'Only we can see screenshots, they are not public. Check whether names or amounts of other people show.';
+
+  @override
+  String get feedbackAddScreenshot => 'Add screenshot';
+
+  @override
+  String get feedbackRemoveScreenshot => 'Remove screenshot';
+
+  @override
+  String get feedbackEmailLabel => 'Email (only if you want a reply)';
+
+  @override
+  String get feedbackEmailInvalid =>
+      'That does not look like an email address.';
+
+  @override
+  String get feedbackDiagnosticsLabel => 'Include app info';
+
+  @override
+  String feedbackDiagnosticsPreview(String info) {
+    return 'Version, system and language: $info';
+  }
+
+  @override
+  String get feedbackSend => 'Send';
+
+  @override
+  String get feedbackSending => 'Sending …';
+
+  @override
+  String get feedbackThanksTitle => 'Thank you, we read every message.';
+
+  @override
+  String get feedbackThanksReply =>
+      'If you gave an email address, we will get back to you if needed.';
+
+  @override
+  String get feedbackDone => 'Done';
+
+  @override
+  String get feedbackErrorOffline =>
+      'No connection. Your text is kept. Check your connection and send it again.';
+
+  @override
+  String get feedbackErrorRateLimited =>
+      'You just sent several messages. Try again in a few minutes. Your text is kept.';
+
+  @override
+  String feedbackErrorRateLimitedIn(int minutes) {
+    return 'You just sent several messages. Try again in $minutes min. Your text is kept.';
+  }
+
+  @override
+  String get feedbackErrorBusy =>
+      'A lot of messages are coming in right now. Try again later. Your text is kept.';
+
+  @override
+  String get feedbackErrorUnavailable =>
+      'Feedback is not switched on yet. Try again later. Your text is kept.';
+
+  @override
+  String get feedbackErrorServer =>
+      'The server is not responding right now. Your text is kept, try again in a few minutes.';
+
+  @override
+  String get feedbackErrorTooLarge =>
+      'A picture is too large (5 MB at most). Remove it or pick a smaller one.';
+
+  @override
+  String get feedbackErrorBadScreenshot =>
+      'That picture does not work. Use photos or screenshots (PNG, JPEG or WebP).';
+
+  @override
+  String get feedbackErrorRejected =>
+      'The message was not accepted. Check the text and the email address and send it again.';
+
+  @override
+  String get feedbackErrorPick =>
+      'The picture could not be loaded. Pick another one.';
+
+  @override
   String get myQrTitle => 'My QR code';
 
   @override

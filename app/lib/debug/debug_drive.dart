@@ -15,6 +15,7 @@ import 'package:mitlio/debug/handlers/connections.dart';
 import 'package:mitlio/debug/handlers/expense_history.dart';
 import 'package:mitlio/debug/handlers/expenses.dart';
 import 'package:mitlio/debug/handlers/export.dart';
+import 'package:mitlio/debug/handlers/feedback.dart';
 import 'package:mitlio/debug/handlers/fuel.dart';
 import 'package:mitlio/debug/handlers/groups.dart';
 import 'package:mitlio/debug/handlers/join.dart';
@@ -131,6 +132,7 @@ void registerDebugDrive(ProviderContainer container) {
     ...setupDriveHandlers(container),
     ...personalDriveHandlers(container),
     ...myQrDriveHandlers(container),
+    ...feedbackDriveHandlers(container),
     ...rareFlowsDriveHandlers(container),
     ...ridesDriveHandlers(container),
     ...exportDriveHandlers(container),
