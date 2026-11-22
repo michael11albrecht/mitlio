@@ -11,6 +11,8 @@ const env = {
   ASTRO_OUT_DIR: './dist-fuel',
   FUEL_API_URL: 'https://fuel.mitlio.test/functions/v1/fuel-prices',
   FUEL_API_ANON_KEY: 'test-anon-key',
+  // The from-to route row (PW-T12) is rendered in this build too: it talks to the same fake origin.
+  ROUTE_WEB: '1',
   ASTRO_TELEMETRY_DISABLED: '1',
 };
 

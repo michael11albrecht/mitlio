@@ -162,6 +162,10 @@ test.describe('calculator (de)', () => {
     await expect(amount(page)).toHaveText(/^12,60\s€$/);
   });
 
+  test('the from-to route row is not rendered without the ROUTE_WEB build flag', async ({ page }) => {
+    await expect(page.locator('#calc-route')).toHaveCount(0);
+  });
+
   test('breakdown is collapsible and shows fuel, extras and total', async ({ page }) => {
     await page.locator('#calc-extras').fill('10');
     const details = page.locator('details.breakdown');

@@ -2,7 +2,7 @@
 import { calculatorMessages } from '../i18n/calculator';
 import { messages, type Locale } from '../i18n';
 import { defaultState, MAX_TRIP_NAME, type CalcState } from '../calculator/core';
-import { APP_STORE_URL, FUEL_API_ANON_KEY, FUEL_API_URL, PLAY_STORE_URL } from '../../site.config.mjs';
+import { APP_STORE_URL, FUEL_API_ANON_KEY, FUEL_API_URL, PLAY_STORE_URL, ROUTE_API_URL } from '../../site.config.mjs';
 import { FUEL_TYPES } from '../lib/fuel';
 import { buildDeepLink } from '../lib/deeplink';
 
@@ -24,6 +24,8 @@ const storesLive = APP_STORE_URL !== '' || PLAY_STORE_URL !== '';
 const ev = d.energy === 'ev';
 // Live fuel price chips need a configured API and a per-litre price field (not the km-rate page).
 const fuelEnabled = FUEL_API_URL !== '' && !rate;
+// From-to route row: opt-in, behind the ROUTE_WEB build flag (empty ROUTE_API_URL means off, nothing rendered).
+const routeEnabled = ROUTE_API_URL !== '';
 const consLabel = `${ev ? m.consumptionEv : m.consumptionFuel} (${ev ? m.consumptionEvUnit : m.consumptionFuelUnit})`;
 const consUnit = ev ? m.consumptionEvUnit : m.consumptionFuelUnit;
 const priceLabel = rate ? `${m.priceRate} (${m.priceRateUnit})` : `${ev ? m.priceEv : m.priceFuel} (${ev ? m.priceEvUnit : m.priceFuelUnit})`;
@@ -177,6 +179,32 @@ const ctaDeepLink = buildDeepLink({
         <p class="error" id="calc-persons-error" hidden></p>
       </div>
     </div>
+
+    {
+      routeEnabled && (
+        <details class="route" id="calc-route" data-api={ROUTE_API_URL} data-key={FUEL_API_ANON_KEY || undefined}>
+          <summary>{m.routeToggle}</summary>
+          <div class="route-body">
+            <div class="field">
+              <label for="calc-route-from">{m.routeFrom}</label>
+              <input id="calc-route-from" type="text" autocomplete="off" maxlength="120" />
+              <ul class="route-list" id="calc-route-from-list" aria-label={m.routeSuggestionsFrom} hidden />
+            </div>
+            <div class="field">
+              <label for="calc-route-to">{m.routeTo}</label>
+              <input id="calc-route-to" type="text" autocomplete="off" maxlength="120" />
+              <ul class="route-list" id="calc-route-to-list" aria-label={m.routeSuggestionsTo} hidden />
+            </div>
+            <button type="button" class="chip chip-action" id="calc-route-recalc" hidden>
+              {m.routeRecalc}
+            </button>
+            <p class="route-status" id="calc-route-status" role="status" />
+            <p class="route-note">{m.routeNote}</p>
+            <p class="route-note" id="calc-route-attribution" hidden />
+          </div>
+        </details>
+      )
+    }
 
     <div class="switches">
       <label class="switch">
@@ -587,6 +615,82 @@ const ctaDeepLink = buildDeepLink({
     width: 6.5rem;
     min-height: 2.75rem;
     font-size: 1rem;
+  }
+
+  .route {
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-2);
+  }
+
+  .route summary {
+    cursor: pointer;
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .route summary:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .route-body {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+  }
+
+  .route-body .field {
+    justify-self: stretch;
+  }
+
+  .route-list {
+    list-style: none;
+    margin: var(--space-1) 0 0;
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .route-list[hidden],
+  .route-status:empty,
+  #calc-route-attribution[hidden],
+  #calc-route-recalc[hidden] {
+    display: none;
+  }
+
+  .route-option {
+    display: block;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: var(--space-2) var(--space-3);
+    font: inherit;
+    text-align: left;
+    color: var(--color-text);
+    background: var(--color-bg);
+    border: 0;
+    border-bottom: 1px solid var(--color-border);
+    cursor: pointer;
+  }
+
+  .route-option:hover {
+    background: var(--color-surface);
+  }
+
+  .route-option:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: -3px;
+  }
+
+  .route-status,
+  .route-note {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
   }
 
   .field label {

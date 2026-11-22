@@ -6,3 +6,5 @@ export const FUEL_API_ANON_KEY: string;
 export const CONTACT_API_URL: string;
 export const APPLE_TEAM_ID: string;
 export const ANDROID_SHA256_CERT_FINGERPRINTS: string;
+export const ROUTE_WEB: boolean;
+export const ROUTE_API_URL: string;
