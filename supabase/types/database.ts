@@ -1043,7 +1043,7 @@ export type Database = {
         Returns: Json
       }
       notification_outbox_health: {
-        Args: never
+        Args: Record<PropertyKey, never>
         Returns: {
           failed_last_hour: number
           oldest_due_age_seconds: number
