@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.4.0](https://github.com/michael11albrecht/mitlio/compare/mitlio-v0.3.0...mitlio-v0.4.0) (2026-11-22)
+
+
+### Features
+
+* **app:** car setup flow and cost calculator (PU-T08, PU-T09) ([#254](https://github.com/michael11albrecht/mitlio/issues/254)) ([d34779d](https://github.com/michael11albrecht/mitlio/commit/d34779ddb82ed9c653e914b0f2485534830f3dfb))
+* **app:** group integration and entry points for profile and cars (PU-T10, PU-T11) [stacked on [#239](https://github.com/michael11albrecht/mitlio/issues/239) [#245](https://github.com/michael11albrecht/mitlio/issues/245) [#254](https://github.com/michael11albrecht/mitlio/issues/254) [#249](https://github.com/michael11albrecht/mitlio/issues/249)] ([#267](https://github.com/michael11albrecht/mitlio/issues/267)) ([1deba61](https://github.com/michael11albrecht/mitlio/commit/1deba6196fe92740417a13242cbc6810563ca27a))
+* **app:** guided setup step-flow framework (PU-T05) ([#245](https://github.com/michael11albrecht/mitlio/issues/245)) ([5aee629](https://github.com/michael11albrecht/mitlio/commit/5aee62999d8cea981b4e7c054c0c2d0a2e898152))
+* **app:** illustration set as CustomPainter widgets (PU-T06) ([#247](https://github.com/michael11albrecht/mitlio/issues/247)) ([47cd58b](https://github.com/michael11albrecht/mitlio/commit/47cd58bddb87325c0cb70ee6f06a6a4600424864))
+* **app:** point prod build at the mitlio-prod Supabase project ([#271](https://github.com/michael11albrecht/mitlio/issues/271)) ([d7f0ab3](https://github.com/michael11albrecht/mitlio/commit/d7f0ab30129068e8ea925f1b37b86095447d0c03))
+* **app:** profile flow (PU-T07) [stacked on [#239](https://github.com/michael11albrecht/mitlio/issues/239) and [#245](https://github.com/michael11albrecht/mitlio/issues/245)] ([#249](https://github.com/michael11albrecht/mitlio/issues/249)) ([044638a](https://github.com/michael11albrecht/mitlio/commit/044638a177fe859951a16427ba702fc2c0a6db1f))
+* **app:** push notifications app side without Firebase (P6b-T06..T09) ([#252](https://github.com/michael11albrecht/mitlio/issues/252)) ([d5b4bd0](https://github.com/michael11albrecht/mitlio/commit/d5b4bd0d66214cd2325f25e1a6da81df1740994f))
+* **app:** rare flows on the step flow: first group, commute route, month settlement (PU-T12) [stacked on [#267](https://github.com/michael11albrecht/mitlio/issues/267)] ([#270](https://github.com/michael11albrecht/mitlio/issues/270)) ([78ff36d](https://github.com/michael11albrecht/mitlio/commit/78ff36ddf74f8a19850eb865473989e4c8ad5781))
+* **app:** read Sentry DSN from AppConfig, full scrubber fixture test (P7-T08) ([#241](https://github.com/michael11albrecht/mitlio/issues/241)) ([57a6079](https://github.com/michael11albrecht/mitlio/commit/57a6079c1857e3f49d53e44f60dfeab882128edd))
+* **app:** Settings &gt; Feedback form, ViewModel, repository, DebugDrive handlers (P7-T10, ADR-29) ([#283](https://github.com/michael11albrecht/mitlio/issues/283)) ([f470d7b](https://github.com/michael11albrecht/mitlio/commit/f470d7b153f2ec4f5e0c985c7124028f7057686c))
+* **app:** share my QR code via share sheet (PU-T16) [stacked on [#267](https://github.com/michael11albrecht/mitlio/issues/267)] ([#269](https://github.com/michael11albrecht/mitlio/issues/269)) ([2782f12](https://github.com/michael11albrecht/mitlio/commit/2782f12030b8f47be2dea0650284617ba371fa7a))
+* **db:** profile, personal vehicles and vehicle source link, schema v7 (PU-T04) ([#239](https://github.com/michael11albrecht/mitlio/issues/239)) ([7203b90](https://github.com/michael11albrecht/mitlio/commit/7203b90728d3710fa171c052bbd8417c093e7080))
+* **domain:** PayPal.Me handle, vehicle extra cost per km, operating-cost check (PU-T02, PU-T03, PU-T15) ([#235](https://github.com/michael11albrecht/mitlio/issues/235)) ([a237c52](https://github.com/michael11albrecht/mitlio/commit/a237c52930c6538fdb4f94451d953b5cf5e32f9b))
+* **domain:** recurrence rule engine for recurring expenses (P9-T03) ([#266](https://github.com/michael11albrecht/mitlio/issues/266)) ([d361018](https://github.com/michael11albrecht/mitlio/commit/d361018f60d22d64cd47fabb60603a93631f2eba))
+* **supabase:** push notification tables, outbox triggers, notify logic (P6b-T02, P6b-T03, P6b-T04) ([#246](https://github.com/michael11albrecht/mitlio/issues/246)) ([d65772f](https://github.com/michael11albrecht/mitlio/commit/d65772f2f8f0519ad37f5c3eed8dcc69b8d911a5))
+* **supabase:** submit-feedback Edge Function, private bucket, retention job (P7-T10) ([#281](https://github.com/michael11albrecht/mitlio/issues/281)) ([f2dac17](https://github.com/michael11albrecht/mitlio/commit/f2dac1783c4ed3007dda827ac83c0e46256dec2c))
+* **web,app:** Made with heart by Michael Albrecht credit ([#186](https://github.com/michael11albrecht/mitlio/issues/186), [#187](https://github.com/michael11albrecht/mitlio/issues/187)) ([#225](https://github.com/michael11albrecht/mitlio/issues/225)) ([a888562](https://github.com/michael11albrecht/mitlio/commit/a888562d6e8fa1cd0e47d6189f8c943a73cde157))
+* **web:** from-to route field on the calculator, behind ROUTE_WEB (PW-T12, [#207](https://github.com/michael11albrecht/mitlio/issues/207)) ([#280](https://github.com/michael11albrecht/mitlio/issues/280)) ([f0055fb](https://github.com/michael11albrecht/mitlio/commit/f0055fbe8e397a92c3d1124a3a72630772c2b448))
+* **web:** render sync privacy text, drop push text until P6b ([#263](https://github.com/michael11albrecht/mitlio/issues/263)) ([#264](https://github.com/michael11albrecht/mitlio/issues/264)) ([b1e4b66](https://github.com/michael11albrecht/mitlio/commit/b1e4b667ffd991bb96086c98f827aab8f1d94b1f))
+
+
+### Bug Fixes
+
+* **app:** credit line gap and check mark over avatar chips ([#236](https://github.com/michael11albrecht/mitlio/issues/236), [#237](https://github.com/michael11albrecht/mitlio/issues/237)) ([#250](https://github.com/michael11albrecht/mitlio/issues/250)) ([1f275e5](https://github.com/michael11albrecht/mitlio/commit/1f275e5bfd21f2992b8decaec9e7bbd09d44921e))
+* **balances:** removed members no longer break balances; settle sheet shows what others owe ([#136](https://github.com/michael11albrecht/mitlio/issues/136), [#141](https://github.com/michael11albrecht/mitlio/issues/141)) ([#222](https://github.com/michael11albrecht/mitlio/issues/222)) ([a800efb](https://github.com/michael11albrecht/mitlio/commit/a800efbd4d356db07cc4fcde1f327872df55af41))
+* **groups:** focus the member rename field and reject duplicate names ([#138](https://github.com/michael11albrecht/mitlio/issues/138), [#144](https://github.com/michael11albrecht/mitlio/issues/144)) ([#224](https://github.com/michael11albrecht/mitlio/issues/224)) ([b941051](https://github.com/michael11albrecht/mitlio/commit/b941051b2c7aa1e094da9739d0cbb3254c0938f0))
+* **trip:** share text names payee and total; plausibility limits; UTC seed dates and app category keys ([#223](https://github.com/michael11albrecht/mitlio/issues/223)) ([6a0465b](https://github.com/michael11albrecht/mitlio/commit/6a0465b8afae2cd5a5f95a067367c7eda43f5cf0))
+* **web:** fuel source/note to footer, nearby only when supported, center chips ([#211](https://github.com/michael11albrecht/mitlio/issues/211)) ([f93013f](https://github.com/michael11albrecht/mitlio/commit/f93013f65f98f029f7ebe46e37e3c27a53c069f6))
+
 ## [0.3.0](https://github.com/michael11albrecht/mitlio/compare/mitlio-v0.2.0...mitlio-v0.3.0) (2026-11-19)
 
 
