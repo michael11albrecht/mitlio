@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.5.0](https://github.com/michael11albrecht/mitlio/compare/mitlio-v0.4.0...mitlio-v0.5.0) (2026-11-22)
+
+
+### Features
+
+* **app:** profile photo from camera or gallery, local only (PU-T13) ([#292](https://github.com/michael11albrecht/mitlio/issues/292)) ([9df16c7](https://github.com/michael11albrecht/mitlio/commit/9df16c78d8a0e6da7fd971c7f161d8769fed0381))
+* **app:** recurring expenses: rules, catch-up on start, form chip, list, DebugDrive (P9-T03) ([#295](https://github.com/michael11albrecht/mitlio/issues/295)) ([fa7c239](https://github.com/michael11albrecht/mitlio/commit/fa7c2394ec0ae7c1abf1da91082ef83644ce1b09))
+* **domain:** parseReceipt turns OCR lines into a ReceiptDraft (P9r-T03) ([#291](https://github.com/michael11albrecht/mitlio/issues/291)) ([15b8bf7](https://github.com/michael11albrecht/mitlio/commit/15b8bf76559e267e6b71d0fc3c3b02767be01edf))
+* **supabase:** delete Auth audit rows with the account, daily audit purge ([#206](https://github.com/michael11albrecht/mitlio/issues/206)) ([#251](https://github.com/michael11albrecht/mitlio/issues/251)) ([1b8b042](https://github.com/michael11albrecht/mitlio/commit/1b8b042a6c468f278e8ac64a5ee83b3529bb35da))
+* **supabase:** notify Edge Function, FCM client, outbox claim/retry, cron (P6b-T05, P6b-T10) ([#253](https://github.com/michael11albrecht/mitlio/issues/253)) ([19ec821](https://github.com/michael11albrecht/mitlio/commit/19ec821bfd3b981d3ec10df36e53af02c2caaac7))
+* **supabase:** notify monitoring, Sentry cron check-ins and outbox health (P6b-T10) [stacked on [#253](https://github.com/michael11albrecht/mitlio/issues/253)] ([#268](https://github.com/michael11albrecht/mitlio/issues/268)) ([2d9163d](https://github.com/michael11albrecht/mitlio/commit/2d9163da1311aaaf3b127a6af79183b3ea5a874b))
+* support mitlio tip jar behind remote flag, off by default (P7-T09) ([#282](https://github.com/michael11albrecht/mitlio/issues/282)) ([e1caca3](https://github.com/michael11albrecht/mitlio/commit/e1caca3f4223a589f79067ae60f765471c194814))
+
+
+### Bug Fixes
+
+* **supabase:** align generated DB types with generator output ([#296](https://github.com/michael11albrecht/mitlio/issues/296)) ([fda22c7](https://github.com/michael11albrecht/mitlio/commit/fda22c77eb219aef2e5a07522dd9c6e4b60d9f4a))
+
 ## [0.4.0](https://github.com/michael11albrecht/mitlio/compare/mitlio-v0.3.0...mitlio-v0.4.0) (2026-11-22)
 
 
