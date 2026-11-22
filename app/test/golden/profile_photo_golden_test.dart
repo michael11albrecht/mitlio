@@ -5,7 +5,7 @@ import '../features/profile/ui/profile_photo_rig.dart';
 import 'golden_matrix.dart';
 
 /// The profile avatar step with the camera/gallery buttons (PU-T13), without
-/// and with a photo, light/dark x 1.0/2.0. The photo is a fixed gradient
+/// and with a photo, light/dark x 1.0/2.0. The photo is a fixed solid-colour
 /// picture, not a real photo.
 Future<void> main() async {
   Future<void> golden(String name, {required bool withPhoto}) async {

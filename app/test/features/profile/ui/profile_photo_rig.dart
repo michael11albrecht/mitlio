@@ -11,9 +11,12 @@ import 'package:mitlio/features/setup/data/setup_state_repository.dart';
 
 import 'profile_flow_rig.dart';
 
-/// A 16x16 colour gradient PNG standing in for the processed profile photo.
+/// A 16x16 single-colour PNG standing in for the processed profile photo.
+/// Solid on purpose: any gradient or edge would be interpolated differently
+/// by the GPU/scaler per platform and break the platform-independent golden.
 final Uint8List samplePhotoPng = base64Decode(
-  'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB6UlEQVR4nBXMoW3gMAAAQC9g8NTwUXiVBawfwORhaIEXqBeIVGxWFvySF3AXCOgKXaEr+C8D3IUQ1voVftbv8L1ewtf6Ez7X3/BvvYaP9Rbe13t4Wx/hdf0Lf9dn+LO+wsv6Dr/XT/i1FhxCFERBFERBFERBFERBFERBFERBFERBFMQnSIIkSIIkSIIkSIIkSIIkSIIkSIIkSIL0BJtgE2yCTbAJNsEm2ASbYBNsgk2wCTbBJtieYBfsgl2wC3bBLtgFu2AX7IJdsAt2wS7YBfsTZEEWZEEWZEEWZEEWZEEWZEEWZEEWZEF+giIogiIogiIogiIogiIogiIogiIogiIoT3AIDsEhOASH4BAcgkNwCA7BITgEh+AQHILjCaqgCqqgCqqgCqqgCqqgCqqgCqqgCqqgPkETNEETNEETNEETNEETNEETNEETNEETtCc4BafgFJyCU3AKTsEpOAWn4BScglNwCk7B+QRd0AVd0AVd0AVd0AVd0AVd0AVd0AVd0J/gElyCS3AJLsEluASX4BJcgktwCS7BJbgE1xMMwRAMwRAMwRAMwRAMwRAMwRAMwRAMwXiCKZiCKZiCKZiCKZiCKZiCKZiCKZiCKZhPcAtuwS24BbfgFtyCW3ALbsEtuAW34Bbcgjus//tjYc+BHUBDAAAAAElFTkSuQmCC',
+  'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAFklEQVR42mOwr99PEmIY1T'
+  'CqYfhqAAANOX0QszVpOgAAAABJRU5ErkJggg==',
 );
 
 /// The profile flow resumed at the avatar step, with a profile, a camera and
