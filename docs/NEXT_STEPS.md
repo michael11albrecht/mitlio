@@ -1,4 +1,4 @@
-# Next steps — task list (status 2026-11-21)
+# Next steps: task list (status 2026-11-22)
 
 Source of truth for scope stays `docs/IMPLEMENTATION_PLAN.md`. This file is the working queue: what is done, what is next, what waits on a human. Update it in every PR that finishes an item. Human-only items: `docs/BLOCKERS.md`.
 
@@ -6,29 +6,28 @@ Source of truth for scope stays `docs/IMPLEMENTATION_PLAN.md`. This file is the 
 
 | Phase | State |
 |---|---|
-| P0–P4, P3r | done |
+| P0-P4, P3r | done |
 | PW, P6c | done; #207 route field waits on owner (ORS origins, Datenschutz) |
-| P6 sync | done (T01–T16) |
-| P7 | T01–T08 done; T09 tip jar waits on ADR-28 owner decision (#219); T10 feedback form waits on ADR-29 (#229, #230) |
-| P8 | T01–T03, T07 done, T04 prod deploy workflow done (#233); T06 (#242, gate verified on a real iOS build), T08 (#243, off until `AGENT_FIX_CI=true`) in owner review |
-| PU | T02, T03, T15 done (#235); T04 (#239), T05 (#245), T06 (#247) in review; T07–T09 in progress (stacked) |
-| P6b | T02–T04 in review (#246); T05 notify function in progress; app-side T06–T09 in review (#252, against fakes, no Firebase); T01 needs Firebase (owner) |
-| P9r, P9-T01..T07 | not started |
+| P6 sync | done (T01-T16); prod backend bootstrapped, app prod config set (#271) |
+| P7 | T01-T08 done; T09 tip jar waits on ADR-28; T10 feedback form unblocked (ADR-29 merged, #229), needs credential/bucket (BLOCKERS 20-22); store listing draft (#260) |
+| P8 | T01-T04, T06-T08 done (#233, #242, #243); T03 store halves wait on secrets |
+| PU | T02-T12, T15, T16 done; T13, T14, T17 later; decisions in BLOCKERS 12 |
+| P6b | T02-T04 (#246) and app side T06-T09 (#252) done; T05 (#253) and T10 (#268) open; T01 needs Firebase keys |
+| P9 | T03 domain recurrence done (#266); rest skipped for now |
+| P9r | not started |
 
-## Done since 2026-11-20
-Bug fixes #136–#147 (closed), credits #186/#187, mutation survivors #118–#120/#178/#210, Sentry scrubber, prod deploy workflow, auto-merge for safe PRs, wear toggle and fuel footer on the web.
+## Open PRs
+#253 notify, #251 audit purge (both stale bot CHANGES_REQUESTED, need owner dismissal), #268 P6b-T10 (stacked on #253), #226 release 0.4.0.
 
-## In flight (agents)
-- PU-T07 profile flow, PU-T08/T09 car + cost calculator (stacked on #239, #245)
-- P6b-T05 `notify` function (stacked on #246), P6b app-side push with fakes
-- #206 audit-log purge follow-up (migration)
-- UX nits #236, #237; #247 CI fix
+## Remaining agent-doable
+| Item | Note |
+|---|---|
+| PU-T13, T14, T17 | later |
+| P9-T03 app side, T04/T05 reminders + digest | skipped until P6b lands |
+| P9-T06 read-only web share link | ADR first; skipped |
+| P9r-T03 parser, T04 interface | synthetic fixtures only; T01/T02 need owner |
 
-## Next up (agent-doable)
-1. PU-T10 group integration, PU-T11 entry points and cards, PU-T16 share my QR code, PU-T12 move rare flows onto step flow — after PU-T07/T08 merge
-2. P9-T03 recurring expenses (domain-first), P9-T04/T05 reminders and digest (after P6b)
-3. P9r receipt OCR: T03 domain parser and T04 interface can start with synthetic fixtures; T01 spike and T02 real receipts need the owner
-4. P9-T06 read-only web share link (ADR first)
+Everything else waits on a human: `docs/BLOCKERS.md`.
 
 ## Verification rule
 Every UI-visible item is also checked on the iOS simulator through DebugDrive (`flutter run -d <sim> --flavor dev --vmservice-out-file=.drive/uri`, `tool/drive.sh`), respecting the tap budgets in `docs/ux-budgets.md`. Findings that are not fixed in the same PR become issues.
