@@ -4344,6 +4344,198 @@ abstract class AppLocalizations {
   /// **'Zum Überweisen an dich, ohne Betrag'**
   String get myQrEntryHint;
 
+  /// No description provided for @feedbackEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Feedback'**
+  String get feedbackEntry;
+
+  /// No description provided for @feedbackEntryHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Ein Problem melden oder etwas vorschlagen'**
+  String get feedbackEntryHint;
+
+  /// No description provided for @feedbackTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Feedback'**
+  String get feedbackTitle;
+
+  /// No description provided for @feedbackTypeProblem.
+  ///
+  /// In de, this message translates to:
+  /// **'Problem'**
+  String get feedbackTypeProblem;
+
+  /// No description provided for @feedbackTypeIdea.
+  ///
+  /// In de, this message translates to:
+  /// **'Idee'**
+  String get feedbackTypeIdea;
+
+  /// No description provided for @feedbackTypeQuestion.
+  ///
+  /// In de, this message translates to:
+  /// **'Frage'**
+  String get feedbackTypeQuestion;
+
+  /// No description provided for @feedbackMessageLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Was möchtest du uns sagen?'**
+  String get feedbackMessageLabel;
+
+  /// No description provided for @feedbackMessageHelper.
+  ///
+  /// In de, this message translates to:
+  /// **'Mindestens 10 Zeichen.'**
+  String get feedbackMessageHelper;
+
+  /// No description provided for @feedbackPublicNote.
+  ///
+  /// In de, this message translates to:
+  /// **'Dein Text wird als öffentliches Ticket gespeichert. Schreib keine privaten Daten hinein.'**
+  String get feedbackPublicNote;
+
+  /// No description provided for @feedbackScreenshotsLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Screenshots (optional, bis zu 3)'**
+  String get feedbackScreenshotsLabel;
+
+  /// No description provided for @feedbackScreenshotsNote.
+  ///
+  /// In de, this message translates to:
+  /// **'Screenshots sehen nur wir, sie sind nicht öffentlich. Prüfe, ob Namen oder Beträge anderer zu sehen sind.'**
+  String get feedbackScreenshotsNote;
+
+  /// No description provided for @feedbackAddScreenshot.
+  ///
+  /// In de, this message translates to:
+  /// **'Screenshot hinzufügen'**
+  String get feedbackAddScreenshot;
+
+  /// No description provided for @feedbackRemoveScreenshot.
+  ///
+  /// In de, this message translates to:
+  /// **'Screenshot entfernen'**
+  String get feedbackRemoveScreenshot;
+
+  /// No description provided for @feedbackEmailLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'E-Mail (nur, wenn du eine Antwort möchtest)'**
+  String get feedbackEmailLabel;
+
+  /// No description provided for @feedbackEmailInvalid.
+  ///
+  /// In de, this message translates to:
+  /// **'Das sieht nicht nach einer E-Mail-Adresse aus.'**
+  String get feedbackEmailInvalid;
+
+  /// No description provided for @feedbackDiagnosticsLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'App-Infos mitsenden'**
+  String get feedbackDiagnosticsLabel;
+
+  /// No description provided for @feedbackDiagnosticsPreview.
+  ///
+  /// In de, this message translates to:
+  /// **'Version, System und Sprache: {info}'**
+  String feedbackDiagnosticsPreview(String info);
+
+  /// No description provided for @feedbackSend.
+  ///
+  /// In de, this message translates to:
+  /// **'Senden'**
+  String get feedbackSend;
+
+  /// No description provided for @feedbackSending.
+  ///
+  /// In de, this message translates to:
+  /// **'Wird gesendet …'**
+  String get feedbackSending;
+
+  /// No description provided for @feedbackThanksTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Danke, wir lesen jede Nachricht.'**
+  String get feedbackThanksTitle;
+
+  /// No description provided for @feedbackThanksReply.
+  ///
+  /// In de, this message translates to:
+  /// **'Wenn du eine E-Mail-Adresse angegeben hast, melden wir uns bei Bedarf.'**
+  String get feedbackThanksReply;
+
+  /// No description provided for @feedbackDone.
+  ///
+  /// In de, this message translates to:
+  /// **'Fertig'**
+  String get feedbackDone;
+
+  /// No description provided for @feedbackErrorOffline.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Verbindung. Dein Text bleibt erhalten. Prüf deine Verbindung und sende ihn nochmal.'**
+  String get feedbackErrorOffline;
+
+  /// No description provided for @feedbackErrorRateLimited.
+  ///
+  /// In de, this message translates to:
+  /// **'Du hast gerade mehrere Nachrichten geschickt. Versuch es in ein paar Minuten nochmal. Dein Text bleibt erhalten.'**
+  String get feedbackErrorRateLimited;
+
+  /// No description provided for @feedbackErrorRateLimitedIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Du hast gerade mehrere Nachrichten geschickt. Versuch es in {minutes} Min. nochmal. Dein Text bleibt erhalten.'**
+  String feedbackErrorRateLimitedIn(int minutes);
+
+  /// No description provided for @feedbackErrorBusy.
+  ///
+  /// In de, this message translates to:
+  /// **'Gerade kommen sehr viele Nachrichten an. Versuch es später nochmal. Dein Text bleibt erhalten.'**
+  String get feedbackErrorBusy;
+
+  /// No description provided for @feedbackErrorUnavailable.
+  ///
+  /// In de, this message translates to:
+  /// **'Feedback ist noch nicht freigeschaltet. Versuch es später nochmal. Dein Text bleibt erhalten.'**
+  String get feedbackErrorUnavailable;
+
+  /// No description provided for @feedbackErrorServer.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Server antwortet gerade nicht. Dein Text bleibt erhalten, versuch es in ein paar Minuten nochmal.'**
+  String get feedbackErrorServer;
+
+  /// No description provided for @feedbackErrorTooLarge.
+  ///
+  /// In de, this message translates to:
+  /// **'Ein Bild ist zu groß (höchstens 5 MB). Entferne es oder wähl ein kleineres.'**
+  String get feedbackErrorTooLarge;
+
+  /// No description provided for @feedbackErrorBadScreenshot.
+  ///
+  /// In de, this message translates to:
+  /// **'Dieses Bild geht nicht. Nimm Fotos oder Screenshots (PNG, JPEG oder WebP).'**
+  String get feedbackErrorBadScreenshot;
+
+  /// No description provided for @feedbackErrorRejected.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Nachricht wurde nicht angenommen. Prüf Text und E-Mail-Adresse und sende sie nochmal.'**
+  String get feedbackErrorRejected;
+
+  /// No description provided for @feedbackErrorPick.
+  ///
+  /// In de, this message translates to:
+  /// **'Das Bild konnte nicht geladen werden. Wähl ein anderes.'**
+  String get feedbackErrorPick;
+
   /// No description provided for @myQrTitle.
   ///
   /// In de, this message translates to:

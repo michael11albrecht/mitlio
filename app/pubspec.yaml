@@ -19,6 +19,9 @@ dependencies:
   flutter_secure_storage: ^11.2.0
   geolocator: ^14.1.2
   go_router: ^18.1.4
+  # Photo picker for the optional feedback screenshots (P7-T10, ADR-29): the
+  # system picker, no library permission, no network.
+  image_picker: ^1.2.0
   intl: ^0.20.3
   material_ui: ^1.1.0
   mitlio_domain: any

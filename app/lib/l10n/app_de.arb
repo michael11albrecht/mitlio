@@ -1842,6 +1842,52 @@
   "profileSettingsEntryHint": "Name, Bild, PayPal.Me und IBAN, nur auf deinem Gerät",
   "myQrEntry": "Mein QR-Code teilen",
   "myQrEntryHint": "Zum Überweisen an dich, ohne Betrag",
+  "feedbackEntry": "Feedback",
+  "feedbackEntryHint": "Ein Problem melden oder etwas vorschlagen",
+  "feedbackTitle": "Feedback",
+  "feedbackTypeProblem": "Problem",
+  "feedbackTypeIdea": "Idee",
+  "feedbackTypeQuestion": "Frage",
+  "feedbackMessageLabel": "Was möchtest du uns sagen?",
+  "feedbackMessageHelper": "Mindestens 10 Zeichen.",
+  "feedbackPublicNote": "Dein Text wird als öffentliches Ticket gespeichert. Schreib keine privaten Daten hinein.",
+  "feedbackScreenshotsLabel": "Screenshots (optional, bis zu 3)",
+  "feedbackScreenshotsNote": "Screenshots sehen nur wir, sie sind nicht öffentlich. Prüfe, ob Namen oder Beträge anderer zu sehen sind.",
+  "feedbackAddScreenshot": "Screenshot hinzufügen",
+  "feedbackRemoveScreenshot": "Screenshot entfernen",
+  "feedbackEmailLabel": "E-Mail (nur, wenn du eine Antwort möchtest)",
+  "feedbackEmailInvalid": "Das sieht nicht nach einer E-Mail-Adresse aus.",
+  "feedbackDiagnosticsLabel": "App-Infos mitsenden",
+  "feedbackDiagnosticsPreview": "Version, System und Sprache: {info}",
+  "@feedbackDiagnosticsPreview": {
+    "placeholders": {
+      "info": {
+        "type": "String"
+      }
+    }
+  },
+  "feedbackSend": "Senden",
+  "feedbackSending": "Wird gesendet …",
+  "feedbackThanksTitle": "Danke, wir lesen jede Nachricht.",
+  "feedbackThanksReply": "Wenn du eine E-Mail-Adresse angegeben hast, melden wir uns bei Bedarf.",
+  "feedbackDone": "Fertig",
+  "feedbackErrorOffline": "Keine Verbindung. Dein Text bleibt erhalten. Prüf deine Verbindung und sende ihn nochmal.",
+  "feedbackErrorRateLimited": "Du hast gerade mehrere Nachrichten geschickt. Versuch es in ein paar Minuten nochmal. Dein Text bleibt erhalten.",
+  "feedbackErrorRateLimitedIn": "Du hast gerade mehrere Nachrichten geschickt. Versuch es in {minutes} Min. nochmal. Dein Text bleibt erhalten.",
+  "@feedbackErrorRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "feedbackErrorBusy": "Gerade kommen sehr viele Nachrichten an. Versuch es später nochmal. Dein Text bleibt erhalten.",
+  "feedbackErrorUnavailable": "Feedback ist noch nicht freigeschaltet. Versuch es später nochmal. Dein Text bleibt erhalten.",
+  "feedbackErrorServer": "Der Server antwortet gerade nicht. Dein Text bleibt erhalten, versuch es in ein paar Minuten nochmal.",
+  "feedbackErrorTooLarge": "Ein Bild ist zu groß (höchstens 5 MB). Entferne es oder wähl ein kleineres.",
+  "feedbackErrorBadScreenshot": "Dieses Bild geht nicht. Nimm Fotos oder Screenshots (PNG, JPEG oder WebP).",
+  "feedbackErrorRejected": "Die Nachricht wurde nicht angenommen. Prüf Text und E-Mail-Adresse und sende sie nochmal.",
+  "feedbackErrorPick": "Das Bild konnte nicht geladen werden. Wähl ein anderes.",
   "myQrTitle": "Mein QR-Code",
   "myQrHint": "Wer diesen Code mit der Banking-App scannt, kann dir Geld überweisen. Er enthält deine IBAN: teile ihn nur mit Leuten, denen du vertraust.",
   "myQrShare": "Teilen",

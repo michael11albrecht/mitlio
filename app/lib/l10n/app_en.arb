@@ -1321,6 +1321,52 @@
   "profileSettingsEntryHint": "Name, picture, PayPal.Me and IBAN, only on your device",
   "myQrEntry": "Share my QR code",
   "myQrEntryHint": "For bank transfers to you, no amount",
+  "feedbackEntry": "Feedback",
+  "feedbackEntryHint": "Report a problem or suggest something",
+  "feedbackTitle": "Feedback",
+  "feedbackTypeProblem": "Problem",
+  "feedbackTypeIdea": "Idea",
+  "feedbackTypeQuestion": "Question",
+  "feedbackMessageLabel": "What would you like to tell us?",
+  "feedbackMessageHelper": "At least 10 characters.",
+  "feedbackPublicNote": "Your text is saved as a public issue. Do not put private details in it.",
+  "feedbackScreenshotsLabel": "Screenshots (optional, up to 3)",
+  "feedbackScreenshotsNote": "Only we can see screenshots, they are not public. Check whether names or amounts of other people show.",
+  "feedbackAddScreenshot": "Add screenshot",
+  "feedbackRemoveScreenshot": "Remove screenshot",
+  "feedbackEmailLabel": "Email (only if you want a reply)",
+  "feedbackEmailInvalid": "That does not look like an email address.",
+  "feedbackDiagnosticsLabel": "Include app info",
+  "feedbackDiagnosticsPreview": "Version, system and language: {info}",
+  "@feedbackDiagnosticsPreview": {
+    "placeholders": {
+      "info": {
+        "type": "String"
+      }
+    }
+  },
+  "feedbackSend": "Send",
+  "feedbackSending": "Sending …",
+  "feedbackThanksTitle": "Thank you, we read every message.",
+  "feedbackThanksReply": "If you gave an email address, we will get back to you if needed.",
+  "feedbackDone": "Done",
+  "feedbackErrorOffline": "No connection. Your text is kept. Check your connection and send it again.",
+  "feedbackErrorRateLimited": "You just sent several messages. Try again in a few minutes. Your text is kept.",
+  "feedbackErrorRateLimitedIn": "You just sent several messages. Try again in {minutes} min. Your text is kept.",
+  "@feedbackErrorRateLimitedIn": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "feedbackErrorBusy": "A lot of messages are coming in right now. Try again later. Your text is kept.",
+  "feedbackErrorUnavailable": "Feedback is not switched on yet. Try again later. Your text is kept.",
+  "feedbackErrorServer": "The server is not responding right now. Your text is kept, try again in a few minutes.",
+  "feedbackErrorTooLarge": "A picture is too large (5 MB at most). Remove it or pick a smaller one.",
+  "feedbackErrorBadScreenshot": "That picture does not work. Use photos or screenshots (PNG, JPEG or WebP).",
+  "feedbackErrorRejected": "The message was not accepted. Check the text and the email address and send it again.",
+  "feedbackErrorPick": "The picture could not be loaded. Pick another one.",
   "myQrTitle": "My QR code",
   "myQrHint": "Anyone who scans this code with their banking app can send you money. It contains your IBAN: only share it with people you trust.",
   "myQrShare": "Share",

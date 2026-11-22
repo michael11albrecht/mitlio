@@ -19,6 +19,10 @@ import 'package:mitlio/core/ui/setup_flow/setup_flow_view_model.dart';
 import 'package:mitlio/db/app_database.dart';
 import 'package:mitlio/db/database_provider.dart';
 import 'package:mitlio/debug/debug_drive.dart';
+import 'package:mitlio/debug/fakes/fake_feedback_service.dart';
+import 'package:mitlio/features/feedback/data/feedback_providers.dart';
+import 'package:mitlio/features/feedback/data/services/feedback_service.dart';
+import 'package:mitlio/features/feedback/data/services/screenshot_picker.dart';
 import 'package:mitlio/features/fuel/data/repositories/fuel_providers.dart';
 import 'package:mitlio/features/fuel/data/services/eu_oil_bulletin_service.dart';
 import 'package:mitlio/features/fuel/data/services/fuel_price_service.dart';
@@ -101,6 +105,23 @@ Future<void> main() async {
             baseUrl: config.supabaseUrl,
             anonKey: config.supabaseAnonKey,
           ),
+        ),
+      // Feedback (ADR-29): the Edge Function answers 503 until the owner
+      // stores the GitHub token, and the Settings row stays hidden. Debug
+      // builds without a backend use the fake so the form can be driven.
+      feedbackServiceProvider.overrideWithValue(
+        config.hasBackend
+            ? HttpFeedbackService(
+                baseUrl: config.supabaseUrl,
+                anonKey: config.supabaseAnonKey,
+              )
+            : kDebugMode
+            ? FakeFeedbackService()
+            : const UnavailableFeedbackService(),
+      ),
+      if (Platform.isAndroid || Platform.isIOS)
+        screenshotPickerProvider.overrideWithValue(
+          ImagePickerScreenshotPicker(),
         ),
       // The guided flows DebugDrive can drive (`ext.mitlio.setup.*`).
       setupFlowConfigsProvider.overrideWithValue({

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mitlio/core/theme/theme.dart';
+import 'package:mitlio/features/feedback/ui/feedback_view_model.dart';
 import 'package:mitlio/features/profile/ui/profile_entry_view_model.dart';
 import 'package:mitlio/features/settings/ui/author_credit_view_model.dart';
 import 'package:mitlio/features/settings/ui/crash_reporting_view_model.dart';
@@ -92,6 +93,14 @@ class SettingsView extends ConsumerWidget {
             subtitle: Text(l10n.licensesEntryHint),
             onTap: () => unawaited(context.push('/settings/licenses')),
           ),
+          // Hidden until the server reports that feedback is set up (ADR-29).
+          if (ref.watch(feedbackEntryVisibleProvider))
+            ListTile(
+              leading: const Icon(Icons.chat_bubble_outline),
+              title: Text(l10n.feedbackEntry),
+              subtitle: Text(l10n.feedbackEntryHint),
+              onTap: () => unawaited(context.push('/settings/feedback')),
+            ),
           ListTile(
             title: Text(
               l10n.deleteMyDataEntry,

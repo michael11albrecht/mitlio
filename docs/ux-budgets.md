@@ -23,6 +23,7 @@ The fenced JSON block below is the single source: the helper parses it. Keys are
 | `profile_setup` | Whole profile flow, every step answered: name, avatar (pick + "Weiter"), PayPal yes, PayPal.Me, bank yes, IBAN, finish action. Typing is not a tap; the minimal path (name, skip, no, no, finish) is 5 (PU-T07) | 8 |
 | `first_group` | First group with people on the step flow (from the first-run screen, PU-T12): name + "Weiter", people + "Weiter", currency "Überspringen", finish action. Typing is not a tap; the entry tap on the first-run screen is not counted | 4 |
 | `commute_template` | New commute route on the step flow (PU-T12): name + "Weiter", distance + "Weiter", car (preselected) "Weiter", driver pick, passenger pick, "Weiter", tolls + "Weiter", finish action. Typing is not a tap; the shortest path (car, skip people, skip tolls) is 6 | 8 |
+| `send_feedback` | Settings to a sent report (ADR-29, P7-T10): "Feedback" row, a type chip, "Senden". Typing the text is not a tap; screenshots, email and app info are optional extras | 3 |
 
 ```json
 {
@@ -42,7 +43,8 @@ The fenced JSON block below is the single source: the helper parses it. Keys are
   "car_setup": {"maxTaps": 6},
   "profile_setup": {"maxTaps": 8},
   "first_group": {"maxTaps": 4},
-  "commute_template": {"maxTaps": 8}
+  "commute_template": {"maxTaps": 8},
+  "send_feedback": {"maxTaps": 3}
 }
 ```
 
