@@ -1,0 +1,22 @@
+{
+  "name": "synthetic-shell-petrol-iso-date",
+  "synthetic": true,
+  "note": "Litres and price per litre must not be mistaken for the total.",
+  "lines": [
+    "Shell Station 4711",
+    "Säule 3",
+    "Super E10",
+    "Menge 45,32 l",
+    "Preis 1,859 EUR/l",
+    "Summe EUR 84,25",
+    "MwSt 19,00 % 13,45",
+    "2024-05-17 08:41"
+  ],
+  "expected": {
+    "totalCents": 8425,
+    "merchant": "Shell",
+    "date": "2024-05-17",
+    "currency": "EUR",
+    "category": "fuel"
+  }
+}

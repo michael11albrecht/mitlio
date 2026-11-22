@@ -1,0 +1,13 @@
+{
+  "name": "synthetic-garbage",
+  "synthetic": true,
+  "note": "OCR noise: nothing may be invented.",
+  "lines": ["###", "@@@ 12", "", "1 2 3", "$$$", "...", "Summe", "99.999.99", "31.02.2024"],
+  "expected": {
+    "totalCents": null,
+    "merchant": null,
+    "date": null,
+    "currency": null,
+    "category": null
+  }
+}

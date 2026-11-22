@@ -1,0 +1,29 @@
+{
+  "name": "synthetic-trattoria-boxes",
+  "synthetic": true,
+  "note": "Unknown restaurant read from boxes: label and amount are separate lines on one row, listed out of order. Subtotal must be ignored.",
+  "lines": [
+    { "text": "18,50", "box": [0.7, 0.30, 0.9, 0.33] },
+    { "text": "Trattoria Da Mario", "box": [0.1, 0.02, 0.9, 0.08] },
+    { "text": "Pizza Diavola", "box": [0.1, 0.30, 0.5, 0.33] },
+    { "text": "Tisch 7", "box": [0.1, 0.12, 0.3, 0.14] },
+    { "text": "Pasta", "box": [0.1, 0.35, 0.5, 0.38] },
+    { "text": "12,00", "box": [0.7, 0.35, 0.9, 0.38] },
+    { "text": "Wein", "box": [0.1, 0.40, 0.5, 0.43] },
+    { "text": "7,50", "box": [0.7, 0.40, 0.9, 0.43] },
+    { "text": "Trinkgeld", "box": [0.1, 0.45, 0.5, 0.48] },
+    { "text": "3,50", "box": [0.7, 0.45, 0.9, 0.48] },
+    { "text": "Zwischensumme", "box": [0.1, 0.55, 0.5, 0.58] },
+    { "text": "38,00", "box": [0.7, 0.55, 0.9, 0.58] },
+    { "text": "Gesamt", "box": [0.1, 0.62, 0.5, 0.65] },
+    { "text": "41,50", "box": [0.7, 0.62, 0.9, 0.65] },
+    { "text": "15.08.2024", "box": [0.1, 0.80, 0.5, 0.83] }
+  ],
+  "expected": {
+    "totalCents": 4150,
+    "merchant": "Trattoria Da Mario",
+    "date": "2024-08-15",
+    "currency": null,
+    "category": "restaurant"
+  }
+}

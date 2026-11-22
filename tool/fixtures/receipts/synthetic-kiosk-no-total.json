@@ -1,0 +1,17 @@
+{
+  "name": "synthetic-kiosk-no-total",
+  "synthetic": true,
+  "note": "No total keyword anywhere: the total stays empty instead of guessing the largest amount.",
+  "lines": [
+    "Kiosk am Eck",
+    "Zeitung 2,50",
+    "Kaffee 1,90"
+  ],
+  "expected": {
+    "totalCents": null,
+    "merchant": "Kiosk am Eck",
+    "date": null,
+    "currency": null,
+    "category": null
+  }
+}
