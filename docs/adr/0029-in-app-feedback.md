@@ -1,6 +1,6 @@
 # ADR-29: In-app feedback, human-triaged into GitHub issues
 
-- **Status:** proposed (owner agreed to the idea 2026-11-20); build after the P8 store release
+- **Status:** accepted 2026-11-22 (owner: starting before the P8 store release is fine; the feature ships hidden until the owner configures the GitHub token)
 - **Date:** 2026-11-20
 
 ## Context
