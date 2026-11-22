@@ -13,6 +13,9 @@ void main() {
       remote: fake,
       seed: (platform, version, url) async => fake.rows[platform] =
           MinVersionConfig(version: version, storeUrl: url),
+      seedSupportTips: (platform, {required enabled}) async {
+        if (enabled) fake.supportTips.add(platform);
+      },
     );
   });
 
@@ -31,6 +34,14 @@ void main() {
         const Err<MinVersionConfig?, RemoteError>(ServerDown()),
       );
       expect(fake.calls, 2);
+    });
+
+    test('the tip jar flag fails like the version read', () async {
+      final fake = FakeAppConfigRemote()..offline = true;
+      expect(
+        await fake.supportTipsEnabled('ios'),
+        const Err<bool, RemoteError>(Offline()),
+      );
     });
   });
 

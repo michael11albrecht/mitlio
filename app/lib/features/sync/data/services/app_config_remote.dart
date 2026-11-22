@@ -33,13 +33,16 @@ class MinVersionConfig {
 /// read: it works before any sign-in. Every failure is a [RemoteError];
 /// nothing throws. `SupabaseAppConfigRemote` and `FakeAppConfigRemote` run the
 /// same contract suite.
-// ignore: one_member_abstracts, a seam with a fake and a shared contract suite
 abstract interface class AppConfigRemote {
   /// The row of [platform] (`ios` or `android`); `Ok(null)` when the server
   /// has no row for it.
   Future<Result<MinVersionConfig?, RemoteError>> minSupportedVersion(
     String platform,
   );
+
+  /// The remote flag `support_tips_enabled` (migration 0017, P7-T09) of
+  /// [platform]; `Ok(false)` when the server has no row for it.
+  Future<Result<bool, RemoteError>> supportTipsEnabled(String platform);
 }
 
 /// [AppConfigRemote] on Supabase: `select` on `app_config` with the anon key.
@@ -73,6 +76,28 @@ class SupabaseAppConfigRemote implements AppConfigRemote {
         return const Err(Rejected('malformed_app_config'));
       }
       return Ok(MinVersionConfig(version: version, storeUrl: url as String?));
+    } on Object catch (e) {
+      return Err(fromException(e));
+    }
+  }
+
+  @override
+  Future<Result<bool, RemoteError>> supportTipsEnabled(String platform) async {
+    final client = switch (_backend.client()) {
+      Ok(:final value) => value,
+      Err() => null,
+    };
+    if (client == null) return const Err(Rejected('backend_unavailable'));
+    try {
+      final rows = await client
+          .from(table)
+          .select('support_tips_enabled')
+          .eq('platform', platform)
+          .limit(1);
+      if (rows.isEmpty) return const Ok(false);
+      final enabled = rows.first['support_tips_enabled'];
+      if (enabled is! bool) return const Err(Rejected('malformed_app_config'));
+      return Ok(enabled);
     } on Object catch (e) {
       return Err(fromException(e));
     }

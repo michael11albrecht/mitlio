@@ -62,7 +62,39 @@ void main() {
       seed: (platform, version, url) async => rows[platform] = {
         'min_supported_version': version,
         'store_url': url,
+        // The column default of migration 0017.
+        'support_tips_enabled': false,
       },
+      seedSupportTips: (platform, {required enabled}) async =>
+          rows[platform]!['support_tips_enabled'] = enabled,
+    );
+  });
+
+  test('the tip jar flag reads one column of one platform', () async {
+    rows['ios'] = {'support_tips_enabled': true};
+    expect(
+      await remote().supportTipsEnabled('ios'),
+      const Ok<bool, RemoteError>(true),
+    );
+    final uri = seen.single;
+    expect(uri.queryParameters['select'], 'support_tips_enabled');
+    expect(uri.queryParameters['platform'], 'eq.ios');
+  });
+
+  test('a tip jar flag that is not a boolean is a malformed error', () async {
+    rows['ios'] = {'support_tips_enabled': 'yes'};
+    expect(
+      await remote().supportTipsEnabled('ios'),
+      const Err<bool, RemoteError>(Rejected('malformed_app_config')),
+    );
+  });
+
+  test('the tip jar flag without a backend is an error', () async {
+    expect(
+      await const SupabaseAppConfigRemote(
+        RemoteBackend.none(),
+      ).supportTipsEnabled('ios'),
+      const Err<bool, RemoteError>(Rejected('backend_unavailable')),
     );
   });
 

@@ -1,8 +1,9 @@
 ---
 import '../styles/global.css';
-import { APP_STORE_URL } from '../../site.config.mjs';
+import { APP_STORE_URL, SUPPORT_PAYPAL_ME } from '../../site.config.mjs';
 import { defaultState } from '../calculator/core';
 import { buildDeepLink } from '../lib/deeplink';
+import { supportUrl } from '../lib/support';
 import { htmlLang, locales, messages, paths, type Locale, type RouteKey } from '../i18n';
 
 interface Props {
@@ -54,6 +55,7 @@ const abs = (path: string) => new URL(path, site).href;
 const pair = alternates ?? (route ? paths[route] : undefined);
 const canonical = pair ? abs(pair[locale]) : path ? abs(path) : undefined;
 const ogUrl = abs(ogImage);
+const supportLink = supportUrl(SUPPORT_PAYPAL_ME);
 ---
 
 <!doctype html>
@@ -121,6 +123,7 @@ const ogUrl = abs(ogImage);
             <li><a href={paths.imprint[locale]}>{t.imprint}</a></li>
             <li><a href={paths.privacy[locale]}>{t.privacy}</a></li>
             <li><a href={paths.contact[locale]}>{t.contact}</a></li>
+            {supportLink && <li><a href={supportLink} target="_blank" rel="noopener">{t.support}</a></li>}
           </ul>
         </nav>
         <p class="credit">

@@ -69,6 +69,7 @@ bool _isCoreLib(String path) => _inDir(path, 'app/lib/core/');
 
 bool _isThemeLib(String path) => _inDir(path, 'app/lib/core/theme/');
 
+const _settleView = 'app/lib/features/settle/ui/settle_view.dart';
 final _viewModel = RegExp(r'^app/lib/.+/ui/[^/]+_view_model\.dart$');
 final _featureUi = RegExp('^app/lib/features/[^/]+/ui/');
 final _featureServices = RegExp('^app/lib/features/[^/]+/data/services/');
@@ -169,6 +170,39 @@ List<Rule> buildRules({required List<String> showDialogAllowlist}) => [
     forbidden: (d) => RegExp(
       'local_member_bank|local_profile_bank|profile_bank|'
       'payment_details|iban_cipher',
+    ).hasMatch(d.target),
+  ),
+  importRule(
+    id: 'no-tip-in-payment-path',
+    description:
+        'tip jar code (features/support) must not be imported by the settle '
+        'payment path: the transfer sheet, its ViewModels and the data layer '
+        'of settle/settlements/balances (ADR-28 §1: never inside the payment)',
+    appliesTo: (p) =>
+        RegExp(
+          '^app/lib/features/(settle|settlements|balances)/',
+        ).hasMatch(p) &&
+        p != _settleView,
+    forbidden: (d) => d.target.contains('features/support/'),
+  ),
+  importRule(
+    id: 'tip-only-quiet-line-on-settled-screen',
+    description:
+        'settle_view.dart may use only the quiet line '
+        '(support_prompt_line.dart), shown after the result (ADR-28 §2)',
+    appliesTo: (p) => p == _settleView,
+    forbidden: (d) =>
+        d.target.contains('features/support/') &&
+        !d.target.endsWith('/support_prompt_line.dart'),
+  ),
+  importRule(
+    id: 'tip-code-no-payment-imports',
+    description:
+        'features/support must not import the settle, settlements or '
+        'balances features (tips never touch the payment)',
+    appliesTo: (p) => _inDir(p, 'app/lib/features/support/'),
+    forbidden: (d) => RegExp(
+      'features/(settle|settlements|balances)/',
     ).hasMatch(d.target),
   ),
   codeRule(

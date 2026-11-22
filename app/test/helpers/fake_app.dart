@@ -38,6 +38,9 @@ import 'package:mitlio/features/settlements/data/repositories/settlements_provid
 import 'package:mitlio/features/settlements/data/repositories/settlements_repository.dart';
 import 'package:mitlio/features/setup/data/fake_setup_state_repository.dart';
 import 'package:mitlio/features/setup/data/setup_providers.dart';
+import 'package:mitlio/features/support/data/repositories/fake_support_repository.dart';
+import 'package:mitlio/features/support/data/services/fake_tip_store_service.dart';
+import 'package:mitlio/features/support/data/support_providers.dart';
 import 'package:mitlio/features/sync/data/repositories/fake_connections_repository.dart';
 import 'package:mitlio/features/sync/data/sync_coordinator.dart';
 import 'package:mitlio/features/sync/data/sync_providers.dart';
@@ -289,6 +292,11 @@ class FakeApp {
   /// test sets its `state`.
   final connections = FakeConnectionsRepository();
 
+  /// The tip jar: the remote flag is off, so no tip surface shows. Tests of
+  /// it set `enabled`.
+  final tipStore = FakeTipStoreService();
+  late final support = FakeSupportRepository(store: tipStore);
+
   List<Override> get overrides => overridesWith();
 
   /// [overrides], optionally with another payment details repository (e.g. a
@@ -297,6 +305,7 @@ class FakeApp {
     paymentDetailsRepositoryProvider.overrideWithValue(
       payments ?? this.payments,
     ),
+    supportRepositoryProvider.overrideWithValue(support),
     groupsRepositoryProvider.overrideWithValue(groups),
     membersRepositoryProvider.overrideWithValue(members),
     expensesRepositoryProvider.overrideWithValue(expenses),

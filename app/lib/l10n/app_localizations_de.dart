@@ -1878,6 +1878,66 @@ class AppLocalizationsDe extends AppLocalizations {
       'Der Link ließ sich nicht öffnen. Wir haben ihn kopiert, du kannst ihn in deinen Browser einfügen.';
 
   @override
+  String get supportEntry => 'mitlio unterstützen';
+
+  @override
+  String get supportEntryHint =>
+      'Ein freiwilliges Trinkgeld, wenn dir mitlio gefällt';
+
+  @override
+  String get supportPromptText =>
+      'Gefällt dir mitlio? Du kannst die Entwicklung freiwillig unterstützen.';
+
+  @override
+  String get supportPromptAction => 'Unterstützen';
+
+  @override
+  String get supportPromptNever => 'Nicht mehr zeigen';
+
+  @override
+  String get supportSheetTitle => 'mitlio unterstützen';
+
+  @override
+  String get supportSheetIntro =>
+      'mitlio hat keine Werbung und kein Tracking. Ein Trinkgeld hilft, den Betrieb zu bezahlen. Es ist freiwillig und hat nichts mit deinen Ausgleichen zu tun.';
+
+  @override
+  String supportTipLabel(String size) {
+    String _temp0 = intl.Intl.selectLogic(
+      size,
+      {
+        'small': 'Kleines Trinkgeld',
+        'medium': 'Mittleres Trinkgeld',
+        'large': 'Großes Trinkgeld',
+        'other': 'Trinkgeld',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get supportThanksTitle => 'Danke dir!';
+
+  @override
+  String get supportThanksBody =>
+      'Dein Trinkgeld hilft, mitlio am Laufen zu halten.';
+
+  @override
+  String get supportClose => 'Schließen';
+
+  @override
+  String get supportErrorStore =>
+      'Der Store ist gerade nicht erreichbar. Prüfe die Verbindung und versuche es in ein paar Minuten noch einmal.';
+
+  @override
+  String get supportErrorProducts =>
+      'Die Trinkgelder sind im Store gerade nicht verfügbar. Versuche es später noch einmal.';
+
+  @override
+  String get supportErrorPurchase =>
+      'Das Trinkgeld ging nicht durch. Prüfe die Verbindung und versuche es in ein paar Minuten noch einmal.';
+
+  @override
   String get licensesTitle => 'Quellen und Lizenzen';
 
   @override
