@@ -40,7 +40,7 @@ abstract interface class AppConfigRemote {
     String platform,
   );
 
-  /// The remote flag `support_tips_enabled` (migration 0017, P7-T09) of
+  /// The remote flag `support_tips_enabled` (migration 0020, P7-T09) of
   /// [platform]; `Ok(false)` when the server has no row for it.
   Future<Result<bool, RemoteError>> supportTipsEnabled(String platform);
 }

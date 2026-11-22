@@ -1,4 +1,4 @@
--- 0017_support_tips_flag: remote kill switch of the "mitlio unterstützen" tip jar (P7-T09, ADR-28).
+-- 0020_support_tips_flag: remote kill switch of the "mitlio unterstützen" tip jar (P7-T09, ADR-28).
 --
 --   * app_config.support_tips_enabled: one flag per store platform, default false. The app shows no tip
 --     surface (Settings row, success-screen line, sheet) until the owner sets it to true, and only after

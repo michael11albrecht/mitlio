@@ -15,7 +15,7 @@ class AppConfigFixture {
   final Future<void> Function(String platform, String version, String? url)
   seed;
 
-  /// Sets the tip jar flag (migration 0017) of the row of `platform`.
+  /// Sets the tip jar flag (migration 0020) of the row of `platform`.
   final Future<void> Function(String platform, {required bool enabled})
   seedSupportTips;
 }

@@ -62,7 +62,7 @@ void main() {
       seed: (platform, version, url) async => rows[platform] = {
         'min_supported_version': version,
         'store_url': url,
-        // The column default of migration 0017.
+        // The column default of migration 0020.
         'support_tips_enabled': false,
       },
       seedSupportTips: (platform, {required enabled}) async =>

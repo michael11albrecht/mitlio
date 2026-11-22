@@ -121,7 +121,7 @@ on conflict (platform) do update
 ''');
   }
 
-  /// Sets the tip jar flag (migration 0017) of an `app_config` row.
+  /// Sets the tip jar flag (migration 0020) of an `app_config` row.
   Future<void> seedSupportTips(String platform, {required bool enabled}) => sql(
     'update public.app_config set support_tips_enabled = $enabled '
     "where platform = '$platform';",
