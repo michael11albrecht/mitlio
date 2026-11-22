@@ -22,6 +22,8 @@ let githubCalls: { path: string; headers: Record<string, string>; body: string }
 let fcmCalls: { authorization: string | null; body: { message: Record<string, unknown> } }[] = [];
 let oauthCalls: { grant_type: string | null; assertion: string | null }[] = [];
 let fcmHealed = false;
+// Sentry cron monitor imitation for the notify test (P6b-T10): records every check-in.
+let sentryCalls: { path: string; status: string | null; duration: string | null }[] = [];
 
 // Frankfurter imitation: rates per 1 unit of `from`. Dated requests answer the last working day.
 const fxRates: Record<string, Record<string, number>> = {
@@ -82,6 +84,14 @@ Deno.serve({ hostname: "0.0.0.0", port: 8787 }, async (req) => {
     }
     return Response.json({ name: `projects/stub/messages/${fcmCalls.length}` });
   }
+  if (url.pathname.startsWith("/api/42/cron/")) {
+    sentryCalls.push({
+      path: url.pathname,
+      status: url.searchParams.get("status"),
+      duration: url.searchParams.get("duration"),
+    });
+    return Response.json({ id: "stub-check-in" }, { status: 202 });
+  }
   if (url.pathname === "/__fcm_heal") {
     fcmHealed = true;
     return Response.json({});
@@ -132,6 +142,7 @@ Deno.serve({ hostname: "0.0.0.0", port: 8787 }, async (req) => {
       github: githubCalls,
       fcm: fcmCalls,
       oauth: oauthCalls,
+      sentry: sentryCalls,
     });
   }
   if (url.pathname === "/__reset") {
@@ -141,6 +152,7 @@ Deno.serve({ hostname: "0.0.0.0", port: 8787 }, async (req) => {
     githubCalls = [];
     fcmCalls = [];
     oauthCalls = [];
+    sentryCalls = [];
     fcmHealed = false;
     return Response.json({});
   }

@@ -48,6 +48,7 @@ FEEDBACK_RATE_LIMIT_PER_HOUR=3
 FEEDBACK_RATE_LIMIT_SALT=integration-test-salt
 FEEDBACK_CLEANUP_TOKEN=integration-cleanup-token
 NOTIFY_TOKEN=$NOTIFY_TOKEN
+SENTRY_DSN=http://stubkey@host.docker.internal:8787/42
 FCM_ENDPOINT=http://host.docker.internal:8787/fcm/v1/projects/stub/messages:send
 FCM_SERVICE_ACCOUNT='{"client_email":"stub@stub.iam.gserviceaccount.com","private_key":"$fcm_key","token_uri":"http://host.docker.internal:8787/oauth/token"}'
 EOF

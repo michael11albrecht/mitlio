@@ -5,8 +5,13 @@
 //   FCM_ENDPOINT         https://fcm.googleapis.com/v1/projects/<project-id>/messages:send
 //   NOTIFY_TOKEN         shared with the cron job (Vault: notify_token), sent as x-notify-token
 // Logs one JSON line per run with counts only (P6b-T10), never names, titles, tokens or ids.
+// Optional monitoring (P6b-T10, ADR-14): SENTRY_DSN (EU project) turns on a Sentry cron monitor
+// check-in per run, `error` on a failed run, a high failure rate, a stale backlog or dropped rows;
+// NOTIFY_SENTRY_MONITOR (slug, default "notify"), NOTIFY_ALERT_FAILURE_RATE (0.5),
+// NOTIFY_ALERT_BACKLOG_SECONDS (600). Logic: _shared/notify_monitor.ts.
 import { constantTimeEquals } from "../_shared/fuel.ts";
 import { createFcmClient, parseServiceAccount } from "../_shared/fcm.ts";
+import { assess, createMonitor, type Health } from "../_shared/notify_monitor.ts";
 import { type ClaimedEvent, type NotifyStore, runNotify } from "../_shared/notify_run.ts";
 
 const env = (name: string): string => Deno.env.get(name) ?? "";
@@ -33,6 +38,27 @@ async function get<T>(path: string): Promise<T[]> {
   const res = await rest(path);
   if (!res.ok) throw new Error(`read failed: ${path.split("?")[0]} ${res.status}`);
   return await res.json();
+}
+
+const envNumber = (name: string, fallback: number): number => {
+  const n = Number(env(name));
+  return env(name) !== "" && Number.isFinite(n) && n >= 0 ? n : fallback;
+};
+
+async function readHealth(): Promise<Health | null> {
+  try {
+    const res = await rest("rpc/notification_outbox_health", { method: "POST", body: "{}" });
+    if (!res.ok) throw new Error(`status ${res.status}`);
+    const rows = (await res.json()) as Health[];
+    return rows[0] ?? null;
+  } catch (e) {
+    console.error(JSON.stringify({
+      event: "notify_health",
+      error: "health_unavailable",
+      message: (e as Error).message,
+    }));
+    return null;
+  }
 }
 
 const inList = (values: string[]) => `in.(${values.map((v) => `"${v}"`).join(",")})`;
@@ -86,6 +112,20 @@ function json(body: unknown, status: number): Response {
   });
 }
 
+const monitor = createMonitor({
+  dsn: env("SENTRY_DSN"),
+  slug: env("NOTIFY_SENTRY_MONITOR") || "notify",
+  fetch: (url, init) => fetch(url, init),
+});
+
+async function checkIn(status: "ok" | "error", ms: number, reasons: string[]): Promise<void> {
+  const result = await monitor.checkIn(status, ms);
+  if (result === "disabled") return;
+  const line = { event: "notify_monitor", status, reasons, check_in: result };
+  if (result === "sent") console.log(JSON.stringify(line));
+  else console.error(JSON.stringify(line));
+}
+
 async function handle(req: Request): Promise<Response> {
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
   const token = env("NOTIFY_TOKEN");
@@ -98,6 +138,7 @@ async function handle(req: Request): Promise<Response> {
   const endpoint = env("FCM_ENDPOINT");
   if (serviceAccount === null || endpoint === "") {
     console.error(JSON.stringify({ event: "notify_run", error: "fcm_not_configured" }));
+    await checkIn("error", 0, ["fcm_not_configured"]);
     return json({ error: "fcm_not_configured" }, 503);
   }
 
@@ -115,7 +156,13 @@ async function handle(req: Request): Promise<Response> {
       batchSize: envInt("NOTIFY_BATCH_SIZE", 200),
       concurrency: envInt("NOTIFY_CONCURRENCY", 10),
     });
-    console.log(JSON.stringify({ event: "notify_run", ...stats, ms: Date.now() - started }));
+    const ms = Date.now() - started;
+    console.log(JSON.stringify({ event: "notify_run", ...stats, ms }));
+    const verdict = assess(stats, await readHealth(), {
+      failureRate: envNumber("NOTIFY_ALERT_FAILURE_RATE", 0.5),
+      backlogSeconds: envNumber("NOTIFY_ALERT_BACKLOG_SECONDS", 600),
+    });
+    await checkIn(verdict.status, ms, verdict.reasons);
     return json(stats, 200);
   } catch (e) {
     console.error(JSON.stringify({
@@ -124,6 +171,7 @@ async function handle(req: Request): Promise<Response> {
       message: (e as Error).message,
       ms: Date.now() - started,
     }));
+    await checkIn("error", Date.now() - started, ["run_failed"]);
     return json({ error: "run_failed" }, 500);
   }
 }
