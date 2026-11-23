@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/michael11albrecht/mitlio/compare/mitlio-v0.5.0...mitlio-v0.5.1) (2026-11-23)
+
+
+### Bug Fixes
+
+* **ios:** add photo library and location-always purpose strings ([#298](https://github.com/michael11albrecht/mitlio/issues/298)) ([ec62075](https://github.com/michael11albrecht/mitlio/commit/ec62075c43e7eb0a2d67550724a7cc579f133d0e))
+
 ## [0.5.0](https://github.com/michael11albrecht/mitlio/compare/mitlio-v0.4.0...mitlio-v0.5.0) (2026-11-22)
 
 
