@@ -47,6 +47,8 @@ export function initFuel(hooks: FuelHooks): { sync: () => void } | null {
   }
   const titleEl = document.getElementById('calc-fuel-title') as HTMLElement;
   const sourceEl = document.getElementById('calc-fuel-source') as HTMLElement;
+  const scopeEl = document.getElementById('calc-fuel-scope') as HTMLElement;
+  const scopeTextEl = document.getElementById('calc-fuel-scope-text') as HTMLElement;
   const statusEl = document.getElementById('calc-fuel-status') as HTMLElement;
   const whereEl = document.getElementById('calc-fuel-where') as HTMLElement;
   const footEl = document.getElementById('calc-fuel-foot') as HTMLElement;
@@ -147,8 +149,10 @@ export function initFuel(hooks: FuelHooks): { sync: () => void } | null {
     hasChips = first !== undefined;
     if (first) {
       // Honest label: scope, age and the API's own attribution text.
+      scopeTextEl.textContent = scopeLabel(first, plz);
+      scopeEl.dataset['scope'] = first.scope;
+      scopeEl.hidden = false;
       const parts = [
-        scopeLabel(first, plz),
         fill(m.fuelAsOf, { when: formatAsOf(first, locale) }),
         first.attribution,
       ];
@@ -156,6 +160,8 @@ export function initFuel(hooks: FuelHooks): { sync: () => void } | null {
       sourceEl.textContent = parts.join(' · ');
       sourceEl.hidden = false;
     } else {
+      scopeTextEl.textContent = '';
+      scopeEl.hidden = true;
       sourceEl.textContent = '';
       sourceEl.hidden = true;
     }

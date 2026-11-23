@@ -131,8 +131,8 @@ test.describe('fuel chips (de)', () => {
     await expect(chip(page, 'e5')).toHaveText(/E5\s*1,799 €/);
     await expect(chip(page, 'e10')).toHaveText(/E10\s*≈1,799 €/);
     await expect(chip(page, 'diesel')).toHaveText(/Diesel\s*1,689 €/);
+    await expect(page.locator('#calc-fuel-scope')).toHaveText('Ø Deutschland');
     const source = page.locator('#calc-fuel-source');
-    await expect(source).toContainText('Ø Deutschland');
     await expect(source).toContainText('Stand 10.11.');
     await expect(source).toContainText('Quelle: EU Weekly Oil Bulletin');
     await expect(source).toContainText('geschätzt');
@@ -312,7 +312,7 @@ test.describe('fuel chips, nearby (geolocation granted)', () => {
     await expect(chip(page, 'e5')).toBeVisible();
     const before = seen.length;
     await page.getByRole('button', { name: 'In meiner Nähe' }).click();
-    await expect(page.locator('#calc-fuel-source')).toContainText('In deiner Nähe');
+    await expect(page.locator('#calc-fuel-scope')).toHaveText('In deiner Nähe');
     await expect(page.locator('#calc-fuel-source')).toContainText('Daten: MTS-K via Tankerkönig (CC BY 4.0)');
     await expect(chip(page, 'diesel')).toHaveText(/Diesel\s*1,649 €/);
     const regional = seen.slice(before);
@@ -348,7 +348,7 @@ test.describe('fuel chips, nearby (geolocation granted)', () => {
     await open(page);
     await page.getByRole('button', { name: 'In meiner Nähe' }).click();
     await expect(page.locator('#calc-fuel-status')).toContainText('keine Preise');
-    await expect(page.locator('#calc-fuel-source')).toContainText('Ø Deutschland');
+    await expect(page.locator('#calc-fuel-scope')).toHaveText('Ø Deutschland');
   });
 
   test('a postcode works as the alternative and is validated', async ({ page }) => {
@@ -361,7 +361,7 @@ test.describe('fuel chips, nearby (geolocation granted)', () => {
     expect(seen.filter((s) => s.url.searchParams.has('plz'))).toHaveLength(0);
     await page.locator('#calc-fuel-plz').fill('80331');
     await page.getByRole('button', { name: 'Preise zeigen' }).click();
-    await expect(page.locator('#calc-fuel-source')).toContainText('Region PLZ 80331');
+    await expect(page.locator('#calc-fuel-scope')).toHaveText('Region PLZ 80331');
     expect(seen.filter((s) => s.url.searchParams.get('plz') === '80331')).toHaveLength(3);
     expect(seen.every((s) => !s.url.searchParams.has('lat'))).toBe(true);
   });
@@ -386,7 +386,8 @@ test.describe('fuel chips (en)', () => {
     await mockApi(page);
     await open(page, '/en/');
     await expect(chip(page, 'e5')).toHaveText(/E5\s*1\.799 €/);
-    await expect(page.locator('#calc-fuel-source')).toContainText('Germany average · as of 10 Nov');
+    await expect(page.locator('#calc-fuel-scope')).toHaveText('Germany average');
+    await expect(page.locator('#calc-fuel-source')).toContainText('as of 10 Nov');
     await chip(page, 'diesel').click();
     await expect(page.locator('#calc-price')).toHaveValue('1.689');
   });
