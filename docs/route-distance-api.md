@@ -118,9 +118,9 @@ DebugDrive: `ext.mitlio.route.suggest`, `route.distance`, `route.manualEdit`, `r
 
 The website calculator has the same collapsed "Start und Ziel eingeben, Strecke berechnen" row (`web/src/calculator/route.ts`).
 It is **off by default**: build with `ROUTE_WEB=1` (and `FUEL_API_URL`) to render it. The endpoint is
-`route-distance` next to `fuel-prices`, so the CSP `connect-src` already covers it. The same flag renders the draft
-Datenschutz section (`web/src/i18n/legal.ts`), which carries an `[[ENTWURF ...]]` placeholder: a production build fails
-until the owner has signed off the wording and removed it. Owner steps: `ORS_API_KEY` secret and
+`route-distance` next to `fuel-prices`, so the CSP `connect-src` already covers it. The same flag renders the
+Datenschutz section (`web/src/i18n/legal.ts`; owner signed off the wording on 2026-11-23). The deploy workflow passes the
+repo variable `ROUTE_WEB`. Owner steps: `ORS_API_KEY` secret and
 `ROUTE_ALLOWED_ORIGINS` (the web origins, e.g. `https://mitlio.web.app,https://mitlio.de,https://www.mitlio.de`, set with
 `supabase secrets set`; unlike `FUEL_ALLOWED_ORIGINS` no workflow sets it). Typing is debounced (300 ms, from 3
 characters); `Retry-After` is exposed by CORS so the 429 message can name the wait.

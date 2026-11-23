@@ -2,7 +2,7 @@
 # the preview URL on the PR), live deploy on push to main. Needs the repo secret FIREBASE_SERVICE_ACCOUNT
 # (service account JSON with "Firebase Hosting Admin"); without it (or on fork PRs) the job is skipped.
 # Optional repo variables used at build time: SITE_URL, FUEL_API_URL, FUEL_API_ANON_KEY, APP_STORE_URL,
-# PLAY_STORE_URL, APPLE_TEAM_ID, ANDROID_SHA256_CERT_FINGERPRINTS (see web/site.config.mjs).
+# PLAY_STORE_URL, APPLE_TEAM_ID, ANDROID_SHA256_CERT_FINGERPRINTS, ROUTE_WEB (see web/site.config.mjs).
 # LEGAL_STREET and LEGAL_CITY hold the operator's postal address for the Impressum / Datenschutzerklärung. They
 # are repo variables so the address never enters the (public) repository; if one is unset, the legal text keeps
 # its placeholder and the production build fails (docs/release.md, "Legal texts").
@@ -51,6 +51,7 @@ jobs:
       LEGAL_CITY: ${{ vars.LEGAL_CITY }}
       FUEL_API_URL: ${{ vars.FUEL_API_URL }}
       FUEL_API_ANON_KEY: ${{ vars.FUEL_API_ANON_KEY }}
+      ROUTE_WEB: ${{ vars.ROUTE_WEB }}
       APP_STORE_URL: ${{ vars.APP_STORE_URL }}
       PLAY_STORE_URL: ${{ vars.PLAY_STORE_URL }}
       APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}

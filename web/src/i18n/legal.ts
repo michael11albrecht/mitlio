@@ -705,11 +705,8 @@ const syncEn: SyncPrivacy = {
 };
 
 // ---------------------------------------------------------------------------------------------------------------
-// From-to route field on the website (PW-T12, issue #207). ENTWURF / DRAFT: NOT legally reviewed.
+// From-to route field on the website (PW-T12, issue #207). Signed off by the owner (2026-11-23).
 // Rendered only when the website is built with ROUTE_WEB=1 (site.config.mjs), the same flag that renders the field.
-// The [[ENTWURF ...]] marker is a placeholder on purpose: a production build fails while it is in the text
-// (assertNoPlaceholders), so the field cannot go live with an unreviewed privacy claim. After the owner's legal
-// sign-off, delete the marker paragraph in both languages.
 //
 // Checked against docs/route-distance-api.md and supabase/functions/_shared/route.ts: the typed text goes to our
 // Edge Function, which sends it to openrouteservice; only the function's egress IP reaches the provider; the
@@ -723,7 +720,6 @@ export const routePrivacySectionDe: LegalSection = {
     'Unser Server leitet den Text für die Adressvorschläge und, nach deiner Auswahl, die Koordinaten von Start und Ziel für die Streckenberechnung an openrouteservice weiter (HeiGIT gGmbH, Heidelberg, Deutschland). openrouteservice sieht nur die Adresse unseres Servers, nicht deine IP-Adresse und keine Nutzerkennung. Eine Adresse, die du tippst, kann ein personenbezogenes Datum sein (zum Beispiel deine Wohnadresse). Wir speichern weder den Text noch die Koordinaten und schreiben sie nicht in Protokolle.',
     'Für den Missbrauchsschutz gilt „Missbrauchsschutz (Rate Limit)“: Dort liegt nur ein gesalzener Hash deiner Anfrage-Kennung, nie der Text.',
     'Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (du löst die Berechnung selbst aus). Die Funktion ist freiwillig. Die Kilometer kannst du jederzeit von Hand eintragen. Die Karten- und Routendaten stammen von OpenStreetMap-Mitwirkenden (ODbL), bereitgestellt über openrouteservice.',
-    '[[ENTWURF: Rechtsprüfung durch den Inhaber steht aus (Rechtsgrundlage, Auftragsverarbeitung bzw. Verantwortlichkeit mit HeiGIT, Ersatzanbieter Geoapify falls aktiviert). Diesen Absatz nach der Freigabe entfernen.]]',
   ],
 };
 
@@ -734,7 +730,6 @@ export const routePrivacySectionEn: LegalSection = {
     'Our server forwards the text for the address suggestions and, after you pick, the coordinates of start and destination for the route calculation to openrouteservice (HeiGIT gGmbH, Heidelberg, Germany). openrouteservice only sees the address of our server, not your IP address and no user ID. An address you type can be personal data (for example your home address). We store neither the text nor the coordinates and do not write them to logs.',
     'For abuse protection, “Abuse protection (rate limit)” applies: only a salted hash of your request identifier is kept there, never the text.',
     'The legal basis is Art. 6(1)(b) GDPR (you trigger the calculation yourself). The feature is optional. You can always enter the kilometres by hand. Map and route data come from OpenStreetMap contributors (ODbL), provided via openrouteservice.',
-    '[[ENTWURF: legal review by the owner is outstanding (legal basis, processing or joint responsibility with HeiGIT, fallback provider Geoapify if enabled). Remove this paragraph after sign-off.]]',
   ],
 };
 
