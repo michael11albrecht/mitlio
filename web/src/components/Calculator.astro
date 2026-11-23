@@ -115,6 +115,7 @@ const ctaDeepLink = buildDeepLink({
           <p class="fuel-title" id="calc-fuel-title">
             {m.fuelTitle}
           </p>
+          <p class="fuel-scope" id="calc-fuel-scope" data-scope="" hidden />
           <div class="chips" id="calc-fuel-chips">
             {FUEL_TYPES.map((t) => (
               <button type="button" class="chip" data-fuel={t} hidden aria-pressed="false">
@@ -518,6 +519,7 @@ const ctaDeepLink = buildDeepLink({
   .fuel[hidden],
   .chip[hidden],
   .fuel-source[hidden],
+  .fuel-scope[hidden],
   .fuel-note[hidden],
   .fuel-foot[hidden],
   .fuel-where[hidden] {
@@ -526,6 +528,17 @@ const ctaDeepLink = buildDeepLink({
 
   .fuel-title {
     margin: 0;
+    font-weight: 600;
+  }
+
+  /* Which price this is: Germany average, nearby or a postcode area. Sits right above the chips. */
+  .fuel-scope {
+    margin: 0;
+    justify-self: start;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--color-border, currentColor);
+    border-radius: 999px;
+    font-size: 0.875rem;
     font-weight: 600;
   }
 
