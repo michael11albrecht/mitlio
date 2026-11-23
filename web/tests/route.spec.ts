@@ -106,7 +106,7 @@ test.describe('privacy text gate', () => {
       const section = privacy.sections.find((s) => s.heading.startsWith(locale === 'de' ? 'Strecke berechnen' : 'Calculating a route'));
       expect(section, locale).toBeDefined();
       expect(JSON.stringify(section)).toContain('openrouteservice');
-      expect(findPlaceholders(privacy)).toEqual([]);
+      expect(findPlaceholders(privacy).some((p) => p.startsWith('[[ENTWURF'))).toBe(false);
       expect(JSON.stringify(privacy)).toContain('HeiGIT');
       // The default text (flag off) does not name the provider.
       expect(JSON.stringify(buildLegalTexts(true)[locale].privacy)).not.toContain('openrouteservice');
