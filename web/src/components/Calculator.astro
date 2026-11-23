@@ -112,17 +112,27 @@ const ctaDeepLink = buildDeepLink({
           data-key={FUEL_API_ANON_KEY || undefined}
           hidden
         >
-          <p class="fuel-title" id="calc-fuel-title">
-            {m.fuelTitle}
-          </p>
-          <p class="fuel-scope" id="calc-fuel-scope" data-scope="" hidden />
-          <div class="chips" id="calc-fuel-chips">
-            {FUEL_TYPES.map((t) => (
-              <button type="button" class="chip" data-fuel={t} hidden aria-pressed="false">
-                <span class="chip-name">{t === 'diesel' ? 'Diesel' : t.toUpperCase()}</span>{' '}
-                <span class="chip-price" />
-              </button>
-            ))}
+          <div class="fuel-head">
+            <p class="fuel-title" id="calc-fuel-title">
+              {m.fuelTitle}
+            </p>
+            {/* Which price this is. Icon + text, never colour alone; the icon follows data-scope. */}
+            <p class="fuel-scope" id="calc-fuel-scope" data-scope="" hidden>
+              <svg class="scope-icon scope-national" viewBox="0 0 16 12" aria-hidden="true" focusable="false">
+                <rect width="16" height="4" y="0" fill="#000" />
+                <rect width="16" height="4" y="4" fill="#d00" />
+                <rect width="16" height="4" y="8" fill="#ffce00" />
+              </svg>
+              <svg class="scope-icon scope-nearby" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path d="M8 1.5a4.5 4.5 0 0 0-4.5 4.5c0 3.2 4.5 8.5 4.5 8.5S12.5 9.2 12.5 6A4.5 4.5 0 0 0 8 1.5Z" fill="none" stroke="currentColor" stroke-width="1.5" />
+                <circle cx="8" cy="6" r="1.6" fill="currentColor" />
+              </svg>
+              <svg class="scope-icon scope-plz" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.5 2" />
+                <circle cx="8" cy="8" r="1.6" fill="currentColor" />
+              </svg>
+              <span id="calc-fuel-scope-text" />
+            </p>
           </div>
           <div class="fuel-where" id="calc-fuel-where" hidden>
             <button type="button" class="chip chip-action" id="calc-fuel-nearby">
@@ -136,6 +146,14 @@ const ctaDeepLink = buildDeepLink({
                 {m.fuelPlzGo}
               </button>
             </div>
+          </div>
+          <div class="chips" id="calc-fuel-chips">
+            {FUEL_TYPES.map((t) => (
+              <button type="button" class="chip" data-fuel={t} hidden aria-pressed="false">
+                <span class="chip-name">{t === 'diesel' ? 'Diesel' : t.toUpperCase()}</span>{' '}
+                <span class="chip-price" />
+              </button>
+            ))}
           </div>
           <p class="fuel-status" id="calc-fuel-status" role="status" />
         </div>
@@ -531,15 +549,49 @@ const ctaDeepLink = buildDeepLink({
     font-weight: 600;
   }
 
-  /* Which price this is: Germany average, nearby or a postcode area. Sits right above the chips. */
+  .fuel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  /* Which price this is: Germany average, nearby or a postcode area. Icon + text, right next to the title. */
   .fuel-scope {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
     margin: 0;
-    justify-self: start;
-    padding: 0 var(--space-3);
-    border: 1px solid var(--color-border, currentColor);
+    padding: 0.125rem var(--space-3);
+    border: 1px solid var(--color-border-strong);
     border-radius: 999px;
     font-size: 0.875rem;
     font-weight: 600;
+  }
+
+  .fuel-scope[data-scope='nearby'],
+  .fuel-scope[data-scope='plz'] {
+    border-color: var(--color-primary);
+  }
+
+  .scope-icon {
+    display: none;
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+  }
+
+  .fuel-scope[data-scope='national'] .scope-national,
+  .fuel-scope[data-scope='nearby'] .scope-nearby,
+  .fuel-scope[data-scope='plz'] .scope-plz {
+    display: block;
+  }
+
+  /* Where the price is for comes first (scope, then the controls to change it), the prices follow. */
+  .fuel-where {
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .chips,
