@@ -99,16 +99,16 @@ test.describe('route lib', () => {
 });
 
 test.describe('privacy text gate', () => {
-  test('the route section is draft-marked, in both languages, and only rendered with the flag', () => {
+  test('the route section is in both languages, and only rendered with the flag', () => {
     const on = buildLegalTexts(true, true);
     for (const locale of ['de', 'en'] as const) {
       const privacy = on[locale].privacy;
       const section = privacy.sections.find((s) => s.heading.startsWith(locale === 'de' ? 'Strecke berechnen' : 'Calculating a route'));
       expect(section, locale).toBeDefined();
       expect(JSON.stringify(section)).toContain('openrouteservice');
-      expect(findPlaceholders(privacy).some((p) => p.startsWith('[[ENTWURF'))).toBe(true);
+      expect(findPlaceholders(privacy)).toEqual([]);
       expect(JSON.stringify(privacy)).toContain('HeiGIT');
-      // The default text (flag off) neither names the provider nor carries the draft marker.
+      // The default text (flag off) does not name the provider.
       expect(JSON.stringify(buildLegalTexts(true)[locale].privacy)).not.toContain('openrouteservice');
     }
     expect(on.de.privacy.sections.length).toBe(on.en.privacy.sections.length);
